@@ -670,13 +670,15 @@ function TambahKegiatanInner() {
                       className="w-24 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                     <span className="text-sm text-gray-500 whitespace-nowrap">orang</span>
-                    <button
-                      type="button"
-                      onClick={() => set("peserta", form.peserta.filter((_, idx) => idx !== i))}
-                      className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    {i > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => set("peserta", form.peserta.filter((_, idx) => idx !== i))}
+                        className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
               )})}
@@ -729,13 +731,15 @@ function TambahKegiatanInner() {
                       placeholder="https://..."
                       className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
-                    <button
-                      type="button"
-                      onClick={() => set("publikasiLinks", form.publikasiLinks.filter((_, idx) => idx !== i))}
-                      className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    {i > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => set("publikasiLinks", form.publikasiLinks.filter((_, idx) => idx !== i))}
+                        className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
