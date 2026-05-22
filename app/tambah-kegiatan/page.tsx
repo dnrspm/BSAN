@@ -3,10 +3,10 @@
 import { useState, useEffect, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import {
-  ArrowLeft, Calendar, X,
+  ArrowLeft, Calendar, Lock, Trash2, Users,
   CheckCircle, PlayCircle, Clock, FileCheck,
   Landmark, Building2, GraduationCap, Heart, HelpCircle,
-  MapPin, Users, Link, Hash,
+  MapPin, Link, Hash,
 } from "lucide-react"
 import {
   KAB_KOTA_ACEH, getKecamatanList, getKelurahanList,
@@ -52,6 +52,7 @@ interface KegiatanForm {
   peserta: PesertaItem[]
   linkDokumentasi: string
   status: StatusKegiatan
+  aksesInfo: "publik" | "terbatas"
 }
 
 // ---------------------------------------------------------------------------
@@ -62,6 +63,8 @@ const SEED_DATA = [
   { id: "kg-2", namaKegiatan: "Sosialisasi Hak Anak", penyelenggara: ["Pusat", "Sekolah"], tanggalMulai: "2025-06-20", tanggalSelesai: "2025-06-21", deskripsiKegiatan: "Sosialisasi hak anak kepada seluruh siswa dan wali kelas", pelaksanaan: ["luring", "daring"] as ("luring" | "daring")[], provinsi: "Aceh", kabupatenKota: "Banda Aceh", kecamatan: "Kuta Alam", kelurahan: "Peunayong", alamatJalan: "Ruang Serbaguna", kodePos: "", linkGoogleMap: "https://maps.google.com", tautanMeeting: "https://zoom.us/j/123", peserta: [{ kategori: "Siswa", jumlah: "80" }, { kategori: "Masyarakat", jumlah: "40" }], linkDokumentasi: "https://docs.example.com", status: "berlangsung" as StatusKegiatan },
   { id: "kg-3", namaKegiatan: "Rapat Koordinasi Kelompok Kerja", penyelenggara: ["Dinas Pendidikan", "Dinas Sosial"], tanggalMulai: "2025-07-10", tanggalSelesai: "2025-07-10", deskripsiKegiatan: "Rapat koordinasi bulanan antar anggota kelompok kerja", pelaksanaan: ["luring"] as ("luring" | "daring")[], provinsi: "Aceh", kabupatenKota: "Banda Aceh", kecamatan: "Kuta Raja", kelurahan: "Keudah", alamatJalan: "Kantor Dinas Pendidikan", kodePos: "23123", linkGoogleMap: "", tautanMeeting: "", peserta: [{ kategori: "Guru", jumlah: "30" }], linkDokumentasi: "", status: "menunggu" as StatusKegiatan },
 ]
+
+const KATEGORI_OPTIONS = ["Guru", "Siswa", "Umum", "Lainnya"]
 
 const PENYELENGGARA_OPTIONS = [
   "Sekolah",
@@ -94,6 +97,7 @@ const emptyForm = (): KegiatanForm => ({
   peserta: [],
   linkDokumentasi: "",
   status: "menunggu",
+  aksesInfo: "publik",
 })
 
 function getPenyelenggaraIcon(type: string) {
@@ -305,6 +309,7 @@ function TambahKegiatanInner() {
         peserta: Array.isArray(existing.peserta) ? existing.peserta as PesertaItem[] : [],
         linkDokumentasi: (existing.linkDokumentasi as string) ?? "",
         status: (existing.status as StatusKegiatan) ?? "menunggu",
+        aksesInfo: (existing.aksesInfo as "publik" | "terbatas") ?? "publik",
       })
       if (existing.realize) {
         setRealizeData(existing.realize as typeof realizeData)
@@ -365,6 +370,7 @@ function TambahKegiatanInner() {
           peserta: form.peserta,
           linkDokumentasi: form.linkDokumentasi,
           status: form.status,
+          aksesInfo: form.aksesInfo,
           createdAt: new Date().toISOString(),
         }
         sessionStorage.setItem("kegiatanList", JSON.stringify([...allData, newItem]))
@@ -548,7 +554,7 @@ function TambahKegiatanInner() {
                         </div>
                         <span className="text-sm font-medium text-gray-700 flex-1">{p}</span>
                         <button type="button" onClick={() => set("penyelenggara", form.penyelenggara.filter((x) => x !== p))} className="p-0.5 hover:bg-gray-200 rounded-full">
-                          <X className="w-3.5 h-3.5 text-gray-400" />
+                          <Trash2 className="w-3.5 h-3.5 text-gray-400" />
                         </button>
                       </div>
                     )
@@ -572,40 +578,67 @@ function TambahKegiatanInner() {
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              {form.peserta.map((p, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <input
-                    value={p.kategori}
-                    onChange={(e) => {
-                      const next = [...form.peserta]
-                      next[i] = { ...next[i], kategori: e.target.value }
-                      set("peserta", next)
-                    }}
-                    placeholder="Kategori"
-                    className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                  <input
-                    type="number"
-                    min="1"
-                    value={p.jumlah}
-                    onChange={(e) => {
-                      const next = [...form.peserta]
-                      next[i] = { ...next[i], jumlah: e.target.value }
-                      set("peserta", next)
-                    }}
-                    placeholder="Jumlah"
-                    className="w-24 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                  <span className="text-sm text-gray-500 whitespace-nowrap">orang</span>
-                  <button
-                    type="button"
-                    onClick={() => set("peserta", form.peserta.filter((_, idx) => idx !== i))}
-                    className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+              {form.peserta.map((p, i) => {
+                const predefined = ["Guru", "Siswa", "Umum"]
+                const isCustom = p.kategori && !predefined.includes(p.kategori)
+                const displayValue = isCustom ? "Lainnya" : p.kategori
+                const takenByOthers = form.peserta
+                  .filter((_, idx) => idx !== i)
+                  .map((r) => r.kategori)
+                  .filter((k) => predefined.includes(k))
+                const availableOptions = ["Lainnya", ...predefined.filter((opt) => !takenByOthers.includes(opt))]
+                return (
+                <div key={i}>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 flex items-center gap-2">
+                      <div className="flex-1">
+                        <SelectInput
+                          value={displayValue}
+                          onChange={(v) => {
+                            const next = [...form.peserta]
+                            next[i] = { ...next[i], kategori: v }
+                            set("peserta", next)
+                          }}
+                          options={availableOptions}
+                          placeholder="Pilih Kategori"
+                        />
+                      </div>
+                      {displayValue === "Lainnya" && (
+                        <input
+                          value={p.kategori !== "Lainnya" ? p.kategori : ""}
+                          onChange={(e) => {
+                            const next = [...form.peserta]
+                            next[i] = { ...next[i], kategori: e.target.value }
+                            set("peserta", next)
+                          }}
+                          placeholder="Tulis kategori..."
+                          className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      )}
+                    </div>
+                    <input
+                      type="number"
+                      min="1"
+                      value={p.jumlah}
+                      onChange={(e) => {
+                        const next = [...form.peserta]
+                        next[i] = { ...next[i], jumlah: e.target.value }
+                        set("peserta", next)
+                      }}
+                      placeholder="Jumlah"
+                      className="w-24 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                    <span className="text-sm text-gray-500 whitespace-nowrap">orang</span>
+                    <button
+                      type="button"
+                      onClick={() => set("peserta", form.peserta.filter((_, idx) => idx !== i))}
+                      className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-              ))}
+              )})}
               <button
                 type="button"
                 onClick={() => set("peserta", [...form.peserta, { kategori: "", jumlah: "" }])}
@@ -767,6 +800,39 @@ function TambahKegiatanInner() {
             </div>
           </SectionCard>
         )}
+
+        {/* Akses Informasi */}
+        <SectionCard icon={<Lock className="w-4 h-4" />} title="Akses Informasi">
+          <div className="space-y-3">
+            <p className="text-xs text-gray-500">Tentukan siapa yang dapat melihat informasi kegiatan ini.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {([
+                { value: "publik" as const, label: "Publik", desc: "Dapat dilihat oleh semua orang tanpa perlu login", icon: <Users className="w-4 h-4" />, color: "border-green-400 bg-green-50", iconBg: "bg-green-100 text-green-700" },
+                { value: "terbatas" as const, label: "Terbatas (Login)", desc: "Hanya dapat dilihat oleh pengguna yang sudah login", icon: <Lock className="w-4 h-4" />, color: "border-amber-400 bg-amber-50", iconBg: "bg-amber-100 text-amber-700" },
+              ]).map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => { if (!isReadOnly) set("aksesInfo", opt.value) }}
+                  disabled={isReadOnly}
+                  className={`flex items-start gap-3 p-4 rounded-xl border-2 text-left transition disabled:cursor-default ${
+                    form.aksesInfo === opt.value
+                      ? opt.color
+                      : "border-gray-200 bg-white hover:border-gray-300 disabled:hover:border-gray-200"
+                  }`}
+                >
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${opt.iconBg}`}>
+                    {opt.icon}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">{opt.label}</p>
+                    <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{opt.desc}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </SectionCard>
 
         {/* Footer actions */}
         {!isReadOnly && (
