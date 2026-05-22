@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import {
-  ArrowLeft, Calendar, Lock, Trash2, Users,
+  ArrowLeft, Calendar, Plus, Trash2, Users,
   CheckCircle, PlayCircle, Clock, FileCheck,
   Landmark, Building2, GraduationCap, Heart, HelpCircle,
   MapPin, Link, Hash,
@@ -20,6 +20,11 @@ type StatusKegiatan = "menunggu" | "berlangsung" | "selesai" | "terealisasi"
 interface PesertaItem {
   kategori: string
   jumlah: string
+}
+
+interface PublikasiLink {
+  url: string
+  jenisMedia: string
 }
 
 const PROVINSI_OPTIONS = [
@@ -50,6 +55,7 @@ interface KegiatanForm {
   linkGoogleMap: string
   tautanMeeting: string
   peserta: PesertaItem[]
+  publikasiLinks: PublikasiLink[]
   linkDokumentasi: string
   status: StatusKegiatan
   aksesInfo: "publik" | "terbatas"
@@ -65,6 +71,8 @@ const SEED_DATA = [
 ]
 
 const KATEGORI_OPTIONS = ["Guru", "Siswa", "Umum", "Lainnya"]
+
+const JENIS_MEDIA_OPTIONS = ["Instagram", "Facebook", "YouTube", "Twitter / X", "TikTok", "Website", "LinkedIn", "Lainnya"]
 
 const PENYELENGGARA_OPTIONS = [
   "Sekolah",
@@ -94,7 +102,8 @@ const emptyForm = (): KegiatanForm => ({
   kodePos: "",
   linkGoogleMap: "",
   tautanMeeting: "",
-  peserta: [],
+  peserta: [{ kategori: "", jumlah: "" }],
+  publikasiLinks: [{ url: "", jenisMedia: "" }],
   linkDokumentasi: "",
   status: "menunggu",
   aksesInfo: "publik",
@@ -238,6 +247,8 @@ function TambahKegiatanInner() {
     dokumentasi: string
     createdAt: string
   } | null>(null)
+  const [isRealizing, setIsRealizing] = useState(false)
+  const [realizeCatatan, setRealizeCatatan] = useState("")
 
   const [tagInput, setTagInput] = useState("")
   const [showTagDropdown, setShowTagDropdown] = useState(false)
@@ -307,6 +318,7 @@ function TambahKegiatanInner() {
         linkGoogleMap: (existing.linkGoogleMap as string) ?? "",
         tautanMeeting: (existing.tautanMeeting as string) ?? "",
         peserta: Array.isArray(existing.peserta) ? existing.peserta as PesertaItem[] : [],
+        publikasiLinks: Array.isArray(existing.publikasiLinks) ? existing.publikasiLinks as PublikasiLink[] : [],
         linkDokumentasi: (existing.linkDokumentasi as string) ?? "",
         status: (existing.status as StatusKegiatan) ?? "menunggu",
         aksesInfo: (existing.aksesInfo as "publik" | "terbatas") ?? "publik",
@@ -368,6 +380,7 @@ function TambahKegiatanInner() {
           linkGoogleMap: form.linkGoogleMap,
           tautanMeeting: form.tautanMeeting,
           peserta: form.peserta,
+          publikasiLinks: form.publikasiLinks,
           linkDokumentasi: form.linkDokumentasi,
           status: form.status,
           aksesInfo: form.aksesInfo,
@@ -409,6 +422,22 @@ function TambahKegiatanInner() {
     )
   }
 
+  const isFormDisabled = isReadOnly && !isRealizing
+
+  const handleRealize = () => {
+    if (!isRealizing || !viewId) return
+    try {
+      const stored = JSON.parse(sessionStorage.getItem("kegiatanList") ?? "[]") as Array<Record<string, unknown>>
+      const idx = stored.findIndex((i) => i.id === viewId)
+      const updated = { ...(idx !== -1 ? stored[idx] : form), ...form, status: "terealisasi", realize: { catatan: realizeCatatan, linkDokumentasi: form.linkDokumentasi, createdAt: new Date().toISOString() } }
+      if (idx !== -1) stored[idx] = updated
+      else stored.push({ id: viewId, ...updated })
+      sessionStorage.setItem("kegiatanList", JSON.stringify(stored))
+      window.dispatchEvent(new CustomEvent("kegiatanUpdated"))
+    } catch {}
+    setSubmitted(true)
+  }
+
   const pageTitle = isView ? "Detail Kegiatan" : isEdit ? "Edit Kegiatan" : "Tambah Kegiatan"
   const pageSubtitle = isView ? "Informasi lengkap kegiatan" : isEdit ? "Perbarui informasi kegiatan" : "Lengkapi semua informasi yang diperlukan"
 
@@ -440,16 +469,28 @@ function TambahKegiatanInner() {
               <p className="text-xs text-gray-500">{pageSubtitle}</p>
             )}
           </div>
-          {isView && form.status === "selesai" && (
-            <a
-              href={`/laporkan-realisasi?id=${viewId}`}
+          {isView && form.status === "selesai" && !isRealizing && (
+            <button
+              onClick={() => { setIsRealizing(true); setRealizeCatatan("") }}
               className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white bg-green-600 hover:bg-green-700 transition shrink-0"
             >
               <FileCheck className="w-4 h-4" /> Laporkan Realisasi
-            </a>
+            </button>
           )}
         </div>
       </div>
+
+      {/* Banner realisasi */}
+      {isRealizing && (
+        <div className="max-w-2xl mx-auto px-4 pt-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl px-5 py-3.5 flex items-start gap-3">
+            <FileCheck className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+            <p className="text-sm text-blue-800">
+              Silakan sesuaikan detail kegiatan dengan realisasi di lapangan. Nama kegiatan dan deskripsi tidak dapat diubah.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Form body */}
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
@@ -478,21 +519,21 @@ function TambahKegiatanInner() {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <FieldLabel required={!isReadOnly}>Tanggal Mulai</FieldLabel>
+              <FieldLabel required={!isFormDisabled}>Tanggal Mulai</FieldLabel>
               <TextInput
                 type="date"
                 value={form.tanggalMulai}
                 onChange={(v) => set("tanggalMulai", v)}
-                disabled={isReadOnly}
+                disabled={isFormDisabled}
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <FieldLabel required={!isReadOnly}>Tanggal Selesai</FieldLabel>
+              <FieldLabel required={!isFormDisabled}>Tanggal Selesai</FieldLabel>
               <TextInput
                 type="date"
                 value={form.tanggalSelesai}
                 onChange={(v) => set("tanggalSelesai", v)}
-                disabled={isReadOnly}
+                disabled={isFormDisabled}
               />
             </div>
           </div>
@@ -500,7 +541,7 @@ function TambahKegiatanInner() {
 
         {/* Penyelenggara */}
         <SectionCard icon={<Building2 className="w-4 h-4" />} title="Penyelenggara">
-          {isReadOnly ? (
+          {isFormDisabled ? (
             <div className="flex flex-col gap-1.5">
               {form.penyelenggara.length > 0 ? form.penyelenggara.map((p) => {
                 const Icon = getPenyelenggaraIcon(p)
@@ -567,7 +608,7 @@ function TambahKegiatanInner() {
 
         {/* Peserta */}
         <SectionCard icon={<Users className="w-4 h-4" />} title="Peserta">
-          {isReadOnly ? (
+          {isFormDisabled ? (
             <div className="flex flex-col gap-2">
               {form.peserta.length > 0 ? form.peserta.map((p, i) => (
                 <div key={i} className="flex items-center gap-3 py-2 px-3 bg-gray-50 rounded-lg">
@@ -642,9 +683,68 @@ function TambahKegiatanInner() {
               <button
                 type="button"
                 onClick={() => set("peserta", [...form.peserta, { kategori: "", jumlah: "" }])}
-                className="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 transition self-start"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
               >
-                + Tambah Kategori
+                <Plus className="w-3.5 h-3.5" /> Tambah Kategori
+              </button>
+            </div>
+          )}
+        </SectionCard>
+
+        {/* Link Publikasi Acara */}
+        <SectionCard icon={<Link className="w-4 h-4" />} title="Link Publikasi Acara">
+          {isFormDisabled ? (
+            <div className="flex flex-col gap-2">
+              {Array.isArray(form.publikasiLinks) && form.publikasiLinks.length > 0 ? form.publikasiLinks.map((p, i) => (
+                <div key={i} className="flex items-center gap-3 py-2 px-3 bg-gray-50 rounded-lg">
+                  <span className="text-xs font-medium text-gray-700 min-w-[90px]">{p.jenisMedia || "-"}</span>
+                  <span className="text-xs text-blue-600 truncate">{p.url || "-"}</span>
+                </div>
+              )) : <span className="text-sm text-gray-400">-</span>}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {Array.isArray(form.publikasiLinks) && form.publikasiLinks.map((p, i) => (
+                <div key={i}>
+                  <div className="flex items-center gap-2">
+                    <div className="w-28 shrink-0">
+                      <SelectInput
+                        value={p.jenisMedia}
+                        onChange={(v) => {
+                          const next = [...form.publikasiLinks]
+                          next[i] = { ...next[i], jenisMedia: v }
+                          set("publikasiLinks", next)
+                        }}
+                        options={JENIS_MEDIA_OPTIONS}
+                        placeholder="Media"
+                      />
+                    </div>
+                    <input
+                      value={p.url}
+                      onChange={(e) => {
+                        const next = [...form.publikasiLinks]
+                        next[i] = { ...next[i], url: e.target.value }
+                        set("publikasiLinks", next)
+                      }}
+                      placeholder="https://..."
+                      className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => set("publikasiLinks", form.publikasiLinks.filter((_, idx) => idx !== i))}
+                      className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => set("publikasiLinks", [...form.publikasiLinks, { url: "", jenisMedia: "" }])}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+              >
+                <Plus className="w-3.5 h-3.5" /> Tambah Link Publikasi
               </button>
             </div>
           )}
@@ -655,7 +755,7 @@ function TambahKegiatanInner() {
           <div className="flex flex-col gap-4">
             {/* Pelaksanaan */}
             <div className="flex flex-col gap-2">
-              <FieldLabel required={!isReadOnly}>Pelaksanaan Kegiatan</FieldLabel>
+              <FieldLabel required={!isFormDisabled}>Pelaksanaan Kegiatan</FieldLabel>
               <div className="flex items-center gap-6">
                 <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                   <input
@@ -672,7 +772,7 @@ function TambahKegiatanInner() {
                         ...(!nowLuring ? { provinsi: "", kabupatenKota: "", kecamatan: "", kelurahan: "", alamatJalan: "", kodePos: "", linkGoogleMap: "" } : {}),
                       }))
                     }}
-                    disabled={isReadOnly}
+                    disabled={isFormDisabled}
                     className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   Luring
@@ -692,7 +792,7 @@ function TambahKegiatanInner() {
                         ...(!nowDaring ? { tautanMeeting: "" } : {}),
                       }))
                     }}
-                    disabled={isReadOnly}
+                    disabled={isFormDisabled}
                     className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   Daring
@@ -703,23 +803,23 @@ function TambahKegiatanInner() {
             {form.pelaksanaan.includes("luring") && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel required={!isReadOnly}>Provinsi</FieldLabel>
+                  <FieldLabel required={!isFormDisabled}>Provinsi</FieldLabel>
                   <SelectInput
                     value={form.provinsi}
                     onChange={(v) => set("provinsi", v)}
                     options={PROVINSI_OPTIONS}
                     placeholder="Pilih Provinsi"
-                    disabled={isReadOnly}
+                    disabled={isFormDisabled}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel required={!isReadOnly}>Kabupaten / Kota</FieldLabel>
+                  <FieldLabel required={!isFormDisabled}>Kabupaten / Kota</FieldLabel>
                   <SelectInput
                     value={form.kabupatenKota}
                     onChange={(v) => set("kabupatenKota", v)}
                     options={KAB_KOTA_ACEH}
                     placeholder={form.provinsi ? "Pilih Kabupaten / Kota" : "Pilih Provinsi dulu"}
-                    disabled={isReadOnly || !form.provinsi}
+                    disabled={isFormDisabled || !form.provinsi}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -729,7 +829,7 @@ function TambahKegiatanInner() {
                     onChange={(v) => set("kecamatan", v)}
                     options={getKecamatanList(form.kabupatenKota)}
                     placeholder={form.kabupatenKota ? "Pilih Kecamatan" : "Pilih Kabupaten / Kota dulu"}
-                    disabled={isReadOnly || !form.kabupatenKota}
+                    disabled={isFormDisabled || !form.kabupatenKota}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -739,7 +839,7 @@ function TambahKegiatanInner() {
                     onChange={(v) => set("kelurahan", v)}
                     options={getKelurahanList(form.kabupatenKota, form.kecamatan)}
                     placeholder={form.kecamatan ? "Pilih Kelurahan / Desa" : "Pilih Kecamatan dulu"}
-                    disabled={isReadOnly || !form.kecamatan}
+                    disabled={isFormDisabled || !form.kecamatan}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -748,7 +848,7 @@ function TambahKegiatanInner() {
                     value={form.alamatJalan}
                     onChange={(v) => set("alamatJalan", v)}
                     placeholder="Contoh: Aula Sekolah SDN 01"
-                    disabled={isReadOnly}
+                    disabled={isFormDisabled}
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -757,7 +857,7 @@ function TambahKegiatanInner() {
                     value={form.kodePos}
                     onChange={(v) => set("kodePos", v)}
                     placeholder="Contoh: 23123"
-                    disabled={isReadOnly}
+                    disabled={isFormDisabled}
                   />
                 </div>
                 <div className="sm:col-span-2 flex flex-col gap-1.5">
@@ -766,7 +866,7 @@ function TambahKegiatanInner() {
                     value={form.linkGoogleMap}
                     onChange={(v) => set("linkGoogleMap", v)}
                     placeholder="https://maps.google.com/..."
-                    disabled={isReadOnly}
+                    disabled={isFormDisabled}
                   />
                 </div>
               </div>
@@ -774,68 +874,103 @@ function TambahKegiatanInner() {
 
             {form.pelaksanaan.includes("daring") && (
               <div className="flex flex-col gap-1.5">
-                <FieldLabel required={!isReadOnly}>Tautan Meeting Online</FieldLabel>
+                <FieldLabel required={!isFormDisabled}>Tautan Meeting Online</FieldLabel>
                 <TextInput
                   value={form.tautanMeeting}
                   onChange={(v) => set("tautanMeeting", v)}
                   placeholder="https://zoom.us/j/..."
-                  disabled={isReadOnly}
+                  disabled={isFormDisabled}
                 />
               </div>
             )}
           </div>
         </SectionCard>
 
-        {/* Link Dokumentasi — tampil saat kegiatan sudah lewat */}
-        {(isPast || form.linkDokumentasi) && (
+        {/* Link Dokumentasi */}
+        {(isPast || form.linkDokumentasi || isRealizing) && (
           <SectionCard icon={<Link className="w-4 h-4" />} title="Link Dokumentasi">
             <div className="flex flex-col gap-1.5">
-              <FieldLabel required={isPast && !isReadOnly}>Link Dokumentasi Kegiatan</FieldLabel>
+              <FieldLabel required={isPast && !isFormDisabled}>Link Dokumentasi Kegiatan</FieldLabel>
               <TextInput
                 value={form.linkDokumentasi}
                 onChange={(v) => set("linkDokumentasi", v)}
                 placeholder="https://..."
-                disabled={isReadOnly}
+                disabled={isFormDisabled}
               />
             </div>
           </SectionCard>
         )}
 
         {/* Akses Informasi */}
-        <SectionCard icon={<Lock className="w-4 h-4" />} title="Akses Informasi">
-          <div className="space-y-3">
-            <p className="text-xs text-gray-500">Tentukan siapa yang dapat melihat informasi kegiatan ini.</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {([
-                { value: "publik" as const, label: "Publik", desc: "Dapat dilihat oleh semua orang tanpa perlu login", icon: <Users className="w-4 h-4" />, color: "border-green-400 bg-green-50", iconBg: "bg-green-100 text-green-700" },
-                { value: "terbatas" as const, label: "Terbatas (Login)", desc: "Hanya dapat dilihat oleh pengguna yang sudah login", icon: <Lock className="w-4 h-4" />, color: "border-amber-400 bg-amber-50", iconBg: "bg-amber-100 text-amber-700" },
-              ]).map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => { if (!isReadOnly) set("aksesInfo", opt.value) }}
-                  disabled={isReadOnly}
-                  className={`flex items-start gap-3 p-4 rounded-xl border-2 text-left transition disabled:cursor-default ${
-                    form.aksesInfo === opt.value
-                      ? opt.color
-                      : "border-gray-200 bg-white hover:border-gray-300 disabled:hover:border-gray-200"
-                  }`}
-                >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${opt.iconBg}`}>
-                    {opt.icon}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">{opt.label}</p>
-                    <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{opt.desc}</p>
-                  </div>
-                </button>
-              ))}
+        {!isRealizing && (
+          <SectionCard icon={<Users className="w-4 h-4" />} title="Akses Informasi">
+            <div className="space-y-3">
+              <p className="text-xs text-gray-500">Tentukan siapa yang dapat melihat informasi kegiatan ini.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {([
+                  { value: "publik" as const, label: "Publik", desc: "Dapat dilihat oleh semua orang tanpa perlu login", icon: <Users className="w-4 h-4" />, color: "border-green-400 bg-green-50", iconBg: "bg-green-100 text-green-700" },
+                  { value: "terbatas" as const, label: "Terbatas (Login)", desc: "Hanya dapat dilihat oleh pengguna yang sudah login", icon: <Users className="w-4 h-4" />, color: "border-amber-400 bg-amber-50", iconBg: "bg-amber-100 text-amber-700" },
+                ]).map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => { if (!isFormDisabled) set("aksesInfo", opt.value) }}
+                    disabled={isFormDisabled}
+                    className={`flex items-start gap-3 p-4 rounded-xl border-2 text-left transition disabled:cursor-default ${
+                      form.aksesInfo === opt.value
+                        ? opt.color
+                        : "border-gray-200 bg-white hover:border-gray-300 disabled:hover:border-gray-200"
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${opt.iconBg}`}>
+                      <Users className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">{opt.label}</p>
+                      <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{opt.desc}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        </SectionCard>
+          </SectionCard>
+        )}
+
+        {/* Catatan — hanya saat realisasi */}
+        {isRealizing && (
+          <SectionCard icon={<FileCheck className="w-4 h-4" />} title="Catatan Realisasi">
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel>Catatan Tambahan</FieldLabel>
+              <textarea
+                value={realizeCatatan}
+                onChange={(e) => setRealizeCatatan(e.target.value)}
+                placeholder="Tambahkan catatan jika ada hal yang perlu disampaikan..."
+                rows={3}
+                className="p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
+              />
+            </div>
+          </SectionCard>
+        )}
 
         {/* Footer actions */}
-        {!isReadOnly && (
+        {isRealizing && (
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={() => setIsRealizing(false)}
+              className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition"
+            >
+              Batal
+            </button>
+            <button
+              onClick={handleRealize}
+              className="flex-1 py-2.5 rounded-lg bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700 transition"
+            >
+              Simpan Laporan Realisasi
+            </button>
+          </div>
+        )}
+
+        {!isReadOnly && !isRealizing && (
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => {
@@ -859,7 +994,7 @@ function TambahKegiatanInner() {
           </div>
         )}
 
-        {isReadOnly && form.status !== "selesai" && form.status !== "berlangsung" && form.status !== "terealisasi" && (
+        {isReadOnly && !isRealizing && form.status !== "selesai" && form.status !== "berlangsung" && form.status !== "terealisasi" && (
           <div className="flex gap-3 pt-2 pb-4">
             <a
               href={`/tambah-kegiatan?edit=${viewId}`}
