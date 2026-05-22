@@ -1,37 +1,21 @@
 "use client"
 
 import { useState } from "react"
-import { X, Camera } from "lucide-react"
+import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { Kegiatan } from "./KegiatanView"
 
 interface RealisasiModalProps {
   kegiatan: Kegiatan
   onClose: () => void
-  onSave: (id: string, realize: { jumlahPeserta: number; tanggalRealisasi: string; catatan: string; dokumentasi: string; createdAt: string }) => void
+  onSave: (id: string, realize: { jumlahPeserta: number; tanggalRealisasi: string; catatan: string; linkDokumentasi: string; createdAt: string }) => void
 }
 
 export function RealisasiModal({ kegiatan, onClose, onSave }: RealisasiModalProps) {
   const [jumlahPeserta, setJumlahPeserta] = useState(kegiatan?.realize?.jumlahPeserta?.toString() || "")
   const [tanggalRealisasi, setTanggalRealisasi] = useState(kegiatan?.realize?.tanggalRealisasi || "")
   const [catatan, setCatatan] = useState(kegiatan?.realize?.catatan || "")
-  const [dokumentasi, setDokumentasi] = useState(kegiatan?.realize?.dokumentasi || "")
-  const [dokumentasiPreview, setDokumentasiPreview] = useState(kegiatan?.realize?.dokumentasi || "")
-  const [isUploading, setIsUploading] = useState(false)
-
-  const handleDokumentasiChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setIsUploading(true)
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setDokumentasiPreview(reader.result as string)
-        setDokumentasi(file.name)
-        setIsUploading(false)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
+  const [linkDokumentasi, setLinkDokumentasi] = useState(kegiatan?.realize?.dokumentasi || (kegiatan as Record<string, unknown>)?.linkDokumentasi as string || "")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,7 +25,7 @@ export function RealisasiModal({ kegiatan, onClose, onSave }: RealisasiModalProp
       jumlahPeserta: parseInt(jumlahPeserta),
       tanggalRealisasi,
       catatan,
-      dokumentasi,
+      linkDokumentasi,
       createdAt: new Date().toISOString(),
     })
     onClose()
@@ -92,47 +76,15 @@ export function RealisasiModal({ kegiatan, onClose, onSave }: RealisasiModalProp
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Dokumentasi Kegiatan
+              Link Dokumentasi
             </label>
-            <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center hover:border-gray-300 transition-colors">
-              {dokumentasiPreview ? (
-                <div className="space-y-2">
-                  <img 
-                    src={dokumentasiPreview} 
-                    alt="Dokumentasi" 
-                    className="max-h-40 mx-auto rounded-lg object-contain"
-                  />
-                  <p className="text-xs text-gray-500">{dokumentasi}</p>
-                  <button
-                    type="button"
-                    onClick={() => { setDokumentasiPreview(""); setDokumentasi("") }}
-                    className="text-xs text-red-500 hover:text-red-600"
-                  >
-                    Hapus
-                  </button>
-                </div>
-              ) : (
-                <label className="cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleDokumentasiChange}
-                    className="hidden"
-                  />
-                  <div className="flex flex-col items-center gap-2">
-                    {isUploading ? (
-                      <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <Camera className="w-8 h-8 text-gray-400" />
-                    )}
-                    <p className="text-sm text-gray-500">
-                      Klik untuk upload foto dokumentasi
-                    </p>
-                    <p className="text-xs text-gray-400">Format: JPG, PNG (max 5MB)</p>
-                  </div>
-                </label>
-              )}
-            </div>
+            <input
+              type="url"
+              value={linkDokumentasi}
+              onChange={(e) => setLinkDokumentasi(e.target.value)}
+              placeholder="https://..."
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            />
           </div>
 
           <div>

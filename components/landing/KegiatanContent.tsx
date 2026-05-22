@@ -1,72 +1,126 @@
 "use client"
 
 import React, { useState, useMemo } from "react"
-import { MapPin, Users, Search } from "lucide-react"
+import { Search, Eye, CheckCircle, Clock, PlayCircle, ChevronDown, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
+import { PROVINSI_DATA } from "@/data/provinsiData"
 
 const PAGE_SIZE = 10
 
+const PROVINCE_OPTIONS = PROVINSI_DATA.filter((p) => !p.provinsi.includes(" - ")).map((p) => p.provinsi).sort()
+
+interface Peserta {
+  kategori: string
+  jumlah: string
+}
+
 interface Kegiatan {
-  no: number
-  nama: string
-  penyelenggara: string
+  id: string
+  namaKegiatan: string
+  penyelenggara: string[]
+  pelaksanaan: ("luring" | "daring")[]
   wilayah: string
-  tanggal: string
-  status: "Berlangsung" | "Selesai" | "Akan Datang"
-  peserta: number
-  deskripsi: string
+  tanggalMulai: string
+  tanggalSelesai: string
+  status: "Berlangsung" | "Selesai" | "Terjadwal" | "Terealisasi"
+  peserta: Peserta[]
+  deskripsiKegiatan: string
+  tautanMeeting: string
 }
 
 export const MOCK_KEGIATAN: Kegiatan[] = [
-  { no: 1, nama: "Pelatihan Fasilitator BSAN Tingkat Nasional", penyelenggara: "Kemendikdasmen", wilayah: "Jakarta", tanggal: "2025-03-10", status: "Selesai", peserta: 120, deskripsi: "Pelatihan bagi fasilitator BSAN dari seluruh Indonesia untuk meningkatkan kapasitas dalam implementasi program." },
-  { no: 2, nama: "Workshop Pembentukan Pokja BSAN Provinsi Jawa Barat", penyelengara: "Dinas Pendidikan Jawa Barat", wilayah: "Bandung", tanggal: "2025-04-05", status: "Selesai", peserta: 45, deskripsi: "Workshop khusus untuk membantu pembentukan Kelompok Kerja BSAN di wilayah Jawa Barat." },
-  { no: 3, nama: "Sosialisasi Program BSAN di Aceh", penyelengara: "Dinas Pendidikan Aceh", wilayah: "Banda Aceh", tanggal: "2025-04-18", status: "Selesai", peserta: 80, deskripsi: "Kesgiatan sosialisasi program BSAN kepada seluruh pemangku kepentingan di Provinsi Aceh." },
-  { no: 4, nama: "Webinar Nasional: Budaya Sekolah Aman", penyelengara: "Kemendikdasmen", wilayah: "Online", tanggal: "2025-05-12", status: "Selesai", peserta: 500, deskripsi: "Webinar nasional yang membahas strategi implementasi budaya sekolah aman dan nyaman." },
-  { no: 5, nama: "Bimtek Monitoring dan Evaluasi BSAN", penyelengara: "Pusat Penguatan Karakter", wilayah: "Surabaya", tanggal: "2025-05-20", status: "Selesai", peserta: 60, deskripsi: "Bimbingan teknis untuk petugas yang menangani monitoring dan evaluasi program BSAN." },
-  { no: 6, nama: "Forum Koordinasi Pokja BSAN Sumatera", penyelengara: "Kemendikdasmen", wilayah: "Medan", tanggal: "2025-06-03", status: "Berlangsung", peserta: 90, deskripsi: "Forum koordinasi antar Kelompok Kerja BSAN di wilayah Sumatera." },
-  { no: 7, nama: "Pelatihan Guru: Pencegahan Kekerasan di Sekolah", penyelengara: "Dinas Pendidikan DKI Jakarta", wilayah: "Jakarta", tanggal: "2025-06-10", status: "Berlangsung", peserta: 200, deskripsi: "Pelatihan untuk guru-guru di DKI Jakarta tentang pencegahan dan penanganan kekerasan di lingkungan sekolah." },
-  { no: 8, nama: "Rapat Koordinasi Pokja BSAN Nasional", penyelengara: "Kemendikdasmen", wilayah: "Jakarta", tanggal: "2025-06-25", status: "Akan Datang", peserta: 150, deskripsi: "Rapat koordinasi seluruh Pokja BSAN tingkat nasional untuk evaluasi semester pertama." },
-  { no: 9, nama: "Workshop BSAN untuk Kepala Sekolah", penyelengara: "Dinas Pendidikan Jawa Tengah", wilayah: "Semarang", tanggal: "2025-07-08", status: "Akan Datang", peserta: 75, deskripsi: "Workshop khusus kepala sekolah tentang implementasi kebijakan BSAN di tingkat satuan pendidikan." },
-  { no: 10, nama: "Seminar Nasional: Perlindungan Peserta Didik", penyelengara: "Kemendikdasmen", wilayah: "Yogyakarta", tanggal: "2025-07-15", status: "Akan Datang", peserta: 300, deskripsi: "Seminar nasional yang membahas isu perlindungan peserta didik dari berbagai perspektif." },
-  { no: 11, nama: "Pelatihan Pokja BSAN Kalimantan", penyelengara: "Dinas Pendidikan Kaltim", wilayah: "Samarinda", tanggal: "2025-07-22", status: "Akan Datang", peserta: 55, deskripsi: "Pelatihan pembentukan dan penguatan Pokja BSAN di wilayah Kalimantan." },
-  { no: 12, nama: "Forum BSAN Kawasan Timur Indonesia", penyelengara: "Kemendikdasmen", wilayah: "Makassar", tanggal: "2025-08-05", status: "Akan Datang", peserta: 110, deskripsi: "Forum khusus untuk daerah-daerah di kawasan timur Indonesia dalam mengakselerasi program BSAN." },
-  { no: 13, nama: "Rapat Pokja BSAN Tingkat Nasional", penyelengara: "Kemendikdasmen", wilayah: "Jakarta", tanggal: "2026-05-06", status: "Berlangsung", peserta: 80, deskripsi: "Rapat koordinasi pokja BSAN tingkat nasional." },
-  { no: 14, nama: "Sosialisasi Kebijakan BSAN untuk Dinas Pendidikan", penyelengara: "Pusat Penguatan Karakter", wilayah: "Online", tanggal: "2026-05-06", status: "Berlangsung", peserta: 250, deskripsi: "Sosialisasi kebijakan BSAN terbaru kepada seluruh dinas pendidikan provinsi." },
-  { no: 15, nama: "Pelatihan Guru Anti Bullying", penyelengara: "Dinas Pendidikan Jawa Barat", wilayah: "Bandung", tanggal: "2026-05-06", status: "Berlangsung", peserta: 150, deskripsi: "Pelatihan untuk guru-guru mengenai pencegahan dan penanganan bullying di sekolah." },
-  { no: 16, nama: "Workshop Pemetaan Zona Aman Sekolah", penyelengara: "Kemendikdasmen", wilayah: "Jakarta", tanggal: "2026-05-06", status: "Akan Datang", peserta: 60, deskripsi: "Workshop pemetaan zona aman di setiap sekolah untuk keselamatan peserta didik." },
-  { no: 17, nama: "Forum Koordinasi Orang Tua - Sekolah", penyelengara: "Dinas Pendidikan Banten", wilayah: "Serang", tanggal: "2026-05-06", status: "Akan Datang", peserta: 100, deskripsi: "Forum koordinasi antara orang tua dan sekolah untuk mendukung program BSAN." },
-  { no: 18, nama: "Pelatihan Pengembangan Kurikulum BSAN", penyelengara: "Kemendikdasmen", wilayah: "Bandung", tanggal: "2026-05-07", status: "Berlangsung", peserta: 120, deskripsi: "Pelatihan pengembangan kurikulum terintegrasi BSAN untuk guru-guru di wilayah Jawa Barat." },
-  { no: 19, nama: "Sosialisasi Pencegahan Perundungan di Sekolah", penyelengara: "Dinas Pendidikan Jawa Timur", wilayah: "Surabaya", tanggal: "2026-05-07", status: "Berlangsung", peserta: 180, deskripsi: "Sosialisasi dan pelatihan pencegahan perundungan di lingkungan sekolah." },
+  { id: "kg-1", namaKegiatan: "Pelatihan Fasilitator BSAN Tingkat Nasional", penyelenggara: ["Kemendikdasmen"], pelaksanaan: ["luring"], wilayah: "Jakarta", tanggalMulai: "2025-03-10", tanggalSelesai: "2025-03-12", status: "Selesai", peserta: [{ kategori: "Guru", jumlah: "80" }, { kategori: "Kepala Sekolah", jumlah: "40" }], deskripsiKegiatan: "Pelatihan bagi fasilitator BSAN dari seluruh Indonesia untuk meningkatkan kapasitas dalam implementasi program.", tautanMeeting: "" },
+  { id: "kg-2", namaKegiatan: "Workshop Pembentukan Pokja BSAN Provinsi Jawa Barat", penyelenggara: ["Dinas Pendidikan Jawa Barat"], pelaksanaan: ["luring"], wilayah: "Bandung", tanggalMulai: "2025-04-05", tanggalSelesai: "2025-04-05", status: "Selesai", peserta: [{ kategori: "Guru", jumlah: "25" }, { kategori: "Pengawas", jumlah: "20" }], deskripsiKegiatan: "Workshop khusus untuk membantu pembentukan Kelompok Kerja BSAN di wilayah Jawa Barat.", tautanMeeting: "" },
+  { id: "kg-3", namaKegiatan: "Sosialisasi Program BSAN di Aceh", penyelenggara: ["Dinas Pendidikan Aceh"], pelaksanaan: ["luring"], wilayah: "Banda Aceh", tanggalMulai: "2025-04-18", tanggalSelesai: "2025-04-18", status: "Selesai", peserta: [{ kategori: "Guru", jumlah: "60" }, { kategori: "Masyarakat", jumlah: "20" }], deskripsiKegiatan: "Kegiatan sosialisasi program BSAN kepada seluruh pemangku kepentingan di Provinsi Aceh.", tautanMeeting: "" },
+  { id: "kg-4", namaKegiatan: "Webinar Nasional: Budaya Sekolah Aman", penyelenggara: ["Kemendikdasmen"], pelaksanaan: ["daring"], wilayah: "Online", tanggalMulai: "2025-05-12", tanggalSelesai: "2025-05-12", status: "Selesai", peserta: [{ kategori: "Guru", jumlah: "350" }, { kategori: "Siswa", jumlah: "150" }], deskripsiKegiatan: "Webinar nasional yang membahas strategi implementasi budaya sekolah aman dan nyaman.", tautanMeeting: "https://zoom.us/j/webinar-nasional" },
+  { id: "kg-5", namaKegiatan: "Bimtek Monitoring dan Evaluasi BSAN", penyelenggara: ["Pusat Penguatan Karakter"], pelaksanaan: ["luring"], wilayah: "Surabaya", tanggalMulai: "2025-05-20", tanggalSelesai: "2025-05-22", status: "Selesai", peserta: [{ kategori: "Tim Monev", jumlah: "60" }], deskripsiKegiatan: "Bimbingan teknis untuk petugas yang menangani monitoring dan evaluasi program BSAN.", tautanMeeting: "" },
+  { id: "kg-6", namaKegiatan: "Forum Koordinasi Pokja BSAN Sumatera", penyelenggara: ["Kemendikdasmen", "Dinas Pendidikan Sumut"], pelaksanaan: ["luring", "daring"], wilayah: "Medan", tanggalMulai: "2025-06-03", tanggalSelesai: "2025-06-04", status: "Berlangsung", peserta: [{ kategori: "Pokja", jumlah: "90" }], deskripsiKegiatan: "Forum koordinasi antar Kelompok Kerja BSAN di wilayah Sumatera.", tautanMeeting: "https://zoom.us/j/pokja-sumatera" },
+  { id: "kg-7", namaKegiatan: "Pelatihan Guru: Pencegahan Kekerasan di Sekolah", penyelenggara: ["Dinas Pendidikan DKI Jakarta"], pelaksanaan: ["luring"], wilayah: "Jakarta", tanggalMulai: "2025-06-10", tanggalSelesai: "2025-06-12", status: "Berlangsung", peserta: [{ kategori: "Guru", jumlah: "150" }, { kategori: "Konselor", jumlah: "50" }], deskripsiKegiatan: "Pelatihan untuk guru-guru di DKI Jakarta tentang pencegahan dan penanganan kekerasan di lingkungan sekolah.", tautanMeeting: "" },
+  { id: "kg-8", namaKegiatan: "Rapat Koordinasi Pokja BSAN Nasional", penyelenggara: ["Kemendikdasmen"], pelaksanaan: ["daring"], wilayah: "Jakarta", tanggalMulai: "2025-06-25", tanggalSelesai: "2025-06-26", status: "Terjadwal", peserta: [{ kategori: "Pokja", jumlah: "150" }], deskripsiKegiatan: "Rapat koordinasi seluruh Pokja BSAN tingkat nasional untuk evaluasi semester pertama.", tautanMeeting: "https://zoom.us/j/pokja-nasional" },
+  { id: "kg-9", namaKegiatan: "Workshop BSAN untuk Kepala Sekolah", penyelenggara: ["Dinas Pendidikan Jawa Tengah"], pelaksanaan: ["luring"], wilayah: "Semarang", tanggalMulai: "2025-07-08", tanggalSelesai: "2025-07-09", status: "Terjadwal", peserta: [{ kategori: "Kepala Sekolah", jumlah: "75" }], deskripsiKegiatan: "Workshop khusus kepala sekolah tentang implementasi kebijakan BSAN di tingkat satuan pendidikan.", tautanMeeting: "" },
+  { id: "kg-10", namaKegiatan: "Seminar Nasional: Perlindungan Peserta Didik", penyelenggara: ["Kemendikdasmen"], pelaksanaan: ["luring", "daring"], wilayah: "Yogyakarta", tanggalMulai: "2025-07-15", tanggalSelesai: "2025-07-16", status: "Terjadwal", peserta: [{ kategori: "Guru", jumlah: "200" }, { kategori: "Siswa", jumlah: "100" }], deskripsiKegiatan: "Seminar nasional yang membahas isu perlindungan peserta didik dari berbagai perspektif.", tautanMeeting: "https://zoom.us/j/seminar-nasional" },
+  { id: "kg-11", namaKegiatan: "Pelatihan Pokja BSAN Kalimantan", penyelenggara: ["Dinas Pendidikan Kaltim"], pelaksanaan: ["luring"], wilayah: "Samarinda", tanggalMulai: "2025-07-22", tanggalSelesai: "2025-07-24", status: "Terjadwal", peserta: [{ kategori: "Pokja", jumlah: "55" }], deskripsiKegiatan: "Pelatihan pembentukan dan penguatan Pokja BSAN di wilayah Kalimantan.", tautanMeeting: "" },
+  { id: "kg-12", namaKegiatan: "Forum BSAN Kawasan Timur Indonesia", penyelenggara: ["Kemendikdasmen"], pelaksanaan: ["luring", "daring"], wilayah: "Makassar", tanggalMulai: "2025-08-05", tanggalSelesai: "2025-08-07", status: "Terjadwal", peserta: [{ kategori: "Guru", jumlah: "80" }, { kategori: "Kepala Sekolah", jumlah: "30" }], deskripsiKegiatan: "Forum khusus untuk daerah-daerah di kawasan timur Indonesia dalam mengakselerasi program BSAN.", tautanMeeting: "https://zoom.us/j/forum-timur" },
+  { id: "kg-13", namaKegiatan: "Rapat Pokja BSAN Tingkat Nasional", penyelenggara: ["Kemendikdasmen"], pelaksanaan: ["luring"], wilayah: "Jakarta", tanggalMulai: "2026-05-06", tanggalSelesai: "2026-05-06", status: "Berlangsung", peserta: [{ kategori: "Pokja", jumlah: "80" }], deskripsiKegiatan: "Rapat koordinasi pokja BSAN tingkat nasional.", tautanMeeting: "" },
+  { id: "kg-14", namaKegiatan: "Sosialisasi Kebijakan BSAN untuk Dinas Pendidikan", penyelenggara: ["Pusat Penguatan Karakter"], pelaksanaan: ["daring"], wilayah: "Online", tanggalMulai: "2026-05-06", tanggalSelesai: "2026-05-06", status: "Berlangsung", peserta: [{ kategori: "Dinas Pendidikan", jumlah: "250" }], deskripsiKegiatan: "Sosialisasi kebijakan BSAN terbaru kepada seluruh dinas pendidikan provinsi.", tautanMeeting: "https://zoom.us/j/sosialisasi-bsan" },
+  { id: "kg-15", namaKegiatan: "Pelatihan Guru Anti Bullying", penyelenggara: ["Dinas Pendidikan Jawa Barat"], pelaksanaan: ["luring"], wilayah: "Bandung", tanggalMulai: "2026-05-06", tanggalSelesai: "2026-05-08", status: "Berlangsung", peserta: [{ kategori: "Guru", jumlah: "120" }, { kategori: "Staf BK", jumlah: "30" }], deskripsiKegiatan: "Pelatihan untuk guru-guru mengenai pencegahan dan penanganan bullying di sekolah.", tautanMeeting: "" },
+  { id: "kg-16", namaKegiatan: "Workshop Pemetaan Zona Aman Sekolah", penyelenggara: ["Kemendikdasmen"], pelaksanaan: ["luring"], wilayah: "Jakarta", tanggalMulai: "2026-05-06", tanggalSelesai: "2026-05-06", status: "Terjadwal", peserta: [{ kategori: "Guru", jumlah: "40" }, { kategori: "Komite Sekolah", jumlah: "20" }], deskripsiKegiatan: "Workshop pemetaan zona aman di setiap sekolah untuk keselamatan peserta didik.", tautanMeeting: "" },
+  { id: "kg-17", namaKegiatan: "Forum Koordinasi Orang Tua - Sekolah", penyelenggara: ["Dinas Pendidikan Banten"], pelaksanaan: ["luring"], wilayah: "Serang", tanggalMulai: "2026-05-06", tanggalSelesai: "2026-05-06", status: "Terjadwal", peserta: [{ kategori: "Orang Tua", jumlah: "70" }, { kategori: "Guru", jumlah: "30" }], deskripsiKegiatan: "Forum koordinasi antara orang tua dan sekolah untuk mendukung program BSAN.", tautanMeeting: "" },
+  { id: "kg-18", namaKegiatan: "Pelatihan Pengembangan Kurikulum BSAN", penyelenggara: ["Kemendikdasmen", "Dinas Pendidikan Jawa Barat"], pelaksanaan: ["luring", "daring"], wilayah: "Bandung", tanggalMulai: "2026-05-07", tanggalSelesai: "2026-05-09", status: "Berlangsung", peserta: [{ kategori: "Guru", jumlah: "90" }, { kategori: "Kurikulum", jumlah: "30" }], deskripsiKegiatan: "Pelatihan pengembangan kurikulum terintegrasi BSAN untuk guru-guru di wilayah Jawa Barat.", tautanMeeting: "https://zoom.us/j/kurikulum-bsan" },
+  { id: "kg-19", namaKegiatan: "Sosialisasi Pencegahan Perundungan di Sekolah", penyelenggara: ["Dinas Pendidikan Jawa Timur"], pelaksanaan: ["luring"], wilayah: "Surabaya", tanggalMulai: "2026-05-07", tanggalSelesai: "2026-05-07", status: "Berlangsung", peserta: [{ kategori: "Guru", jumlah: "120" }, { kategori: "Siswa", jumlah: "60" }], deskripsiKegiatan: "Sosialisasi dan pelatihan pencegahan perundungan di lingkungan sekolah.", tautanMeeting: "" },
 ]
 
-const STATUS_OPTIONS = ["Semua", "Berlangsung", "Selesai", "Akan Datang"] as const
+const STATUS_OPTIONS = ["Semua", "Berlangsung", "Selesai", "Terjadwal", "Terealisasi"] as const
 
-const STATUS_BADGE: Record<Kegiatan["status"], string> = {
-  "Berlangsung": "bg-blue-50 text-blue-700 border-blue-200",
-  "Selesai":     "bg-emerald-50 text-emerald-700 border-emerald-200",
-  "Akan Datang": "bg-amber-50 text-amber-700 border-amber-200",
+function StatusBadge({ status }: { status: Kegiatan["status"] }) {
+  if (status === "Terealisasi") return (
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+      <CheckCircle className="w-3 h-3" /> Terealisasi
+    </span>
+  )
+  if (status === "Selesai") return (
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+      <CheckCircle className="w-3 h-3" /> Selesai
+    </span>
+  )
+  if (status === "Berlangsung") return (
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+      <PlayCircle className="w-3 h-3" /> Berlangsung
+    </span>
+  )
+  return (
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
+      <Clock className="w-3 h-3" /> Terjadwal
+    </span>
+  )
 }
 
+function formatDate(d: string) {
+  return new Date(d).toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" })
+}
+
+function formatDateShort(d: string) {
+  return new Date(d).toLocaleDateString("id-ID", { month: "short", day: "numeric" })
+}
+
+function meetingLabel(url: string) {
+  const u = url.toLowerCase()
+  if (u.includes("zoom.us")) return "Zoom"
+  if (u.includes("meet.google")) return "Google Meet"
+  if (u.includes("teams.microsoft")) return "Microsoft Teams"
+  if (u.includes("webex")) return "Webex"
+  return "Meeting Link"
+}
 
 type KegiatanContentProps = { hideHeroPrefix?: boolean }
 export function KegiatanContent({ hideHeroPrefix = false }: KegiatanContentProps) {
   const [search, setSearch] = useState("")
   const [page, setPage] = useState(1)
   const [statusFilter, setStatusFilter] = useState<string>("Semua")
-  const [expandedNo, setExpandedNo] = useState<number | null>(null)
+  const [detailKegiatan, setDetailKegiatan] = useState<Kegiatan | null>(null)
+  const [selectedProvince, setSelectedProvince] = useState("")
+  const [selectedKota, setSelectedKota] = useState("")
+  const [showWilayahModal, setShowWilayahModal] = useState(false)
+  const [modalBrowseProvince, setModalBrowseProvince] = useState<string | null>(null)
+  const [modalPendingProvince, setModalPendingProvince] = useState("")
+  const [modalPendingKota, setModalPendingKota] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
-    return MOCK_KEGIATAN.filter((r) =>
-      (r.nama.toLowerCase().includes(q) || r.penyelenggara.toLowerCase().includes(q) || r.wilayah.toLowerCase().includes(q)) &&
-      (statusFilter === "Semua" || r.status === statusFilter)
-    )
-  }, [search, statusFilter])
+    return MOCK_KEGIATAN.filter((r) => {
+      if (statusFilter !== "Semua" && r.status !== statusFilter) return false
+      if (q && !r.namaKegiatan.toLowerCase().includes(q) &&
+          !r.penyelenggara.some(p => p.toLowerCase().includes(q)) &&
+          !r.wilayah.toLowerCase().includes(q)) return false
+      if (selectedKota) return r.wilayah.toLowerCase().includes(selectedKota.toLowerCase())
+      if (selectedProvince) return r.wilayah.toLowerCase().includes(selectedProvince.toLowerCase())
+      return true
+    })
+  }, [search, statusFilter, selectedProvince, selectedKota])
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
@@ -96,9 +150,18 @@ export function KegiatanContent({ hideHeroPrefix = false }: KegiatanContentProps
           </div>
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
             <div className="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <h2 className="font-semibold text-slate-900">Semua Kegiatan</h2>
-                <p className="text-slate-400 text-xs mt-1">{filtered.length} kegiatan ditemukan</p>
+              <div className="flex items-center gap-3">
+                <h2 className="font-semibold text-slate-900">Data Kegiatan BSAN</h2>
+                <button
+                  onClick={() => { setModalPendingProvince(selectedProvince); setModalPendingKota(selectedProvince ? selectedKota : null); setModalBrowseProvince(selectedProvince || null); setShowWilayahModal(true) }}
+                  className="h-9 px-3 text-sm border border-slate-400 rounded-lg bg-white text-slate-800 font-medium hover:bg-slate-50 hover:border-slate-500 transition-colors flex items-center gap-2"
+                >
+                  <span className="max-w-[200px] truncate">
+                    {selectedKota ? `${selectedKota}, ${selectedProvince}` : selectedProvince || "Seluruh Indonesia"}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                </button>
+                <p className="text-slate-400 text-xs mt-0.5">{filtered.length} kegiatan</p>
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <select
@@ -124,52 +187,98 @@ export function KegiatanContent({ hideHeroPrefix = false }: KegiatanContentProps
             <Table>
               <TableHeader>
                 <TableRow className="bg-slate-50/70 hover:bg-slate-50/70">
-                  <TableHead className="w-10 text-slate-500 text-xs pl-5">No</TableHead>
-                  <TableHead className="text-slate-500 text-xs">Nama Kegiatan</TableHead>
-                  <TableHead className="text-slate-500 text-xs">Penyelenggara</TableHead>
-                  <TableHead className="w-32 text-slate-500 text-xs">Wilayah</TableHead>
+                  <TableHead className="text-slate-500 text-xs pl-5">Nama Kegiatan</TableHead>
                   <TableHead className="w-28 text-slate-500 text-xs">Tanggal</TableHead>
-                  <TableHead className="w-28 text-slate-500 text-xs text-center">Peserta</TableHead>
+                  <TableHead className="w-52 text-slate-500 text-xs">Lokasi</TableHead>
+                  <TableHead className="w-36 text-slate-500 text-xs">Peserta</TableHead>
                   <TableHead className="w-32 text-slate-500 text-xs">Status</TableHead>
+                  <TableHead className="w-24 text-slate-500 text-xs text-right pr-5">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paged.map((row, idx) => (
-                  <React.Fragment key={row.no}>
-                    <TableRow
-                      className="cursor-pointer"
-                      onClick={() => setExpandedNo(expandedNo === row.no ? null : row.no)}
-                    >
-                      <TableCell className="text-slate-400 text-xs pl-5">{(page - 1) * PAGE_SIZE + idx + 1}</TableCell>
-                      <TableCell className="font-medium text-slate-900">{row.nama}</TableCell>
-                      <TableCell className="text-slate-600 text-sm">{row.penyelenggara}</TableCell>
-                      <TableCell className="text-slate-600 text-sm">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-slate-400" />
-                          {row.wilayah}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-slate-600 text-sm">{row.tanggal}</TableCell>
-                      <TableCell className="text-center">
-                        <span className="inline-flex items-center gap-1 text-sm text-slate-700">
-                          <Users className="w-3.5 h-3.5 text-slate-400" />
-                          {row.peserta}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={cn("text-xs", STATUS_BADGE[row.status])}>
-                          {row.status}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                    {expandedNo === row.no && (
-                      <TableRow className="bg-slate-50/60 hover:bg-slate-50/60">
-                        <TableCell colSpan={7} className="px-5 py-3">
-                          <p className="text-sm text-slate-600">{row.deskripsi}</p>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </React.Fragment>
+                {paged.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    className="cursor-pointer"
+                    onClick={() => setDetailKegiatan(row)}
+                  >
+                    <TableCell className="pl-5">
+                      <div className="font-medium text-slate-900">{row.namaKegiatan}</div>
+                    </TableCell>
+                    <TableCell className="text-slate-600 text-sm whitespace-nowrap">
+                      {row.tanggalMulai === row.tanggalSelesai
+                        ? formatDateShort(row.tanggalMulai)
+                        : `${formatDateShort(row.tanggalMulai)} – ${formatDateShort(row.tanggalSelesai)}`}
+                    </TableCell>
+                    <TableCell className="text-slate-600 text-sm">
+                      {row.pelaksanaan.includes("luring") && row.pelaksanaan.includes("daring") ? (
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">Hybrid</span>
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-slate-700">{row.wilayah}</span>
+                            <span className="text-slate-300">|</span>
+                            {row.tautanMeeting ? (
+                              <a
+                                href={row.tautanMeeting}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="text-blue-600 hover:text-blue-800 hover:underline"
+                              >
+                                {meetingLabel(row.tautanMeeting)}
+                              </a>
+                            ) : (
+                              <span className="text-slate-400">Online</span>
+                            )}
+                          </div>
+                        </div>
+                      ) : row.pelaksanaan.includes("luring") ? (
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">Luring</span>
+                          <span className="text-sm text-slate-700">{row.wilayah}</span>
+                        </div>
+                      ) : row.pelaksanaan.includes("daring") ? (
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">Daring</span>
+                          {row.tautanMeeting ? (
+                            <a
+                              href={row.tautanMeeting}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                            >
+                              {meetingLabel(row.tautanMeeting)}
+                            </a>
+                          ) : (
+                            <span className="text-xs text-slate-400">Online</span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-400">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-slate-600 text-sm">
+                      {row.peserta.length > 0
+                        ? row.peserta.map((p) => (
+                            <span key={p.kategori} className="inline-block mr-1 last:mr-0 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded whitespace-nowrap">
+                              {p.kategori}
+                            </span>
+                          ))
+                        : "-"}
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge status={row.status} />
+                    </TableCell>
+                    <TableCell className="text-right pr-5">
+                      <span
+                        onClick={(e) => { e.stopPropagation(); setDetailKegiatan(row) }}
+                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition border border-blue-200 whitespace-nowrap cursor-pointer"
+                      >
+                        <Eye className="w-3.5 h-3.5" /> Detail
+                      </span>
+                    </TableCell>
+                  </TableRow>
                 ))}
               </TableBody>
             </Table>
@@ -194,6 +303,159 @@ export function KegiatanContent({ hideHeroPrefix = false }: KegiatanContentProps
           </div>
         </div>
       </div>
+
+      {detailKegiatan && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setDetailKegiatan(null)}>
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+              <h3 className="text-base font-bold text-gray-900">Detail Kegiatan</h3>
+              <button onClick={() => setDetailKegiatan(null)} className="p-1 hover:bg-gray-100 rounded-lg"><X className="w-5 h-5 text-gray-500" /></button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Nama Kegiatan</p>
+                <p className="text-sm font-medium text-slate-900 mt-0.5">{detailKegiatan.namaKegiatan}</p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Deskripsi</p>
+                <p className="text-sm text-slate-700 mt-0.5">{detailKegiatan.deskripsiKegiatan}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Tanggal Mulai</p>
+                  <p className="text-sm text-slate-700 mt-0.5">{formatDate(detailKegiatan.tanggalMulai)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Tanggal Selesai</p>
+                  <p className="text-sm text-slate-700 mt-0.5">{formatDate(detailKegiatan.tanggalSelesai)}</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Pelaksanaan</p>
+                <div className="flex items-center gap-2 mt-1">
+                  {detailKegiatan.pelaksanaan.includes("luring") && <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">Luring</span>}
+                  {detailKegiatan.pelaksanaan.includes("daring") && <span className="text-xs bg-cyan-100 text-cyan-700 px-2 py-0.5 rounded-full font-medium">Daring</span>}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Lokasi</p>
+                <p className="text-sm text-slate-700 mt-0.5">{detailKegiatan.wilayah}</p>
+              </div>
+              {detailKegiatan.pelaksanaan.includes("luring") && detailKegiatan.pelaksanaan.includes("daring") && detailKegiatan.tautanMeeting && (
+                <div>
+                  <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Tautan Meeting</p>
+                  <a
+                    href={detailKegiatan.tautanMeeting}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:text-blue-800 hover:underline mt-0.5 inline-block"
+                  >
+                    {meetingLabel(detailKegiatan.tautanMeeting)}
+                  </a>
+                </div>
+              )}
+              {detailKegiatan.pelaksanaan.includes("daring") && !detailKegiatan.pelaksanaan.includes("luring") && (
+                <div>
+                  <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Tautan Meeting</p>
+                  {detailKegiatan.tautanMeeting ? (
+                    <a
+                      href={detailKegiatan.tautanMeeting}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline mt-0.5 inline-block"
+                    >
+                      {meetingLabel(detailKegiatan.tautanMeeting)}
+                    </a>
+                  ) : (
+                    <p className="text-sm text-slate-400 mt-0.5">-</p>
+                  )}
+                </div>
+              )}
+              <div>
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Peserta</p>
+                {detailKegiatan.peserta.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {detailKegiatan.peserta.map((p) => (
+                      <span key={p.kategori} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                        {p.kategori}: {p.jumlah}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-400 mt-0.5">-</p>
+                )}
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Status</p>
+                <div className="mt-1"><StatusBadge status={detailKegiatan.status} /></div>
+              </div>
+              {detailKegiatan.penyelenggara.length > 0 && (
+                <div>
+                  <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Penyelenggara</p>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {detailKegiatan.penyelenggara.map((p) => (
+                      <span key={p} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{p}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showWilayahModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowWilayahModal(false)} />
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+              <h3 className="text-base font-bold text-gray-900">Filter Wilayah</h3>
+              <button onClick={() => setShowWilayahModal(false)} className="p-1 hover:bg-gray-100 rounded-lg"><X className="w-5 h-5 text-gray-500" /></button>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <div className="flex h-full max-h-[420px]">
+                <div className="w-1/2 border-r border-gray-100 overflow-y-auto">
+                  <div className="p-2 space-y-0.5">
+                    <button onClick={() => { setModalPendingProvince(""); setModalPendingKota(null); setModalBrowseProvince(null) }} className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${!modalBrowseProvince && modalPendingProvince === "" ? "bg-blue-50 text-blue-700" : "hover:bg-gray-50 text-gray-700"}`}>Seluruh Indonesia</button>
+                    <div className="border-t border-gray-100 my-1" />
+                    {PROVINCE_OPTIONS.map((province) => {
+                      const isBrowsed = modalBrowseProvince === province
+                      return (
+                        <button key={province} onClick={() => { setModalBrowseProvince(province); setModalPendingProvince(province); setModalPendingKota(null) }} className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between transition-colors ${isBrowsed ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-50 text-gray-700"}`}>
+                          <span className="truncate">{province}</span>
+                          {isBrowsed && <svg className="w-3.5 h-3.5 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+                <div className="w-1/2 overflow-y-auto bg-gray-50/40">
+                  <div className="p-2 space-y-0.5">
+                    {modalBrowseProvince ? (() => {
+                      const kotaList = PROVINSI_DATA.filter(p => p.provinsi.startsWith(modalBrowseProvince + " - ")).map(p => p.provinsi.split(" - ")[1])
+                      return (
+                        <>
+                          <p className="px-3 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wide">{modalBrowseProvince}</p>
+                          <button onClick={() => setModalPendingKota("")} className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${modalPendingKota === "" ? "bg-blue-50 text-blue-700" : "hover:bg-gray-100 text-gray-700"}`}>Semua Kabupaten/Kota</button>
+                          {kotaList.length > 0 && <div className="border-t border-gray-100 my-1" />}
+                          {kotaList.map((kota) => (
+                            <button key={kota} onClick={() => setModalPendingKota(kota)} className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${modalPendingKota === kota ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-100 text-gray-700"}`}>{kota}</button>
+                          ))}
+                        </>
+                      )
+                    })() : <p className="text-sm text-gray-400 p-4">Pilih provinsi di kiri untuk melihat kab/kota</p>}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
+              <button onClick={() => setShowWilayahModal(false)} className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition">Batal</button>
+              <button onClick={() => { setSelectedProvince(modalPendingProvince); setSelectedKota(modalPendingKota ?? ""); setShowWilayahModal(false) }} disabled={modalBrowseProvince !== null && modalPendingKota === null} className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed">Terapkan</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

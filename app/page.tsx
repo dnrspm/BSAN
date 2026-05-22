@@ -112,7 +112,7 @@ export default function LandingPage() {
     setActivityPage(0)
     if (!selectedDate) return []
     return filteredActivities.filter(k => {
-      const actDate = new Date(k.tanggal)
+      const actDate = new Date(k.tanggalMulai)
       const sameMonthYear = actDate.getMonth() === selectedDate.getMonth() && actDate.getFullYear() === selectedDate.getFullYear()
       const matchStatus = activityStatusFilter === "Semua" || k.status === activityStatusFilter
       return sameMonthYear && matchStatus
@@ -470,9 +470,9 @@ export default function LandingPage() {
                           <div className="border border-slate-200 rounded-lg overflow-hidden">
                             {(() => {
                               const rows = [
-                                { label: "Berlangsung", count: filteredActivities.filter(k => { if (!selectedDate) return false; const d = new Date(k.tanggal); return d.getMonth() === selectedDate.getMonth() && d.getFullYear() === selectedDate.getFullYear() && k.status === "Berlangsung" }).length, status: "Berlangsung", color: "bg-blue-500" },
-                                { label: "Akan Datang", count: filteredActivities.filter(k => { if (!selectedDate) return false; const d = new Date(k.tanggal); return d.getMonth() === selectedDate.getMonth() && d.getFullYear() === selectedDate.getFullYear() && k.status === "Akan Datang" }).length, status: "Akan Datang", color: "bg-amber-500" },
-                                { label: "Selesai", count: filteredActivities.filter(k => { if (!selectedDate) return false; const d = new Date(k.tanggal); return d.getMonth() === selectedDate.getMonth() && d.getFullYear() === selectedDate.getFullYear() && k.status === "Selesai" }).length, status: "Selesai", color: "bg-emerald-500" },
+                                { label: "Berlangsung", count: filteredActivities.filter(k => { if (!selectedDate) return false; const d = new Date(k.tanggalMulai); return d.getMonth() === selectedDate.getMonth() && d.getFullYear() === selectedDate.getFullYear() && k.status === "Berlangsung" }).length, status: "Berlangsung", color: "bg-blue-500" },
+                                { label: "Terjadwal", count: filteredActivities.filter(k => { if (!selectedDate) return false; const d = new Date(k.tanggalMulai); return d.getMonth() === selectedDate.getMonth() && d.getFullYear() === selectedDate.getFullYear() && k.status === "Terjadwal" }).length, status: "Terjadwal", color: "bg-amber-500" },
+                                { label: "Selesai", count: filteredActivities.filter(k => { if (!selectedDate) return false; const d = new Date(k.tanggalMulai); return d.getMonth() === selectedDate.getMonth() && d.getFullYear() === selectedDate.getFullYear() && k.status === "Selesai" }).length, status: "Selesai", color: "bg-emerald-500" },
                               ]
                               return (
                                 <table className="w-full text-sm">
@@ -512,9 +512,9 @@ export default function LandingPage() {
                           </div>
                           <div className="border border-slate-100 rounded-lg overflow-hidden">
                             {pagedActivities.length > 0 ? pagedActivities.map(k => (
-                              <div key={k.no} className="grid grid-cols-[1fr_auto] border-b border-slate-100 last:border-b-0">
-                                <p className="text-sm font-semibold text-slate-800 leading-snug line-clamp-1 px-3 py-2">{k.nama}</p>
-                                <p className="text-xs text-slate-400 whitespace-nowrap px-3 py-2">{k.wilayah} · {new Date(k.tanggal).toLocaleDateString("id-ID", { day: "2-digit", month: "short" })}</p>
+                              <div key={k.id} className="grid grid-cols-[1fr_auto] border-b border-slate-100 last:border-b-0">
+                                <p className="text-sm font-semibold text-slate-800 leading-snug line-clamp-1 px-3 py-2">{k.namaKegiatan}</p>
+                                <p className="text-xs text-slate-400 whitespace-nowrap px-3 py-2">{k.wilayah} · {new Date(k.tanggalMulai).toLocaleDateString("id-ID", { day: "2-digit", month: "short" })}</p>
                               </div>
                             )) : (
                               <p className="text-xs text-slate-400 px-3 py-2.5">Tidak ada kegiatan</p>

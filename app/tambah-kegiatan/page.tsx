@@ -6,8 +6,11 @@ import {
   ArrowLeft, Calendar, X,
   CheckCircle, PlayCircle, Clock, FileCheck,
   Landmark, Building2, GraduationCap, Heart, HelpCircle,
-  MapPin, Users, Link,
+  MapPin, Users, Link, Hash,
 } from "lucide-react"
+import {
+  KAB_KOTA_ACEH, getKecamatanList, getKelurahanList,
+} from "@/lib/wilayah-aceh"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -19,13 +22,31 @@ interface PesertaItem {
   jumlah: string
 }
 
+const PROVINSI_OPTIONS = [
+  "Aceh", "Sumatera Utara", "Sumatera Barat", "Riau", "Kepulauan Riau",
+  "Jambi", "Sumatera Selatan", "Kepulauan Bangka Belitung", "Bengkulu",
+  "Lampung", "DKI Jakarta", "Jawa Barat", "Banten", "Jawa Tengah",
+  "DI Yogyakarta", "Jawa Timur", "Bali", "Nusa Tenggara Barat",
+  "Nusa Tenggara Timur", "Kalimantan Barat", "Kalimantan Tengah",
+  "Kalimantan Selatan", "Kalimantan Timur", "Kalimantan Utara",
+  "Sulawesi Utara", "Gorontalo", "Sulawesi Tengah", "Sulawesi Barat",
+  "Sulawesi Selatan", "Sulawesi Tenggara", "Maluku", "Maluku Utara",
+  "Papua Barat", "Papua",
+]
+
 interface KegiatanForm {
   namaKegiatan: string
   penyelenggara: string[]
   tanggalMulai: string
   tanggalSelesai: string
   deskripsiKegiatan: string
-  lokasi: string
+  pelaksanaan: ("luring" | "daring")[]
+  provinsi: string
+  kabupatenKota: string
+  kecamatan: string
+  kelurahan: string
+  alamatJalan: string
+  kodePos: string
   linkGoogleMap: string
   tautanMeeting: string
   peserta: PesertaItem[]
@@ -37,9 +58,9 @@ interface KegiatanForm {
 // Seed data (must match KegiatanView SEED_DATA)
 // ---------------------------------------------------------------------------
 const SEED_DATA = [
-  { id: "kg-1", namaKegiatan: "Workshop PKSA", penyelenggara: ["Sekolah"], tanggalMulai: "2025-04-15", tanggalSelesai: "2025-04-15", deskripsiKegiatan: "Workshop pengenalan isu kekerasan pada anak", lokasi: "Aula Sekolah", linkGoogleMap: "", tautanMeeting: "", peserta: [{ kategori: "Guru", jumlah: "20" }, { kategori: "Siswa", jumlah: "30" }], linkDokumentasi: "", status: "selesai" as StatusKegiatan },
-  { id: "kg-2", namaKegiatan: "Sosialisasi Hak Anak", penyelenggara: ["Pusat", "Sekolah"], tanggalMulai: "2025-06-20", tanggalSelesai: "2025-06-21", deskripsiKegiatan: "Sosialisasi hak anak kepada seluruh siswa dan wali kelas", lokasi: "Ruang Serbaguna", linkGoogleMap: "https://maps.google.com", tautanMeeting: "https://zoom.us/j/123", peserta: [{ kategori: "Siswa", jumlah: "80" }, { kategori: "Masyarakat", jumlah: "40" }], linkDokumentasi: "https://docs.example.com", status: "berlangsung" as StatusKegiatan },
-  { id: "kg-3", namaKegiatan: "Rapat Koordinasi Kelompok Kerja", penyelenggara: ["Dinas Pendidikan", "Dinas Sosial"], tanggalMulai: "2025-07-10", tanggalSelesai: "2025-07-10", deskripsiKegiatan: "Rapat koordinasi bulanan antar anggota kelompok kerja", lokasi: "Kantor Dinas Pendidikan", linkGoogleMap: "", tautanMeeting: "", peserta: [{ kategori: "Guru", jumlah: "30" }], linkDokumentasi: "", status: "menunggu" as StatusKegiatan },
+  { id: "kg-1", namaKegiatan: "Workshop PKSA", penyelenggara: ["Sekolah"], tanggalMulai: "2025-04-15", tanggalSelesai: "2025-04-15", deskripsiKegiatan: "Workshop pengenalan isu kekerasan pada anak", pelaksanaan: ["luring"] as ("luring" | "daring")[], provinsi: "Aceh", kabupatenKota: "Banda Aceh", kecamatan: "Baiturrahman", kelurahan: "Peuniti", alamatJalan: "Aula Sekolah SDN 01", kodePos: "", linkGoogleMap: "", tautanMeeting: "", peserta: [{ kategori: "Guru", jumlah: "20" }, { kategori: "Siswa", jumlah: "30" }], linkDokumentasi: "", status: "selesai" as StatusKegiatan },
+  { id: "kg-2", namaKegiatan: "Sosialisasi Hak Anak", penyelenggara: ["Pusat", "Sekolah"], tanggalMulai: "2025-06-20", tanggalSelesai: "2025-06-21", deskripsiKegiatan: "Sosialisasi hak anak kepada seluruh siswa dan wali kelas", pelaksanaan: ["luring", "daring"] as ("luring" | "daring")[], provinsi: "Aceh", kabupatenKota: "Banda Aceh", kecamatan: "Kuta Alam", kelurahan: "Peunayong", alamatJalan: "Ruang Serbaguna", kodePos: "", linkGoogleMap: "https://maps.google.com", tautanMeeting: "https://zoom.us/j/123", peserta: [{ kategori: "Siswa", jumlah: "80" }, { kategori: "Masyarakat", jumlah: "40" }], linkDokumentasi: "https://docs.example.com", status: "berlangsung" as StatusKegiatan },
+  { id: "kg-3", namaKegiatan: "Rapat Koordinasi Kelompok Kerja", penyelenggara: ["Dinas Pendidikan", "Dinas Sosial"], tanggalMulai: "2025-07-10", tanggalSelesai: "2025-07-10", deskripsiKegiatan: "Rapat koordinasi bulanan antar anggota kelompok kerja", pelaksanaan: ["luring"] as ("luring" | "daring")[], provinsi: "Aceh", kabupatenKota: "Banda Aceh", kecamatan: "Kuta Raja", kelurahan: "Keudah", alamatJalan: "Kantor Dinas Pendidikan", kodePos: "23123", linkGoogleMap: "", tautanMeeting: "", peserta: [{ kategori: "Guru", jumlah: "30" }], linkDokumentasi: "", status: "menunggu" as StatusKegiatan },
 ]
 
 const PENYELENGGARA_OPTIONS = [
@@ -61,7 +82,13 @@ const emptyForm = (): KegiatanForm => ({
   tanggalMulai: "",
   tanggalSelesai: "",
   deskripsiKegiatan: "",
-  lokasi: "",
+  pelaksanaan: [],
+  provinsi: "",
+  kabupatenKota: "",
+  kecamatan: "",
+  kelurahan: "",
+  alamatJalan: "",
+  kodePos: "",
   linkGoogleMap: "",
   tautanMeeting: "",
   peserta: [],
@@ -179,7 +206,7 @@ function StatusBadge({ status }: { status: StatusKegiatan }) {
   )
   return (
     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
-      <Clock className="w-3 h-3" /> Menunggu
+      <Clock className="w-3 h-3" /> Terjadwal
     </span>
   )
 }
@@ -266,7 +293,13 @@ function TambahKegiatanInner() {
         tanggalMulai: (existing.tanggalMulai as string) ?? (existing.waktuKegiatan as string) ?? "",
         tanggalSelesai: (existing.tanggalSelesai as string) ?? "",
         deskripsiKegiatan: (existing.deskripsiKegiatan as string) ?? "",
-        lokasi: (existing.lokasi as string) ?? "",
+        pelaksanaan: Array.isArray(existing.pelaksanaan) ? existing.pelaksanaan as ("luring" | "daring")[] : [],
+        provinsi: (existing.provinsi as string) ?? "",
+        kabupatenKota: (existing.kabupatenKota as string) ?? "",
+        kecamatan: (existing.kecamatan as string) ?? "",
+        kelurahan: (existing.kelurahan as string) ?? "",
+        alamatJalan: (existing.alamatJalan as string) ?? (existing.lokasi as string) ?? "",
+        kodePos: (existing.kodePos as string) ?? "",
         linkGoogleMap: (existing.linkGoogleMap as string) ?? "",
         tautanMeeting: (existing.tautanMeeting as string) ?? "",
         peserta: Array.isArray(existing.peserta) ? existing.peserta as PesertaItem[] : [],
@@ -279,8 +312,17 @@ function TambahKegiatanInner() {
     }
   }, [activeId])
 
-  const set = <K extends keyof KegiatanForm>(k: K, v: KegiatanForm[K]) =>
-    setForm((prev) => ({ ...prev, [k]: v }))
+  const set = <K extends keyof KegiatanForm>(k: K, v: KegiatanForm[K]) => {
+    if (k === "provinsi") {
+      setForm((prev) => ({ ...prev, provinsi: v as string, kabupatenKota: "", kecamatan: "", kelurahan: "" }))
+    } else if (k === "kabupatenKota") {
+      setForm((prev) => ({ ...prev, kabupatenKota: v as string, kecamatan: "", kelurahan: "" }))
+    } else if (k === "kecamatan") {
+      setForm((prev) => ({ ...prev, kecamatan: v as string, kelurahan: "" }))
+    } else {
+      setForm((prev) => ({ ...prev, [k]: v }))
+    }
+  }
 
   const canSubmit =
     form.namaKegiatan.trim() !== "" &&
@@ -311,7 +353,13 @@ function TambahKegiatanInner() {
           tanggalMulai: form.tanggalMulai,
           tanggalSelesai: form.tanggalSelesai,
           deskripsiKegiatan: form.deskripsiKegiatan,
-          lokasi: form.lokasi,
+          pelaksanaan: form.pelaksanaan,
+          provinsi: form.provinsi,
+          kabupatenKota: form.kabupatenKota,
+          kecamatan: form.kecamatan,
+          kelurahan: form.kelurahan,
+          alamatJalan: form.alamatJalan,
+          kodePos: form.kodePos,
           linkGoogleMap: form.linkGoogleMap,
           tautanMeeting: form.tautanMeeting,
           peserta: form.peserta,
@@ -572,33 +620,136 @@ function TambahKegiatanInner() {
         {/* Lokasi */}
         <SectionCard icon={<MapPin className="w-4 h-4" />} title="Lokasi">
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel required={!isReadOnly}>Lokasi Kegiatan</FieldLabel>
-              <TextInput
-                value={form.lokasi}
-                onChange={(v) => set("lokasi", v)}
-                placeholder="Contoh: Aula Sekolah SDN 01"
-                disabled={isReadOnly}
-              />
+            {/* Pelaksanaan */}
+            <div className="flex flex-col gap-2">
+              <FieldLabel required={!isReadOnly}>Pelaksanaan Kegiatan</FieldLabel>
+              <div className="flex items-center gap-6">
+                <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.pelaksanaan.includes("luring")}
+                    onChange={() => {
+                      const nowLuring = !form.pelaksanaan.includes("luring")
+                      const next = nowLuring
+                        ? [...form.pelaksanaan, "luring"]
+                        : form.pelaksanaan.filter((x) => x !== "luring")
+                      setForm((prev) => ({
+                        ...prev,
+                        pelaksanaan: next,
+                        ...(!nowLuring ? { provinsi: "", kabupatenKota: "", kecamatan: "", kelurahan: "", alamatJalan: "", kodePos: "", linkGoogleMap: "" } : {}),
+                      }))
+                    }}
+                    disabled={isReadOnly}
+                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  Luring
+                </label>
+                <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.pelaksanaan.includes("daring")}
+                    onChange={() => {
+                      const nowDaring = !form.pelaksanaan.includes("daring")
+                      const next = nowDaring
+                        ? [...form.pelaksanaan, "daring"]
+                        : form.pelaksanaan.filter((x) => x !== "daring")
+                      setForm((prev) => ({
+                        ...prev,
+                        pelaksanaan: next,
+                        ...(!nowDaring ? { tautanMeeting: "" } : {}),
+                      }))
+                    }}
+                    disabled={isReadOnly}
+                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  Daring
+                </label>
+              </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel>Link Google Map</FieldLabel>
-              <TextInput
-                value={form.linkGoogleMap}
-                onChange={(v) => set("linkGoogleMap", v)}
-                placeholder="https://maps.google.com/..."
-                disabled={isReadOnly}
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel>Tautan Meeting Online / Zoom</FieldLabel>
-              <TextInput
-                value={form.tautanMeeting}
-                onChange={(v) => set("tautanMeeting", v)}
-                placeholder="https://zoom.us/j/..."
-                disabled={isReadOnly}
-              />
-            </div>
+
+            {form.pelaksanaan.includes("luring") && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel required={!isReadOnly}>Provinsi</FieldLabel>
+                  <SelectInput
+                    value={form.provinsi}
+                    onChange={(v) => set("provinsi", v)}
+                    options={PROVINSI_OPTIONS}
+                    placeholder="Pilih Provinsi"
+                    disabled={isReadOnly}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel required={!isReadOnly}>Kabupaten / Kota</FieldLabel>
+                  <SelectInput
+                    value={form.kabupatenKota}
+                    onChange={(v) => set("kabupatenKota", v)}
+                    options={KAB_KOTA_ACEH}
+                    placeholder={form.provinsi ? "Pilih Kabupaten / Kota" : "Pilih Provinsi dulu"}
+                    disabled={isReadOnly || !form.provinsi}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel>Kecamatan</FieldLabel>
+                  <SelectInput
+                    value={form.kecamatan}
+                    onChange={(v) => set("kecamatan", v)}
+                    options={getKecamatanList(form.kabupatenKota)}
+                    placeholder={form.kabupatenKota ? "Pilih Kecamatan" : "Pilih Kabupaten / Kota dulu"}
+                    disabled={isReadOnly || !form.kabupatenKota}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel>Kelurahan / Desa</FieldLabel>
+                  <SelectInput
+                    value={form.kelurahan}
+                    onChange={(v) => set("kelurahan", v)}
+                    options={getKelurahanList(form.kabupatenKota, form.kecamatan)}
+                    placeholder={form.kecamatan ? "Pilih Kelurahan / Desa" : "Pilih Kecamatan dulu"}
+                    disabled={isReadOnly || !form.kecamatan}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel>Nama Jalan / Gedung</FieldLabel>
+                  <TextInput
+                    value={form.alamatJalan}
+                    onChange={(v) => set("alamatJalan", v)}
+                    placeholder="Contoh: Aula Sekolah SDN 01"
+                    disabled={isReadOnly}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel>Kode Pos</FieldLabel>
+                  <TextInput
+                    value={form.kodePos}
+                    onChange={(v) => set("kodePos", v)}
+                    placeholder="Contoh: 23123"
+                    disabled={isReadOnly}
+                  />
+                </div>
+                <div className="sm:col-span-2 flex flex-col gap-1.5">
+                  <FieldLabel>Link Google Map</FieldLabel>
+                  <TextInput
+                    value={form.linkGoogleMap}
+                    onChange={(v) => set("linkGoogleMap", v)}
+                    placeholder="https://maps.google.com/..."
+                    disabled={isReadOnly}
+                  />
+                </div>
+              </div>
+            )}
+
+            {form.pelaksanaan.includes("daring") && (
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel required={!isReadOnly}>Tautan Meeting Online</FieldLabel>
+                <TextInput
+                  value={form.tautanMeeting}
+                  onChange={(v) => set("tautanMeeting", v)}
+                  placeholder="https://zoom.us/j/..."
+                  disabled={isReadOnly}
+                />
+              </div>
+            )}
           </div>
         </SectionCard>
 
