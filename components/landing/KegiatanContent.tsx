@@ -307,99 +307,97 @@ export function KegiatanContent({ hideHeroPrefix = false }: KegiatanContentProps
       {detailKegiatan && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setDetailKegiatan(null)}>
           <div className="absolute inset-0 bg-black/50" />
-          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+
+            <div className="sticky top-0 bg-white z-10 flex items-center justify-between px-6 py-4 border-b border-gray-200 rounded-t-2xl">
               <h3 className="text-base font-bold text-gray-900">Detail Kegiatan</h3>
-              <button onClick={() => setDetailKegiatan(null)} className="p-1 hover:bg-gray-100 rounded-lg"><X className="w-5 h-5 text-gray-500" /></button>
+              <button onClick={() => setDetailKegiatan(null)} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
             </div>
-            <div className="p-5 space-y-4">
+
+            <div className="p-6 space-y-6">
+
               <div>
-                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Nama Kegiatan</p>
-                <p className="text-sm font-medium text-slate-900 mt-0.5">{detailKegiatan.namaKegiatan}</p>
-              </div>
-              <div>
-                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Deskripsi</p>
-                <p className="text-sm text-slate-700 mt-0.5">{detailKegiatan.deskripsiKegiatan}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Tanggal Mulai</p>
-                  <p className="text-sm text-slate-700 mt-0.5">{formatDate(detailKegiatan.tanggalMulai)}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Tanggal Selesai</p>
-                  <p className="text-sm text-slate-700 mt-0.5">{formatDate(detailKegiatan.tanggalSelesai)}</p>
+                <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-widest">Nama Kegiatan</p>
+                <p className="text-sm font-semibold text-slate-900 mt-1">{detailKegiatan.namaKegiatan}</p>
+                <div className="flex items-center flex-wrap gap-2 mt-2.5">
+                  <StatusBadge status={detailKegiatan.status} />
+                  {detailKegiatan.penyelenggara.length > 0 && detailKegiatan.penyelenggara.map((p) => (
+                    <span key={p} className="text-xs bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full">{p}</span>
+                  ))}
                 </div>
               </div>
-              <div>
-                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Pelaksanaan</p>
-                <div className="flex items-center gap-2 mt-1">
-                  {detailKegiatan.pelaksanaan.includes("luring") && <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">Luring</span>}
-                  {detailKegiatan.pelaksanaan.includes("daring") && <span className="text-xs bg-cyan-100 text-cyan-700 px-2 py-0.5 rounded-full font-medium">Daring</span>}
-                </div>
-              </div>
-              <div>
-                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Lokasi</p>
-                <p className="text-sm text-slate-700 mt-0.5">{detailKegiatan.wilayah}</p>
-              </div>
-              {detailKegiatan.pelaksanaan.includes("luring") && detailKegiatan.pelaksanaan.includes("daring") && detailKegiatan.tautanMeeting && (
-                <div>
-                  <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Tautan Meeting</p>
-                  <a
-                    href={detailKegiatan.tautanMeeting}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-blue-600 hover:text-blue-800 hover:underline mt-0.5 inline-block"
-                  >
-                    {meetingLabel(detailKegiatan.tautanMeeting)}
-                  </a>
-                </div>
+
+              {detailKegiatan.deskripsiKegiatan && (
+                <>
+                  <div className="border-t border-gray-100" />
+                  <div>
+                    <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-widest">Deskripsi</p>
+                    <p className="text-sm text-slate-700 mt-1 leading-relaxed">{detailKegiatan.deskripsiKegiatan}</p>
+                  </div>
+                </>
               )}
-              {detailKegiatan.pelaksanaan.includes("daring") && !detailKegiatan.pelaksanaan.includes("luring") && (
-                <div>
-                  <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Tautan Meeting</p>
-                  {detailKegiatan.tautanMeeting ? (
-                    <a
-                      href={detailKegiatan.tautanMeeting}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline mt-0.5 inline-block"
-                    >
-                      {meetingLabel(detailKegiatan.tautanMeeting)}
-                    </a>
-                  ) : (
-                    <p className="text-sm text-slate-400 mt-0.5">-</p>
+
+              <div className="border-t border-gray-100" />
+
+              <div>
+                <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-widest mb-3">Waktu &amp; Tempat</p>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                  <div>
+                    <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Tanggal</p>
+                    <p className="text-sm font-medium text-slate-900 mt-1">
+                      {formatDate(detailKegiatan.tanggalMulai)}{detailKegiatan.tanggalMulai !== detailKegiatan.tanggalSelesai ? ` – ${formatDate(detailKegiatan.tanggalSelesai)}` : ""}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Pelaksanaan</p>
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      {detailKegiatan.pelaksanaan.includes("luring") && (
+                        <span className="text-xs font-medium bg-orange-100 text-orange-700 px-2.5 py-0.5 rounded-full">Luring</span>
+                      )}
+                      {detailKegiatan.pelaksanaan.includes("daring") && (
+                        <span className="text-xs font-medium bg-cyan-100 text-cyan-700 px-2.5 py-0.5 rounded-full">Daring</span>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Lokasi</p>
+                    <p className="text-sm text-slate-700 mt-1">{detailKegiatan.wilayah}</p>
+                  </div>
+                  {detailKegiatan.pelaksanaan.includes("daring") && (
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Tautan Meeting</p>
+                      {detailKegiatan.tautanMeeting ? (
+                        <a href={detailKegiatan.tautanMeeting} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline mt-1 inline-block">
+                          {meetingLabel(detailKegiatan.tautanMeeting)}
+                        </a>
+                      ) : (
+                        <p className="text-sm text-slate-400 mt-1">-</p>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
+              </div>
+
+              <div className="border-t border-gray-100" />
+
               <div>
-                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Peserta</p>
+                <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-widest mb-3">Peserta</p>
                 {detailKegiatan.peserta.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5 mt-1">
+                  <div className="space-y-2">
                     {detailKegiatan.peserta.map((p) => (
-                      <span key={p.kategori} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
-                        {p.kategori}: {p.jumlah}
-                      </span>
+                      <div key={p.kategori} className="flex items-center justify-between">
+                        <span className="text-sm text-slate-700">{p.kategori}</span>
+                        <span className="text-sm font-semibold text-slate-900">{p.jumlah} orang</span>
+                      </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-400 mt-0.5">-</p>
+                  <p className="text-sm text-slate-400">-</p>
                 )}
               </div>
-              <div>
-                <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Status</p>
-                <div className="mt-1"><StatusBadge status={detailKegiatan.status} /></div>
-              </div>
-              {detailKegiatan.penyelenggara.length > 0 && (
-                <div>
-                  <p className="text-xs text-slate-400 font-semibold uppercase tracking-wide">Penyelenggara</p>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {detailKegiatan.penyelenggara.map((p) => (
-                      <span key={p} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{p}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
+
             </div>
           </div>
         </div>
