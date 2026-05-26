@@ -70,6 +70,7 @@ These principles apply to every piece of copy, regardless of component or contex
 * Casual language or slang  
 * Rare, promotional, or emotional wording (e.g., "Apresiasi")  
 * (...) only for loading: "Memuat..."
+* DO NOT use ellipsis (...) in search bar placeholders. Use clean text without trailing dots.
 
 ---
 
