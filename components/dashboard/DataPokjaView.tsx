@@ -177,7 +177,7 @@ function PokjaDetailDrawer({ pokja, onClose }: { pokja: PokjaItem; onClose: () =
                   type="text"
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-                  placeholder="Cari nama, posisi..."
+                  placeholder="Cari nama, posisi"
                   className="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 />
               </div>
@@ -499,7 +499,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                     type="text"
                     value={search}
                     onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-                    placeholder="Cari nama, posisi..."
+                    placeholder="Cari nama, posisi"
                     className="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   />
                 </div>
@@ -663,7 +663,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Cari nama kelompok kerja, ketua, SK..."
+                  placeholder="Cari nama kelompok kerja, ketua, SK"
                   className="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 />
               </div>

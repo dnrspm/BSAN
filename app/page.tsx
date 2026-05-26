@@ -136,7 +136,7 @@ export default function LandingPage() {
                 <div className="pb-16 pt-16">
                   <p className="text-sm md:text-base font-bold text-slate-800">Selamat Datang di</p>
                   <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mt-1">Portal Budaya Sekolah Aman dan Nyaman (BSAN)</h1>
-                  <p className="mt-3 text-slate-700 text-base max-w-xl">Lihat informasi pembentukan kelompok kerja BSAN beserta beragam informasi dan Sumber Dukungan di Daerah Anda.</p>
+                  <p className="mt-3 text-slate-700 text-base max-w-xl">Dapatkan informasi pembentukan Kelompok Kerja, Sumber Dukungan, dan beragam kegiatan di wilayah Anda untuk menciptakan lingkungan belajar yang aman dan nyaman.</p>
                 </div>
                 <div className="hidden md:block self-end">
                   <img src="/herobsan.png" alt="Ilustrasi BSAN" className="w-full h-auto rounded-2xl" />
@@ -165,7 +165,7 @@ export default function LandingPage() {
               </div>
               <div className="flex items-center gap-2">
                 <p className="text-sm text-slate-400">
-                  Update terakhir: {new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })} | {new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+                  Update terakhir: {mounted ? `${new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })} | ${new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}` : ""}
                 </p>
               </div>
             </div>
@@ -203,7 +203,7 @@ export default function LandingPage() {
                         </div>
                         <div className="flex-1" />
                         <Divider />
-                        <Button onClick={() => router.push(`/kelompok-kerja?provinsi=${encodeURIComponent(selectedProvince)}&kota=${encodeURIComponent(selectedKota)}`)} size="sm" className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 gap-1">Lihat Detail <ArrowRight className="w-3.5 h-3.5" /></Button>
+                        <Button onClick={() => router.push(`/kelompok-kerja?provinsi=${encodeURIComponent(selectedProvince)}&kota=${encodeURIComponent(selectedKota)}`)} size="sm" className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 gap-1">Cek Detail <ArrowRight className="w-3.5 h-3.5" /></Button>
                       </div>
                     ) : (
                       <div className="flex flex-1 gap-6 min-w-0">
@@ -366,19 +366,19 @@ export default function LandingPage() {
                       {selectedProvince === "__hanya_provinsi__" && !selectedKota && (
                         <>
                           <Divider />
-                          <Button onClick={() => router.push("/kelompok-kerja?hanya_provinsi=true")} size="sm" className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 gap-1 shrink-0">Lihat Detail <ArrowRight className="w-3.5 h-3.5" /></Button>
+                          <Button onClick={() => router.push("/kelompok-kerja?hanya_provinsi=true")} size="sm" className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 gap-1 shrink-0">Cek Detail <ArrowRight className="w-3.5 h-3.5" /></Button>
                         </>
                       )}
                       {!selectedProvince && !selectedKota && (
                         <>
                           <Divider />
-                          <Button onClick={() => router.push("/kelompok-kerja")} size="sm" className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 gap-1 shrink-0">Lihat Detail <ArrowRight className="w-3.5 h-3.5" /></Button>
+                          <Button onClick={() => router.push("/kelompok-kerja")} size="sm" className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 gap-1 shrink-0">Cek Detail <ArrowRight className="w-3.5 h-3.5" /></Button>
                         </>
                       )}
                       {selectedProvince && selectedProvince !== "__hanya_provinsi__" && !selectedKota && (
                         <>
                           <Divider />
-                          <Button onClick={() => router.push(`/kelompok-kerja?provinsi=${encodeURIComponent(selectedProvince)}`)} size="sm" className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 gap-1 shrink-0">Lihat Detail <ArrowRight className="w-3.5 h-3.5" /></Button>
+                          <Button onClick={() => router.push(`/kelompok-kerja?provinsi=${encodeURIComponent(selectedProvince)}`)} size="sm" className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 gap-1 shrink-0">Cek Detail <ArrowRight className="w-3.5 h-3.5" /></Button>
                         </>
                       )}
                     </div>
@@ -435,7 +435,7 @@ export default function LandingPage() {
                       </div>
                     )}
                     <Divider />
-                    <Button onClick={() => router.push("/sumber-dukungan")} size="sm" className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 gap-1 shrink-0">Lihat Detail <ArrowRight className="w-3.5 h-3.5" /></Button>
+                    <Button onClick={() => router.push("/sumber-dukungan")} size="sm" className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 gap-1 shrink-0">Cek Detail <ArrowRight className="w-3.5 h-3.5" /></Button>
                   </div>
                 </div>
               </div>
@@ -524,7 +524,7 @@ export default function LandingPage() {
                       </div>
                     )}
                     <Divider />
-                    <Button onClick={() => router.push("/kegiatan")} size="sm" className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 gap-1 shrink-0 self-center">Lihat Detail <ArrowRight className="w-3.5 h-3.5" /></Button>
+                    <Button onClick={() => router.push("/kegiatan")} size="sm" className="bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 gap-1 shrink-0 self-center">Cek Detail <ArrowRight className="w-3.5 h-3.5" /></Button>
                   </div>
                 </div>
               </div>

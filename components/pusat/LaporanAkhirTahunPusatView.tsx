@@ -643,7 +643,7 @@ export function LaporanAkhirTahunPusatView() {
                           onClick={() => router.push(`/laporan-akhir-tahun/detail?id=${item.id}`)}
                           className="text-blue-600 hover:underline text-sm flex items-center gap-1"
                         >
-                          <Eye className="w-3.5 h-3.5" /> Lihat Detail
+                          <Eye className="w-3.5 h-3.5" /> Cek Detail
                         </button>
                       </div>
                     </td>

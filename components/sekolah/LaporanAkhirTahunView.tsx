@@ -539,7 +539,7 @@ useEffect(() => {
                         }}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition"
                       >
-                        Lihat Detail
+                        Cek Detail
                       </button>
                     ) : (
                       <button
