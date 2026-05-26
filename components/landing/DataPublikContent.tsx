@@ -442,7 +442,7 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
                               onClick={() => setSelectedRow(row)}
                               className="h-7 text-xs border-slate-200 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                             >
-                              Lihat Detail
+                              Cek Detail
                             </Button>
                           )}
                         </TableCell>

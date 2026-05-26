@@ -249,7 +249,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                                 onClick={() => setSelectedItem(item)}
                                 className={cn("h-7 text-xs", isNasional ? "bg-blue-600 hover:bg-blue-700 text-white" : "border-slate-200 text-blue-600 hover:text-blue-700 hover:bg-blue-50")}
                               >
-                                Lihat Detail
+                                Cek Detail
                               </Button>
                             </td>
                           </tr>
