@@ -165,7 +165,7 @@ export default function LandingPage() {
               </div>
               <div className="flex items-center gap-2">
                 <p className="text-sm text-slate-400">
-                  Update terakhir: {new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })} | {new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+                  Update terakhir: {mounted ? `${new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })} | ${new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}` : ""}
                 </p>
               </div>
             </div>
