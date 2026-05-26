@@ -164,7 +164,7 @@ function StatusBadge({ status, jenisMenunggu, jenisButuhPerbaikan }: { status: S
   
   if (status === "butuh_perbaikan") {
     if (jenisButuhPerbaikan === "perbaikan") {
-      return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">Butuh Perbaikan</span>
+      return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">Perlu Perbaikan</span>
     }
     return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">Ditolak</span>
   }
@@ -797,7 +797,7 @@ function RujukanFormInner() {
               {form.status === "terverifikasi" && "Terverifikasi"}
               {form.status === "menunggu" && (form.jenisMenunggu === "perbaikan" ? "Perlu Diperiksa - Perbaikan" : form.jenisMenunggu === "perbaikan_laporan" ? "Perlu Diperiksa - Laporan Perbaikan" : form.jenisMenunggu === "pemulihan" ? "Perlu Diperiksa - Pemulihan" : form.jenisMenunggu === "penonaktifan" ? "Perlu Diperiksa - Penonaktifan" : "Perlu Diperiksa")}
               {form.status === "menunggu_review" && "Menunggu Review"}
-              {form.status === "butuh_perbaikan" && (form.jenisButuhPerbaikan === "perbaikan" ? "Butuh Perbaikan" : "Ditolak")}
+              {form.status === "butuh_perbaikan" && (form.jenisButuhPerbaikan === "perbaikan" ? "Perlu Perbaikan" : "Ditolak")}
               {form.status === "nonaktif" && "Nonaktif"}
             </p>
             <p className={`text-sm font-medium mb-1 ${(() => {
@@ -1065,11 +1065,11 @@ function RujukanFormInner() {
 
         <SectionCard icon={<Lock className="w-4 h-4" />} title="Akses Informasi">
           <div className="space-y-3">
-            <p className="text-xs text-gray-500">Tentukan siapa yang dapat melihat informasi sumber dukungan ini.</p>
+            <p className="text-xs text-gray-500">Tentukan siapa yang dapat mengakses informasi Sumber Dukungan ini.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {([
-                { value: "publik" as AksesInfo, label: "Publik", desc: "Dapat dilihat oleh semua orang tanpa perlu login", icon: <Users className="w-4 h-4" />, color: "border-green-400 bg-green-50", iconBg: "bg-green-100 text-green-700" },
-                { value: "terbatas" as AksesInfo, label: "Terbatas (Login)", desc: "Hanya dapat dilihat oleh pengguna yang sudah login", icon: <Lock className="w-4 h-4" />, color: "border-amber-400 bg-amber-50", iconBg: "bg-amber-100 text-amber-700" },
+                { value: "publik" as AksesInfo, label: "Publik", desc: "Dapat diakses oleh publik tanpa masuk ke portal", icon: <Users className="w-4 h-4" />, color: "border-green-400 bg-green-50", iconBg: "bg-green-100 text-green-700" },
+                { value: "terbatas" as AksesInfo, label: "Terbatas", desc: "Hanya dapat diakses oleh pengguna yang masuk ke portal", icon: <Lock className="w-4 h-4" />, color: "border-amber-400 bg-amber-50", iconBg: "bg-amber-100 text-amber-700" },
               ]).map((opt) => (
                 <button
                   key={opt.value}

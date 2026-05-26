@@ -912,8 +912,8 @@ function TambahKegiatanInner() {
               <p className="text-xs text-gray-500">Tentukan siapa yang dapat melihat informasi kegiatan ini.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {([
-                  { value: "publik" as const, label: "Publik", desc: "Dapat dilihat oleh semua orang tanpa perlu login", icon: <Users className="w-4 h-4" />, color: "border-green-400 bg-green-50", iconBg: "bg-green-100 text-green-700" },
-                  { value: "terbatas" as const, label: "Terbatas (Login)", desc: "Hanya dapat dilihat oleh pengguna yang sudah login", icon: <Users className="w-4 h-4" />, color: "border-amber-400 bg-amber-50", iconBg: "bg-amber-100 text-amber-700" },
+                  { value: "publik" as const, label: "Publik", desc: "Dapat diakses oleh publik tanpa masuk ke portal", icon: <Users className="w-4 h-4" />, color: "border-green-400 bg-green-50", iconBg: "bg-green-100 text-green-700" },
+                  { value: "terbatas" as const, label: "Terbatas", desc: "Hanya dapat diakses oleh pengguna yang masuk ke portal", icon: <Users className="w-4 h-4" />, color: "border-amber-400 bg-amber-50", iconBg: "bg-amber-100 text-amber-700" },
                 ]).map((opt) => (
                   <button
                     key={opt.value}

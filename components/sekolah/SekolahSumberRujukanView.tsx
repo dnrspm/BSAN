@@ -120,7 +120,7 @@ function StatusBadge({ status, jenisMenunggu, jenisButuhPerbaikan }: { status: S
     if (jenisButuhPerbaikan === "perbaikan") {
       return (
         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">
-          <XCircle className="w-3 h-3" /> Butuh Perbaikan
+          <XCircle className="w-3 h-3" /> Perlu Perbaikan
         </span>
       )
     }
