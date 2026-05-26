@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, useEffect } from "react"
 import { Search, Globe, ChevronLeft, ChevronRight, X, ChevronDown, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -57,6 +57,11 @@ export function SumberDukunganContent({ hideHeroPrefix = false }: SumberDukungan
   const [modalPendingFilter, setModalPendingFilter] = useState<FilterWilayah | "all">("all")
   const [modalPendingShowAll, setModalPendingShowAll] = useState(false)
   const [selectedItem, setSelectedItem] = useState<SumberRujukan | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
@@ -142,7 +147,7 @@ export function SumberDukunganContent({ hideHeroPrefix = false }: SumberDukungan
         <div className="max-w-6xl mx-auto px-4 pb-0 mb-16">
           <div className="flex items-center justify-end mt-8 mb-3">
             <p className="text-sm text-slate-400">
-              Update terakhir: {new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })} | {new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+              Update terakhir: {mounted ? `${new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })} | ${new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}` : ""}
             </p>
           </div>
           {/* Table card */}
