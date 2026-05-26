@@ -164,7 +164,7 @@ function StatusBadge({ status, jenisMenunggu, jenisButuhPerbaikan }: { status: S
   
   if (status === "butuh_perbaikan") {
     if (jenisButuhPerbaikan === "perbaikan") {
-      return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">Butuh Perbaikan</span>
+      return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">Perlu Perbaikan</span>
     }
     return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">Ditolak</span>
   }
@@ -797,7 +797,7 @@ function RujukanFormInner() {
               {form.status === "terverifikasi" && "Terverifikasi"}
               {form.status === "menunggu" && (form.jenisMenunggu === "perbaikan" ? "Perlu Diperiksa - Perbaikan" : form.jenisMenunggu === "perbaikan_laporan" ? "Perlu Diperiksa - Laporan Perbaikan" : form.jenisMenunggu === "pemulihan" ? "Perlu Diperiksa - Pemulihan" : form.jenisMenunggu === "penonaktifan" ? "Perlu Diperiksa - Penonaktifan" : "Perlu Diperiksa")}
               {form.status === "menunggu_review" && "Menunggu Review"}
-              {form.status === "butuh_perbaikan" && (form.jenisButuhPerbaikan === "perbaikan" ? "Butuh Perbaikan" : "Ditolak")}
+              {form.status === "butuh_perbaikan" && (form.jenisButuhPerbaikan === "perbaikan" ? "Perlu Perbaikan" : "Ditolak")}
               {form.status === "nonaktif" && "Nonaktif"}
             </p>
             <p className={`text-sm font-medium mb-1 ${(() => {
