@@ -136,7 +136,7 @@ export default function LandingPage() {
                 <div className="pb-16 pt-16">
                   <p className="text-sm md:text-base font-bold text-slate-800">Selamat Datang di</p>
                   <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mt-1">Portal Budaya Sekolah Aman dan Nyaman (BSAN)</h1>
-                  <p className="mt-3 text-slate-700 text-base max-w-xl">Lihat informasi pembentukan kelompok kerja BSAN beserta beragam informasi dan Sumber Dukungan di Daerah Anda.</p>
+                  <p className="mt-3 text-slate-700 text-base max-w-xl">Dapatkan informasi pembentukan Kelompok Kerja, Sumber Dukungan, dan beragam kegiatan di wilayah Anda untuk menciptakan lingkungan belajar yang aman dan nyaman.</p>
                 </div>
                 <div className="hidden md:block self-end">
                   <img src="/herobsan.png" alt="Ilustrasi BSAN" className="w-full h-auto rounded-2xl" />
