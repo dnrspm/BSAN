@@ -286,7 +286,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
                 </th>
                 <th className="px-4 py-3 text-left">
                   <button className="flex items-center gap-1 text-xs font-semibold text-gray-600 uppercase tracking-wide hover:text-gray-900">
-                    Status
+                    Status Kelompok Kerja Provinsi
                   </button>
                 </th>
                 <th className="px-4 py-3 text-center">
@@ -296,7 +296,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
                 </th>
                 <th className="px-4 py-3 text-center">
                   <button className="flex items-center gap-1 text-xs font-semibold text-gray-600 uppercase tracking-wide hover:text-gray-900 mx-auto">
-                    Jumlah Kelompok Kerja per Kota/Kab
+                    Kelompok kerja kab/kota terbentuk
                   </button>
                 </th>
                 <th className="px-4 py-3 text-center">
