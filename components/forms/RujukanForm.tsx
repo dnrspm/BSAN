@@ -647,7 +647,8 @@ function RujukanFormInner() {
             ...stored[idx],
             ...form,
             logTerakhir: isResubmit ? RUJUKAN_LOG.dibuatSekolah(auth.namaSekolah ?? "") : logEdit,
-            ...(needsReverify ? { status: "menunggu", jenisMenunggu: reverifyJenis, catatanPerbaikan: reverifyAlasan } : {})
+            ...(needsReverify ? { status: "menunggu", jenisMenunggu: reverifyJenis, catatanPerbaikan: reverifyAlasan } : {}),
+            ...(isPusat ? { status: "terverifikasi", jenisMenunggu: undefined } : {}),
           }
           localStorage.setItem("rujukanList", JSON.stringify(stored))
         } else if (SEED_IDS.includes(editId)) {
@@ -655,11 +656,11 @@ function RujukanFormInner() {
           const reverifyAlasan = ajukanAlasan.trim() || undefined
           localStorage.setItem(
             "rujukanList",
-            JSON.stringify([...stored, { ...seed, ...form, id: editId, logTerakhir: isResubmit ? RUJUKAN_LOG.dibuatSekolah(auth.namaSekolah ?? "") : logEdit, ...(needsReverify ? { status: "menunggu", jenisMenunggu: reverifyJenis, catatanPerbaikan: reverifyAlasan } : {}) }])
+            JSON.stringify([...stored, { ...seed, ...form, id: editId, logTerakhir: isResubmit ? RUJUKAN_LOG.dibuatSekolah(auth.namaSekolah ?? "") : logEdit, ...(needsReverify ? { status: "menunggu", jenisMenunggu: reverifyJenis, catatanPerbaikan: reverifyAlasan } : {}), ...(isPusat ? { status: "terverifikasi", jenisMenunggu: undefined } : {}) }])
           )
         } else {
           const reverifyAlasan = ajukanAlasan.trim() || undefined
-          localStorage.setItem("rujukanList", JSON.stringify([...stored, { id: editId, ...form, logTerakhir: isResubmit ? RUJUKAN_LOG.dibuatSekolah(auth.namaSekolah ?? "") : logEdit, ...(needsReverify ? { status: "menunggu", jenisMenunggu: reverifyJenis, catatanPerbaikan: reverifyAlasan } : {}) }]))
+          localStorage.setItem("rujukanList", JSON.stringify([...stored, { id: editId, ...form, logTerakhir: isResubmit ? RUJUKAN_LOG.dibuatSekolah(auth.namaSekolah ?? "") : logEdit, ...(needsReverify ? { status: "menunggu", jenisMenunggu: reverifyJenis, catatanPerbaikan: reverifyAlasan } : {}), ...(isPusat ? { status: "terverifikasi", jenisMenunggu: undefined } : {}) }]))
         }
       } else {
         const newItem: SumberRujukan = {
@@ -1264,8 +1265,32 @@ function RujukanFormInner() {
                     </button>
                   </>
                 )}
-                {/* Dinas/Pusat: terverifikasi → Nonaktif */}
-                {mounted && form.status === "terverifikasi" && !isSekolah && (
+                {/* Pusat: terverifikasi → Edit + Nonaktif */}
+                {mounted && form.status === "terverifikasi" && isPusat && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => router.push(`/sumber-rujukan/form?edit=${viewId}`)}
+                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition inline-flex items-center justify-center gap-2"
+                    >
+                      <Pencil className="w-4 h-4" /> Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmModal({
+                        show: true,
+                        title: "Nonaktifkan Sumber Dukungan",
+                        description: "Sumber dukungan ini akan dinonaktifkan dan tidak akan ditampilkan di tabel publik. Anda dapat memulihkannya nanti bila diperlukan.",
+                        onConfirm: handleDelete
+                      })}
+                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
+                    >
+                      Nonaktif
+                    </button>
+                  </>
+                )}
+                {/* Dinas: terverifikasi → Nonaktif */}
+                {mounted && form.status === "terverifikasi" && !isSekolah && !isPusat && (
                   <button
                     type="button"
                     onClick={() => setConfirmModal({
