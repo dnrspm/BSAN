@@ -91,7 +91,7 @@ function getStatus(provinsi: string, kabIdx?: number): {
   return { status: "Belum Dibentuk" }
 }
 
-export const KAB_TO_INCLUDE: Record<string, string[]> = {
+const KAB_TO_INCLUDE: Record<string, string[]> = {
   "Aceh": ["Banda Aceh", "Aceh Besar", "Pidie", "Aceh Utara", "Aceh Timur", "Aceh Barat", "Aceh Tengah", "Pidie Jaya", "Bireuen", "Lhokseumawe"],
   "Sumatera Utara": ["Medan", "Deli Serdang", "Simalungun", "Toba Samosir", "Labuhanbatu", "Padang Sidempuan"],
   "DKI Jakarta": ["Jakarta Pusat", "Jakarta Utara", "Jakarta Barat", "Jakarta Selatan", "Jakarta Timur", "Kepulauan Seribu"],
