@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { ClipboardList, CheckCircle2, XCircle, Clock, MapPin, Users, Plus, ChevronRight, AlertTriangle, Building2, MapPinned, TrendingUp, X, ChevronDown } from "lucide-react"
+import { ClipboardList, CheckCircle2, XCircle, Clock, MapPin, Users, Plus, ChevronRight, AlertTriangle, Building2, MapPinned, TrendingUp } from "lucide-react"
 import { PieChart, Pie, Cell } from "recharts"
 import type { PokjaItem } from "@/types/pokja"
 import { KAB_TO_INCLUDE } from "@/data/provinsiData"
@@ -71,13 +71,7 @@ const PROVINCE_DATA = [
 export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRujukan, onViewActivities, onGoToPokja }: DashboardPusatViewProps) {
   const [search, setSearch] = useState("")
   const [entriesPerPage, setEntriesPerPage] = useState(10)
-  const [selectedProvince, setSelectedProvince] = useState<{
-    nama: string
-    totalKabKota: number
-    pokjaKabKota: number
-    statusProv: "aktif" | "menunggu" | "perbaikan" | "belum"
-    matching: PokjaItem[]
-  } | null>(null)
+  const [expandedProvince, setExpandedProvince] = useState<string | null>(null)
 
   // Hitung pokja per provinsi dari pokjaList secara dinamis
   // p.nama dan prov.nama sekarang keduanya menggunakan format "Provinsi X" — exact match
@@ -327,8 +321,10 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
                 }
                 const sc = statusConfig[prov.statusProv]
 
+                const isExpanded = expandedProvince === prov.nama
                 return (
-                  <tr key={prov.nama} className="hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => setSelectedProvince(prov)}>
+                  <>
+                  <tr key={prov.nama} className="hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => setExpandedProvince(isExpanded ? null : prov.nama)}>
                     <td className="px-4 py-3.5 text-gray-500">{idx + 1}</td>
                     <td className="px-4 py-3.5 font-medium text-gray-900">
                       {prov.nama.replace(/^Provinsi\s*/i, "")}
@@ -348,6 +344,80 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
                       {persentase}%
                     </td>
                   </tr>
+                  {isExpanded && (
+                    <tr key={`${prov.nama}-detail`}>
+                      <td colSpan={6} className="px-6 py-5 bg-gray-50 border-b border-gray-200">
+                        {(() => {
+                          const provName = prov.nama.replace(/^Provinsi\s*/i, "")
+                          const pokja = prov.matching[0]
+                          const kabList = KAB_TO_INCLUDE[provName] ?? []
+                          const unformedCount = prov.totalKabKota - prov.pokjaKabKota
+
+                          const sc = statusConfig[prov.statusProv]
+
+                          return (
+                            <div className="space-y-4">
+                              {/* Info Pokja */}
+                              <div className="flex items-center gap-3">
+                                <span className="text-sm font-bold text-gray-900">Kelompok Kerja Provinsi {provName}</span>
+                                <span className={`inline-block px-3 py-1 rounded-md text-xs font-medium ${sc.cls}`}>{sc.label}</span>
+                              </div>
+
+                              {pokja ? (
+                                <div className="rounded-xl bg-white border border-gray-200 p-4 grid grid-cols-2 gap-4 text-sm">
+                                  <div>
+                                    <p className="text-xs text-gray-500">Nomor Kanal</p>
+                                    <p className="font-medium text-gray-900">{pokja.data.nomorKanal || "—"}</p>
+                                  </div>
+                                  {pokja.tanggalDiverifikasi && (
+                                    <div>
+                                      <p className="text-xs text-gray-500">Tanggal Diverifikasi</p>
+                                      <p className="font-medium text-gray-900">{pokja.tanggalDiverifikasi}</p>
+                                    </div>
+                                  )}
+                                  {pokja.alasanPenolakan && (
+                                    <div className="col-span-2">
+                                      <p className="text-xs text-gray-500">Catatan</p>
+                                      <p className="font-medium text-gray-900">{pokja.alasanPenolakan}</p>
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <div className="rounded-xl bg-white border border-dashed border-gray-300 p-4 text-center">
+                                  <p className="text-sm text-gray-500">Belum ada Kelompok Kerja yang dibentuk untuk provinsi ini.</p>
+                                </div>
+                              )}
+
+                              {/* Daftar Kab/Kota */}
+                              <div>
+                                <p className="text-sm font-bold text-gray-900 mb-2">
+                                  Kelompok Kerja Kab/Kota ({prov.pokjaKabKota} terbentuk dari {prov.totalKabKota})
+                                </p>
+                                {kabList.length > 0 ? (
+                                  <div className="divide-y divide-gray-100 border border-gray-200 rounded-xl overflow-hidden bg-white">
+                                    {kabList.map((kab) => (
+                                      <div key={kab} className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50">
+                                        <p className="text-sm text-gray-900">{kab}</p>
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Terbentuk</span>
+                                      </div>
+                                    ))}
+                                    {unformedCount > 0 && (
+                                      <div className="px-4 py-2.5 bg-gray-50 text-sm text-gray-500">+ {unformedCount} kab/kota lainnya belum membentuk Kelompok Kerja</div>
+                                    )}
+                                  </div>
+                                ) : prov.pokjaKabKota > 0 ? (
+                                  <div className="rounded-xl bg-green-50 border border-green-200 p-3 text-center text-sm text-green-700">{prov.pokjaKabKota} kab/kota telah membentuk Kelompok Kerja.</div>
+                                ) : (
+                                  <div className="rounded-xl bg-gray-50 border border-gray-200 p-3 text-center text-sm text-gray-500">Belum ada kab/kota yang membentuk Kelompok Kerja.</div>
+                                )}
+                              </div>
+                            </div>
+                          )
+                        })()}
+                      </td>
+                    </tr>
+                  )}
+                  </>
                 )
               })}
               {/* Total Row */}
@@ -369,110 +439,6 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
           </table>
         </div>
       </div>
-
-      {/* Detail Modal */}
-      {selectedProvince && (() => {
-        const provName = selectedProvince.nama.replace(/^Provinsi\s*/i, "")
-        const pokja = selectedProvince.matching[0]
-        const kabList = KAB_TO_INCLUDE[provName] ?? []
-        const unformedCount = selectedProvince.totalKabKota - selectedProvince.pokjaKabKota
-
-        const statusConfig: Record<string, { label: string; cls: string }> = {
-          aktif:    { label: "Aktif",              cls: "bg-green-100 text-green-700 border border-green-300" },
-          menunggu: { label: "Perlu Diperiksa", cls: "bg-amber-100 text-amber-700 border border-amber-300" },
-          perbaikan:{ label: "Perlu Perbaikan",     cls: "bg-red-100 text-red-700 border border-red-300" },
-          belum:    { label: "Belum Dibentuk",      cls: "bg-gray-100 text-gray-500 border border-gray-200" },
-        }
-        const sc = statusConfig[selectedProvince.statusProv]
-
-        return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setSelectedProvince(null)}>
-            <div className="absolute inset-0 bg-black/50" />
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
-              {/* Header */}
-              <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200">
-                <div>
-                  <h2 className="text-lg font-bold text-gray-900">Kelompok Kerja Provinsi {provName}</h2>
-                  <span className={`inline-block mt-1.5 px-3 py-1 rounded-md text-xs font-medium ${sc.cls}`}>
-                    {sc.label}
-                  </span>
-                </div>
-                <button onClick={() => setSelectedProvince(null)} className="p-2 rounded-lg hover:bg-gray-100 text-gray-400">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Body */}
-              <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-                {/* Informasi Pokja */}
-                {pokja ? (
-                  <div className="rounded-xl bg-blue-50 border border-blue-100 p-4">
-                    <p className="text-xs font-semibold text-blue-700 uppercase mb-2">Informasi Pokja</p>
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div>
-                        <p className="text-xs text-blue-600">Nomor Kanal</p>
-                        <p className="font-medium text-gray-900">{pokja.data.nomorKanal || "—"}</p>
-                      </div>
-                      {pokja.tanggalDiverifikasi && (
-                        <div>
-                          <p className="text-xs text-blue-600">Tanggal Diverifikasi</p>
-                          <p className="font-medium text-gray-900">{pokja.tanggalDiverifikasi}</p>
-                        </div>
-                      )}
-                      {pokja.alasanPenolakan && (
-                        <div className="col-span-2">
-                          <p className="text-xs text-blue-600">Catatan</p>
-                          <p className="font-medium text-gray-900">{pokja.alasanPenolakan}</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="rounded-xl bg-gray-50 border border-gray-200 p-4 text-center">
-                    <p className="text-sm text-gray-500">Belum ada Kelompok Kerja yang dibentuk untuk provinsi ini.</p>
-                  </div>
-                )}
-
-                {/* Daftar Kab/Kota */}
-                <div>
-                  <h3 className="text-sm font-bold text-gray-900 mb-3">
-                    Kelompok Kerja Kab/Kota ({selectedProvince.pokjaKabKota} terbentuk dari {selectedProvince.totalKabKota})
-                  </h3>
-
-                  {kabList.length > 0 ? (
-                    <div className="divide-y divide-gray-100 border border-gray-200 rounded-xl overflow-hidden">
-                      {kabList.map((kab) => {
-                        const isFormed = true // all in KAB_TO_INCLUDE are formed
-                        return (
-                          <div key={kab} className="flex items-center justify-between px-4 py-3 hover:bg-gray-50">
-                            <p className="text-sm font-medium text-gray-900">{kab}</p>
-                            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${isFormed ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-                              {isFormed ? "Terbentuk" : "Belum"}
-                            </span>
-                          </div>
-                        )
-                      })}
-                      {unformedCount > 0 && (
-                        <div className="px-4 py-3 bg-gray-50">
-                          <p className="text-sm text-gray-500">+ {unformedCount} kab/kota lainnya belum membentuk Kelompok Kerja</p>
-                        </div>
-                      )}
-                    </div>
-                  ) : selectedProvince.pokjaKabKota > 0 ? (
-                    <div className="rounded-xl bg-green-50 border border-green-200 p-4 text-center">
-                      <p className="text-sm text-green-700">{selectedProvince.pokjaKabKota} kab/kota telah membentuk Kelompok Kerja.</p>
-                    </div>
-                  ) : (
-                    <div className="rounded-xl bg-gray-50 border border-gray-200 p-4 text-center">
-                      <p className="text-sm text-gray-500">Belum ada kab/kota yang membentuk Kelompok Kerja.</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )
-      })()}
 
       {/* Sumber Dukungan */}
       <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
