@@ -718,11 +718,11 @@ function RujukanFormInner() {
             </svg>
           </div>
           <h2 className="text-lg font-bold text-gray-900">
-            {isEdit ? (wasResubmit ? "Usulan Berhasil Dikirim Ulang" : "Berhasil Diperbarui") : isSekolah ? "Usulan Berhasil Dikirim" : "Berhasil Ditambahkan"}
+            {isEdit ? (wasResubmit ? "Usulan Berhasil Dikirim Ulang" : "Berhasil Mengajukan Pengubahan") : isSekolah ? "Usulan Berhasil Dikirim" : "Berhasil Ditambahkan"}
           </h2>
           <p className="text-sm text-gray-500 mt-1">
             {isEdit
-              ? wasResubmit ? "Usulan Anda telah dikirim ulang untuk diperiksa kembali." : "Perubahan berhasil disimpan."
+              ? wasResubmit ? "Usulan Anda telah dikirim ulang untuk diperiksa kembali." : "Pengubahan data perlu diverifikasi terlebih dahulu."
               : isSekolah
                 ? "Usulan sumber dukungan Anda akan diverifikasi oleh admin."
                 : "Sumber dukungan berhasil ditambahkan dan langsung terverifikasi."}
@@ -1336,7 +1336,7 @@ function RujukanFormInner() {
                 disabled={!canSubmit}
                 className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
-                {isEdit && mounted && isSekolah && (form.status === "terverifikasi" || form.status === "butuh_perbaikan") ? "Ajukan Perubahan" : isEdit ? "Simpan Perubahan" : (mounted && isSekolah) ? "Kirim Usulan" : "Simpan Sumber Dukungan"}
+                {isEdit && mounted && isSekolah && (form.status === "terverifikasi" || form.status === "butuh_perbaikan") ? "Ajukan Pengubahan" : isEdit ? "Simpan Pengubahan" : (mounted && isSekolah) ? "Kirim Usulan" : "Simpan Sumber Dukungan"}
               </button>
             </div>
           </div>
@@ -1353,8 +1353,8 @@ function RujukanFormInner() {
                 <Pencil className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-gray-900">Ajukan Perubahan</h3>
-                <p className="text-xs text-gray-500">Jelaskan alasan perubahan data ini.</p>
+                <h3 className="text-base font-bold text-gray-900">Ajukan Pengubahan</h3>
+                <p className="text-xs text-gray-500">Jelaskan alasan pengubahan data ini.</p>
               </div>
             </div>
             <div className="p-5 space-y-4">
@@ -1363,11 +1363,11 @@ function RujukanFormInner() {
                 <p className="text-sm text-gray-900">{form.namaInstansi}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Alasan Perubahan</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Alasan Pengubahan</label>
                 <textarea
                   value={ajukanAlasan}
                   onChange={(e) => setAjukanAlasan(e.target.value)}
-                  placeholder="Jelaskan alasan perubahan data..."
+                  placeholder="Jelaskan alasan pengubahan data..."
                   className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   rows={4}
                 />
@@ -1385,7 +1385,7 @@ function RujukanFormInner() {
                 disabled={!ajukanAlasan.trim()}
                 className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Ajukan Perubahan
+                Ajukan Pengubahan
               </button>
             </div>
           </div>

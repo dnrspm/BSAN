@@ -266,4 +266,37 @@ Status badge untuk Sumber Dukungan yang sedang menunggu verifikasi memiliki copy
 * ✅ Dinas: "3 Sumber Dukungan **Perlu Verifikasi**"
 * ❌ Dinas: "3 Sumber Dukungan **Dalam Proses Verifikasi**" (tidak action-oriented)
 
+---
+
+## **Terminologi: Pengubahan vs Perubahan**
+
+### **Aturan**
+Gunakan **"pengubahan"** (bukan "perubahan") untuk semua konteks edit/update data di BSAN.
+
+| Salah | Benar |
+|-------|-------|
+| Simpan Perubahan | Simpan Pengubahan |
+| Ajukan Perubahan | Ajukan Pengubahan |
+| Catatan Perubahan | Catatan Pengubahan |
+| Alasan Perubahan | Alasan Pengubahan |
+| Perubahan berhasil disimpan | Pengubahan data perlu diverifikasi terlebih dahulu |
+
+### **Contoh Penggunaan di UI**
+
+**Tombol:**
+* ✅ "Simpan Pengubahan"
+* ✅ "Ajukan Pengubahan"
+* ❌ "Simpan Perubahan"
+
+**Success Message (setelah edit data yang perlu verifikasi):**
+* ✅ Title: "Berhasil Mengajukan Pengubahan"
+* ✅ Body: "Pengubahan data perlu diverifikasi terlebih dahulu."
+* ❌ Title: "Berhasil Diperbarui"
+* ❌ Body: "Perubahan berhasil disimpan."
+
+**Form Labels:**
+* ✅ "Alasan Pengubahan"
+* ✅ "Catatan Pengubahan"
+* ❌ "Alasan Perubahan"
+
 
