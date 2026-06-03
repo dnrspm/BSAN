@@ -993,7 +993,7 @@ function TambahKegiatanInner() {
               disabled={!canSubmit}
               className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
-              {isEdit ? "Simpan Perubahan" : "Simpan Kegiatan"}
+              {isEdit ? "Simpan Pengubahan" : "Simpan Kegiatan"}
             </button>
           </div>
         )}

@@ -15,7 +15,7 @@
 3. Banner merah menampilkan alasan penolakan + tombol "Perbaiki Data POKJA"
 4. Klik → `handlePerbaikiPokja()` menyimpan `perbaikanPokjaData` ke sessionStorage (termasuk `prevStatus`) → navigate ke `/buat-pokja`
 5. Form pre-fill semua field, judul berubah "Perbaikan Data POKJA", badge "Mode Perbaikan"
-6. Step 4 (review) tampilkan textarea "Catatan Perubahan" → disimpan sebagai `deskripsiPerbaikan` di payload
+6. Step 4 (review) tampilkan textarea "Catatan Pengubahan" → disimpan sebagai `deskripsiPerbaikan` di payload
 7. Submit → `perbaikanSubmitData` di sessionStorage → redirect `/?pokjaPerbaikan=1`
 8. `page.tsx` handler: update status `masih-diverifikasi`, log aksi `"edit"` (jika prevStatus=aktif) atau `"perbaiki"` (jika prevStatus=butuh-perbaikan), alasan = input user atau default
 

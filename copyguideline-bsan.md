@@ -243,3 +243,60 @@ Contoh:
 
 Kegagalan menerapkan overlay ini bersama Base Prompt membatalkan output yang dihasilkan.
 
+---
+
+## **Status Label Guidelines**
+
+### **Status Verifikasi Sumber Dukungan**
+
+Status badge untuk Sumber Dukungan yang sedang menunggu verifikasi memiliki copy berbeda berdasarkan peran pengguna:
+
+| Peran | Status Label | Alasan |
+|-------|-------------|--------|
+| **Sekolah** | "Dalam Proses Verifikasi" | Sekolah sebagai pengusul melihat bahwa usulannya sedang diproses |
+| **Dinas** | "Perlu Verifikasi" | Dinas sebagai verifikator melihat bahwa ada item yang perlu ditindaklanjuti |
+| **Admin Pusat** | "Perlu Verifikasi" | Admin Pusat sebagai pengawas melihat status yang perlu diverifikasi |
+
+**Alasan Perbedaan:**
+* **Sekolah** menggunakan perspektif pasif — mereka menunggu proses yang dilakukan pihak lain
+* **Dinas dan Admin Pusat** menggunakan perspektif aktif — mereka adalah pihak yang perlu mengambil tindakan
+
+**Contoh Penggunaan:**
+* ✅ Sekolah: "Usulan Anda sedang **Dalam Proses Verifikasi**"
+* ✅ Dinas: "3 Sumber Dukungan **Perlu Verifikasi**"
+* ❌ Dinas: "3 Sumber Dukungan **Dalam Proses Verifikasi**" (tidak action-oriented)
+
+---
+
+## **Terminologi: Pengubahan vs Perubahan**
+
+### **Aturan**
+Gunakan **"pengubahan"** (bukan "perubahan") untuk semua konteks edit/update data di BSAN.
+
+| Salah | Benar |
+|-------|-------|
+| Simpan Perubahan | Simpan Pengubahan |
+| Ajukan Perubahan | Ajukan Pengubahan |
+| Catatan Perubahan | Catatan Pengubahan |
+| Alasan Perubahan | Alasan Pengubahan |
+| Perubahan berhasil disimpan | Pengubahan data perlu diverifikasi terlebih dahulu |
+
+### **Contoh Penggunaan di UI**
+
+**Tombol:**
+* ✅ "Simpan Pengubahan"
+* ✅ "Ajukan Pengubahan"
+* ❌ "Simpan Perubahan"
+
+**Success Message (setelah edit data yang perlu verifikasi):**
+* ✅ Title: "Berhasil Mengajukan Pengubahan"
+* ✅ Body: "Pengubahan data perlu diverifikasi terlebih dahulu."
+* ❌ Title: "Berhasil Diperbarui"
+* ❌ Body: "Perubahan berhasil disimpan."
+
+**Form Labels:**
+* ✅ "Alasan Pengubahan"
+* ✅ "Catatan Pengubahan"
+* ❌ "Alasan Perubahan"
+
+

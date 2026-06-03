@@ -1751,12 +1751,12 @@ export default function BuatPokjaPage() {
                   </div>
                 )}
 
-                {/* Deskripsi perubahan — hanya mode perbaikan/edit */}
+                {/* Deskripsi pengubahan — hanya mode perbaikan/edit */}
                 {isPerbaikanMode && (
                   <div>
                     <div className="mb-3">
-                      <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Catatan Perubahan</p>
-                      <p className="text-xs text-gray-400 mt-0.5">Jelaskan perubahan apa saja yang Anda lakukan pada data POKJA ini.</p>
+                      <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Catatan Pengubahan</p>
+                      <p className="text-xs text-gray-400 mt-0.5">Jelaskan pengubahan apa saja yang Anda lakukan pada data POKJA ini.</p>
                     </div>
                     <textarea
                       value={deskripsiPerbaikan}
