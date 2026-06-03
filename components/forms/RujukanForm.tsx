@@ -154,7 +154,7 @@ function SectionCard({ icon, title, children }: { icon: React.ReactNode; title: 
   )
 }
 
-function StatusBadge({ status, jenisMenunggu, jenisButuhPerbaikan }: { status: StatusRujukan; jenisMenunggu?: "pengajuan" | "perbaikan" | "perbaikan_laporan" | "penonaktifan" | "pemulihan"; jenisButuhPerbaikan?: "ditolak" | "perbaikan" }) {
+function StatusBadge({ status, jenisMenunggu, jenisButuhPerbaikan, isSekolah }: { status: StatusRujukan; jenisMenunggu?: "pengajuan" | "perbaikan" | "perbaikan_laporan" | "penonaktifan" | "pemulihan"; jenisButuhPerbaikan?: "ditolak" | "perbaikan"; isSekolah?: boolean }) {
   if (status === "terverifikasi") {
     return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">Terverifikasi</span>
   }
@@ -169,9 +169,13 @@ function StatusBadge({ status, jenisMenunggu, jenisButuhPerbaikan }: { status: S
     return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">Ditolak</span>
   }
   if (status === "menunggu") {
-    return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Dalam Proses Verifikasi</span>
+    // Sekolah sees "Dalam Proses Verifikasi", others see "Perlu Verifikasi"
+    const label = isSekolah ? "Dalam Proses Verifikasi" : "Perlu Verifikasi"
+    return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">{label}</span>
   }
-  return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Dalam Proses Verifikasi</span>
+  // Default fallback for menunggu_review or other waiting states
+  const defaultLabel = isSekolah ? "Dalam Proses Verifikasi" : "Perlu Verifikasi"
+  return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">{defaultLabel}</span>
 }
 
 const emptyForm = (): FormState => ({
@@ -747,7 +751,7 @@ function RujukanFormInner() {
             </h1>
             {isView ? (
               <div className="mt-1">
-                <StatusBadge status={form.status} jenisMenunggu={form.jenisMenunggu} jenisButuhPerbaikan={form.jenisButuhPerbaikan} />
+                <StatusBadge status={form.status} jenisMenunggu={form.jenisMenunggu} jenisButuhPerbaikan={form.jenisButuhPerbaikan} isSekolah={isSekolah} />
               </div>
             ) : (
               <p className="text-xs text-gray-500">
