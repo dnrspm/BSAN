@@ -58,7 +58,7 @@ export function SekolahDashboard({ searchParams }: SekolahDashboardProps) {
         <main className="flex-1 px-4 md:px-6 py-6">
           {menu === "sumber-rujukan" && <SekolahSumberRujukanView wilayah={wilayah} />}
           {menu === "kegiatan" && <KegiatanView />}
-          {menu === "pelanggaran" && <PelanggaranView />}
+          {menu === "pelanggaran" && <PelanggaranView readOnly />}
           {menu === "laporan-akhir-tahun" && <LaporanAkhirTahunView />}
         </main>
       </div>

@@ -1,12 +1,12 @@
 "use client"
-import { LayoutDashboard, Users, LogOut, GraduationCap, Menu, X, BookOpenCheck, CalendarDays } from "lucide-react"
+import { LayoutDashboard, Users, LogOut, GraduationCap, Menu, X, BookOpenCheck, CalendarDays, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { clearAuthAndRedirectToLogin } from "@/lib/logout"
 import { readAuthSession } from "@/lib/auth-session"
 
-type ActiveMenu = "dashboard" | "data-pokja" | "sumber-rujukan" | "kegiatan"
+type ActiveMenu = "dashboard" | "data-pokja" | "sumber-rujukan" | "kegiatan" | "pelanggaran"
 
 interface SidebarProps {
   activeMenu: ActiveMenu
@@ -33,6 +33,11 @@ const navItems = [
     id: "kegiatan" as ActiveMenu,
     label: "Kegiatan",
     icon: CalendarDays,
+  },
+  {
+    id: "pelanggaran" as ActiveMenu,
+    label: "Pelanggaran",
+    icon: AlertTriangle,
   },
 ]
 

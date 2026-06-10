@@ -12,6 +12,7 @@ import {
   Download,
   Eye,
   FileText,
+  GraduationCap,
   Plus,
   Search,
   Upload,
@@ -22,26 +23,56 @@ import {
   Calendar,
   Image,
   Check,
-  XCircle as XCircleIcon,
-  ArrowRightLeft,
 } from "lucide-react"
 import { readAuthSession } from "@/lib/auth-session"
 
-type StatusPelanggaran = "selesai" | "dihentikan" | "dilimpahkan"
+type StatusPelanggaran = "baru" | "proses" | "selesai"
+
+interface UnsurItem {
+  kategori: string
+  jumlah: string
+}
 
 interface PelanggaranItem {
   id: string
-  namaSekolah: string
-  unsurTerlibat: { laki: number; perempuan: number }
+  namaSekolah: string[]
+  unsurTerlibat: UnsurItem[]
   tanggalTerjadi: string
   kategori: string
-  dokumentasi: string[]
+  dokumentasi: string
   rekomendasi: string
   status: StatusPelanggaran
   createdAt: string
   updatedAt: string
   dibuatOleh: string
 }
+
+const SEKOLAH_OPTIONS = [
+  "SDN 1 Banda Aceh",
+  "SDN 2 Banda Aceh",
+  "SMPN 1 Banda Aceh",
+  "SMAN 1 Banda Aceh",
+  "SMKN 1 Banda Aceh",
+  "SDN 1 Medan",
+  "SMPN 2 Jakarta Pusat",
+  "SMAN 3 Surabaya",
+  "SDN 4 Bandung",
+  "SMPN 5 Yogyakarta",
+  "SMKN 2 Semarang",
+  "SDN 1 Denpasar",
+  "SMPN 3 Makassar",
+  "SMAN 2 Palembang",
+]
+
+function getSekolahColors(name: string) {
+  const lower = name.toLowerCase()
+  if (lower.startsWith("sdn") || lower.startsWith("sd ")) return { bg: "bg-amber-500/10", text: "text-amber-700" }
+  if (lower.startsWith("smpn") || lower.startsWith("smp ")) return { bg: "bg-blue-500/10", text: "text-blue-700" }
+  if (lower.startsWith("sman") || lower.startsWith("smkn") || lower.startsWith("sma ") || lower.startsWith("smk ")) return { bg: "bg-emerald-500/10", text: "text-emerald-700" }
+  return { bg: "bg-gray-500/10", text: "text-gray-700" }
+}
+
+const UNSUR_OPTIONS = ["Siswa Laki-laki", "Siswa Perempuan", "Guru", "Staff", "Lainnya"]
 
 const KATEGORI_PELANGGARAN = [
   "Perundungan (Bullying)",
@@ -57,28 +88,28 @@ const KATEGORI_PELANGGARAN = [
 
 function StatusBadge({ status }: { status: StatusPelanggaran }) {
   switch (status) {
+    case "baru":
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+          <FileText className="w-3 h-3" /> Baru
+        </span>
+      )
+    case "proses":
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
+          <Clock className="w-3 h-3" /> Proses
+        </span>
+      )
     case "selesai":
       return (
         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
           <CheckCircle className="w-3 h-3" /> Selesai
         </span>
       )
-    case "dihentikan":
-      return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
-          <XCircleIcon className="w-3 h-3" /> Dihentikan
-        </span>
-      )
-    case "dilimpahkan":
-      return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-          <ArrowRightLeft className="w-3 h-3" /> Dilimpahkan
-        </span>
-      )
   }
 }
 
-function DetailModal({ item, onClose, onUpdateStatus }: { item: PelanggaranItem; onClose: () => void; onUpdateStatus: (id: string, status: StatusPelanggaran) => void }) {
+function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: PelanggaranItem; onClose: () => void; onUpdateStatus: (id: string, status: StatusPelanggaran) => void; readOnly?: boolean }) {
   const [showStatusModal, setShowStatusModal] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState<StatusPelanggaran>(item.status)
 
@@ -104,22 +135,34 @@ function DetailModal({ item, onClose, onUpdateStatus }: { item: PelanggaranItem;
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
           <div className="bg-gray-50 rounded-lg p-4 space-y-2">
             <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-gray-500" />
+              <GraduationCap className="w-4 h-4 text-gray-500" />
               <span className="text-sm font-medium text-gray-700">Nama Sekolah</span>
             </div>
-            <p className="text-sm font-semibold text-gray-900 ml-6">{item.namaSekolah}</p>
+            <div className="ml-6 flex flex-wrap gap-1.5">
+              {item.namaSekolah.map((s, i) => (
+                <span key={i} className="inline-flex items-center gap-1 text-sm font-semibold text-gray-900 bg-white px-2 py-0.5 rounded border border-gray-200">
+                  <GraduationCap className="w-3 h-3 text-gray-400" />
+                  {s}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-gray-50 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Users className="w-4 h-4 text-gray-500" />
+              <span className="text-xs font-medium text-gray-500">Unsur Terlibat</span>
+            </div>
+            <div className="ml-6 space-y-1">
+              {(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u, i) => (
+                <p key={i} className="text-sm font-semibold text-gray-900">
+                  {u.kategori}: {u.jumlah} org
+                </p>
+              ))}
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Users className="w-4 h-4 text-gray-500" />
-                <span className="text-xs font-medium text-gray-500">Unsur Terlibat</span>
-              </div>
-              <p className="text-sm font-semibold text-gray-900">
-                L: {item.unsurTerlibat.laki} | P: {item.unsurTerlibat.perempuan}
-              </p>
-            </div>
             <div className="bg-gray-50 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
                 <Calendar className="w-4 h-4 text-gray-500" />
@@ -139,26 +182,20 @@ function DetailModal({ item, onClose, onUpdateStatus }: { item: PelanggaranItem;
             <p className="text-sm font-semibold text-gray-900 ml-6">{item.kategori}</p>
           </div>
 
-          {item.dokumentasi.length > 0 && (
+          {item.dokumentasi && (
             <div className="bg-gray-50 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
                 <Image className="w-4 h-4 text-gray-500" />
                 <span className="text-xs font-medium text-gray-500">Dokumentasi</span>
               </div>
-              <div className="flex gap-2 mt-2 ml-6 flex-wrap">
-                {item.dokumentasi.map((doc, i) => (
-                  <a key={i} href={doc} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline bg-blue-50 px-2 py-1 rounded">
-                    Dokumen {i + 1}
-                  </a>
-                ))}
-              </div>
+              <p className="text-sm text-gray-900 ml-6">{item.dokumentasi}</p>
             </div>
           )}
 
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex items-center gap-2 mb-1">
               <CheckCircle className="w-4 h-4 text-gray-500" />
-              <span className="text-xs font-medium text-gray-500">Rekomendasi</span>
+              <span className="text-xs font-medium text-gray-500">Detail Kasus</span>
             </div>
             <p className="text-sm text-gray-900 ml-6 leading-relaxed">{item.rekomendasi}</p>
           </div>
@@ -168,18 +205,20 @@ function DetailModal({ item, onClose, onUpdateStatus }: { item: PelanggaranItem;
           </div>
         </div>
 
-        <div className="border-t border-gray-200 p-5 flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedStatus(item.status)
-              setShowStatusModal(true)
-            }}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
-          >
-            <Check className="w-4 h-4" /> Update Status
-          </button>
-        </div>
+        {!readOnly && (
+          <div className="border-t border-gray-200 p-5 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedStatus(item.status)
+                setShowStatusModal(true)
+              }}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
+            >
+              <Check className="w-4 h-4" /> Update Status
+            </button>
+          </div>
+        )}
       </div>
 
       {showStatusModal && (
@@ -194,9 +233,9 @@ function DetailModal({ item, onClose, onUpdateStatus }: { item: PelanggaranItem;
             </div>
             <div className="p-5 space-y-3">
               {([
-                { value: "selesai" as StatusPelanggaran, label: "Selesai", desc: "Kasus sudah ditangani dan resolved", color: "bg-green-500" },
-                { value: "dihentikan" as StatusPelanggaran, label: "Dihentikan", desc: "Kasus dihentikan / tidak dilanjutkan", color: "bg-gray-500" },
-                { value: "dilimpahkan" as StatusPelanggaran, label: "Dilimpahkan", desc: "Kasus dilimpahkan ke pihak lain", color: "bg-blue-500" },
+                { value: "baru" as StatusPelanggaran, label: "Baru", desc: "Laporan baru masuk, belum ditindaklanjuti", color: "bg-blue-500" },
+                { value: "proses" as StatusPelanggaran, label: "Proses", desc: "Kasus sedang dalam proses penanganan", color: "bg-amber-500" },
+                { value: "selesai" as StatusPelanggaran, label: "Selesai", desc: "Kasus sudah ditangani dan selesai", color: "bg-green-500" },
               ] as { value: StatusPelanggaran; label: string; desc: string; color: string }[]).map((opt) => (
                 <button
                   key={opt.value}
@@ -211,9 +250,9 @@ function DetailModal({ item, onClose, onUpdateStatus }: { item: PelanggaranItem;
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full ${opt.color} flex items-center justify-center text-white`}>
+                      {opt.value === "baru" && <FileText className="w-4 h-4" />}
+                      {opt.value === "proses" && <Clock className="w-4 h-4" />}
                       {opt.value === "selesai" && <CheckCircle className="w-4 h-4" />}
-                      {opt.value === "dihentikan" && <XCircleIcon className="w-4 h-4" />}
-                      {opt.value === "dilimpahkan" && <ArrowRightLeft className="w-4 h-4" />}
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-gray-900">{opt.label}</p>
@@ -231,38 +270,65 @@ function DetailModal({ item, onClose, onUpdateStatus }: { item: PelanggaranItem;
 }
 
 function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; onSubmit: (data: Omit<PelanggaranItem, "id" | "createdAt" | "updatedAt" | "dibuatOleh">) => void; initialData?: PelanggaranItem }) {
-  const [namaSekolah, setNamaSekolah] = useState(initialData?.namaSekolah ?? "")
-  const [laki, setLaki] = useState(initialData?.unsurTerlibat.laki ?? 0)
-  const [perempuan, setPerempuan] = useState(initialData?.unsurTerlibat.perempuan ?? 0)
+  const [namaSekolah, setNamaSekolah] = useState<string[]>(initialData?.namaSekolah ?? [])
+  const [sekolahInput, setSekolahInput] = useState("")
+  const [showSekolahDropdown, setShowSekolahDropdown] = useState(false)
+  const [unsurTerlibat, setUnsurTerlibat] = useState<UnsurItem[]>(
+    Array.isArray(initialData?.unsurTerlibat)
+      ? initialData!.unsurTerlibat
+      : initialData?.unsurTerlibat
+        ? [{ kategori: "Siswa Laki-laki", jumlah: String((initialData.unsurTerlibat as any).laki ?? 0) }, { kategori: "Siswa Perempuan", jumlah: String((initialData.unsurTerlibat as any).perempuan ?? 0) }]
+        : [{ kategori: "", jumlah: "" }]
+  )
   const [tanggal, setTanggal] = useState(initialData?.tanggalTerjadi?.split("T")[0] ?? "")
   const [kategori, setKategori] = useState(initialData?.kategori ?? "")
-  const [dokumentasi, setDokumentasi] = useState<string[]>(initialData?.dokumentasi ?? [])
-  const [dokumentasiInput, setDokumentasiInput] = useState("")
+  const [dokumentasi, setDokumentasi] = useState(initialData?.dokumentasi ?? "")
   const [rekomendasi, setRekomendasi] = useState(initialData?.rekomendasi ?? "")
-  const [status, setStatus] = useState<StatusPelanggaran>(initialData?.status ?? "selesai")
+  const [status, setStatus] = useState<StatusPelanggaran>(initialData?.status ?? "baru")
 
-  const handleAddDokumentasi = () => {
-    if (dokumentasiInput.trim()) {
-      setDokumentasi((prev) => [...prev, dokumentasiInput.trim()])
-      setDokumentasiInput("")
+  const allSchoolSuggestions = useMemo(() => {
+    const names = new Set<string>()
+    SEKOLAH_OPTIONS.forEach((s) => names.add(s))
+    try {
+      const stored = localStorage.getItem("pelanggaranList")
+      if (stored) {
+        const parsed: PelanggaranItem[] = JSON.parse(stored)
+        parsed.forEach((item) => {
+          const list = Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah]
+          list.forEach((s) => { if (s.trim()) names.add(s.trim()) })
+        })
+      }
+    } catch { /* ignore */ }
+    return Array.from(names).sort()
+  }, [])
+
+  const filteredSekolahOptions = sekolahInput
+    ? allSchoolSuggestions.filter((s) => s.toLowerCase().includes(sekolahInput.toLowerCase()) && !namaSekolah.includes(s))
+    : allSchoolSuggestions.filter((s) => !namaSekolah.includes(s))
+
+  const addSekolah = (name: string) => {
+    const trimmed = name.trim()
+    if (trimmed && !namaSekolah.includes(trimmed)) {
+      setNamaSekolah((prev) => [...prev, trimmed])
     }
+    setSekolahInput("")
+    setShowSekolahDropdown(false)
   }
 
-  const removeDokumentasi = (index: number) => {
-    setDokumentasi((prev) => prev.filter((_, i) => i !== index))
+  const removeSekolah = (index: number) => {
+    setNamaSekolah((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const canSubmit = namaSekolah.trim() && laki + perempuan > 0 && tanggal && kategori && rekomendasi.trim()
+  const canSubmit = namaSekolah.length > 0 && unsurTerlibat.some((u) => u.kategori && u.jumlah) && tanggal && kategori && rekomendasi.trim()
 
   const handleSubmit = () => {
     if (!canSubmit) return
-    const session = readAuthSession()
     onSubmit({
-      namaSekolah: namaSekolah.trim(),
-      unsurTerlibat: { laki, perempuan },
+      namaSekolah,
+      unsurTerlibat: unsurTerlibat.filter((u) => u.kategori && u.jumlah),
       tanggalTerjadi: tanggal,
       kategori,
-      dokumentasi,
+      dokumentasi: dokumentasi.trim(),
       rekomendasi: rekomendasi.trim(),
       status,
     })
@@ -290,49 +356,46 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           <div>
             <label className="text-xs font-semibold text-gray-700">Nama Sekolah <span className="text-red-500">*</span></label>
-            <input
-              type="text"
-              value={namaSekolah}
-              onChange={(e) => setNamaSekolah(e.target.value)}
-              placeholder="Nama sekolah"
-              className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            />
-          </div>
-
-          <div>
-            <label className="text-xs font-semibold text-gray-700">Unsur yang Terlibat <span className="text-red-500">*</span></label>
-            <div className="flex gap-4 mt-1">
-              <div className="flex-1">
-                <label className="text-xs text-gray-500">Laki-laki (L)</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={laki}
-                  onChange={(e) => setLaki(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="text-xs text-gray-500">Perempuan (P)</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={perempuan}
-                  onChange={(e) => setPerempuan(Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                />
-              </div>
+            <div className="relative mt-1">
+              <input
+                type="text"
+                value={sekolahInput}
+                onChange={(e) => { setSekolahInput(e.target.value); setShowSekolahDropdown(true) }}
+                onFocus={() => setShowSekolahDropdown(true)}
+                onClick={() => setShowSekolahDropdown(true)}
+                onBlur={() => setTimeout(() => setShowSekolahDropdown(false), 200)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSekolah(sekolahInput) } }}
+                placeholder="Tambah nama sekolah"
+                className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              />
+              {showSekolahDropdown && filteredSekolahOptions.length > 0 && (
+                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                  {filteredSekolahOptions.map((o) => (
+                    <button
+                      key={o}
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => addSekolah(o)}
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 text-gray-700"
+                    >
+                      {o}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
-
-          <div>
-            <label className="text-xs font-semibold text-gray-700">Kapan Terjadi <span className="text-red-500">*</span></label>
-            <input
-              type="date"
-              value={tanggal}
-              onChange={(e) => setTanggal(e.target.value)}
-              className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            />
+            {namaSekolah.length > 0 && (
+              <div className="flex flex-col gap-1.5 mt-3">
+                {namaSekolah.map((s, i) => (
+                  <div key={i} className="flex items-center gap-2 py-1.5 px-2 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium text-gray-700 flex-1">{s}</span>
+                    <button type="button" onClick={() => removeSekolah(i)} className="p-0.5 hover:bg-gray-200 rounded-full">
+                      <X className="w-3.5 h-3.5 text-gray-400" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div>
@@ -350,59 +413,125 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-gray-700">Dokumentasi <span className="text-gray-400">(opsional)</span></label>
-            <div className="flex gap-2 mt-1">
-              <input
-                type="url"
-                value={dokumentasiInput}
-                onChange={(e) => setDokumentasiInput(e.target.value)}
-                placeholder="https://..."
-                className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-              />
-              <button
-                type="button"
-                onClick={handleAddDokumentasi}
-                className="h-9 px-3 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium transition flex items-center gap-1"
-              >
-                <Plus className="w-4 h-4" /> Tambah
-              </button>
-            </div>
-            {dokumentasi.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {dokumentasi.map((doc, i) => (
-                  <div key={i} className="flex items-center gap-1 bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded">
-                    <a href={doc} target="_blank" rel="noopener noreferrer" className="hover:underline">{doc.slice(0, 30)}...</a>
-                    <button type="button" onClick={() => removeDokumentasi(i)} className="hover:text-red-600">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div>
-            <label className="text-xs font-semibold text-gray-700">Rekomendasi <span className="text-red-500">*</span></label>
+            <label className="text-xs font-semibold text-gray-700">Detail Kasus <span className="text-red-500">*</span></label>
             <textarea
               value={rekomendasi}
               onChange={(e) => setRekomendasi(e.target.value)}
-              placeholder="Tuliskan rekomendasi penanganan..."
+              placeholder="Tuliskan detail kasus..."
               rows={4}
               className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
             />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-gray-700">Status</label>
+            <label className="text-xs font-semibold text-gray-700">Unsur yang Terlibat <span className="text-red-500">*</span></label>
+            <div className="flex flex-col gap-3 mt-1">
+              {unsurTerlibat.map((u, i) => {
+                const predefined = UNSUR_OPTIONS.filter((o) => o !== "Lainnya")
+                const isCustom = u.kategori && !predefined.includes(u.kategori)
+                const displayValue = isCustom ? "Lainnya" : u.kategori
+                const takenByOthers = unsurTerlibat
+                  .filter((_, idx) => idx !== i)
+                  .map((r) => r.kategori)
+                  .filter((k) => predefined.includes(k))
+                const availableOptions = ["Lainnya", ...predefined.filter((opt) => !takenByOthers.includes(opt))]
+                return (
+                  <div key={i} className="flex items-center gap-2">
+                    <div className="flex-1 flex items-center gap-2">
+                      <select
+                        value={displayValue}
+                        onChange={(e) => {
+                          const next = [...unsurTerlibat]
+                          next[i] = { ...next[i], kategori: e.target.value }
+                          setUnsurTerlibat(next)
+                        }}
+                        className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      >
+                        <option value="" disabled>Pilih unsur</option>
+                        {availableOptions.map((o) => (
+                          <option key={o} value={o}>{o}</option>
+                        ))}
+                      </select>
+                      {displayValue === "Lainnya" && (
+                        <input
+                          value={u.kategori !== "Lainnya" ? u.kategori : ""}
+                          onChange={(e) => {
+                            const next = [...unsurTerlibat]
+                            next[i] = { ...next[i], kategori: e.target.value }
+                            setUnsurTerlibat(next)
+                          }}
+                          placeholder="Tulis unsur..."
+                          className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        />
+                      )}
+                    </div>
+                    <input
+                      type="number"
+                      min="1"
+                      value={u.jumlah}
+                      onChange={(e) => {
+                        const next = [...unsurTerlibat]
+                        next[i] = { ...next[i], jumlah: e.target.value }
+                        setUnsurTerlibat(next)
+                      }}
+                      placeholder="Jml"
+                      className="w-20 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                    <span className="text-sm text-gray-500 whitespace-nowrap">org</span>
+                    {i > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setUnsurTerlibat((prev) => prev.filter((_, idx) => idx !== i))}
+                        className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                )
+              })}
+              <button
+                type="button"
+                onClick={() => setUnsurTerlibat((prev) => [...prev, { kategori: "", jumlah: "" }])}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+              >
+                <Plus className="w-3.5 h-3.5" /> Tambah Unsur
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-gray-700">Kapan Terjadi <span className="text-red-500">*</span></label>
+            <input
+              type="date"
+              value={tanggal}
+              onChange={(e) => setTanggal(e.target.value)}
+              className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-gray-700">Status Pelanggaran</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as StatusPelanggaran)}
               className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
+              <option value="baru">Baru</option>
+              <option value="proses">Proses</option>
               <option value="selesai">Selesai</option>
-              <option value="dihentikan">Dihentikan</option>
-              <option value="dilimpahkan">Dilimpahkan</option>
             </select>
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-gray-700">Dokumentasi <span className="text-gray-400">(opsional)</span></label>
+            <input
+              type="text"
+              value={dokumentasi}
+              onChange={(e) => setDokumentasi(e.target.value)}
+              placeholder="Link atau keterangan dokumentasi..."
+              className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            />
           </div>
         </div>
 
@@ -428,7 +557,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
   )
 }
 
-export function PelanggaranView() {
+export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; editId?: string }) {
   const [list, setList] = useState<PelanggaranItem[]>([])
   const [search, setSearch] = useState("")
   const [filterStatus, setFilterStatus] = useState<StatusPelanggaran | "semua">("semua")
@@ -441,16 +570,39 @@ export function PelanggaranView() {
   useEffect(() => {
     const stored = localStorage.getItem("pelanggaranList")
     if (stored) {
-      setList(JSON.parse(stored))
+      try {
+        const parsed: PelanggaranItem[] = JSON.parse(stored)
+        const normalized = parsed.map((item) => {
+          const unsur = Array.isArray(item.unsurTerlibat)
+            ? item.unsurTerlibat
+            : [{ kategori: "Laki-laki", jumlah: String((item.unsurTerlibat as any)?.laki ?? 0) }, { kategori: "Perempuan", jumlah: String((item.unsurTerlibat as any)?.perempuan ?? 0) }].filter((u) => parseInt(u.jumlah) > 0)
+          return {
+            ...item,
+            namaSekolah: Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah],
+            unsurTerlibat: unsur,
+            dokumentasi: Array.isArray(item.dokumentasi) ? item.dokumentasi[0] ?? "" : item.dokumentasi,
+          }
+        })
+        setList(normalized)
+      } catch { /* ignore */ }
     }
   }, [])
+
+  useEffect(() => {
+    if (!editId || list.length === 0) return
+    const found = list.find((i) => i.id === editId)
+    if (found) {
+      window.location.href = `/tambah-pelanggaran?edit=${editId}`
+    }
+  }, [editId, list])
 
   const filtered = useMemo(() => {
     return list
       .filter((item) => {
+        const sekolahList = Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah]
         const matchSearch =
           search.trim() === "" ||
-          item.namaSekolah.toLowerCase().includes(search.toLowerCase()) ||
+          sekolahList.some((s) => s.toLowerCase().includes(search.toLowerCase())) ||
           item.kategori.toLowerCase().includes(search.toLowerCase())
         const matchStatus = filterStatus === "semua" || item.status === filterStatus
         return matchSearch && matchStatus
@@ -467,9 +619,9 @@ export function PelanggaranView() {
   const stats = useMemo(() => {
     return {
       total: list.length,
+      baru: list.filter((i) => i.status === "baru").length,
+      proses: list.filter((i) => i.status === "proses").length,
       selesai: list.filter((i) => i.status === "selesai").length,
-      dihentikan: list.filter((i) => i.status === "dihentikan").length,
-      dilimpahkan: list.filter((i) => i.status === "dilimpahkan").length,
     }
   }, [list])
 
@@ -481,14 +633,20 @@ export function PelanggaranView() {
   const handleCreate = (data: Omit<PelanggaranItem, "id" | "createdAt" | "updatedAt" | "dibuatOleh">) => {
     const session = readAuthSession()
     const now = new Date().toISOString()
-    const newItem: PelanggaranItem = {
+    const dibuatOleh = session?.role === "dinas"
+      ? `Admin Dinas ${session.namaDinas ?? ""}`
+      : session?.namaSekolah
+        ? `Admin Sekolah ${session.namaSekolah}`
+        : "Admin Sekolah"
+    const newItem: PelanggaranItem & { logStatus?: { status: StatusPelanggaran; keterangan: string; waktu: string }[] } = {
       ...data,
       id: `pg-${Date.now()}`,
       createdAt: now,
       updatedAt: now,
-      dibuatOleh: session?.namaSekolah ? `Admin Sekolah ${session.namaSekolah}` : "Admin Sekolah",
+      dibuatOleh,
+      logStatus: [{ status: data.status, keterangan: "Laporan awal dibuat", waktu: now }],
     }
-    saveList([newItem, ...list])
+    saveList([newItem as PelanggaranItem, ...list])
     setShowForm(false)
   }
 
@@ -514,12 +672,11 @@ export function PelanggaranView() {
 
   const downloadCsv = () => {
     const rows = [
-      ["Nama Sekolah", "L", "P", "Tanggal", "Kategori", "Status", "Rekomendasi", "Dibuat"].join(","),
+      ["Nama Sekolah", "Unsur Terlibat", "Tanggal", "Kategori", "Status", "Detail Kasus", "Dibuat"].join(","),
       ...filtered.map((item) =>
         [
-          `"${item.namaSekolah}"`,
-          item.unsurTerlibat.laki,
-          item.unsurTerlibat.perempuan,
+          `"${(Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah]).join("; ")}"`,
+          `"${(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u) => `${u.kategori}: ${u.jumlah}`).join("; ")}"`,
           `"${item.tanggalTerjadi}"`,
           `"${item.kategori}"`,
           `"${item.status}"`,
@@ -559,15 +716,14 @@ export function PelanggaranView() {
           >
             <Download className="w-4 h-4" /> Ekspor CSV
           </button>
-          <button
-            onClick={() => {
-              setEditingItem(undefined)
-              setShowForm(true)
-            }}
-            className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
-          >
-            <Plus className="w-4 h-4" /> Buat Pelanggaran
-          </button>
+          {!readOnly && (
+            <a
+              href="/tambah-pelanggaran?create"
+              className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
+            >
+              <Plus className="w-4 h-4" /> Buat Pelanggaran
+            </a>
+          )}
         </div>
       </div>
 
@@ -584,30 +740,30 @@ export function PelanggaranView() {
           </div>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+            <FileText className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xl font-bold text-gray-900">{stats.baru}</p>
+            <p className="text-xs text-gray-500">Baru</p>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+            <Clock className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xl font-bold text-gray-900">{stats.proses}</p>
+            <p className="text-xs text-gray-500">Proses</p>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-green-600">
             <CheckCircle className="w-5 h-5" />
           </div>
           <div>
             <p className="text-xl font-bold text-gray-900">{stats.selesai}</p>
             <p className="text-xs text-gray-500">Selesai</p>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
-            <XCircleIcon className="w-5 h-5" />
-          </div>
-          <div>
-            <p className="text-xl font-bold text-gray-900">{stats.dihentikan}</p>
-            <p className="text-xs text-gray-500">Dihentikan</p>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-            <ArrowRightLeft className="w-5 h-5" />
-          </div>
-          <div>
-            <p className="text-xl font-bold text-gray-900">{stats.dilimpahkan}</p>
-            <p className="text-xs text-gray-500">Dilimpahkan</p>
           </div>
         </div>
       </div>
@@ -628,16 +784,16 @@ export function PelanggaranView() {
           className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
         >
           <option value="semua">Semua Status</option>
+          <option value="baru">Baru</option>
+          <option value="proses">Proses</option>
           <option value="selesai">Selesai</option>
-          <option value="dihentikan">Dihentikan</option>
-          <option value="dilimpahkan">Dilimpahkan</option>
         </select>
       </div>
 
       {totalRows === 0 ? (
         <div className="bg-white rounded-xl border border-dashed border-gray-300 p-10 text-center">
           <p className="font-semibold text-gray-700 text-sm">Belum ada data pelanggaran</p>
-          <p className="text-gray-500 text-xs mt-1">Klik "Buat Pelanggaran" untuk menambahkan data.</p>
+          {!readOnly && <p className="text-gray-500 text-xs mt-1">Klik "Buat Pelanggaran" untuk menambahkan data.</p>}
         </div>
       ) : (
         <>
@@ -657,28 +813,30 @@ export function PelanggaranView() {
                 <tbody className="divide-y divide-gray-100">
                   {paginatedData.map((item) => (
                     <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3.5 font-semibold text-gray-900">{item.namaSekolah}</td>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
-                        {item.unsurTerlibat.laki} / {item.unsurTerlibat.perempuan}
+                        {item.namaSekolah.join(", ")}
+                      </td>
+                      <td className="px-4 py-3.5 text-sm text-gray-800">
+                        {(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u, i) => (
+                          <span key={i} className="mr-2">{u.kategori}: {u.jumlah}</span>
+                        ))}
                       </td>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
                         {new Date(item.tanggalTerjadi).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
                       </td>
-                      <td className="px-4 py-3.5">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                          {item.kategori}
-                        </span>
+                      <td className="px-4 py-3.5 text-sm text-gray-800">
+                        {item.kategori}
                       </td>
                       <td className="px-4 py-3.5">
                         <StatusBadge status={item.status} />
                       </td>
                       <td className="px-4 py-3.5 text-right">
-                        <button
-                          onClick={() => setSelected(item)}
+                        <a
+                          href={`/tambah-pelanggaran?view=${item.id}`}
                           className="text-blue-600 hover:underline text-sm flex items-center gap-1 ml-auto"
                         >
                           <Eye className="w-3.5 h-3.5" /> Detail
-                        </button>
+                        </a>
                       </td>
                     </tr>
                   ))}
@@ -735,6 +893,7 @@ export function PelanggaranView() {
           item={selected}
           onClose={() => setSelected(null)}
           onUpdateStatus={handleUpdateStatus}
+          readOnly={readOnly}
         />
       )}
 

@@ -19,13 +19,14 @@ import { ValidatePokjaDrawer } from "@/components/pusat/ValidatePokjaDrawer"
 import { LaporanAkhirTahunPusatView } from "@/components/pusat/LaporanAkhirTahunPusatView"
 
 import { SekolahDashboard } from "@/components/sekolah/SekolahDashboard"
+import { PelanggaranView } from "@/components/sekolah/PelanggaranView"
 
 import { MOCK_PENGAJUAN, PengajuanPokja } from "@/data/mockPokja"
 import type { PokjaItem, PokjaData } from "@/types/pokja"
 import { getDrafts, clearDraft } from "@/lib/draft-storage"
 
 type AdminRole = "dinas" | "pusat" | "sekolah"
-type DinaMenu = "dashboard" | "data-pokja" | "sumber-rujukan" | "kegiatan"
+type DinaMenu = "dashboard" | "data-pokja" | "sumber-rujukan" | "kegiatan" | "pelanggaran"
 
 const REGION = "Provinsi Aceh"
 
@@ -191,7 +192,7 @@ function DashboardPageInner() {
   // Handle ?menu= URL param for dinas
   useEffect(() => {
     const menuParam = searchParams.get("menu") as DinaMenu | null
-    if (menuParam && ["dashboard", "data-pokja", "sumber-rujukan", "kegiatan"].includes(menuParam)) {
+    if (menuParam && ["dashboard", "data-pokja", "sumber-rujukan", "kegiatan", "pelanggaran"].includes(menuParam)) {
       setDinasMenu(menuParam)
     }
   }, [searchParams])
@@ -516,6 +517,7 @@ function DashboardPageInner() {
               )}
               {dinasMenu === "sumber-rujukan" && <SumberRujukanView />}
               {dinasMenu === "kegiatan" && <KegiatanView />}
+              {dinasMenu === "pelanggaran" && <PelanggaranView editId={searchParams.get("edit") ?? undefined} />}
             </main>
           </div>
         </div>
