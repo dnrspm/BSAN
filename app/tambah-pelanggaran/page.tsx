@@ -4,10 +4,12 @@ import { useEffect, useState, useMemo, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import {
   ArrowLeft, AlertTriangle, Users, Calendar, FileText,
-  CheckCircle, Clock, Plus, X,
+  CheckCircle, Clock, Plus, X, XCircle,
 } from "lucide-react"
 
-type StatusPelanggaran = "baru" | "proses" | "selesai"
+type StatusPelanggaran = "baru" | "proses" | "selesai" | "ditutup"
+type TingkatKeparahan = "ringan" | "sedang" | "berat"
+type Pelapor = "laporan_masyarakat" | "laporan_sekolah" | "temuan_pengawas" | "media" | "lainnya"
 
 interface UnsurItem {
   kategori: string
@@ -20,6 +22,11 @@ interface PelanggaranItem {
   unsurTerlibat: UnsurItem[]
   tanggalTerjadi: string
   kategori: string
+  tingkatKeparahan: TingkatKeparahan
+  pelapor: Pelapor
+  pelaporLainnya?: string
+  tindakLanjut: string
+  pic: string
   dokumentasi: string
   rekomendasi: string
   status: StatusPelanggaran
@@ -42,6 +49,20 @@ const KATEGORI_PELANGGARAN = [
   "Perundungan (Bullying)", "Pelecehan Seksual", "Kekerasan Fisik",
   "Kekerasan Verbal", "Pencurian", "Vandalisme", "Penggunaan NAPZA",
   "Melanggar Aturan Sekolah", "Lainnya",
+]
+
+const TINGKAT_KEPARAHAN: { value: TingkatKeparahan; label: string; color: string }[] = [
+  { value: "ringan", label: "Ringan", color: "bg-yellow-100 text-yellow-700" },
+  { value: "sedang", label: "Sedang", color: "bg-orange-100 text-orange-700" },
+  { value: "berat", label: "Berat", color: "bg-red-100 text-red-700" },
+]
+
+const PELAPOR_OPTIONS: { value: Pelapor; label: string }[] = [
+  { value: "laporan_masyarakat", label: "Laporan masyarakat" },
+  { value: "laporan_sekolah", label: "Laporan sekolah" },
+  { value: "temuan_pengawas", label: "Temuan pengawas/pokja" },
+  { value: "media", label: "Media/berita" },
+  { value: "lainnya", label: "Lainnya" },
 ]
 
 function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
@@ -87,13 +108,19 @@ function StatusBadge({ status }: { status: StatusPelanggaran }) {
     case "proses":
       return (
         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
-          <Clock className="w-3 h-3" /> Proses
+          <Clock className="w-3 h-3" /> Diproses
         </span>
       )
     case "selesai":
       return (
         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
           <CheckCircle className="w-3 h-3" /> Selesai
+        </span>
+      )
+    case "ditutup":
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
+          <XCircle className="w-3 h-3" /> Ditutup
         </span>
       )
   }
@@ -105,6 +132,11 @@ function emptyForm() {
     unsurTerlibat: [{ kategori: "", jumlah: "" }] as UnsurItem[],
     tanggalTerjadi: "",
     kategori: "",
+    tingkatKeparahan: "ringan" as TingkatKeparahan,
+    pelapor: "laporan_sekolah" as Pelapor,
+    pelaporLainnya: "",
+    pic: "",
+    tindakLanjut: "",
     dokumentasi: "",
     rekomendasi: "",
     status: "baru" as StatusPelanggaran,
@@ -134,7 +166,20 @@ function TambahPelanggaranInner() {
   const [form, setForm] = useState<FormData>(emptyForm)
   const [sekolahInput, setSekolahInput] = useState("")
   const [showSekolahDropdown, setShowSekolahDropdown] = useState(false)
+  const [picInput, setPicInput] = useState("")
+  const [showPicDropdown, setShowPicDropdown] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+
+  const selectPic = (name: string) => {
+    setForm((prev) => ({ ...prev, pic: name }))
+    setPicInput("")
+    setShowPicDropdown(false)
+  }
+
+  const clearPic = () => {
+    setForm((prev) => ({ ...prev, pic: "" }))
+    setPicInput("")
+  }
 
   useEffect(() => {
     try {
@@ -153,9 +198,14 @@ function TambahPelanggaranInner() {
       if (found) {
         const normalized = {
           ...found,
-          namaSekolah: Array.isArray(found.namaSekolah) ? found.namaSekolah : [found.namaSekolah],
+          namaSekolah: Array.isArray(found.namaSekolah) ? found.namaSekolah : [found.namaSekolah as any],
           unsurTerlibat: Array.isArray(found.unsurTerlibat) ? found.unsurTerlibat : [],
           dokumentasi: Array.isArray(found.dokumentasi) ? found.dokumentasi[0] ?? "" : found.dokumentasi,
+          tingkatKeparahan: (found as any).tingkatKeparahan ?? "ringan",
+          pelapor: (found as any).pelapor ?? "laporan_sekolah",
+          pelaporLainnya: (found as any).pelaporLainnya ?? "",
+          tindakLanjut: (found as any).tindakLanjut ?? "",
+          pic: (found as any).pic ?? "",
           logStatus: Array.isArray((found as any).logStatus) ? (found as any).logStatus : [],
         }
         setItem(normalized)
@@ -165,6 +215,11 @@ function TambahPelanggaranInner() {
             unsurTerlibat: normalized.unsurTerlibat.length > 0 ? normalized.unsurTerlibat : [{ kategori: "", jumlah: "" }],
             tanggalTerjadi: normalized.tanggalTerjadi?.split("T")[0] ?? "",
             kategori: normalized.kategori,
+            tingkatKeparahan: normalized.tingkatKeparahan,
+            pelapor: normalized.pelapor,
+            pelaporLainnya: normalized.pelaporLainnya ?? "",
+            pic: normalized.pic ?? "",
+            tindakLanjut: normalized.tindakLanjut ?? "",
             dokumentasi: normalized.dokumentasi,
             rekomendasi: normalized.rekomendasi,
             status: normalized.status,
@@ -190,6 +245,28 @@ function TambahPelanggaranInner() {
     return Array.from(names).sort()
   }, [])
 
+  const allPicOptions = useMemo(() => {
+    const names = new Set<string>()
+    try {
+      const stored = localStorage.getItem("pokjaList")
+      if (stored) {
+        const parsed = JSON.parse(stored) as any[]
+        parsed.forEach((pokja: any) => {
+          if (pokja.data?.members) {
+            Object.values(pokja.data.members).forEach((m: any) => {
+              if (m && m.nama && m.nama.trim()) names.add(m.nama.trim())
+            })
+          }
+        })
+      }
+    } catch { /* ignore */ }
+    return Array.from(names).sort()
+  }, [])
+
+  const filteredPicOptions = picInput
+    ? allPicOptions.filter((name) => name.toLowerCase().includes(picInput.toLowerCase()))
+    : allPicOptions
+
   const filteredSekolahOptions = sekolahInput
     ? allSchoolSuggestions.filter((s) => s.toLowerCase().includes(sekolahInput.toLowerCase()) && !form.namaSekolah.includes(s))
     : allSchoolSuggestions.filter((s) => !form.namaSekolah.includes(s))
@@ -212,6 +289,8 @@ function TambahPelanggaranInner() {
     form.unsurTerlibat.some((u) => u.kategori && u.jumlah) &&
     form.tanggalTerjadi &&
     form.kategori &&
+    form.tingkatKeparahan &&
+    form.pelapor &&
     form.rekomendasi.trim()
 
   const handleSubmit = () => {
@@ -235,6 +314,7 @@ function TambahPelanggaranInner() {
             ? {
                 ...i,
                 ...form,
+                pelaporLainnya: form.pelapor === "lainnya" ? form.pelaporLainnya : "",
                 unsurTerlibat: form.unsurTerlibat.filter((u) => u.kategori && u.jumlah),
                 updatedAt: now,
               }
@@ -248,6 +328,7 @@ function TambahPelanggaranInner() {
           createdAt: now,
           updatedAt: now,
           dibuatOleh,
+          pelaporLainnya: form.pelapor === "lainnya" ? form.pelaporLainnya : "",
           unsurTerlibat: form.unsurTerlibat.filter((u) => u.kategori && u.jumlah),
           logStatus: [{ status: form.status, keterangan: "Laporan awal dibuat", waktu: now }],
         }
@@ -360,6 +441,20 @@ function TambahPelanggaranInner() {
                 <TextInput value={item.kategori} />
               </div>
               <div className="flex flex-col gap-1.5">
+                <FieldLabel>Tingkat Keparahan</FieldLabel>
+                <TextInput value={TINGKAT_KEPARAHAN.find((t) => t.value === item.tingkatKeparahan)?.label ?? item.tingkatKeparahan} />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel>Pelapor / Sumber Laporan</FieldLabel>
+                <TextInput value={PELAPOR_OPTIONS.find((p) => p.value === item.pelapor)?.label ?? item.pelapor} />
+              </div>
+              {item.pic && (
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel>Penanggung Jawab (PIC)</FieldLabel>
+                  <TextInput value={item.pic} />
+                </div>
+              )}
+              <div className="flex flex-col gap-1.5">
                 <FieldLabel>Detail Kasus</FieldLabel>
                 <textarea
                   value={item.rekomendasi}
@@ -368,6 +463,17 @@ function TambahPelanggaranInner() {
                   className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-default resize-none"
                 />
               </div>
+              {item.tindakLanjut && (
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel>Tindak Lanjut / Catatan Penanganan</FieldLabel>
+                  <textarea
+                    value={item.tindakLanjut}
+                    disabled
+                    rows={3}
+                    className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-default resize-none"
+                  />
+                </div>
+              )}
               <div className="flex flex-col gap-1.5">
                 <FieldLabel>Unsur yang Terlibat</FieldLabel>
                 <div className="flex flex-col gap-2 mt-1">
@@ -418,7 +524,7 @@ function TambahPelanggaranInner() {
             <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
               <h3 className="text-base font-bold text-gray-900 mb-4">Ubah Status Pelanggaran</h3>
               <div className="space-y-2">
-                {(["baru", "proses", "selesai"] as StatusPelanggaran[]).map((opt) => (
+                {(["baru", "proses", "selesai", "ditutup"] as StatusPelanggaran[]).map((opt) => (
                   <button
                     key={opt}
                     onClick={() => setNewStatus(opt)}
@@ -432,6 +538,7 @@ function TambahPelanggaranInner() {
                       {opt === "baru" && <FileText className="w-4 h-4" />}
                       {opt === "proses" && <Clock className="w-4 h-4" />}
                       {opt === "selesai" && <CheckCircle className="w-4 h-4" />}
+                      {opt === "ditutup" && <XCircle className="w-4 h-4" />}
                       <span className="capitalize">{opt}</span>
                     </div>
                   </button>
@@ -543,19 +650,120 @@ function TambahPelanggaranInner() {
               )}
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel required>Kategori Pelanggaran</FieldLabel>
-              <select
-                value={form.kategori}
-                onChange={(e) => setForm((prev) => ({ ...prev, kategori: e.target.value }))}
-                className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-              >
-                <option value="" disabled>Pilih kategori</option>
-                {KATEGORI_PELANGGARAN.map((k) => (
-                  <option key={k} value={k}>{k}</option>
-                ))}
-              </select>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel required>Kategori Pelanggaran</FieldLabel>
+                <select
+                  value={form.kategori}
+                  onChange={(e) => setForm((prev) => ({ ...prev, kategori: e.target.value }))}
+                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                >
+                  <option value="" disabled>Pilih kategori</option>
+                  {KATEGORI_PELANGGARAN.map((k) => (
+                    <option key={k} value={k}>{k}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel required>Tingkat Keparahan</FieldLabel>
+                <select
+                  value={form.tingkatKeparahan}
+                  onChange={(e) => setForm((prev) => ({ ...prev, tingkatKeparahan: e.target.value as TingkatKeparahan }))}
+                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                >
+                  {TINGKAT_KEPARAHAN.map((t) => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </select>
+              </div>
             </div>
+
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel required>Tanggal Kejadian</FieldLabel>
+              <input
+                type="date"
+                value={form.tanggalTerjadi}
+                onChange={(e) => setForm((prev) => ({ ...prev, tanggalTerjadi: e.target.value }))}
+                className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel required>Unsur yang Terlibat</FieldLabel>
+              <div className="flex flex-col gap-3 mt-1">
+                {form.unsurTerlibat.map((u, i) => {
+                const predefined = UNSUR_OPTIONS.filter((o) => o !== "Lainnya")
+                const isCustom = u.kategori && !predefined.includes(u.kategori)
+                const displayValue = isCustom ? "Lainnya" : u.kategori
+                const takenByOthers = form.unsurTerlibat
+                  .filter((_, idx) => idx !== i)
+                  .map((r) => r.kategori)
+                  .filter((k) => predefined.includes(k))
+                const availableOptions = ["Lainnya", ...predefined.filter((opt) => !takenByOthers.includes(opt))]
+                return (
+                  <div key={i} className="flex items-center gap-2">
+                    <div className="flex-1 flex items-center gap-2">
+                      <select
+                        value={displayValue}
+                        onChange={(e) => {
+                          const next = [...form.unsurTerlibat]
+                          next[i] = { ...next[i], kategori: e.target.value }
+                          setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                        }}
+                        className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      >
+                        <option value="" disabled>Pilih unsur</option>
+                        {availableOptions.map((o) => (
+                          <option key={o} value={o}>{o}</option>
+                        ))}
+                      </select>
+                      {displayValue === "Lainnya" && (
+                        <input
+                          value={u.kategori !== "Lainnya" ? u.kategori : ""}
+                          onChange={(e) => {
+                            const next = [...form.unsurTerlibat]
+                            next[i] = { ...next[i], kategori: e.target.value }
+                            setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                          }}
+                          placeholder="Tulis unsur..."
+                          className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        />
+                      )}
+                    </div>
+                    <input
+                      type="number"
+                      min="1"
+                      value={u.jumlah}
+                      onChange={(e) => {
+                        const next = [...form.unsurTerlibat]
+                        next[i] = { ...next[i], jumlah: e.target.value }
+                        setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                      }}
+                      placeholder="Jml"
+                      className="w-20 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                    <span className="text-sm text-gray-500 whitespace-nowrap">org</span>
+                    {i > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setForm((prev) => ({ ...prev, unsurTerlibat: prev.unsurTerlibat.filter((_, idx) => idx !== i) }))}
+                        className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                )
+              })}
+              <button
+                type="button"
+                onClick={() => setForm((prev) => ({ ...prev, unsurTerlibat: [...prev.unsurTerlibat, { kategori: "", jumlah: "" }] }))}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+              >
+                <Plus className="w-3.5 h-3.5" /> Tambah Unsur
+              </button>
+            </div>
+          </div>
 
             <div className="flex flex-col gap-1.5">
               <FieldLabel required>Detail Kasus</FieldLabel>
@@ -567,94 +775,79 @@ function TambahPelanggaranInner() {
                 className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
               />
             </div>
+          </div>
+        </SectionCard>
 
+        <SectionCard icon={<FileText className="w-4 h-4" />} title="Sumber Laporan & PIC">
+          <div className="grid grid-cols-1 gap-4">
             <div className="flex flex-col gap-1.5">
-              <FieldLabel required>Unsur yang Terlibat</FieldLabel>
-              <div className="flex flex-col gap-3 mt-1">
-                {form.unsurTerlibat.map((u, i) => {
-                  const predefined = UNSUR_OPTIONS.filter((o) => o !== "Lainnya")
-                  const isCustom = u.kategori && !predefined.includes(u.kategori)
-                  const displayValue = isCustom ? "Lainnya" : u.kategori
-                  const takenByOthers = form.unsurTerlibat
-                    .filter((_, idx) => idx !== i)
-                    .map((r) => r.kategori)
-                    .filter((k) => predefined.includes(k))
-                  const availableOptions = ["Lainnya", ...predefined.filter((opt) => !takenByOthers.includes(opt))]
-                  return (
-                    <div key={i} className="flex items-center gap-2">
-                      <div className="flex-1 flex items-center gap-2">
-                        <select
-                          value={displayValue}
-                          onChange={(e) => {
-                            const next = [...form.unsurTerlibat]
-                            next[i] = { ...next[i], kategori: e.target.value }
-                            setForm((prev) => ({ ...prev, unsurTerlibat: next }))
-                          }}
-                          className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                        >
-                          <option value="" disabled>Pilih unsur</option>
-                          {availableOptions.map((o) => (
-                            <option key={o} value={o}>{o}</option>
-                          ))}
-                        </select>
-                        {displayValue === "Lainnya" && (
-                          <input
-                            value={u.kategori !== "Lainnya" ? u.kategori : ""}
-                            onChange={(e) => {
-                              const next = [...form.unsurTerlibat]
-                              next[i] = { ...next[i], kategori: e.target.value }
-                              setForm((prev) => ({ ...prev, unsurTerlibat: next }))
-                            }}
-                            placeholder="Tulis unsur..."
-                            className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                          />
-                        )}
-                      </div>
-                      <input
-                        type="number"
-                        min="1"
-                        value={u.jumlah}
-                        onChange={(e) => {
-                          const next = [...form.unsurTerlibat]
-                          next[i] = { ...next[i], jumlah: e.target.value }
-                          setForm((prev) => ({ ...prev, unsurTerlibat: next }))
-                        }}
-                        placeholder="Jml"
-                        className="w-20 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      />
-                      <span className="text-sm text-gray-500 whitespace-nowrap">org</span>
-                      {i > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => setForm((prev) => ({ ...prev, unsurTerlibat: prev.unsurTerlibat.filter((_, idx) => idx !== i) }))}
-                          className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                  )
-                })}
-                <button
-                  type="button"
-                  onClick={() => setForm((prev) => ({ ...prev, unsurTerlibat: [...prev.unsurTerlibat, { kategori: "", jumlah: "" }] }))}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
-                >
-                  <Plus className="w-3.5 h-3.5" /> Tambah Unsur
-                </button>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel required>Kapan Terjadi</FieldLabel>
-              <input
-                type="date"
-                value={form.tanggalTerjadi}
-                onChange={(e) => setForm((prev) => ({ ...prev, tanggalTerjadi: e.target.value }))}
+              <FieldLabel required>Pelapor / Sumber Laporan</FieldLabel>
+              <select
+                value={form.pelapor}
+                onChange={(e) => setForm((prev) => ({ ...prev, pelapor: e.target.value as Pelapor }))}
                 className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-              />
+              >
+                {PELAPOR_OPTIONS.map((p) => (
+                  <option key={p.value} value={p.value}>{p.label}</option>
+                ))}
+              </select>
+              {form.pelapor === "lainnya" && (
+                <input
+                  type="text"
+                  value={form.pelaporLainnya}
+                  onChange={(e) => setForm((prev) => ({ ...prev, pelaporLainnya: e.target.value }))}
+                  placeholder="Tuliskan sumber laporan..."
+                  className="w-full h-9 px-3 mt-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                />
+              )}
             </div>
 
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel>Penanggung Jawab (PIC) <span className="text-gray-400">(opsional)</span></FieldLabel>
+              {!form.pic ? (
+                <div className="relative mt-1">
+                  <input
+                    type="text"
+                    value={picInput}
+                    onChange={(e) => { setPicInput(e.target.value); setShowPicDropdown(true) }}
+                    onFocus={() => setShowPicDropdown(true)}
+                    onClick={() => setShowPicDropdown(true)}
+                    onBlur={() => setTimeout(() => setShowPicDropdown(false), 200)}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (filteredPicOptions.length > 0) selectPic(filteredPicOptions[0]) } }}
+                    placeholder="Cari nama anggota pokja..."
+                    className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  />
+                  {showPicDropdown && filteredPicOptions.length > 0 && (
+                    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      {filteredPicOptions.map((name) => (
+                        <button
+                          key={name}
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => selectPic(name)}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 text-gray-700"
+                        >
+                          {name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 py-1.5 px-2 mt-1 bg-gray-50 rounded-lg">
+                  <Users className="w-3.5 h-3.5 text-gray-400" />
+                  <span className="text-sm font-medium text-gray-700 flex-1">{form.pic}</span>
+                  <button type="button" onClick={clearPic} className="p-0.5 hover:bg-gray-200 rounded-full">
+                    <X className="w-3.5 h-3.5 text-gray-400" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </SectionCard>
+
+        <SectionCard icon={<CheckCircle className="w-4 h-4" />} title="Penanganan">
+          <div className="grid grid-cols-1 gap-4">
             <div className="flex flex-col gap-1.5">
               <FieldLabel>Status Pelanggaran</FieldLabel>
               <select
@@ -663,9 +856,21 @@ function TambahPelanggaranInner() {
                 className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="baru">Baru</option>
-                <option value="proses">Proses</option>
+                <option value="proses">Diproses</option>
                 <option value="selesai">Selesai</option>
+                <option value="ditutup">Ditutup</option>
               </select>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel>Tindak Lanjut / Catatan Penanganan <span className="text-gray-400">(opsional)</span></FieldLabel>
+              <textarea
+                value={form.tindakLanjut}
+                onChange={(e) => setForm((prev) => ({ ...prev, tindakLanjut: e.target.value }))}
+                placeholder="Catat apa yang sudah atau akan dilakukan..."
+                rows={3}
+                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
+              />
             </div>
 
             <div className="flex flex-col gap-1.5">
