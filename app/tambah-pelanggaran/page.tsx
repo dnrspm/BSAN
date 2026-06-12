@@ -33,6 +33,7 @@ interface PelanggaranItem {
   createdAt: string
   updatedAt: string
   dibuatOleh: string
+  diperbaruiOleh: string
 }
 
 const SEKOLAH_OPTIONS = [
@@ -161,6 +162,7 @@ function TambahPelanggaranInner() {
   const [showStatusModal, setShowStatusModal] = useState(false)
   const [newStatus, setNewStatus] = useState<StatusPelanggaran>("baru")
   const [keteranganStatus, setKeteranganStatus] = useState("")
+  const [dokumentasiStatus, setDokumentasiStatus] = useState("")
 
   // Form mode state
   const [form, setForm] = useState<FormData>(emptyForm)
@@ -317,6 +319,11 @@ function TambahPelanggaranInner() {
                 pelaporLainnya: form.pelapor === "lainnya" ? form.pelaporLainnya : "",
                 unsurTerlibat: form.unsurTerlibat.filter((u) => u.kategori && u.jumlah),
                 updatedAt: now,
+                diperbaruiOleh: dibuatOleh,
+                logStatus: [
+                  ...(Array.isArray((i as any).logStatus) ? (i as any).logStatus : []),
+                  { status: form.status, keterangan: "", dokumentasi: "", dibuatOleh, aksi: "edit", waktu: now },
+                ],
               }
             : i
         )
@@ -328,9 +335,10 @@ function TambahPelanggaranInner() {
           createdAt: now,
           updatedAt: now,
           dibuatOleh,
+          diperbaruiOleh: dibuatOleh,
           pelaporLainnya: form.pelapor === "lainnya" ? form.pelaporLainnya : "",
           unsurTerlibat: form.unsurTerlibat.filter((u) => u.kategori && u.jumlah),
-          logStatus: [{ status: form.status, keterangan: "Laporan awal dibuat", waktu: now }],
+          logStatus: [{ status: form.status, keterangan: form.tindakLanjut.trim(), dokumentasi: form.dokumentasi || "", dibuatOleh, aksi: "buat", waktu: now }],
         }
         localStorage.setItem("pelanggaranList", JSON.stringify([newItem, ...stored]))
       }
@@ -359,6 +367,14 @@ function TambahPelanggaranInner() {
   // View mode: update status
   const handleUpdateStatus = () => {
     if (!viewId || !item || newStatus === item.status) return
+    const session = (() => {
+      try { return JSON.parse(localStorage.getItem("auth") ?? "{}") } catch { return {} }
+    })() as { role?: string; namaSekolah?: string; namaDinas?: string }
+    const updaterName = session?.role === "dinas"
+      ? `Admin Dinas ${session.namaDinas ?? ""}`
+      : session?.namaSekolah
+        ? `Admin Sekolah ${session.namaSekolah}`
+        : "Admin Sekolah"
     try {
       const stored = JSON.parse(localStorage.getItem("pelanggaranList") ?? "[]") as PelanggaranItem[]
       const updated = stored.map((i) =>
@@ -366,10 +382,12 @@ function TambahPelanggaranInner() {
           ? {
               ...i,
               status: newStatus,
+              dokumentasi: dokumentasiStatus || i.dokumentasi,
               updatedAt: new Date().toISOString(),
+              diperbaruiOleh: updaterName,
               logStatus: [
                 ...(Array.isArray((i as any).logStatus) ? (i as any).logStatus : []),
-                { status: newStatus, keterangan: keteranganStatus.trim(), waktu: new Date().toISOString() },
+                { status: newStatus, keterangan: keteranganStatus.trim(), dokumentasi: dokumentasiStatus || "", dibuatOleh: updaterName, aksi: "perbaharui_status", waktu: new Date().toISOString() },
               ],
             }
           : i
@@ -378,10 +396,11 @@ function TambahPelanggaranInner() {
       const savedLog = Array.isArray((updated.find((i) => i.id === viewId) as any)?.logStatus)
         ? (updated.find((i) => i.id === viewId) as any).logStatus
         : []
-      setItem({ ...item, status: newStatus, updatedAt: new Date().toISOString(), logStatus: savedLog })
+      setItem({ ...item, status: newStatus, dokumentasi: dokumentasiStatus || item.dokumentasi, updatedAt: new Date().toISOString(), diperbaruiOleh: updaterName, logStatus: savedLog })
     } catch {}
     setShowStatusModal(false)
     setKeteranganStatus("")
+    setDokumentasiStatus("")
   }
 
   // Success screen for form submit
@@ -436,44 +455,23 @@ function TambahPelanggaranInner() {
                   )) : <span className="text-sm text-gray-400">-</span>}
                 </div>
               </div>
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel>Kategori Pelanggaran</FieldLabel>
-                <TextInput value={item.kategori} />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel>Tingkat Keparahan</FieldLabel>
-                <TextInput value={TINGKAT_KEPARAHAN.find((t) => t.value === item.tingkatKeparahan)?.label ?? item.tingkatKeparahan} />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel>Pelapor / Sumber Laporan</FieldLabel>
-                <TextInput value={PELAPOR_OPTIONS.find((p) => p.value === item.pelapor)?.label ?? item.pelapor} />
-              </div>
-              {item.pic && (
+
+              <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel>Penanggung Jawab (PIC)</FieldLabel>
-                  <TextInput value={item.pic} />
+                  <FieldLabel>Kategori Pelanggaran</FieldLabel>
+                  <TextInput value={item.kategori} />
                 </div>
-              )}
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel>Detail Kasus</FieldLabel>
-                <textarea
-                  value={item.rekomendasi}
-                  disabled
-                  rows={4}
-                  className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-default resize-none"
-                />
-              </div>
-              {item.tindakLanjut && (
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel>Tindak Lanjut / Catatan Penanganan</FieldLabel>
-                  <textarea
-                    value={item.tindakLanjut}
-                    disabled
-                    rows={3}
-                    className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-default resize-none"
-                  />
+                  <FieldLabel>Tingkat Keparahan</FieldLabel>
+                  <TextInput value={TINGKAT_KEPARAHAN.find((t) => t.value === item.tingkatKeparahan)?.label ?? item.tingkatKeparahan} />
                 </div>
-              )}
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel>Tanggal Kejadian</FieldLabel>
+                <TextInput value={new Date(item.tanggalTerjadi).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} />
+              </div>
+
               <div className="flex flex-col gap-1.5">
                 <FieldLabel>Unsur yang Terlibat</FieldLabel>
                 <div className="flex flex-col gap-2 mt-1">
@@ -485,36 +483,63 @@ function TambahPelanggaranInner() {
                   )) : <span className="text-sm text-gray-400">-</span>}
                 </div>
               </div>
+
               <div className="flex flex-col gap-1.5">
-                <FieldLabel>Kapan Terjadi</FieldLabel>
-                <TextInput value={new Date(item.tanggalTerjadi).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} />
+                <FieldLabel>Detail Kasus</FieldLabel>
+                <textarea
+                  value={item.rekomendasi}
+                  disabled
+                  rows={4}
+                  className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-default resize-none"
+                />
               </div>
             </div>
           </SectionCard>
 
-          {item.dokumentasi && (
-            <SectionCard icon={<FileText className="w-4 h-4" />} title="Dokumentasi">
-              <TextInput value={item.dokumentasi} />
-            </SectionCard>
-          )}
-
-          {Array.isArray((item as any).logStatus) && (item as any).logStatus.length > 0 && (
-            <SectionCard icon={<Clock className="w-4 h-4" />} title="Riwayat Status">
-              <div className="flex flex-col gap-3">
-                {(item as any).logStatus.map((entry: { status: StatusPelanggaran; keterangan: string; waktu: string }, i: number) => (
-                  <div key={i} className="flex items-start gap-3 py-2 px-3 bg-gray-50 rounded-lg">
-                    <StatusBadge status={entry.status} />
-                    <div className="flex-1 min-w-0">
-                      {entry.keterangan && <p className="text-xs text-gray-600">{entry.keterangan}</p>}
-                      <p className="text-xs text-gray-400 mt-0.5">
-                        {new Date(entry.waktu).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+          <SectionCard icon={<Users className="w-4 h-4" />} title="Sumber Laporan & PIC">
+            <div className="grid grid-cols-1 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel>Pelapor / Sumber Laporan</FieldLabel>
+                <TextInput value={PELAPOR_OPTIONS.find((p) => p.value === item.pelapor)?.label ?? item.pelapor} />
+                {item.pelapor === "lainnya" && item.pelaporLainnya && (
+                  <TextInput value={item.pelaporLainnya} />
+                )}
               </div>
-            </SectionCard>
-          )}
+              {item.pic && (
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel>Penanggung Jawab (PIC)</FieldLabel>
+                  <TextInput value={item.pic} />
+                </div>
+              )}
+            </div>
+          </SectionCard>
+
+          <SectionCard icon={<CheckCircle className="w-4 h-4" />} title="Riwayat Status Pelanggaran">
+            <div className="grid grid-cols-1 gap-4">
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3">
+                  {Array.isArray((item as any).logStatus) && (item as any).logStatus.map((entry: { status: StatusPelanggaran; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }, i: number) => {
+                    const dibuatOleh = entry.dibuatOleh || entry.keterangan.match(/oleh (.+)$/)?.[1] || ""
+                    const labelAksi = entry.aksi === "perbaharui_status" ? "Diperbaharui" : entry.aksi === "edit" ? "Diedit" : "Dibuat"
+                    const keterangan = entry.keterangan.replace(/ — oleh .+$/, "").replace(/^Laporan awal (dibuat )?/, "").trim()
+                    return (
+                      <div key={i} className="p-3 bg-gray-50 rounded-lg space-y-1">
+                        <div className="flex items-center gap-2">
+                          <StatusBadge status={entry.status} />
+                          <span className="text-xs text-gray-500">{labelAksi} oleh {dibuatOleh}</span>
+                        </div>
+                        {keterangan && <p className="text-xs text-gray-700"><span className="font-medium">Keterangan:</span> {keterangan}</p>}
+                        {(entry as any).dokumentasi ? <p className="text-xs text-gray-700"><span className="font-medium">Dokumentasi:</span> {(entry as any).dokumentasi.startsWith("http") ? <a href={(entry as any).dokumentasi} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{(entry as any).dokumentasi}</a> : (entry as any).dokumentasi}</p> : null}
+                        <p className="text-xs text-gray-400">
+                          {new Date(entry.waktu).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        </p>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </SectionCard>
         </div>
 
         {/* Status change modal */}
@@ -544,15 +569,27 @@ function TambahPelanggaranInner() {
                   </button>
                 ))}
               </div>
-              <div className="mt-4">
-                <label className="text-xs font-semibold text-gray-700">Keterangan <span className="text-gray-400">(opsional)</span></label>
-                <textarea
-                  value={keteranganStatus}
-                  onChange={(e) => setKeteranganStatus(e.target.value)}
-                  placeholder="Tambahkan keterangan..."
-                  rows={2}
-                  className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                />
+              <div className="mt-4 space-y-3">
+                <div>
+                  <label className="text-xs font-semibold text-gray-700">Keterangan <span className="text-gray-400">(opsional)</span></label>
+                  <textarea
+                    value={keteranganStatus}
+                    onChange={(e) => setKeteranganStatus(e.target.value)}
+                    placeholder="Tambahkan keterangan..."
+                    rows={2}
+                    className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-gray-700">Link Dokumentasi <span className="text-gray-400">(opsional)</span></label>
+                  <input
+                    type="text"
+                    value={dokumentasiStatus}
+                    onChange={(e) => setDokumentasiStatus(e.target.value)}
+                    placeholder="Link atau keterangan dokumentasi..."
+                    className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  />
+                </div>
               </div>
               <div className="flex gap-3 mt-4">
                 <button onClick={() => setShowStatusModal(false)} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Batal</button>
@@ -566,7 +603,7 @@ function TambahPelanggaranInner() {
           <div className="max-w-2xl mx-auto px-4 pb-8 flex gap-3">
             <a href={`/dashboard?menu=pelanggaran&edit=${item.id}`} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition text-center">Edit</a>
             <button onClick={handleDelete} className="flex-1 py-2.5 rounded-lg border border-red-300 text-red-600 font-medium text-sm hover:bg-red-50 transition">Hapus</button>
-            <button onClick={() => { setNewStatus(item.status); setKeteranganStatus(""); setShowStatusModal(true) }} className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition">Perbaharui Status</button>
+            <button onClick={() => { setNewStatus(item.status); setKeteranganStatus(""); setDokumentasiStatus(""); setShowStatusModal(true) }} className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition">Perbaharui Status</button>
           </div>
         )}
       </div>
@@ -848,20 +885,25 @@ function TambahPelanggaranInner() {
           </div>
         </SectionCard>
 
-        <SectionCard icon={<CheckCircle className="w-4 h-4" />} title="Penanganan">
+        {!editId && (
+        <SectionCard icon={<CheckCircle className="w-4 h-4" />} title="Status Pelanggaran">
           <div className="grid grid-cols-1 gap-4">
             <div className="flex flex-col gap-1.5">
               <FieldLabel>Status Pelanggaran</FieldLabel>
-              <select
-                value={form.status}
-                onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.value as StatusPelanggaran }))}
-                className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-              >
-                <option value="baru">Baru</option>
-                <option value="proses">Diproses</option>
-                <option value="selesai">Selesai</option>
-                <option value="ditutup">Ditutup</option>
-              </select>
+              {editId ? (
+                <div className="mt-1"><StatusBadge status={form.status} /></div>
+              ) : (
+                <select
+                  value={form.status}
+                  onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.value as StatusPelanggaran }))}
+                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                >
+                  <option value="baru">Baru</option>
+                  <option value="proses">Diproses</option>
+                  <option value="selesai">Selesai</option>
+                  <option value="ditutup">Ditutup</option>
+                </select>
+              )}
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -876,7 +918,7 @@ function TambahPelanggaranInner() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <FieldLabel>Dokumentasi <span className="text-gray-400">(opsional)</span></FieldLabel>
+              <FieldLabel>Link Dokumentasi <span className="text-gray-400">(opsional)</span></FieldLabel>
               <input
                 type="text"
                 value={form.dokumentasi}
@@ -887,6 +929,7 @@ function TambahPelanggaranInner() {
             </div>
           </div>
         </SectionCard>
+        )}
       </div>
 
       <div className="max-w-2xl mx-auto px-4 pb-8 flex gap-3">

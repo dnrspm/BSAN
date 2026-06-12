@@ -52,6 +52,7 @@ interface PelanggaranItem {
   createdAt: string
   updatedAt: string
   dibuatOleh: string
+  diperbaruiOleh: string
 }
 
 const SEKOLAH_OPTIONS = [
@@ -136,9 +137,20 @@ function StatusBadge({ status }: { status: StatusPelanggaran }) {
   }
 }
 
-function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: PelanggaranItem; onClose: () => void; onUpdateStatus: (id: string, status: StatusPelanggaran) => void; readOnly?: boolean }) {
+function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: PelanggaranItem; onClose: () => void; onUpdateStatus: (id: string, status: StatusPelanggaran, keterangan?: string, dokumentasi?: string) => void; readOnly?: boolean }) {
   const [showStatusModal, setShowStatusModal] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState<StatusPelanggaran>(item.status)
+  const [keteranganStatus, setKeteranganStatus] = useState("")
+  const [dokumentasiStatus, setDokumentasiStatus] = useState("")
+
+  function SectionDivider({ icon, title }: { icon: React.ReactNode; title: string }) {
+    return (
+      <div className="flex items-center gap-2 pb-1 border-t border-gray-100 first:border-t-0">
+        <span className="text-gray-500">{icon}</span>
+        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{title}</span>
+      </div>
+    )
+  }
 
   return (
     <>
@@ -159,15 +171,17 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5 space-y-5">
-          <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-            <div className="flex items-center gap-2">
+        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+          <SectionDivider icon={<AlertTriangle className="w-4 h-4" />} title="Informasi Pelanggaran" />
+
+          <div>
+            <div className="flex items-center gap-2 mb-2">
               <GraduationCap className="w-4 h-4 text-gray-500" />
-              <span className="text-sm font-medium text-gray-700">Nama Sekolah</span>
+              <span className="text-xs font-medium text-gray-500">Nama Sekolah</span>
             </div>
             <div className="ml-6 flex flex-wrap gap-1.5">
               {item.namaSekolah.map((s, i) => (
-                <span key={i} className="inline-flex items-center gap-1 text-sm font-semibold text-gray-900 bg-white px-2 py-0.5 rounded border border-gray-200">
+                <span key={i} className="inline-flex items-center gap-1 text-sm font-semibold text-gray-900 bg-gray-50 px-2 py-0.5 rounded border border-gray-200">
                   <GraduationCap className="w-3 h-3 text-gray-400" />
                   {s}
                 </span>
@@ -175,7 +189,36 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
             </div>
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <AlertTriangle className="w-4 h-4 text-gray-500" />
+                <span className="text-xs font-medium text-gray-500">Kategori Pelanggaran</span>
+              </div>
+              <p className="text-sm font-semibold text-gray-900 ml-6">{item.kategori}</p>
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <AlertTriangle className="w-4 h-4 text-gray-500" />
+                <span className="text-xs font-medium text-gray-500">Tingkat Keparahan</span>
+              </div>
+              <p className="text-sm font-semibold text-gray-900 ml-6">
+                {TINGKAT_KEPARAHAN.find((t) => t.value === item.tingkatKeparahan)?.label ?? item.tingkatKeparahan}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Calendar className="w-4 h-4 text-gray-500" />
+              <span className="text-xs font-medium text-gray-500">Tanggal Kejadian</span>
+            </div>
+            <p className="text-sm font-semibold text-gray-900 ml-6">
+              {new Date(item.tanggalTerjadi).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+            </p>
+          </div>
+
+          <div>
             <div className="flex items-center gap-2 mb-2">
               <Users className="w-4 h-4 text-gray-500" />
               <span className="text-xs font-medium text-gray-500">Unsur Terlibat</span>
@@ -189,37 +232,17 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Calendar className="w-4 h-4 text-gray-500" />
-                <span className="text-xs font-medium text-gray-500">Tanggal Terjadi</span>
-              </div>
-              <p className="text-sm font-semibold text-gray-900">
-                {new Date(item.tanggalTerjadi).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div>
             <div className="flex items-center gap-2 mb-1">
-              <AlertTriangle className="w-4 h-4 text-gray-500" />
-              <span className="text-xs font-medium text-gray-500">Kategori Pelanggaran</span>
+              <FileText className="w-4 h-4 text-gray-500" />
+              <span className="text-xs font-medium text-gray-500">Detail Kasus</span>
             </div>
-            <p className="text-sm font-semibold text-gray-900 ml-6">{item.kategori}</p>
+            <p className="text-sm text-gray-900 ml-6 leading-relaxed">{item.rekomendasi}</p>
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <AlertTriangle className="w-4 h-4 text-gray-500" />
-              <span className="text-xs font-medium text-gray-500">Tingkat Keparahan</span>
-            </div>
-            <p className="text-sm font-semibold text-gray-900 ml-6">
-              {TINGKAT_KEPARAHAN.find((t) => t.value === item.tingkatKeparahan)?.label ?? item.tingkatKeparahan}
-            </p>
-          </div>
+          <SectionDivider icon={<Users className="w-4 h-4" />} title="Sumber Laporan & PIC" />
 
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div>
             <div className="flex items-center gap-2 mb-1">
               <FileText className="w-4 h-4 text-gray-500" />
               <span className="text-xs font-medium text-gray-500">Pelapor / Sumber Laporan</span>
@@ -231,7 +254,7 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
           </div>
 
           {item.pic && (
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div>
               <div className="flex items-center gap-2 mb-1">
                 <Users className="w-4 h-4 text-gray-500" />
                 <span className="text-xs font-medium text-gray-500">Penanggung Jawab (PIC)</span>
@@ -240,36 +263,27 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
             </div>
           )}
 
-          {item.dokumentasi && (
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Image className="w-4 h-4 text-gray-500" />
-                <span className="text-xs font-medium text-gray-500">Dokumentasi</span>
-              </div>
-              <p className="text-sm text-gray-900 ml-6">{item.dokumentasi}</p>
-            </div>
-          )}
+          <SectionDivider icon={<CheckCircle className="w-4 h-4" />} title="Riwayat Status Pelanggaran" />
 
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <CheckCircle className="w-4 h-4 text-gray-500" />
-              <span className="text-xs font-medium text-gray-500">Detail Kasus</span>
-            </div>
-            <p className="text-sm text-gray-900 ml-6 leading-relaxed">{item.rekomendasi}</p>
-          </div>
-
-          {item.tindakLanjut && (
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <CheckCircle className="w-4 h-4 text-gray-500" />
-                <span className="text-xs font-medium text-gray-500">Tindak Lanjut / Catatan Penanganan</span>
-              </div>
-              <p className="text-sm text-gray-900 ml-6 leading-relaxed whitespace-pre-wrap">{item.tindakLanjut}</p>
-            </div>
-          )}
-
-          <div className="text-xs text-gray-400">
-            Dibuat oleh: {item.dibuatOleh} pada {new Date(item.createdAt).toLocaleDateString("id-ID")}
+          <div className="flex flex-col gap-2">
+            {Array.isArray((item as any).logStatus) && (item as any).logStatus.map((entry: { status: StatusPelanggaran; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }, i: number) => {
+                const dibuatOleh = entry.dibuatOleh || entry.keterangan.match(/oleh (.+)$/)?.[1] || ""
+                const labelAksi = entry.aksi === "perbaharui_status" ? "Diperbaharui" : entry.aksi === "edit" ? "Diedit" : "Dibuat"
+                const keterangan = entry.keterangan.replace(/ — oleh .+$/, "").replace(/^Laporan awal (dibuat )?/, "").trim()
+                return (
+                  <div key={i} className="p-3 bg-gray-50 rounded-lg space-y-1">
+                    <div className="flex items-center gap-2">
+                      <StatusBadge status={entry.status} />
+                      <span className="text-xs text-gray-500">{labelAksi} oleh {dibuatOleh}</span>
+                    </div>
+                    {keterangan && <p className="text-xs text-gray-700"><span className="font-medium">Keterangan:</span> {keterangan}</p>}
+                    {(entry as any).dokumentasi ? <p className="text-xs text-gray-700"><span className="font-medium">Dokumentasi:</span> {(entry as any).dokumentasi.startsWith("http") ? <a href={(entry as any).dokumentasi} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{(entry as any).dokumentasi}</a> : (entry as any).dokumentasi}</p> : null}
+                    <p className="text-xs text-gray-400">
+                      {new Date(entry.waktu).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  </div>
+                )
+              })}
           </div>
         </div>
 
@@ -279,6 +293,8 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
               type="button"
               onClick={() => {
                 setSelectedStatus(item.status)
+                setKeteranganStatus("")
+                setDokumentasiStatus("")
                 setShowStatusModal(true)
               }}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
@@ -308,11 +324,7 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
               ] as { value: StatusPelanggaran; label: string; desc: string; color: string }[]).map((opt) => (
                 <button
                   key={opt.value}
-                  onClick={() => {
-                    setSelectedStatus(opt.value)
-                    setShowStatusModal(false)
-                    onUpdateStatus(item.id, opt.value)
-                  }}
+                  onClick={() => setSelectedStatus(opt.value)}
                   className={`w-full text-left p-4 rounded-lg border-2 transition ${
                     selectedStatus === opt.value ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                   }`}
@@ -331,6 +343,30 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
                   </div>
                 </button>
               ))}
+              <div>
+                <label className="text-xs font-semibold text-gray-700">Keterangan <span className="text-gray-400">(opsional)</span></label>
+                <textarea
+                  value={keteranganStatus}
+                  onChange={(e) => setKeteranganStatus(e.target.value)}
+                  placeholder="Tambahkan keterangan..."
+                  rows={2}
+                  className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-700">Link Dokumentasi <span className="text-gray-400">(opsional)</span></label>
+                <input
+                  type="text"
+                  value={dokumentasiStatus}
+                  onChange={(e) => setDokumentasiStatus(e.target.value)}
+                  placeholder="Link atau keterangan dokumentasi..."
+                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 px-5 pb-5">
+              <button onClick={() => setShowStatusModal(false)} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Batal</button>
+              <button onClick={() => { setShowStatusModal(false); onUpdateStatus(item.id, selectedStatus, keteranganStatus, dokumentasiStatus) }} disabled={selectedStatus === item.status} className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition">Simpan</button>
             </div>
           </div>
         </div>
@@ -339,7 +375,7 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
   )
 }
 
-function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; onSubmit: (data: Omit<PelanggaranItem, "id" | "createdAt" | "updatedAt" | "dibuatOleh">) => void; initialData?: PelanggaranItem }) {
+function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; onSubmit: (data: Omit<PelanggaranItem, "id" | "createdAt" | "updatedAt" | "dibuatOleh" | "diperbaruiOleh">) => void; initialData?: PelanggaranItem }) {
   const [namaSekolah, setNamaSekolah] = useState<string[]>(initialData?.namaSekolah ?? [])
   const [sekolahInput, setSekolahInput] = useState("")
   const [showSekolahDropdown, setShowSekolahDropdown] = useState(false)
@@ -718,7 +754,9 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
             )}
           </div>
 
-          <SectionDivider icon={<CheckCircle className="w-4 h-4" />} title="Penanganan" />
+          {!initialData && (
+          <>
+          <SectionDivider icon={<CheckCircle className="w-4 h-4" />} title="Status Pelanggaran" />
 
           <div>
             <label className="text-xs font-semibold text-gray-700">Status Pelanggaran</label>
@@ -746,7 +784,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-gray-700">Dokumentasi <span className="text-gray-400">(opsional)</span></label>
+            <label className="text-xs font-semibold text-gray-700">Link Dokumentasi <span className="text-gray-400">(opsional)</span></label>
             <input
               type="text"
               value={dokumentasi}
@@ -755,6 +793,8 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
               className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
           </div>
+          </>
+          )}
         </div>
 
         <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2 flex-shrink-0">
@@ -809,6 +849,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
             pelaporLainnya: (item as any).pelaporLainnya ?? "",
             tindakLanjut: (item as any).tindakLanjut ?? "",
             pic: (item as any).pic ?? "",
+            diperbaruiOleh: (item as any).diperbaruiOleh ?? "",
           }
         })
         setList(normalized)
@@ -866,42 +907,63 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
     localStorage.setItem("pelanggaranList", JSON.stringify(newList))
   }
 
-  const handleCreate = (data: Omit<PelanggaranItem, "id" | "createdAt" | "updatedAt" | "dibuatOleh">) => {
+  const getSessionName = () => {
     const session = readAuthSession()
-    const now = new Date().toISOString()
-    const dibuatOleh = session?.role === "dinas"
+    return session?.role === "dinas"
       ? `Admin Dinas ${session.namaDinas ?? ""}`
       : session?.namaSekolah
         ? `Admin Sekolah ${session.namaSekolah}`
         : "Admin Sekolah"
+  }
+
+  const handleCreate = (data: Omit<PelanggaranItem, "id" | "createdAt" | "updatedAt" | "dibuatOleh" | "diperbaruiOleh">) => {
+    const now = new Date().toISOString()
+    const dibuatOleh = getSessionName()
     const newItem: PelanggaranItem & { logStatus?: { status: StatusPelanggaran; keterangan: string; waktu: string }[] } = {
       ...data,
       id: `pg-${Date.now()}`,
       createdAt: now,
       updatedAt: now,
       dibuatOleh,
-      logStatus: [{ status: data.status, keterangan: "Laporan awal dibuat", waktu: now }],
+      diperbaruiOleh: dibuatOleh,
+      logStatus: [{ status: data.status, keterangan: `Laporan awal dibuat oleh ${dibuatOleh}`, waktu: now }],
     }
     saveList([newItem as PelanggaranItem, ...list])
     setShowForm(false)
   }
 
-  const handleUpdate = (data: Omit<PelanggaranItem, "id" | "createdAt" | "updatedAt" | "dibuatOleh">) => {
+  const handleUpdate = (data: Omit<PelanggaranItem, "id" | "createdAt" | "updatedAt" | "dibuatOleh" | "diperbaruiOleh">) => {
     if (!editingItem) return
+    const updaterName = getSessionName()
+    const now = new Date().toISOString()
+    const logStatus = [
+      ...(Array.isArray((editingItem as any).logStatus) ? (editingItem as any).logStatus : []),
+      { status: editingItem.status, keterangan: "", dokumentasi: "", dibuatOleh: updaterName, aksi: "edit", waktu: now },
+    ]
     const updated: PelanggaranItem = {
       ...editingItem,
       ...data,
-      updatedAt: new Date().toISOString(),
+      updatedAt: now,
+      diperbaruiOleh: updaterName,
+      logStatus,
     }
     saveList(list.map((item) => (item.id === editingItem.id ? updated : item)))
     setShowForm(false)
     setEditingItem(undefined)
   }
 
-  const handleUpdateStatus = (id: string, status: StatusPelanggaran) => {
-    const updated = list.map((item) =>
-      item.id === id ? { ...item, status, updatedAt: new Date().toISOString() } : item
-    )
+  const handleUpdateStatus = (id: string, status: StatusPelanggaran, keterangan?: string, dokumentasi?: string) => {
+    const updaterName = getSessionName()
+    const now = new Date().toISOString()
+    const updated = list.map((item) => {
+      if (item.id !== id) return item
+      const logStatus = [
+        ...(Array.isArray((item as any).logStatus) ? (item as any).logStatus : []),
+        { status, keterangan: keterangan?.trim() || "", dokumentasi: dokumentasi || "", dibuatOleh: updaterName, aksi: "perbaharui_status", waktu: now },
+      ]
+      const newDokumentasi = dokumentasi !== undefined ? dokumentasi : item.dokumentasi
+      return { ...item, status, dokumentasi: newDokumentasi, updatedAt: now, diperbaruiOleh: updaterName, logStatus }
+    })
     saveList(updated)
     setSelected(null)
   }
