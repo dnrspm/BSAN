@@ -701,8 +701,8 @@ function TambahPelanggaranInner() {
                   .filter((k) => predefined.includes(k))
                 const availableOptions = ["Lainnya", ...predefined.filter((opt) => !takenByOthers.includes(opt))]
                 return (
-                  <div key={i} className="flex items-center gap-2">
-                    <div className="flex-1 flex items-center gap-2">
+                  <div key={i} className="grid grid-cols-[1fr_100px_auto_auto] gap-2 items-center">
+                    <div className="flex items-center gap-2">
                       <select
                         value={displayValue}
                         onChange={(e) => {
@@ -740,17 +740,19 @@ function TambahPelanggaranInner() {
                         setForm((prev) => ({ ...prev, unsurTerlibat: next }))
                       }}
                       placeholder="Jml"
-                      className="w-20 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     />
-                    <span className="text-sm text-gray-500 whitespace-nowrap">org</span>
-                    {i > 0 && (
+                    <span className="text-sm text-gray-500 whitespace-nowrap self-center">org</span>
+                    {i > 0 ? (
                       <button
                         type="button"
                         onClick={() => setForm((prev) => ({ ...prev, unsurTerlibat: prev.unsurTerlibat.filter((_, idx) => idx !== i) }))}
-                        className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition"
+                        className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition self-center"
                       >
                         <X className="w-4 h-4" />
                       </button>
+                    ) : (
+                      <div className="w-7" />
                     )}
                   </div>
                 )
