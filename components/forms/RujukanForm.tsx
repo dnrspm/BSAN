@@ -4,8 +4,9 @@ import { useState, useEffect, useRef, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import {
   ArrowLeft, MapPin, Phone, Globe, Lock, Users,
-  ChevronDown, Building2, RotateCcw, Plus, Trash2, Flag, Pencil, CheckCircle, XCircle, MessageCircle,
+  ChevronDown, Building2, RotateCcw, Plus, Trash2, Flag, Pencil, CheckCircle, XCircle, MessageCircle, Info, AlertCircle,
 } from "lucide-react"
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
 import { SEED, type SumberRujukan } from "@/components/dashboard/SumberRujukanView"
 import { RUJUKAN_LOG, dinasLog, getStatusAfterRestore } from "@/lib/rujukan-logs"
 import { getDinasNamaForLogs, readAuthSession } from "@/lib/auth-session"
@@ -83,6 +84,30 @@ const PROVINSI_OPTIONS = [
   "Papua Barat", "Papua",
 ]
 const SEED_IDS = SEED.map((s) => s.id)
+
+function hasCoordinates(url: string): boolean {
+  try {
+    new URL(url)
+    return /@-?\d+\.?\d*,-?\d+\.?\d*/.test(url) ||
+      /[?&]q=-?\d+\.?\d*,-?\d+\.?\d*/.test(url) ||
+      /[?&]ll=-?\d+\.?\d*,-?\d+\.?\d*/.test(url)
+  } catch {
+    return false
+  }
+}
+
+function extractCoordinates(url: string): { lat: string; lng: string } | null {
+  try {
+    new URL(url)
+    const m = url.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/)
+    if (m) return { lat: m[1], lng: m[2] }
+    const q = url.match(/[?&]q=(-?\d+\.?\d*),(-?\d+\.?\d*)/)
+    if (q) return { lat: q[1], lng: q[2] }
+    const ll = url.match(/[?&]ll=(-?\d+\.?\d*),(-?\d+\.?\d*)/)
+    if (ll) return { lat: ll[1], lng: ll[2] }
+  } catch {}
+  return null
+}
 
 // ---------------------------------------------------------------------------
 // Helper components
@@ -259,6 +284,7 @@ function RujukanFormInner() {
   const [showHapusModal, setShowHapusModal] = useState(false)
   const [showAjukanModal, setShowAjukanModal] = useState(false)
   const [ajukanAlasan, setAjukanAlasan] = useState("")
+  const [showMapModal, setShowMapModal] = useState(false)
   const [confirmModal, setConfirmModal] = useState<{
     show: boolean
     title: string
@@ -950,8 +976,36 @@ function RujukanFormInner() {
               <TextInput value={form.kodePos} onChange={(v) => set("kodePos", v.replace(/\D/g, ""))} placeholder="Contoh: 23242" disabled={isReadOnly} />
             </div>
             <div className="flex flex-col gap-1.5">
-              <FieldLabel>Tautan Google Maps <span className="text-xs font-normal text-gray-400">(opsional)</span></FieldLabel>
+              <div className="flex items-center gap-1">
+                <FieldLabel>Tautan Google Maps <span className="text-xs font-normal text-gray-400">(opsional)</span></FieldLabel>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button type="button" className="inline-flex items-center justify-center text-gray-400 hover:text-gray-600 transition cursor-help">
+                      <Info className="w-3.5 h-3.5" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="w-80">
+                    <p className="mb-1.5">Gunakan tautan Google Maps yang mengandung koordinat (lintang &amp; bujur) agar peta dapat ditampilkan. Tautan ini dapat diambil dari <span className="font-semibold">address bar</span> browser Anda ketika membuka peta.</p>
+                    <img src="/addressbar-map.svg" alt="Contoh address bar browser dengan tautan Google Maps yang mengandung koordinat" className="w-full rounded border border-white/20 mt-1" />
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <TextInput value={form.tautanGoogleMaps} onChange={(v) => set("tautanGoogleMaps", v)} placeholder="https://maps.google.com/..." disabled={isReadOnly} />
+              {form.tautanGoogleMaps && (
+                <div className="flex gap-1.5 mt-0.5">
+                  <div className="shrink-0 mt-0.5">
+                    {hasCoordinates(form.tautanGoogleMaps)
+                      ? <CheckCircle className="w-3.5 h-3.5 text-green-600" />
+                      : <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+                    }
+                  </div>
+                  <p className="text-xs text-gray-700">
+                    {hasCoordinates(form.tautanGoogleMaps)
+                      ? <>Pratinjau lokasi tersedia, <button onClick={() => setShowMapModal(true)} className="text-blue-600 hover:underline cursor-pointer">Lihat map</button></>
+                      : "Pratinjau lokasi tidak tersedia, gunakan tautan dari address bar"}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </SectionCard>
@@ -1695,6 +1749,46 @@ function RujukanFormInner() {
               >
                 Nonaktifkan
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Map Preview Modal */}
+      {showMapModal && hasCoordinates(form.tautanGoogleMaps) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/50" onClick={() => setShowMapModal(false)} />
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <MapPin className="w-4 h-4 text-blue-700" />
+                </div>
+                <h3 className="text-base font-bold text-gray-900">Pratinjau Lokasi</h3>
+              </div>
+              <button onClick={() => setShowMapModal(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
+                <XCircle className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="h-[400px]">
+              {(() => {
+                const coords = extractCoordinates(form.tautanGoogleMaps)
+                const src = coords
+                  ? `https://maps.google.com/maps?q=${coords.lat},${coords.lng}&output=embed`
+                  : `https://maps.google.com/maps?q=${encodeURIComponent(form.tautanGoogleMaps)}&output=embed`
+                return (
+                  <iframe
+                    src={src}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Peta Lokasi"
+                  />
+                )
+              })()}
             </div>
           </div>
         </div>

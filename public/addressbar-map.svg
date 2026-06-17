@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 110" width="900" height="110">
+  <rect x="0.5" y="32.5" width="899" height="55" rx="28" fill="#fff" stroke="#dadce0" stroke-width="1"/>
+  <rect x="0.5" y="32.5" width="899" height="55" rx="28" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="6,4"/>
+  <text x="30" y="68" font-family="Arial, sans-serif" font-size="20" fill="#3c4043">https://www.google.com/maps/@-6.326458,106.7474152,19.63z</text>
+  <text x="14" y="22" font-family="Arial, sans-serif" font-size="16" fill="#2563eb" font-weight="bold">copy tautan ini</text>
+  <polygon points="30,28 42,28 30,40" fill="#2563eb"/>
+</svg>
