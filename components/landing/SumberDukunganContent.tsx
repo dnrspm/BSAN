@@ -346,26 +346,24 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
             <div className="flex-1 overflow-y-auto divide-y divide-slate-100 px-6 py-5">
               <div className="grid grid-cols-2 gap-y-4 gap-x-3 pb-6">
                 <div>
-                  <p className="text-xs text-slate-500 mb-1">Kategori Dukungan</p>
-                  <div className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
-                    <span>{KATEGORI_CONFIG[selectedItem.kategoriBentukDukungan]?.label}</span>
-                  </div>
+                  <p className="text-sm text-slate-500">Kategori Dukungan</p>
+                  <p className="text-base text-slate-800 mt-1">{KATEGORI_CONFIG[selectedItem.kategoriBentukDukungan]?.label}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500 mb-1">Wilayah</p>
-                  <p className="text-sm font-medium text-slate-900">
+                  <p className="text-sm text-slate-500">Wilayah</p>
+                  <p className="text-base text-slate-800 mt-1">
                     {(selectedItem.provinsi === NASIONAL_WILAYAH || selectedItem.provinsi === "Seluruh Indonesia") && (selectedItem.kabupatenKota === NASIONAL_WILAYAH || selectedItem.kabupatenKota === "Seluruh Indonesia") ? "Nasional" : (selectedItem.kabupatenKota ? `Kota ${selectedItem.kabupatenKota}` : "-")}
                   </p>
                 </div>
                 {selectedItem.kategoriPenyedia && (
                   <div>
-                    <p className="text-xs text-slate-500 mb-1">Penyedia</p>
-                    <p className="text-sm text-slate-900">{selectedItem.kategoriPenyedia}</p>
+                    <p className="text-sm text-slate-500">Penyedia</p>
+                    <p className="text-base text-slate-800 mt-1">{selectedItem.kategoriPenyedia}</p>
                   </div>
                 )}
                 <div>
-                  <p className="text-xs text-slate-500 mb-1">Provinsi</p>
-                  <p className="text-sm text-slate-900">
+                  <p className="text-sm text-slate-500">Provinsi</p>
+                  <p className="text-base text-slate-800 mt-1">
                     {(selectedItem.provinsi === NASIONAL_WILAYAH || selectedItem.provinsi === "Seluruh Indonesia") && (selectedItem.kabupatenKota === NASIONAL_WILAYAH || selectedItem.kabupatenKota === "Seluruh Indonesia") ? "Nasional" : (selectedItem.provinsi || "-")}
                   </p>
                 </div>
@@ -376,9 +374,16 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                   {selectedItem.tautanGoogleMaps ? (
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
-                        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Alamat</p>
-                        <p className="text-sm text-slate-700">
-                          {[selectedItem.namaJalan, selectedItem.nomorJalan, selectedItem.kelurahan, selectedItem.kecamatan, selectedItem.kabupatenKota, selectedItem.provinsi].filter(Boolean).join(", ")}
+                        <p className="text-sm text-slate-500">Alamat</p>
+                        <p className="text-base text-slate-800 mt-1">
+                          {[
+                            selectedItem.namaJalan,
+                            selectedItem.nomorJalan,
+                            selectedItem.kelurahan,
+                            selectedItem.kecamatan,
+                            selectedItem.alamatKota ?? (selectedItem.kabupatenKota !== "Seluruh Indonesia" ? selectedItem.kabupatenKota : null),
+                            selectedItem.alamatProvinsi ?? (selectedItem.provinsi !== "Seluruh Indonesia" ? selectedItem.provinsi : null),
+                          ].filter(Boolean).join(", ")}
                         </p>
                       </div>
                       <a
@@ -393,13 +398,25 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                     </div>
                   ) : (
                     <>
-                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Alamat</p>
-                      <p className="text-sm text-slate-700 mb-4">
-                        {[selectedItem.namaJalan, selectedItem.nomorJalan, selectedItem.kelurahan, selectedItem.kecamatan, selectedItem.kabupatenKota, selectedItem.provinsi].filter(Boolean).join(", ")}
+                      <p className="text-sm text-slate-500">Alamat</p>
+                      <p className="text-base text-slate-800 mt-1 mb-4">
+                        {[
+                          selectedItem.namaJalan,
+                          selectedItem.nomorJalan,
+                          selectedItem.kelurahan,
+                          selectedItem.kecamatan,
+                          selectedItem.alamatKota ?? (selectedItem.kabupatenKota !== "Seluruh Indonesia" ? selectedItem.kabupatenKota : null),
+                          selectedItem.alamatProvinsi ?? (selectedItem.provinsi !== "Seluruh Indonesia" ? selectedItem.provinsi : null),
+                        ].filter(Boolean).join(", ")}
                       </p>
                       <div className="rounded-lg border border-slate-200 overflow-hidden h-48">
                         <iframe
-                          src={`https://maps.google.com/maps?q=${encodeURIComponent([selectedItem.namaJalan, selectedItem.kabupatenKota, selectedItem.provinsi].filter(Boolean).join(", "))}&t=&z=15&output=embed`}
+                          src={`https://maps.google.com/maps?q=${encodeURIComponent([
+                            selectedItem.namaJalan,
+                            selectedItem.nomorJalan,
+                            selectedItem.alamatKota ?? (selectedItem.kabupatenKota !== "Seluruh Indonesia" ? selectedItem.kabupatenKota : null),
+                            selectedItem.alamatProvinsi ?? (selectedItem.provinsi !== "Seluruh Indonesia" ? selectedItem.provinsi : null),
+                          ].filter(Boolean).join(", "))}&t=&z=15&output=embed`}
                           width="100%"
                           height="100%"
                           style={{ border: 0 }}
@@ -414,8 +431,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                 </div>
               )}
 
-              <div className="pt-3 pb-1">
-                <div className="space-y-3">
+              <div className="pt-3 pb-1 space-y-3">
                   {selectedItem.nomorCallCenter && (
                     <a
                       href={`https://wa.me/62${selectedItem.nomorCallCenter.replace(/^0/, "")}`}
@@ -426,38 +442,73 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
                       </svg>
-                      Hubungi Layanan Pengaduan ({selectedItem.nomorCallCenter})
+                      Call Center ({selectedItem.nomorCallCenter})
                     </a>
                   )}
-                  {selectedItem.nomorPribadi && !selectedItem.nomorCallCenter && (
-                    <a
-                      href={`https://wa.me/62${selectedItem.nomorPribadi.replace(/^0/, "")}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-semibold transition-colors"
-                    >
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                      </svg>
-                      Hubungi Layanan Pengaduan ({selectedItem.nomorPribadi})
-                    </a>
+                  {(selectedItem.nomorCallCenter2 || selectedItem.nomorPribadi) && (
+                    <>
+                      <hr className="border-slate-100" />
+                      <p className="text-sm text-slate-500">Kontak Lainnya</p>
+                      <div className="space-y-3">
+                        {selectedItem.nomorCallCenter2 && (
+                          <div className="flex items-center justify-between">
+                            <p className="text-base text-slate-800">Call Center 2</p>
+                            <div className="flex items-center gap-3">
+                              <p className="text-base text-slate-800">{selectedItem.nomorCallCenter2}</p>
+                              <a
+                                href={`https://wa.me/62${selectedItem.nomorCallCenter2.replace(/^0/, "")}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-medium hover:bg-slate-50 transition-colors"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                                </svg>
+                                Hubungi
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                        {selectedItem.nomorPribadi && (
+                          <div className="flex items-center justify-between">
+                            <p className="text-base text-slate-800">Kontak Penanggung Jawab</p>
+                            <div className="flex items-center gap-3">
+                              <p className="text-base text-slate-800">{selectedItem.nomorPribadi}</p>
+                              <a
+                                href={`https://wa.me/62${selectedItem.nomorPribadi.replace(/^0/, "")}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-medium hover:bg-slate-50 transition-colors"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                                </svg>
+                                Hubungi
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </>
                   )}
                   {selectedItem.website && (
-                    <a
-                      href={selectedItem.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors"
-                    >
-                      <Globe className="w-4 h-4" />
-                      Kunjugi Website
-                    </a>
+                    <>
+                      <hr className="border-slate-100" />
+                      <a
+                        href={selectedItem.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors"
+                      >
+                        <Globe className="w-4 h-4" />
+                        Kunjugi Website
+                      </a>
+                    </>
                   )}
                   {(!selectedItem.nomorCallCenter && !selectedItem.nomorPribadi && !selectedItem.website) && (
                     <p className="text-sm text-slate-400">Tidak ada kontak tersedia</p>
                   )}
                 </div>
-              </div>
             </div>
 
             

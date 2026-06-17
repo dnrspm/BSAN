@@ -48,8 +48,11 @@ export interface SumberRujukan {
   kodePos?: string
   tautanGoogleMaps?: string
   nomorCallCenter: string
+  nomorCallCenter2?: string
   nomorPribadi?: string
   website?: string
+  alamatKota?: string
+  alamatProvinsi?: string
   aksesInfo: "publik" | "terbatas"
   status: StatusRujukan
   dibuatOleh: string
@@ -141,7 +144,8 @@ export const SEED: SumberRujukan[] = [
     id: "sr-nasional-1", namaInstansi: "Kepolisian Republik Indonesia (Polri)",
     kategoriBentukDukungan: "Kepolisian", kategoriPenyedia: "Pemerintah Pusat",
     provinsi: "Seluruh Indonesia", kabupatenKota: "Seluruh Indonesia", namaJalan: "Jl. Trunojoyo No. 3", nomorJalan: "",
-    nomorCallCenter: "110", aksesInfo: "publik", status: "terverifikasi",
+    kelurahan: "Gunung", kecamatan: "Kebayoran Baru", alamatKota: "Jakarta Selatan", alamatProvinsi: "DKI Jakarta",
+    nomorCallCenter: "110", nomorPribadi: "081112223333", aksesInfo: "publik", status: "terverifikasi",
     dibuatOleh: "Admin Pusat", usulanDari: "pusat",
     logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat,
   },
@@ -150,24 +154,19 @@ export const SEED: SumberRujukan[] = [
     id: "sr-nasional-3", namaInstansi: "Komisi Perlindungan Anak Indonesia (KPAI)",
     kategoriBentukDukungan: "Sosial", kategoriPenyedia: "Pemerintah Pusat",
     provinsi: "Seluruh Indonesia", kabupatenKota: "Seluruh Indonesia", namaJalan: "Jl. Matraman No. 56", nomorJalan: "",
-    nomorCallCenter: "021-6916565", aksesInfo: "publik", status: "terverifikasi",
-    dibuatOleh: "Admin Pusat", usulanDari: "pusat",
-    logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat,
-  },
-  {
-    id: "sr-nasional-4", namaInstansi: "Hotline Nasional KPAI - Pengaduan Anak",
-    kategoriBentukDukungan: "Konseling", kategoriPenyedia: "Pemerintah Pusat",
-    provinsi: "Seluruh Indonesia", kabupatenKota: "Seluruh Indonesia", namaJalan: "Jl. Matraman No. 56", nomorJalan: "",
-    nomorCallCenter: "021-6916565 / 119 ext. 8", aksesInfo: "publik", status: "terverifikasi",
+    kelurahan: "Pisangan Baru", kecamatan: "Matraman", alamatKota: "Jakarta Timur", alamatProvinsi: "DKI Jakarta",
+    nomorCallCenter: "021-6916565", nomorCallCenter2: "021-6916566", nomorPribadi: "081234567890", aksesInfo: "publik", status: "terverifikasi",
     dibuatOleh: "Admin Pusat", usulanDari: "pusat",
     logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat,
   },
   {
     id: "sr-nasional-5", namaInstansi: "BNPT - Badan Nasional Penanggulangan Terorisme",
     kategoriBentukDukungan: "Lainnya", kategoriPenyedia: "Pemerintah Pusat",
-    provinsi: "Seluruh Indonesia", kabupatenKota: "Seluruh Indonesia", namaJalan: "Jl. Veteres", nomorJalan: "",
-    tautanGoogleMaps: "https://www.google.com/maps/place/Badan+Nasional+Penanggulangan+Terorisme/@-6.3426683,106.6878589,11z/data=!4m6!3m5!1s0x2e69c0e6789e2691:0xde40f9595e05e114!8m2!3d-6.518397!4d106.8761706!16s%2Fg%2F11b6syscb0?entry=ttu&g_ep=EgoyMDI2MDYxMy4wIKXMDSoASAFQAw%3D%3D",
-    nomorCallCenter: "021-8090555", aksesInfo: "publik", status: "terverifikasi",
+    provinsi: "Seluruh Indonesia", kabupatenKota: "Seluruh Indonesia", namaJalan: "Jl. Padjajaran", nomorJalan: "No. 45",
+    kelurahan: "Baranangsiang", kecamatan: "Bogor Timur",
+    tautanGoogleMaps: "https://www.google.com/maps/place/Badan+Nasional+Penanggulangan+Terorisme/@-6.518397,106.8761706,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69c0e6789e2691:0xde40f9595e05e114!8m2!3d-6.518397!4d106.8761706!16s%2Fg%2F11b6syscb0?entry=ttu&g_ep=EgoyMDI2MDYxMy4wIKXMDSoASAFQAw%3D%3D",
+    alamatKota: "Kota Bogor", alamatProvinsi: "Jawa Barat",
+    nomorCallCenter: "021-8090555", nomorCallCenter2: "021-8090556", nomorPribadi: "081234567890", aksesInfo: "publik", status: "terverifikasi",
     dibuatOleh: "Admin Pusat", usulanDari: "pusat",
     logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat,
   },
@@ -180,7 +179,7 @@ export const SEED: SumberRujukan[] = [
     kabupatenKota: "Banda Aceh",
     namaJalan: "Jl. Teuku Umar",
     nomorJalan: "No. 45",
-    nomorCallCenter: "065199988",
+    nomorCallCenter: "065199988", nomorPribadi: "085277788899",
     aksesInfo: "publik",
     status: "terverifikasi",
     dibuatOleh: actorDinasSeed,
@@ -313,7 +312,8 @@ export const SEED: SumberRujukan[] = [
     id: "sr-sby-1", namaInstansi: "RSUD Dr. Soetomo",
     kategoriBentukDukungan: "Fasilitas Kesehatan", kategoriPenyedia: "Pemerintah Daerah",
     provinsi: "Jawa Timur", kabupatenKota: "Surabaya", namaJalan: "Jl. Mayjen Prof. Dr. Moestopo", nomorJalan: "No. 6-8",
-    nomorCallCenter: "0315501078", aksesInfo: "publik", status: "terverifikasi",
+    kecamatan: "Gubeng", kelurahan: "Mojo",
+    nomorCallCenter: "0315501078", nomorCallCenter2: "0315501079", nomorPribadi: "081334455667", aksesInfo: "publik", status: "terverifikasi",
     dibuatOleh: "Admin Pusat", usulanDari: "pusat",
     logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat,
   },
@@ -330,7 +330,7 @@ export const SEED: SumberRujukan[] = [
     id: "sr-mdn-1", namaInstansi: "P2TP2A Kota Medan",
     kategoriBentukDukungan: "Sosial", kategoriPenyedia: "Pemerintah Daerah",
     provinsi: "Sumatera Utara", kabupatenKota: "Medan", namaJalan: "Jl. Kapten Maulana Lubis",
-    nomorCallCenter: "0618458844", aksesInfo: "publik", status: "terverifikasi",
+    nomorCallCenter: "0618458844", nomorPribadi: "082156789012", aksesInfo: "publik", status: "terverifikasi",
     dibuatOleh: "Admin Pusat", usulanDari: "pusat",
     logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat,
   },
@@ -480,7 +480,7 @@ function DetailPanel({
   const [nonaktifNotes, setNonaktifNotes] = useState("")
   const kategoriCfg = KATEGORI_CONFIG[item.kategoriBentukDukungan]
   const penyediaCfg = item.kategoriPenyedia ? PENYEDIA_CONFIG[item.kategoriPenyedia] : null
-  const alamat = [item.namaJalan, item.nomorJalan, item.kelurahan, item.kecamatan, item.kabupatenKota, item.provinsi, item.kodePos]
+  const alamat = [item.namaJalan, item.nomorJalan, item.kelurahan, item.kecamatan, item.alamatKota ?? (item.kabupatenKota !== "Seluruh Indonesia" ? item.kabupatenKota : null), item.alamatProvinsi ?? (item.provinsi !== "Seluruh Indonesia" ? item.provinsi : null), item.kodePos]
     .filter(Boolean).join(", ")
 
   const handleSubmitRevision = () => {
@@ -579,6 +579,15 @@ function DetailPanel({
                   <p className="text-sm font-medium text-gray-900">{item.nomorCallCenter}</p>
                 </div>
               </div>
+              {item.nomorCallCenter2 && (
+                <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2.5">
+                  <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-gray-500">Call Center 2</p>
+                    <p className="text-sm font-medium text-gray-900">{item.nomorCallCenter2}</p>
+                  </div>
+                </div>
+              )}
               {item.nomorPribadi && (
                 <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2.5">
                   <MessageCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
@@ -1026,8 +1035,9 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
     const headers = [
       "Nama Instansi", "Kategori Dukungan", "Kategori Penyedia",
       "Provinsi", "Kabupaten/Kota", "Alamat",
-      "Nomor Call Center", "Nomor Pribadi", "Website",
+      "Nomor Call Center", "Nomor Pribadi", "Nomor Call Center 2", "Website",
       "Akses Informasi", "Status", "Dibuat Oleh",
+      "Alamat Kota", "Alamat Provinsi",
     ]
     const rows = filtered.map((item) => [
       item.namaInstansi,
@@ -1038,10 +1048,13 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
       [item.namaJalan, item.nomorJalan, item.kodePos].filter(Boolean).join(" "),
       item.nomorCallCenter ?? "",
       item.nomorPribadi ?? "",
+      item.nomorCallCenter2 ?? "",
       item.website ?? "",
       item.aksesInfo === "publik" ? "Publik" : "Terbatas",
       item.status,
       item.dibuatOleh ?? "",
+      item.alamatKota ?? "",
+      item.alamatProvinsi ?? "",
     ])
     const escape = (v: string) => `"${v.replace(/"/g, '""')}"`
     const csv = [headers, ...rows].map((row) => row.map(escape).join(",")).join("\n")
@@ -1152,6 +1165,9 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
     const website = get(13).trim()
     const aksesInfoRaw = get(14).trim()
     const aksesInfo: "publik" | "terbatas" = aksesInfoRaw === "Terbatas" ? "terbatas" : "publik"
+    const nomorCallCenter2 = get(15).trim()
+    const alamatKota = get(16).trim()
+    const alamatProvinsi = get(17).trim()
 
     if (!namaInstansi) errors.push(`Baris ${rowIndex + 1}: "Nama Instansi" wajib diisi`)
     if (!kategoriDukungan || !KATEGORI_DUKUNGAN_OPTIONS.includes(kategoriDukungan)) {
@@ -1182,9 +1198,12 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
         kodePos,
         tautanGoogleMaps,
         nomorCallCenter,
+        nomorCallCenter2,
         nomorPribadi,
         website,
         aksesInfo,
+        alamatKota,
+        alamatProvinsi,
       },
     }
   }
@@ -1223,8 +1242,11 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
               kodePos: data.kodePos,
               tautanGoogleMaps: data.tautanGoogleMaps,
               nomorCallCenter: data.nomorCallCenter!,
+              nomorCallCenter2: data.nomorCallCenter2,
               nomorPribadi: data.nomorPribadi,
               website: data.website,
+              alamatKota: data.alamatKota,
+              alamatProvinsi: data.alamatProvinsi,
               aksesInfo: data.aksesInfo ?? "publik",
               status: "terverifikasi",
               dibuatOleh: "Admin Pusat",

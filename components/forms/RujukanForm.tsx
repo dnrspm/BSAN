@@ -777,7 +777,7 @@ function RujukanFormInner() {
             </h1>
             {isView ? (
               <div className="mt-1">
-                <StatusBadge status={form.status} jenisMenunggu={form.jenisMenunggu} jenisButuhPerbaikan={form.jenisButuhPerbaikan} isSekolah={isSekolah} />
+                <StatusBadge status={form.status} jenisMenunggu={form.jenisMenunggu} jenisButuhPerbaikan={form.jenisButuhPerbaikan} isSekolah={mounted && isSekolah} />
               </div>
             ) : (
               <p className="text-xs text-gray-500">
