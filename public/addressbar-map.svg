@@ -1,7 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 110" width="900" height="110">
-  <rect x="0.5" y="32.5" width="899" height="55" rx="28" fill="#fff" stroke="#dadce0" stroke-width="1"/>
-  <rect x="0.5" y="32.5" width="899" height="55" rx="28" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="6,4"/>
-  <text x="30" y="68" font-family="Arial, sans-serif" font-size="20" fill="#3c4043">https://www.google.com/maps/@-6.326458,106.7474152,19.63z</text>
-  <text x="14" y="22" font-family="Arial, sans-serif" font-size="16" fill="#2563eb" font-weight="bold">copy tautan ini</text>
-  <polygon points="30,28 42,28 30,40" fill="#2563eb"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 36">
+  <!-- browser chrome background -->
+  <rect width="300" height="36" rx="6" fill="#e8eaed"/>
+
+  <!-- macOS-style window dots -->
+  <circle cx="14" cy="18" r="4" fill="#ff5f57"/>
+  <circle cx="26" cy="18" r="4" fill="#febc2e"/>
+  <circle cx="38" cy="18" r="4" fill="#28c840"/>
+
+  <!-- address bar white pill -->
+  <rect x="54" y="8" width="238" height="20" rx="10" fill="white" stroke="#dadce0" stroke-width="0.75"/>
+
+  <!-- lock icon -->
+  <rect x="62" y="16" width="7" height="5.5" rx="1" fill="#9aa0a6"/>
+  <path d="M63.5 16 L63.5 13.5 Q63.5 11.5 65.5 11.5 Q67.5 11.5 67.5 13.5 L67.5 16" fill="none" stroke="#9aa0a6" stroke-width="1.2"/>
+
+  <!-- URL text -->
+  <text x="75" y="22" font-family="Arial, sans-serif" font-size="9.5" fill="#202124">google.com/maps/@-6.326458,106.7474152</text>
+
+  <!-- blue dashed highlight around address bar -->
+  <rect x="54" y="8" width="238" height="20" rx="10" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4,3"/>
 </svg>

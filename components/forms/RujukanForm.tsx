@@ -986,7 +986,7 @@ function RujukanFormInner() {
                   </TooltipTrigger>
                   <TooltipContent side="top" className="w-80">
                     <p className="mb-1.5">Gunakan tautan Google Maps yang mengandung koordinat (lintang &amp; bujur) agar peta dapat ditampilkan. Tautan ini dapat diambil dari <span className="font-semibold">address bar</span> browser Anda ketika membuka peta.</p>
-                    <img src="/addressbar-map.svg" alt="Contoh address bar browser dengan tautan Google Maps yang mengandung koordinat" className="w-full rounded border border-white/20 mt-1" />
+                    <img src="/addressbar-map.svg" alt="Contoh address bar browser dengan tautan Google Maps yang mengandung koordinat" className="w-full rounded border border-gray-100 mt-1" />
                   </TooltipContent>
                 </Tooltip>
               </div>
