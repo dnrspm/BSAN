@@ -372,23 +372,45 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
               </div>
 
               {(selectedItem.namaJalan || selectedItem.nomorJalan) && (
-                <div className="pt-4">
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Alamat</p>
-                  <p className="text-sm text-slate-700 mb-4">
-                    {[selectedItem.namaJalan, selectedItem.nomorJalan, selectedItem.kelurahan, selectedItem.kecamatan, selectedItem.kabupatenKota, selectedItem.provinsi].filter(Boolean).join(", ")}
-                  </p>
-                  <div className="rounded-lg border border-slate-200 overflow-hidden h-48">
-                    <iframe
-                      src={`https://maps.google.com/maps?q=${encodeURIComponent([selectedItem.namaJalan, selectedItem.kabupatenKota, selectedItem.provinsi].filter(Boolean).join(", "))}&t=&z=15&output=embed`}
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title="Peta Lokasi"
-                    />
-                  </div>
+                <div className="pt-4 pb-4">
+                  {selectedItem.tautanGoogleMaps ? (
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Alamat</p>
+                        <p className="text-sm text-slate-700">
+                          {[selectedItem.namaJalan, selectedItem.nomorJalan, selectedItem.kelurahan, selectedItem.kecamatan, selectedItem.kabupatenKota, selectedItem.provinsi].filter(Boolean).join(", ")}
+                        </p>
+                      </div>
+                      <a
+                        href={selectedItem.tautanGoogleMaps}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-medium hover:bg-slate-50 transition-colors"
+                      >
+                        <MapPin className="w-3.5 h-3.5" />
+                        Maps
+                      </a>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Alamat</p>
+                      <p className="text-sm text-slate-700 mb-4">
+                        {[selectedItem.namaJalan, selectedItem.nomorJalan, selectedItem.kelurahan, selectedItem.kecamatan, selectedItem.kabupatenKota, selectedItem.provinsi].filter(Boolean).join(", ")}
+                      </p>
+                      <div className="rounded-lg border border-slate-200 overflow-hidden h-48">
+                        <iframe
+                          src={`https://maps.google.com/maps?q=${encodeURIComponent([selectedItem.namaJalan, selectedItem.kabupatenKota, selectedItem.provinsi].filter(Boolean).join(", "))}&t=&z=15&output=embed`}
+                          width="100%"
+                          height="100%"
+                          style={{ border: 0 }}
+                          allowFullScreen
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                          title="Peta Lokasi"
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
 

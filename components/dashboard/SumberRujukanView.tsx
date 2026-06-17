@@ -166,6 +166,7 @@ export const SEED: SumberRujukan[] = [
     id: "sr-nasional-5", namaInstansi: "BNPT - Badan Nasional Penanggulangan Terorisme",
     kategoriBentukDukungan: "Lainnya", kategoriPenyedia: "Pemerintah Pusat",
     provinsi: "Seluruh Indonesia", kabupatenKota: "Seluruh Indonesia", namaJalan: "Jl. Veteres", nomorJalan: "",
+    tautanGoogleMaps: "https://www.google.com/maps/place/Badan+Nasional+Penanggulangan+Terorisme/@-6.3426683,106.6878589,11z/data=!4m6!3m5!1s0x2e69c0e6789e2691:0xde40f9595e05e114!8m2!3d-6.518397!4d106.8761706!16s%2Fg%2F11b6syscb0?entry=ttu&g_ep=EgoyMDI2MDYxMy4wIKXMDSoASAFQAw%3D%3D",
     nomorCallCenter: "021-8090555", aksesInfo: "publik", status: "terverifikasi",
     dibuatOleh: "Admin Pusat", usulanDari: "pusat",
     logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat,
