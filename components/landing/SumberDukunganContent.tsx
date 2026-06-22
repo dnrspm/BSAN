@@ -456,7 +456,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                     )
 
                     return (
-                        <div className={`grid grid-cols-1 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 border border-slate-200 rounded-lg ${split ? "sm:grid-cols-3" : "sm:grid-cols-[repeat(auto-fit,minmax(0,1fr))]"}`}>
+                        <div className={`grid grid-cols-1 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 rounded-lg ${total > 1 ? "border border-slate-200" : ""} ${split ? "sm:grid-cols-3" : "sm:grid-cols-[repeat(auto-fit,minmax(0,1fr))]"}`}>
                           {split && selectedItem.nomorCallCenter && renderCard("Call Center", selectedItem.nomorCallCenter, true, true)}
                           {(!split && selectedItem.nomorCallCenter) && renderCard("Call Center", selectedItem.nomorCallCenter, true)}
                           {selectedItem.nomorCallCenter2 && renderCard("Call Center 2", selectedItem.nomorCallCenter2)}
