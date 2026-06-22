@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Plus, Eye, CheckCircle, Clock, PlayCircle } from "lucide-react"
+import { useState, useEffect, useMemo } from "react"
+import { Plus, Eye, CheckCircle, Clock, PlayCircle, Search } from "lucide-react"
 import { RealisasiModal } from "./RealisasiModal"
 
 // ---------------------------------------------------------------------------
@@ -77,6 +77,20 @@ function StatusBadge({ status }: { status: StatusKegiatan }) {
 export function KegiatanView() {
   const [list, setList] = useState<Kegiatan[]>([])
   const [mounted, setMounted] = useState(false)
+  const [search, setSearch] = useState("")
+  const [filterStatus, setFilterStatus] = useState<"semua" | StatusKegiatan>("semua")
+
+  const filtered = useMemo(() => {
+    return list.filter((item) => {
+      const q = search.toLowerCase().trim()
+      const matchSearch = !q ||
+        item.namaKegiatan.toLowerCase().includes(q) ||
+        item.penyelenggara.some((p) => p.toLowerCase().includes(q)) ||
+        (item.lokasi && item.lokasi.toLowerCase().includes(q))
+      const matchStatus = filterStatus === "semua" || item.status === filterStatus
+      return matchSearch && matchStatus
+    })
+  }, [list, search, filterStatus])
 
   useEffect(() => {
     const loadData = () => {
@@ -122,6 +136,30 @@ export function KegiatanView() {
         </a>
       </div>
 
+      {/* Search + Filter */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari nama kegiatan, penyelenggara, atau lokasi"
+            className="w-full pl-9 pr-3 h-9 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          />
+        </div>
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value as "semua" | StatusKegiatan)}
+          className="h-9 px-3 text-sm rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="semua">Semua Status</option>
+          <option value="menunggu">Terjadwal</option>
+          <option value="berlangsung">Berlangsung</option>
+          <option value="selesai">Selesai</option>
+          <option value="terealisasi">Terealisasi</option>
+        </select>
+      </div>
+
       {/* Table */}
       <div className="rounded-xl border border-gray-200 overflow-hidden bg-white shadow-sm">
         <div className="overflow-x-auto">
@@ -137,14 +175,14 @@ export function KegiatanView() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {list.length === 0 ? (
+              {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">
-                    Belum ada kegiatan
+                    {list.length === 0 ? "Belum ada kegiatan" : "Tidak ada kegiatan yang cocok dengan pencarian"}
                   </td>
                 </tr>
               ) : (
-                list.map((item) => (
+                filtered.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3.5 font-medium text-gray-800">{item.namaKegiatan}</td>
                     <td className="px-4 py-3.5">

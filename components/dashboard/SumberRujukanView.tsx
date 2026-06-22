@@ -49,6 +49,7 @@ export interface SumberRujukan {
   tautanGoogleMaps?: string
   nomorCallCenter: string
   nomorCallCenter2?: string
+  nomorCallCenter3?: string
   nomorPribadi?: string
   website?: string
   alamatKota?: string
@@ -147,7 +148,7 @@ export const SEED: SumberRujukan[] = [
     kelurahan: "Gunung", kecamatan: "Kebayoran Baru", alamatKota: "Jakarta Selatan", alamatProvinsi: "DKI Jakarta",
     nomorCallCenter: "110", nomorPribadi: "081112223333", aksesInfo: "publik", status: "terverifikasi",
     dibuatOleh: "Admin Pusat", usulanDari: "pusat",
-    logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat,
+    logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat, website: "https://www.polri.go.id",
   },
   
   {
@@ -157,7 +158,7 @@ export const SEED: SumberRujukan[] = [
     kelurahan: "Pisangan Baru", kecamatan: "Matraman", alamatKota: "Jakarta Timur", alamatProvinsi: "DKI Jakarta",
     nomorCallCenter: "021-6916565", nomorCallCenter2: "021-6916566", nomorPribadi: "081234567890", aksesInfo: "publik", status: "terverifikasi",
     dibuatOleh: "Admin Pusat", usulanDari: "pusat",
-    logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat,
+    logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat, website: "https://www.kpai.go.id",
   },
   {
     id: "sr-nasional-5", namaInstansi: "BNPT - Badan Nasional Penanggulangan Terorisme",
@@ -168,7 +169,49 @@ export const SEED: SumberRujukan[] = [
     alamatKota: "Kota Bogor", alamatProvinsi: "Jawa Barat",
     nomorCallCenter: "021-8090555", nomorCallCenter2: "021-8090556", nomorPribadi: "081234567890", aksesInfo: "publik", status: "terverifikasi",
     dibuatOleh: "Admin Pusat", usulanDari: "pusat",
+    logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat, website: "https://www.bnpt.go.id",
+  },
+  {
+    id: "sr-contoh-1kontak", namaInstansi: "Hotline Perlindungan Anak Nasional",
+    kategoriBentukDukungan: "Sosial", kategoriPenyedia: "Pemerintah Pusat",
+    provinsi: "Seluruh Indonesia", kabupatenKota: "Seluruh Indonesia",
+    namaJalan: "Jl. Merdeka", nomorJalan: "No. 1",
+    kelurahan: "Gambir", kecamatan: "Gambir", alamatKota: "Jakarta Pusat", alamatProvinsi: "DKI Jakarta",
+    nomorCallCenter: "1500771", aksesInfo: "publik", status: "terverifikasi",
+    dibuatOleh: "Admin Pusat", usulanDari: "pusat",
     logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat,
+  },
+  {
+    id: "sr-contoh-2kontak", namaInstansi: "Layanan Psikologi Nasional",
+    kategoriBentukDukungan: "Psikologi", kategoriPenyedia: "Pemerintah Pusat",
+    provinsi: "Seluruh Indonesia", kabupatenKota: "Seluruh Indonesia",
+    namaJalan: "Jl. Sudirman", nomorJalan: "No. 50",
+    kelurahan: "Karet Tengsin", kecamatan: "Tanah Abang", alamatKota: "Jakarta Pusat", alamatProvinsi: "DKI Jakarta",
+    tautanGoogleMaps: "https://maps.google.com/?q=-6.2088,106.8456",
+    nomorCallCenter: "1500772", nomorCallCenter2: "021-12345678", aksesInfo: "publik", status: "terverifikasi",
+    dibuatOleh: "Admin Pusat", usulanDari: "pusat",
+    logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat,
+  },
+  {
+    id: "sr-contoh-3kontak", namaInstansi: "Bantuan Hukum Nasional",
+    kategoriBentukDukungan: "Bantuan Hukum", kategoriPenyedia: "Pemerintah Pusat",
+    provinsi: "Seluruh Indonesia", kabupatenKota: "Seluruh Indonesia",
+    namaJalan: "Jl. MH Thamrin", nomorJalan: "No. 10",
+    kelurahan: "Menteng", kecamatan: "Menteng", alamatKota: "Jakarta Pusat", alamatProvinsi: "DKI Jakarta",
+    nomorCallCenter: "1500773", nomorCallCenter2: "021-87654321", nomorPribadi: "081234567891", aksesInfo: "publik", status: "terverifikasi",
+    dibuatOleh: "Admin Pusat", usulanDari: "pusat",
+    logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat, website: "https://bantuanhukum.go.id",
+  },
+  {
+    id: "sr-contoh-4kontak", namaInstansi: "Pusat Informasi dan Konseling Nasional",
+    kategoriBentukDukungan: "Konseling", kategoriPenyedia: "Pemerintah Pusat",
+    provinsi: "Seluruh Indonesia", kabupatenKota: "Seluruh Indonesia",
+    namaJalan: "Jl. Kuningan", nomorJalan: "No. 8",
+    kelurahan: "Kuningan Timur", kecamatan: "Setiabudi", alamatKota: "Jakarta Selatan", alamatProvinsi: "DKI Jakarta",
+    tautanGoogleMaps: "https://maps.google.com/?q=-6.2389,106.8306",
+    nomorCallCenter: "1500774", nomorCallCenter2: "021-11223344", nomorCallCenter3: "081234567893", nomorPribadi: "081234567892", aksesInfo: "publik", status: "terverifikasi",
+    dibuatOleh: "Admin Pusat", usulanDari: "pusat",
+    logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat, website: "https://konseling.go.id",
   },
   {
     id: "sr-review-1",
@@ -224,7 +267,7 @@ export const SEED: SumberRujukan[] = [
     provinsi: "Aceh", kabupatenKota: "Banda Aceh", namaJalan: "Jl. Sultan Malikul Saleh",
     nomorCallCenter: "110", aksesInfo: "publik", status: "terverifikasi",
     dibuatOleh: "Admin Pusat", usulanDari: "pusat",
-    logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat,
+    logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat, website: "https://polrestabandaaceh.id",
   },
   {
     id: "sr-6",
@@ -585,6 +628,15 @@ function DetailPanel({
                   <div>
                     <p className="text-xs text-gray-500">Call Center 2</p>
                     <p className="text-sm font-medium text-gray-900">{item.nomorCallCenter2}</p>
+                  </div>
+                </div>
+              )}
+              {item.nomorCallCenter3 && (
+                <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2.5">
+                  <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs text-gray-500">Call Center 3</p>
+                    <p className="text-sm font-medium text-gray-900">{item.nomorCallCenter3}</p>
                   </div>
                 </div>
               )}

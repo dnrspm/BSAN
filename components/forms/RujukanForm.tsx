@@ -57,7 +57,7 @@ interface FormState {
   kategoriPenyedia: KategoriPenyedia | ""
   aksesInfo: AksesInfo
   status: StatusRujukan
-  isNasional: boolean
+  tingkatWilayah: "" | "Nasional" | "Provinsi" | "Kabupaten/Kota"
   jenisMenunggu?: "pengajuan" | "perbaikan" | "perbaikan_laporan" | "penonaktifan" | "pemulihan"
   jenisButuhPerbaikan?: "ditolak" | "perbaikan"
 }
@@ -219,7 +219,7 @@ const emptyForm = (): FormState => ({
   kategoriPenyedia: "",
   aksesInfo: "publik",
   status: "menunggu",
-  isNasional: false,
+  tingkatWilayah: "Kabupaten/Kota",
 })
 
 // ---------------------------------------------------------------------------
@@ -384,7 +384,7 @@ function RujukanFormInner() {
           return undefined
         })(),
         jenisButuhPerbaikan: (existing.jenisButuhPerbaikan as "ditolak" | "perbaikan" | undefined) ?? undefined,
-        isNasional: (existing.isNasional as boolean) ?? (existing.provinsi === "Nasional" && existing.kabupatenKota === "Nasional") ?? false,
+        tingkatWilayah: ((existing.tingkatWilayah as string) || (existing.isNasional ? "Nasional" : "Kabupaten/Kota")) as FormState["tingkatWilayah"],
       })
       setViewUsulanDari((existing.usulanDari as SumberRujukan["usulanDari"]) ?? undefined)
       setViewCatatanPerbaikan((existing.catatanPerbaikan as string) ?? "")
@@ -394,15 +394,8 @@ function RujukanFormInner() {
 
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => {
     if (k === "namaInstansi" || k === "kabupatenKota" || k === "kategoriBentukDukungan" || k === "kategoriPenyedia") setDuplicateError(null)
-    if (k === "isNasional") {
-      setForm((prev) => ({
-        ...prev,
-        isNasional: v as boolean,
-        provinsi: v ? "" : defaultWilayah.current.provinsi,
-        kabupatenKota: v ? "" : defaultWilayah.current.kabupatenKota,
-        kecamatan: "",
-        kelurahan: "",
-      }))
+    if (k === "tingkatWilayah") {
+      setForm((prev) => ({ ...prev, tingkatWilayah: v as FormState["tingkatWilayah"] }))
       return
     }
     if (k === "provinsi") {
@@ -718,7 +711,8 @@ function RujukanFormInner() {
           logTerakhir: isSekolah ? RUJUKAN_LOG.dibuatSekolah(auth.namaSekolah ?? "") : isPusat ? RUJUKAN_LOG.dibuatTerverifikasiPusat : dinasLog.dibuatTerverifikasi(d),
           usulanDari: isSekolah ? "sekolah" : isPusat ? "pusat" : "dinas",
           createdAt: new Date().toISOString(),
-          isNasional: form.isNasional,
+          isNasional: form.tingkatWilayah === "Nasional",
+          tingkatWilayah: form.tingkatWilayah,
         }
         localStorage.setItem("rujukanList", JSON.stringify([...stored, newItem]))
       }
@@ -900,17 +894,15 @@ function RujukanFormInner() {
               <FieldLabel required={!isReadOnly}>Kategori Penyedia Layanan</FieldLabel>
               <SelectInput value={form.kategoriPenyedia} onChange={(v) => set("kategoriPenyedia", v as KategoriPenyedia)} options={KATEGORI_PENYEDIA} placeholder="Pilih kategori penyedia" disabled={isReadOnly} />
             </div>
-            <div className="sm:col-span-2">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.isNasional}
-                  onChange={(e) => set("isNasional", e.target.checked)}
-                  disabled={isReadOnly}
-                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
-                />
-                <span className="text-sm font-medium text-gray-700">Tandai sebagai Nasional</span>
-              </label>
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel required>Tingkat Wilayah</FieldLabel>
+              <SelectInput
+                value={form.tingkatWilayah}
+                onChange={(v) => set("tingkatWilayah", v)}
+                options={["Nasional", "Provinsi", "Kabupaten/Kota"]}
+                placeholder="Pilih tingkat wilayah"
+                disabled={isReadOnly}
+              />
             </div>
           </div>
         </SectionCard>
@@ -919,11 +911,11 @@ function RujukanFormInner() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <FieldLabel required={!isReadOnly}>Provinsi</FieldLabel>
-              <SelectInput value={form.provinsi} onChange={(v) => set("provinsi", v)} options={PROVINSI_OPTIONS} placeholder="Pilih Provinsi" disabled={isReadOnly || (mounted && (isSekolah || isDinas) && !form.isNasional)} />
+              <SelectInput value={form.provinsi} onChange={(v) => set("provinsi", v)} options={PROVINSI_OPTIONS} placeholder="Pilih Provinsi" disabled={isReadOnly} />
             </div>
             <div className="flex flex-col gap-1.5">
               <FieldLabel required={!isReadOnly}>Kabupaten / Kota</FieldLabel>
-              {mounted && !isReadOnly && (isDinas || form.isNasional) ? (
+              {mounted && !isReadOnly && isDinas ? (
                 <SelectInput
                   value={form.kabupatenKota}
                   onChange={(v) => set("kabupatenKota", v)}
@@ -937,7 +929,7 @@ function RujukanFormInner() {
             </div>
             <div className="flex flex-col gap-1.5">
               <FieldLabel>Kecamatan</FieldLabel>
-              {mounted && !isReadOnly && (isDinas || isSekolah || form.isNasional) ? (
+              {mounted && !isReadOnly && (isDinas || isSekolah) ? (
                 <SelectInput
                   value={form.kecamatan}
                   onChange={(v) => set("kecamatan", v)}
@@ -951,7 +943,7 @@ function RujukanFormInner() {
             </div>
             <div className="flex flex-col gap-1.5">
               <FieldLabel>Kelurahan</FieldLabel>
-              {mounted && !isReadOnly && (isDinas || isSekolah || form.isNasional) ? (
+              {mounted && !isReadOnly && (isDinas || isSekolah) ? (
                 <SelectInput
                   value={form.kelurahan}
                   onChange={(v) => set("kelurahan", v)}
