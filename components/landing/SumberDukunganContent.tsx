@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useMemo, useEffect } from "react"
-import { Search, Globe, ChevronLeft, ChevronRight, X, ChevronDown, MapPin, Phone, ExternalLink, Copy } from "lucide-react"
+import { Search, Globe, ChevronLeft, ChevronRight, X, ChevronDown, MapPin, Phone, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import {
@@ -437,12 +437,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
 
                     const renderCard = (label: string, nomor: string, isMain?: boolean, fullWidth?: boolean) => (
                       <div className={`p-4 ${fullWidth ? "sm:col-span-full border-b border-slate-200" : ""}`}>
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm text-slate-500">{label}</p>
-                          <button onClick={() => navigator.clipboard.writeText(nomor)} className="text-slate-400 hover:text-slate-600">
-                            <Copy className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
+                        <p className="text-sm text-slate-500">{label}</p>
                         <a
                           href={`https://wa.me/62${nomor.replace(/^0/, "")}`}
                           target="_blank"
