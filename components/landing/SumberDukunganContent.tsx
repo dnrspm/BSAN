@@ -430,13 +430,11 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                   {(() => {
                     const cc = !!selectedItem.nomorCallCenter
                     const cc2 = !!selectedItem.nomorCallCenter2
-                    const cc3 = !!selectedItem.nomorCallCenter3
                     const pj = !!selectedItem.nomorPribadi
-                    const total = [cc, cc2, cc3, pj].filter(Boolean).length
-                    const split = total >= 4
+                    const total = [cc, cc2, pj].filter(Boolean).length
 
-                    const renderCard = (label: string, nomor: string, isMain?: boolean, fullWidth?: boolean) => (
-                      <div className={`p-4 ${fullWidth ? "sm:col-span-full border-b border-slate-200" : ""}`}>
+                    const renderCard = (label: string, nomor: string, isMain?: boolean) => (
+                      <div className="p-4">
                         <p className="text-sm text-slate-500">{label}</p>
                         <a
                           href={`https://wa.me/62${nomor.replace(/^0/, "")}`}
@@ -451,11 +449,9 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                     )
 
                     return (
-                        <div className={`grid grid-cols-1 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 rounded-lg ${total > 1 ? "border border-slate-200" : ""} ${split ? "sm:grid-cols-3" : "sm:grid-cols-[repeat(auto-fit,minmax(0,1fr))]"}`}>
-                          {split && selectedItem.nomorCallCenter && renderCard("Call Center", selectedItem.nomorCallCenter, true, true)}
-                          {(!split && selectedItem.nomorCallCenter) && renderCard("Call Center", selectedItem.nomorCallCenter, true)}
+                        <div className={`grid grid-cols-1 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 rounded-lg ${total > 1 ? "border border-slate-200" : ""} sm:grid-cols-[repeat(auto-fit,minmax(0,1fr))]`}>
+                          {selectedItem.nomorCallCenter && renderCard("Call Center", selectedItem.nomorCallCenter, true)}
                           {selectedItem.nomorCallCenter2 && renderCard("Call Center 2", selectedItem.nomorCallCenter2)}
-                          {selectedItem.nomorCallCenter3 && renderCard("Call Center 3", selectedItem.nomorCallCenter3)}
                           {selectedItem.nomorPribadi && renderCard("Penanggung Jawab", selectedItem.nomorPribadi)}
                         </div>
                     )

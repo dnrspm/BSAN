@@ -49,7 +49,6 @@ export interface SumberRujukan {
   tautanGoogleMaps?: string
   nomorCallCenter: string
   nomorCallCenter2?: string
-  nomorCallCenter3?: string
   nomorPribadi?: string
   website?: string
   alamatKota?: string
@@ -201,17 +200,6 @@ export const SEED: SumberRujukan[] = [
     nomorCallCenter: "1500773", nomorCallCenter2: "021-87654321", nomorPribadi: "081234567891", aksesInfo: "publik", status: "terverifikasi",
     dibuatOleh: "Admin Pusat", usulanDari: "pusat",
     logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat, website: "https://bantuanhukum.go.id",
-  },
-  {
-    id: "sr-contoh-4kontak", namaInstansi: "Pusat Informasi dan Konseling Nasional",
-    kategoriBentukDukungan: "Konseling", kategoriPenyedia: "Pemerintah Pusat",
-    provinsi: "Seluruh Indonesia", kabupatenKota: "Seluruh Indonesia",
-    namaJalan: "Jl. Kuningan", nomorJalan: "No. 8",
-    kelurahan: "Kuningan Timur", kecamatan: "Setiabudi", alamatKota: "Jakarta Selatan", alamatProvinsi: "DKI Jakarta",
-    tautanGoogleMaps: "https://maps.google.com/?q=-6.2389,106.8306",
-    nomorCallCenter: "1500774", nomorCallCenter2: "021-11223344", nomorCallCenter3: "081234567893", nomorPribadi: "081234567892", aksesInfo: "publik", status: "terverifikasi",
-    dibuatOleh: "Admin Pusat", usulanDari: "pusat",
-    logTerakhir: RUJUKAN_LOG.dibuatTerverifikasiPusat, website: "https://konseling.go.id",
   },
   {
     id: "sr-review-1",
@@ -628,15 +616,6 @@ function DetailPanel({
                   <div>
                     <p className="text-xs text-gray-500">Call Center 2</p>
                     <p className="text-sm font-medium text-gray-900">{item.nomorCallCenter2}</p>
-                  </div>
-                </div>
-              )}
-              {item.nomorCallCenter3 && (
-                <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2.5">
-                  <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                  <div>
-                    <p className="text-xs text-gray-500">Call Center 3</p>
-                    <p className="text-sm font-medium text-gray-900">{item.nomorCallCenter3}</p>
                   </div>
                 </div>
               )}
