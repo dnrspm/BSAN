@@ -8,8 +8,8 @@ import {
 } from "lucide-react"
 
 type StatusPelanggaran = "baru" | "proses" | "selesai" | "ditutup"
-type TingkatKeparahan = "ringan" | "sedang" | "berat"
-type Pelapor = "laporan_masyarakat" | "laporan_sekolah" | "temuan_pengawas" | "media" | "lainnya"
+type TingkatKeparahan = "biasa" | "urgen" | "sangat_urgen"
+type Pelapor = "laporan_masyarakat" | "laporan_sekolah" | "laporan_kemendikdasmen" | "temuan_pengawas" | "media" | "lainnya"
 
 interface IndividuItem {
   nama: string
@@ -55,11 +55,20 @@ interface PelanggaranItem {
 }
 
 const SEKOLAH_OPTIONS = [
-  "SDN 1 Banda Aceh", "SDN 2 Banda Aceh", "SMPN 1 Banda Aceh",
-  "SMAN 1 Banda Aceh", "SMKN 1 Banda Aceh", "SDN 1 Medan",
-  "SMPN 2 Jakarta Pusat", "SMAN 3 Surabaya", "SDN 4 Bandung",
-  "SMPN 5 Yogyakarta", "SMKN 2 Semarang", "SDN 1 Denpasar",
-  "SMPN 3 Makassar", "SMAN 2 Palembang",
+  { npsn: "10101001", nama: "SDN 1 Banda Aceh" },
+  { npsn: "10101002", nama: "SDN 2 Banda Aceh" },
+  { npsn: "10101003", nama: "SMPN 1 Banda Aceh" },
+  { npsn: "10101004", nama: "SMAN 1 Banda Aceh" },
+  { npsn: "10101005", nama: "SMKN 1 Banda Aceh" },
+  { npsn: "10201001", nama: "SDN 1 Medan" },
+  { npsn: "10301002", nama: "SMPN 2 Jakarta Pusat" },
+  { npsn: "10401003", nama: "SMAN 3 Surabaya" },
+  { npsn: "10501004", nama: "SDN 4 Bandung" },
+  { npsn: "10601005", nama: "SMPN 5 Yogyakarta" },
+  { npsn: "10701002", nama: "SMKN 2 Semarang" },
+  { npsn: "10801001", nama: "SDN 1 Denpasar" },
+  { npsn: "10901003", nama: "SMPN 3 Makassar" },
+  { npsn: "11001002", nama: "SMAN 2 Palembang" },
 ]
 
 const UNSUR_OPTIONS = ["Siswa Laki-laki", "Siswa Perempuan", "Guru", "Tenaga Kependidikan", "Kepala Sekolah", "Warga Sekolah", "Lainnya"]
@@ -67,18 +76,19 @@ const UNSUR_OPTIONS = ["Siswa Laki-laki", "Siswa Perempuan", "Guru", "Tenaga Kep
 const KATEGORI_PELANGGARAN = [
   "Perundungan (Bullying)", "Pelecehan Seksual", "Kekerasan Fisik",
   "Kekerasan Verbal", "Pencurian", "Vandalisme", "Penggunaan NAPZA",
-  "Melanggar Aturan Sekolah", "Lainnya",
+  "Melanggar Aturan Sekolah", "Pelanggaran Hukum", "Lainnya",
 ]
 
 const TINGKAT_KEPARAHAN: { value: TingkatKeparahan; label: string; color: string }[] = [
-  { value: "ringan", label: "Ringan", color: "bg-yellow-100 text-yellow-700" },
-  { value: "sedang", label: "Sedang", color: "bg-orange-100 text-orange-700" },
-  { value: "berat", label: "Berat", color: "bg-red-100 text-red-700" },
+  { value: "biasa", label: "Biasa", color: "bg-yellow-100 text-yellow-700" },
+  { value: "urgen", label: "Urgen", color: "bg-orange-100 text-orange-700" },
+  { value: "sangat_urgen", label: "Sangat Urgen", color: "bg-red-100 text-red-700" },
 ]
 
 const PELAPOR_OPTIONS: { value: Pelapor; label: string }[] = [
   { value: "laporan_masyarakat", label: "Laporan masyarakat" },
   { value: "laporan_sekolah", label: "Laporan sekolah" },
+  { value: "laporan_kemendikdasmen", label: "Laporan Kemendikdasmen" },
   { value: "temuan_pengawas", label: "Temuan pengawas/pokja" },
   { value: "media", label: "Media/berita" },
   { value: "lainnya", label: "Lainnya" },
@@ -152,7 +162,7 @@ function emptyForm() {
     tanggalTerjadi: "",
     kronologi: [{ tanggal: "", jam: "", lokasi: "", keterangan: "" }],
     kategori: "",
-    tingkatKeparahan: "ringan" as TingkatKeparahan,
+    tingkatKeparahan: "biasa" as TingkatKeparahan,
     pelapor: "laporan_sekolah" as Pelapor,
     pelaporLainnya: "",
     pic: "",
@@ -191,6 +201,8 @@ function TambahPelanggaranInner() {
   const [showSekolahDropdown, setShowSekolahDropdown] = useState(false)
   const [picInput, setPicInput] = useState("")
   const [showPicDropdown, setShowPicDropdown] = useState(false)
+  const [asalSekolahQuery, setAsalSekolahQuery] = useState<Record<number, string>>({})
+  const [openAsalSekolahIdx, setOpenAsalSekolahIdx] = useState<number | null>(null)
   const [submitted, setSubmitted] = useState(false)
 
   const selectPic = (name: string) => {
@@ -224,7 +236,7 @@ function TambahPelanggaranInner() {
           namaSekolah: Array.isArray(found.namaSekolah) ? found.namaSekolah : [found.namaSekolah as any],
           unsurTerlibat: Array.isArray(found.unsurTerlibat) ? found.unsurTerlibat : [],
           dokumentasi: Array.isArray(found.dokumentasi) ? found.dokumentasi[0] ?? "" : found.dokumentasi,
-          tingkatKeparahan: (found as any).tingkatKeparahan ?? "ringan",
+          tingkatKeparahan: (found as any).tingkatKeparahan ?? "biasa",
           pelapor: (found as any).pelapor ?? "laporan_sekolah",
           pelaporLainnya: (found as any).pelaporLainnya ?? "",
           tindakLanjut: (found as any).tindakLanjut ?? "",
@@ -257,18 +269,18 @@ function TambahPelanggaranInner() {
 
   // School suggestions
   const allSchoolSuggestions = useMemo(() => {
-    const names = new Set<string>()
-    SEKOLAH_OPTIONS.forEach((s) => names.add(s))
+    const map = new Map<string, string>()
+    SEKOLAH_OPTIONS.forEach((s) => map.set(s.nama, s.npsn))
     try {
       const stored = localStorage.getItem("pelanggaranList")
       if (stored) {
         JSON.parse(stored).forEach((item: PelanggaranItem) => {
           const list = Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah]
-          list.forEach((s) => { if (s.trim()) names.add(s.trim()) })
+          list.forEach((s) => { if (s.trim() && !map.has(s.trim())) map.set(s.trim(), "") })
         })
       }
     } catch {}
-    return Array.from(names).sort()
+    return Array.from(map.entries()).map(([nama, npsn]) => ({ nama, npsn })).sort((a, b) => a.nama.localeCompare(b.nama))
   }, [])
 
   const allPicOptions = useMemo(() => {
@@ -294,8 +306,8 @@ function TambahPelanggaranInner() {
     : allPicOptions
 
   const filteredSekolahOptions = sekolahInput
-    ? allSchoolSuggestions.filter((s) => s.toLowerCase().includes(sekolahInput.toLowerCase()) && !form.namaSekolah.includes(s))
-    : allSchoolSuggestions.filter((s) => !form.namaSekolah.includes(s))
+    ? allSchoolSuggestions.filter((s) => (s.nama.toLowerCase().includes(sekolahInput.toLowerCase()) || s.npsn.includes(sekolahInput)) && !form.namaSekolah.includes(s.nama))
+    : allSchoolSuggestions.filter((s) => !form.namaSekolah.includes(s.nama))
 
   const addSekolah = (name: string) => {
     const trimmed = name.trim()
@@ -316,8 +328,7 @@ function TambahPelanggaranInner() {
     form.kronologi.some((e) => e.tanggal) &&
     form.kategori &&
     form.tingkatKeparahan &&
-    form.pelapor &&
-    form.rekomendasi.trim()
+    form.pelapor
 
   const handleSubmit = () => {
     if (!canSubmit) return
@@ -393,7 +404,7 @@ function TambahPelanggaranInner() {
 
   // View mode: update status
   const handleUpdateStatus = () => {
-    if (!viewId || !item || newStatus === item.status) return
+    if (!viewId || !item) return
     const session = (() => {
       try { return JSON.parse(localStorage.getItem("auth") ?? "{}") } catch { return {} }
     })() as { role?: string; namaSekolah?: string; namaDinas?: string }
@@ -489,7 +500,7 @@ function TambahPelanggaranInner() {
                   <TextInput value={item.kategori} />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel>Tingkat Keparahan</FieldLabel>
+                  <FieldLabel>Tingkat Urgensi</FieldLabel>
                   <TextInput value={TINGKAT_KEPARAHAN.find((t) => t.value === item.tingkatKeparahan)?.label ?? item.tingkatKeparahan} />
                 </div>
               </div>
@@ -499,6 +510,25 @@ function TambahPelanggaranInner() {
                 <TextInput value={new Date(item.tanggalTerjadi).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} />
               </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                {(item as any).motif && (
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel>Motif Kejadian</FieldLabel>
+                    <TextInput value={(item as any).motif} />
+                  </div>
+                )}
+                {(item as any).tanggalPelaporan && (
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel>Tanggal Pelaporan</FieldLabel>
+                    <TextInput value={new Date((item as any).tanggalPelaporan).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} />
+                  </div>
+                )}
+              </div>
+            </div>
+          </SectionCard>
+
+          <SectionCard icon={<Clock className="w-4 h-4" />} title="Detail Kasus">
+            <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <FieldLabel>Unsur yang Terlibat</FieldLabel>
                 <div className="flex flex-col gap-2 mt-1">
@@ -525,14 +555,39 @@ function TambahPelanggaranInner() {
                 </div>
               </div>
 
+              <hr className="border-gray-300 -mx-5" />
+
               <div className="flex flex-col gap-1.5">
-                <FieldLabel>Detail Kasus</FieldLabel>
-                <textarea
-                  value={item.rekomendasi}
-                  disabled
-                  rows={4}
-                  className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-default resize-none"
-                />
+                <FieldLabel>Kronologi Kejadian</FieldLabel>
+                {Array.isArray((item as any).kronologi) && (item as any).kronologi.length > 0 ? (
+                  <div className="flex flex-col gap-2 mt-1">
+                    {(item as any).kronologi.map((entry: { tanggal?: string; jam?: string; lokasi?: string; keterangan?: string }, i: number) => (
+                      <div key={i} className="flex gap-3 text-sm">
+                        <div className="flex flex-col items-center">
+                          <div className="w-2 h-2 rounded-full bg-gray-400 mt-1.5 shrink-0" />
+                          {i < (item as any).kronologi.length - 1 && <div className="w-px flex-1 bg-gray-200 mt-1" />}
+                        </div>
+                        <div className="pb-3">
+                          {(entry.tanggal || entry.jam) && (
+                            <p className="text-xs text-gray-400 mb-0.5">
+                              {entry.tanggal && new Date(entry.tanggal).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                              {entry.jam && ` · ${entry.jam}`}
+                              {entry.lokasi && ` · ${entry.lokasi}`}
+                            </p>
+                          )}
+                          <p className="text-gray-700">{entry.keterangan || "-"}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : <span className="text-sm text-gray-400 mt-1">-</span>}
+              </div>
+
+              <hr className="border-gray-300 -mx-5" />
+
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel>Keterangan Tambahan</FieldLabel>
+                <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">{item.rekomendasi || "-"}</p>
               </div>
             </div>
           </SectionCard>
@@ -612,7 +667,7 @@ function TambahPelanggaranInner() {
               </div>
               <div className="mt-4 space-y-3">
                 <div>
-                  <label className="text-xs font-semibold text-gray-700">Keterangan <span className="text-gray-400">(opsional)</span></label>
+                  <label className="text-xs font-semibold text-gray-700">Keterangan <span className="text-red-500">*</span></label>
                   <textarea
                     value={keteranganStatus}
                     onChange={(e) => setKeteranganStatus(e.target.value)}
@@ -634,7 +689,7 @@ function TambahPelanggaranInner() {
               </div>
               <div className="flex gap-3 mt-4">
                 <button onClick={() => setShowStatusModal(false)} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Batal</button>
-                <button onClick={handleUpdateStatus} disabled={newStatus === item.status} className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition">Simpan</button>
+                <button onClick={handleUpdateStatus} disabled={!keteranganStatus.trim()} className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition">Simpan</button>
               </div>
             </div>
           </div>
@@ -702,13 +757,13 @@ function TambahPelanggaranInner() {
                   <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                     {filteredSekolahOptions.map((o) => (
                       <button
-                        key={o}
+                        key={o.nama}
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => addSekolah(o)}
-                        className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 text-gray-700"
+                        onClick={() => addSekolah(o.nama)}
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex flex-col"
                       >
-                        {o}
+                        <span className="text-gray-800">{o.nama}{o.npsn && <span className="text-xs text-gray-400 ml-2">NPSN {o.npsn}</span>}</span>
                       </button>
                     ))}
                   </div>
@@ -743,7 +798,7 @@ function TambahPelanggaranInner() {
                 </select>
               </div>
               <div className="flex flex-col gap-1.5">
-                <FieldLabel required>Tingkat Keparahan</FieldLabel>
+                <FieldLabel required>Tingkat Urgensi</FieldLabel>
                 <select
                   value={form.tingkatKeparahan}
                   onChange={(e) => setForm((prev) => ({ ...prev, tingkatKeparahan: e.target.value as TingkatKeparahan }))}
@@ -845,20 +900,44 @@ function TambahPelanggaranInner() {
                       </div>
                       <div>
                         {i === 0 && <label className="block text-xs text-gray-500 mb-1">Asal Sekolah</label>}
-                        <input
-                          value={displayKategori === "Lainnya" ? (u.kategori !== "Lainnya" ? u.kategori : "") : u.asalSekolah}
-                          onChange={(e) => {
-                            const next = [...form.unsurTerlibat]
-                            if (displayKategori === "Lainnya") {
+                        {displayKategori === "Lainnya" ? (
+                          <input
+                            value={u.kategori !== "Lainnya" ? u.kategori : ""}
+                            onChange={(e) => {
+                              const next = [...form.unsurTerlibat]
                               next[i] = { ...next[i], kategori: e.target.value }
-                            } else {
+                              setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                            }}
+                            placeholder="Tulis..."
+                            className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                          />
+                        ) : form.namaSekolah.length > 0 ? (
+                          <select
+                            value={u.asalSekolah}
+                            onChange={(e) => {
+                              const next = [...form.unsurTerlibat]
                               next[i] = { ...next[i], asalSekolah: e.target.value }
-                            }
-                            setForm((prev) => ({ ...prev, unsurTerlibat: next }))
-                          }}
-                          placeholder={displayKategori === "Lainnya" ? "Tulis..." : "Asal sekolah"}
-                          className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                        />
+                              setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                            }}
+                            className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                          >
+                            <option value="">Pilih sekolah</option>
+                            {form.namaSekolah.map((s) => (
+                              <option key={s} value={s}>{s}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            value={u.asalSekolah}
+                            onChange={(e) => {
+                              const next = [...form.unsurTerlibat]
+                              next[i] = { ...next[i], asalSekolah: e.target.value }
+                              setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                            }}
+                            placeholder="Asal sekolah"
+                            className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                          />
+                        )}
                       </div>
                       <div>
                         {i === 0 && <label className="block text-xs text-gray-500 mb-1">Jml</label>}
@@ -914,9 +993,8 @@ function TambahPelanggaranInner() {
                               setForm((prev) => ({ ...prev, unsurTerlibat: next }))
                             }}
                             placeholder="Umur"
-                            className="w-[72px] shrink-0 h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            className="w-[88px] shrink-0 h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                           />
-                          <div className="w-[22px] shrink-0" />
                         </div>
                         ))}
                       </div>
@@ -1020,7 +1098,7 @@ function TambahPelanggaranInner() {
             <hr className="border-gray-300 -mx-5 my-2" />
 
             <div className="flex flex-col gap-1.5">
-              <FieldLabel required>Keterangan Tambahan</FieldLabel>
+              <FieldLabel>Keterangan Tambahan</FieldLabel>
               <textarea
                 value={form.rekomendasi}
                 onChange={(e) => setForm((prev) => ({ ...prev, rekomendasi: e.target.value }))}

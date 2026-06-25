@@ -27,8 +27,8 @@ import {
 import { readAuthSession } from "@/lib/auth-session"
 
 type StatusPelanggaran = "baru" | "proses" | "selesai" | "ditutup"
-type TingkatKeparahan = "ringan" | "sedang" | "berat"
-type Pelapor = "laporan_masyarakat" | "laporan_sekolah" | "temuan_pengawas" | "media" | "lainnya"
+type TingkatKeparahan = "biasa" | "urgen" | "sangat_urgen"
+type Pelapor = "laporan_masyarakat" | "laporan_sekolah" | "laporan_kemendikdasmen" | "temuan_pengawas" | "media" | "lainnya"
 
 interface IndividuItem {
   nama: string
@@ -108,13 +108,14 @@ const KATEGORI_PELANGGARAN = [
   "Vandalisme",
   "Penggunaan NAPZA",
   "Melanggar Aturan Sekolah",
+  "Pelanggaran Hukum",
   "Lainnya",
 ]
 
 const TINGKAT_KEPARAHAN: { value: TingkatKeparahan; label: string; color: string }[] = [
-  { value: "ringan", label: "Ringan", color: "bg-yellow-100 text-yellow-700" },
-  { value: "sedang", label: "Sedang", color: "bg-orange-100 text-orange-700" },
-  { value: "berat", label: "Berat", color: "bg-red-100 text-red-700" },
+  { value: "biasa", label: "Biasa", color: "bg-yellow-100 text-yellow-700" },
+  { value: "urgen", label: "Urgen", color: "bg-orange-100 text-orange-700" },
+  { value: "sangat_urgen", label: "Sangat Urgen", color: "bg-red-100 text-red-700" },
 ]
 
 const PELAPOR_OPTIONS: { value: Pelapor; label: string }[] = [
@@ -217,7 +218,7 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <AlertTriangle className="w-4 h-4 text-gray-500" />
-                <span className="text-xs font-medium text-gray-500">Tingkat Keparahan</span>
+                <span className="text-xs font-medium text-gray-500">Tingkat Urgensi</span>
               </div>
               <p className="text-sm font-semibold text-gray-900 ml-6">
                 {TINGKAT_KEPARAHAN.find((t) => t.value === item.tingkatKeparahan)?.label ?? item.tingkatKeparahan}
@@ -474,7 +475,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
         : [{ tanggal: "", jam: "", lokasi: "", keterangan: "" }]
   )
   const [kategori, setKategori] = useState(initialData?.kategori ?? "")
-  const [tingkatKeparahan, setTingkatKeparahan] = useState<TingkatKeparahan>(initialData?.tingkatKeparahan ?? "ringan")
+  const [tingkatKeparahan, setTingkatKeparahan] = useState<TingkatKeparahan>(initialData?.tingkatKeparahan ?? "biasa")
   const [pelapor, setPelapor] = useState<Pelapor>(initialData?.pelapor ?? "laporan_sekolah")
   const [pelaporLainnya, setPelaporLainnya] = useState(initialData?.pelaporLainnya ?? "")
   const [pic, setPic] = useState(initialData?.pic ?? "")
@@ -665,7 +666,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
               </select>
             </div>
             <div>
-              <label className="text-xs font-semibold text-gray-700">Tingkat Keparahan <span className="text-red-500">*</span></label>
+              <label className="text-xs font-semibold text-gray-700">Tingkat Urgensi <span className="text-red-500">*</span></label>
               <select
                 value={tingkatKeparahan}
                 onChange={(e) => setTingkatKeparahan(e.target.value as TingkatKeparahan)}
@@ -1072,7 +1073,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
             namaSekolah: Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah as any],
             unsurTerlibat: unsur,
             dokumentasi: Array.isArray(item.dokumentasi) ? item.dokumentasi[0] ?? "" : item.dokumentasi,
-            tingkatKeparahan: (item as any).tingkatKeparahan ?? "ringan",
+            tingkatKeparahan: (item as any).tingkatKeparahan ?? "biasa",
             pelapor: (item as any).pelapor ?? "laporan_sekolah",
             pelaporLainnya: (item as any).pelaporLainnya ?? "",
             tindakLanjut: (item as any).tindakLanjut ?? "",
@@ -1198,7 +1199,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
 
   const downloadCsv = () => {
     const rows = [
-      ["Nama Sekolah", "Unsur Terlibat", "Tanggal", "Kategori", "Tingkat Keparahan", "Pelapor", "PIC", "Status", "Detail Kasus", "Tindak Lanjut", "Dibuat"].join(","),
+      ["Nama Sekolah", "Unsur Terlibat", "Tanggal", "Kategori", "Tingkat Urgensi", "Pelapor", "PIC", "Status", "Detail Kasus", "Tindak Lanjut", "Dibuat"].join(","),
       ...filtered.map((item) =>
         [
           `"${(Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah]).join("; ")}"`,
