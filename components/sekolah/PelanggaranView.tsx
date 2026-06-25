@@ -30,9 +30,17 @@ type StatusPelanggaran = "baru" | "proses" | "selesai" | "ditutup"
 type TingkatKeparahan = "ringan" | "sedang" | "berat"
 type Pelapor = "laporan_masyarakat" | "laporan_sekolah" | "temuan_pengawas" | "media" | "lainnya"
 
+interface IndividuItem {
+  nama: string
+  umur: string
+}
+
 interface UnsurItem {
+  peran: "pelaku" | "korban"
   kategori: string
+  asalSekolah: string
   jumlah: string
+  individu: IndividuItem[]
 }
 
 interface PelanggaranItem {
@@ -80,7 +88,7 @@ function getSekolahColors(name: string) {
   return { bg: "bg-gray-500/10", text: "text-gray-700" }
 }
 
-const UNSUR_OPTIONS = ["Siswa Laki-laki", "Siswa Perempuan", "Guru", "Staff", "Lainnya"]
+const UNSUR_OPTIONS = ["Siswa Laki-laki", "Siswa Perempuan", "Guru", "Tenaga Kependidikan", "Kepala Sekolah", "Warga Sekolah", "Lainnya"]
 
 const KATEGORI_PELANGGARAN = [
   "Perundungan (Bullying)",
@@ -223,11 +231,26 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
               <Users className="w-4 h-4 text-gray-500" />
               <span className="text-xs font-medium text-gray-500">Unsur Terlibat</span>
             </div>
-            <div className="ml-6 space-y-1">
+            <div className="ml-6 space-y-1.5">
               {(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u, i) => (
-                <p key={i} className="text-sm font-semibold text-gray-900">
-                  {u.kategori}: {u.jumlah} org
-                </p>
+                <div key={i} className="border border-gray-200 rounded-lg px-3 py-2 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                      u.peran === "pelaku" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
+                    }`}>
+                      {u.peran === "pelaku" ? "Pelaku" : "Korban"}
+                    </span>
+                    <span className="text-xs font-medium text-gray-500">{u.kategori || "-"}</span>
+                    {u.asalSekolah && <span className="text-xs text-gray-500">· {u.asalSekolah}</span>}
+                  </div>
+                  {Array.isArray(u.individu) && u.individu.length > 0 && u.individu.map((ind, idx) => (
+                    <div key={idx} className="flex items-center gap-3 pl-4 text-sm">
+                      <span className="text-gray-400 text-xs">#{idx + 1}</span>
+                      <span className="font-semibold text-gray-900">{ind.nama || "-"}</span>
+                      {ind.umur && <span className="text-gray-500 text-xs">{ind.umur} thn</span>}
+                    </div>
+                  ))}
+                </div>
               ))}
             </div>
           </div>
@@ -380,11 +403,9 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
   const [sekolahInput, setSekolahInput] = useState("")
   const [showSekolahDropdown, setShowSekolahDropdown] = useState(false)
   const [unsurTerlibat, setUnsurTerlibat] = useState<UnsurItem[]>(
-    Array.isArray(initialData?.unsurTerlibat)
+    Array.isArray(initialData?.unsurTerlibat) && initialData!.unsurTerlibat.length > 0
       ? initialData!.unsurTerlibat
-      : initialData?.unsurTerlibat
-        ? [{ kategori: "Siswa Laki-laki", jumlah: String((initialData.unsurTerlibat as any).laki ?? 0) }, { kategori: "Siswa Perempuan", jumlah: String((initialData.unsurTerlibat as any).perempuan ?? 0) }]
-        : [{ kategori: "", jumlah: "" }]
+      : [{ peran: "pelaku", kategori: "", asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "" }] }]
   )
   const [tanggal, setTanggal] = useState(initialData?.tanggalTerjadi?.split("T")[0] ?? "")
   const [kategori, setKategori] = useState(initialData?.kategori ?? "")
@@ -465,13 +486,13 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
     setPicInput("")
   }
 
-  const canSubmit = namaSekolah.length > 0 && unsurTerlibat.some((u) => u.kategori && u.jumlah) && tanggal && kategori && rekomendasi.trim() && tingkatKeparahan && pelapor
+  const canSubmit = namaSekolah.length > 0 && unsurTerlibat.some((u) => u.kategori && u.peran && u.individu.some((ind) => ind.nama)) && tanggal && kategori && rekomendasi.trim() && tingkatKeparahan && pelapor
 
   const handleSubmit = () => {
     if (!canSubmit) return
     onSubmit({
       namaSekolah,
-      unsurTerlibat: unsurTerlibat.filter((u) => u.kategori && u.jumlah),
+      unsurTerlibat: unsurTerlibat.filter((u) => u.kategori && u.peran && u.individu.some((ind) => ind.nama)),
       tanggalTerjadi: tanggal,
       kategori,
       tingkatKeparahan,
@@ -600,79 +621,136 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
 
           <div>
             <label className="text-xs font-semibold text-gray-700">Unsur yang Terlibat <span className="text-red-500">*</span></label>
-            <div className="flex flex-col gap-3 mt-1">
+            <div className="flex flex-col gap-2 mt-1">
               {unsurTerlibat.map((u, i) => {
                 const predefined = UNSUR_OPTIONS.filter((o) => o !== "Lainnya")
                 const isCustom = u.kategori && !predefined.includes(u.kategori)
-                const displayValue = isCustom ? "Lainnya" : u.kategori
-                const takenByOthers = unsurTerlibat
-                  .filter((_, idx) => idx !== i)
-                  .map((r) => r.kategori)
-                  .filter((k) => predefined.includes(k))
-                const availableOptions = ["Lainnya", ...predefined.filter((opt) => !takenByOthers.includes(opt))]
+                const displayKategori = isCustom ? "Lainnya" : u.kategori
+                const lainCount = unsurTerlibat.filter((_, idx) => idx !== i && (_.kategori === "Lainnya" || (!predefined.includes(_.kategori) && _.kategori))).length
+                const lainDisabled = lainCount >= 3
+                const jml = parseInt(u.jumlah) || 0
+                const syncIndividu = (next: UnsurItem[]) => {
+                  const entry = next[i]
+                  if (!entry) return
+                  const newJml = parseInt(entry.jumlah) || 0
+                  if (!entry.individu) entry.individu = []
+                  const current = entry.individu.length
+                  if (newJml > current) {
+                    const add = Array.from({ length: newJml - current }, () => ({ nama: "", umur: "" }))
+                    entry.individu = [...entry.individu, ...add]
+                  } else if (newJml < current) {
+                    entry.individu = entry.individu.slice(0, newJml)
+                  }
+                  if (newJml === 0) entry.individu = [{ nama: "", umur: "" }]
+                  setUnsurTerlibat(next)
+                }
                 return (
-                  <div key={i} className="grid grid-cols-[1fr_100px_auto_auto] gap-2 items-center">
-                    <div className="flex items-center gap-2">
-                      <select
-                        value={displayValue}
-                        onChange={(e) => {
-                          const next = [...unsurTerlibat]
+                <div key={i} className="border border-gray-200 rounded-lg px-3 py-2.5">
+                  <div className="grid grid-cols-[auto_1fr_1fr_72px_auto] gap-2 items-center">
+                    <select
+                      value={u.peran}
+                      onChange={(e) => {
+                        const next = [...unsurTerlibat]
+                        next[i] = { ...next[i], peran: e.target.value as "pelaku" | "korban" }
+                        setUnsurTerlibat(next)
+                      }}
+                      className="h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    >
+                      <option value="pelaku">Terduga Pelaku</option>
+                      <option value="korban">Terduga Korban</option>
+                    </select>
+                    <select
+                      value={displayKategori}
+                      onChange={(e) => {
+                        const next = [...unsurTerlibat]
+                        next[i] = { ...next[i], kategori: e.target.value }
+                        setUnsurTerlibat(next)
+                      }}
+                      className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white truncate"
+                    >
+                      <option value="" disabled>Jenis</option>
+                      {UNSUR_OPTIONS.map((o) => (
+                        <option key={o} value={o} disabled={o === "Lainnya" && lainDisabled}>{o} {o === "Lainnya" && lainDisabled ? "(maks 3)" : ""}</option>
+                      ))}
+                    </select>
+                    <input
+                      value={displayKategori === "Lainnya" ? (u.kategori !== "Lainnya" ? u.kategori : "") : u.asalSekolah}
+                      onChange={(e) => {
+                        const next = [...unsurTerlibat]
+                        if (displayKategori === "Lainnya") {
                           next[i] = { ...next[i], kategori: e.target.value }
-                          setUnsurTerlibat(next)
-                        }}
-                        className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      >
-                        <option value="" disabled>Pilih unsur</option>
-                        {availableOptions.map((o) => (
-                          <option key={o} value={o}>{o}</option>
-                        ))}
-                      </select>
-                      {displayValue === "Lainnya" && (
-                        <input
-                          value={u.kategori !== "Lainnya" ? u.kategori : ""}
-                          onChange={(e) => {
-                            const next = [...unsurTerlibat]
-                            next[i] = { ...next[i], kategori: e.target.value }
-                            setUnsurTerlibat(next)
-                          }}
-                          placeholder="Tulis unsur..."
-                          className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                        />
-                      )}
-                    </div>
+                        } else {
+                          next[i] = { ...next[i], asalSekolah: e.target.value }
+                        }
+                        setUnsurTerlibat(next)
+                      }}
+                      placeholder={displayKategori === "Lainnya" ? "Tulis..." : "Asal sekolah"}
+                      className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
                     <input
                       type="number"
-                      min="1"
+                      min="0"
                       value={u.jumlah}
                       onChange={(e) => {
                         const next = [...unsurTerlibat]
                         next[i] = { ...next[i], jumlah: e.target.value }
-                        setUnsurTerlibat(next)
+                        syncIndividu(next)
                       }}
                       placeholder="Jml"
-                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     />
-                    <span className="text-sm text-gray-500 whitespace-nowrap self-center">org</span>
                     {i > 0 ? (
                       <button
                         type="button"
                         onClick={() => setUnsurTerlibat((prev) => prev.filter((_, idx) => idx !== i))}
-                        className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition self-center"
+                        className="p-1 hover:bg-red-50 rounded text-red-400 hover:text-red-600 transition"
                       >
-                        <X className="w-4 h-4" />
+                        <X className="w-3.5 h-3.5" />
                       </button>
                     ) : (
-                      <div className="w-7" />
+                      <div className="w-5" />
                     )}
-                  </div>
-                )
-              })}
+                    </div>
+                    {jml > 0 && (
+                      <div className="flex flex-col gap-2 mt-2">
+                        {u.individu.map((ind, idx) => (
+                        <div key={idx} className="flex items-center gap-2">
+                          <span className="text-sm text-gray-400 w-5 shrink-0 text-right">#{idx + 1}</span>
+                          <input
+                            value={ind.nama}
+                            onChange={(e) => {
+                              const next = [...unsurTerlibat]
+                              next[i].individu[idx] = { ...next[i].individu[idx], nama: e.target.value }
+                              setUnsurTerlibat(next)
+                            }}
+                            placeholder="Nama"
+                            className="flex-1 min-w-0 h-7 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                          />
+                          <input
+                            type="number"
+                            min="1"
+                            value={ind.umur}
+                            onChange={(e) => {
+                              const next = [...unsurTerlibat]
+                              next[i].individu[idx] = { ...next[i].individu[idx], umur: e.target.value }
+                              setUnsurTerlibat(next)
+                            }}
+                            placeholder="Umur"
+                            className="w-[72px] shrink-0 h-7 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                          />
+                          <div className="w-[22px] shrink-0" />
+                        </div>
+                        ))}
+                      </div>
+                    )}
+                </div>
+              )})}
               <button
                 type="button"
-                onClick={() => setUnsurTerlibat((prev) => [...prev, { kategori: "", jumlah: "" }])}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+                onClick={() => setUnsurTerlibat((prev) => [...prev, { peran: "pelaku", kategori: "", asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "" }] }])}
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
               >
-                <Plus className="w-3.5 h-3.5" /> Tambah Unsur
+                <Plus className="w-3.5 h-3.5" /> Tambah Kelompok Unsur
               </button>
             </div>
           </div>
@@ -836,9 +914,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
       try {
         const parsed: PelanggaranItem[] = JSON.parse(stored)
         const normalized = parsed.map((item) => {
-          const unsur = Array.isArray(item.unsurTerlibat)
-            ? item.unsurTerlibat
-            : [{ kategori: "Laki-laki", jumlah: String((item.unsurTerlibat as any)?.laki ?? 0) }, { kategori: "Perempuan", jumlah: String((item.unsurTerlibat as any)?.perempuan ?? 0) }].filter((u) => parseInt(u.jumlah) > 0)
+          const unsur = Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []
           return {
             ...item,
             namaSekolah: Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah as any],
@@ -974,7 +1050,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
       ...filtered.map((item) =>
         [
           `"${(Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah]).join("; ")}"`,
-          `"${(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u) => `${u.kategori}: ${u.jumlah}`).join("; ")}"`,
+          `"${(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u) => `${u.kategori} (${u.peran}) ${u.asalSekolah} - ${(u.individu || []).map((ind) => `${ind.nama}${ind.umur ? `(${ind.umur})` : ""}`).join(", ")}`).join("; ")}"`,
           `"${item.tanggalTerjadi}"`,
           `"${item.kategori}"`,
           `"${TINGKAT_KEPARAHAN.find((t) => t.value === item.tingkatKeparahan)?.label ?? item.tingkatKeparahan}"`,
@@ -1125,7 +1201,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200 text-left">
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Nama Sekolah</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Unsur (L/P)</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Unsur Terlibat</th>
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Tanggal</th>
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Kategori</th>
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
@@ -1140,7 +1216,19 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
                       </td>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
                         {(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u, i) => (
-                          <span key={i} className="mr-2">{u.kategori}: {u.jumlah}</span>
+                          <div key={i} className="mb-1 last:mb-0">
+                            <span className="text-xs text-gray-500">{u.kategori}</span>
+                            <span className={`ml-1 text-xs font-medium px-1.5 py-0.5 rounded-full ${
+                              u.peran === "pelaku" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
+                            }`}>
+                              {u.peran === "pelaku" ? "P" : "K"}
+                            </span>
+                            <div className="text-xs text-gray-700 pl-1">
+                              {(u.individu || []).map((ind, idx) => (
+                                <span key={idx}>{ind.nama}{idx < u.individu.length - 1 ? ", " : ""}</span>
+                              ))}
+                            </div>
+                          </div>
                         ))}
                       </td>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
