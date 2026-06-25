@@ -35,6 +35,13 @@ interface IndividuItem {
   umur: string
 }
 
+interface KronologiEntry {
+  tanggal: string
+  jam: string
+  lokasi: string
+  keterangan: string
+}
+
 interface UnsurItem {
   peran: "pelaku" | "korban"
   kategori: string
@@ -48,6 +55,7 @@ interface PelanggaranItem {
   namaSekolah: string[]
   unsurTerlibat: UnsurItem[]
   tanggalTerjadi: string
+  kronologi?: KronologiEntry[]
   kategori: string
   tingkatKeparahan: TingkatKeparahan
   pelapor: Pelapor
@@ -56,6 +64,7 @@ interface PelanggaranItem {
   pic: string
   dokumentasi: string
   rekomendasi: string
+  motif?: string
   status: StatusPelanggaran
   createdAt: string
   updatedAt: string
@@ -226,6 +235,44 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
             </p>
           </div>
 
+          {item.kronologi && Array.isArray(item.kronologi) ? (
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-4 h-4 flex items-center justify-center text-gray-500">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </span>
+                <span className="text-xs font-medium text-gray-500">Kronologi Kejadian</span>
+              </div>
+              <div className="ml-6 space-y-1.5">
+                {item.kronologi.map((k, i) => (
+                  <div key={i} className="flex items-start gap-2 text-sm">
+                    <span className="font-semibold text-gray-700 whitespace-nowrap min-w-[105px]">
+                      {k.tanggal ? new Date(k.tanggal).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : ""}
+                    </span>
+                    {k.jam && (
+                      <span className="text-gray-500 whitespace-nowrap">{k.jam}</span>
+                    )}
+                    {k.lokasi && (
+                      <span className="text-gray-500">@{k.lokasi}</span>
+                    )}
+                    <span className="text-gray-600">—</span>
+                    <span className="text-gray-800">{k.keterangan}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : item.kronologi && typeof item.kronologi === "string" ? (
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-4 h-4 flex items-center justify-center text-gray-500">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </span>
+                <span className="text-xs font-medium text-gray-500">Kronologi Kejadian</span>
+              </div>
+              <p className="text-sm text-gray-900 ml-6 whitespace-pre-wrap">{item.kronologi}</p>
+            </div>
+          ) : null}
+
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Users className="w-4 h-4 text-gray-500" />
@@ -254,6 +301,18 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
               ))}
             </div>
           </div>
+
+          {item.motif && (
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-4 h-4 flex items-center justify-center text-gray-500">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                </span>
+                <span className="text-xs font-medium text-gray-500">Motif Kejadian</span>
+              </div>
+              <p className="text-sm text-gray-900 ml-6 leading-relaxed">{item.motif}</p>
+            </div>
+          )}
 
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -407,7 +466,13 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
       ? initialData!.unsurTerlibat
       : [{ peran: "pelaku", kategori: "", asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "" }] }]
   )
-  const [tanggal, setTanggal] = useState(initialData?.tanggalTerjadi?.split("T")[0] ?? "")
+  const [kronologi, setKronologi] = useState<KronologiEntry[]>(
+    Array.isArray(initialData?.kronologi)
+      ? initialData!.kronologi.map((e: any) => ({ tanggal: e.tanggal ?? "", jam: e.jam ?? "", lokasi: e.lokasi ?? "", keterangan: e.keterangan ?? "" }))
+      : initialData?.kronologi
+        ? [{ tanggal: initialData.tanggalTerjadi?.split("T")[0] ?? "", jam: "", lokasi: "", keterangan: initialData.kronologi as string }]
+        : [{ tanggal: "", jam: "", lokasi: "", keterangan: "" }]
+  )
   const [kategori, setKategori] = useState(initialData?.kategori ?? "")
   const [tingkatKeparahan, setTingkatKeparahan] = useState<TingkatKeparahan>(initialData?.tingkatKeparahan ?? "ringan")
   const [pelapor, setPelapor] = useState<Pelapor>(initialData?.pelapor ?? "laporan_sekolah")
@@ -417,6 +482,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
   const [showPicDropdown, setShowPicDropdown] = useState(false)
   const [tindakLanjut, setTindakLanjut] = useState(initialData?.tindakLanjut ?? "")
   const [dokumentasi, setDokumentasi] = useState(initialData?.dokumentasi ?? "")
+  const [motif, setMotif] = useState(initialData?.motif ?? "")
   const [rekomendasi, setRekomendasi] = useState(initialData?.rekomendasi ?? "")
   const [status, setStatus] = useState<StatusPelanggaran>(initialData?.status ?? "baru")
 
@@ -486,17 +552,20 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
     setPicInput("")
   }
 
-  const canSubmit = namaSekolah.length > 0 && unsurTerlibat.some((u) => u.kategori && u.peran && u.individu.some((ind) => ind.nama)) && tanggal && kategori && rekomendasi.trim() && tingkatKeparahan && pelapor
+  const canSubmit = namaSekolah.length > 0 && unsurTerlibat.some((u) => u.kategori && u.peran && u.individu.some((ind) => ind.nama)) && kronologi.some((e) => e.tanggal) && kategori && rekomendasi.trim() && tingkatKeparahan && pelapor
 
   const handleSubmit = () => {
     if (!canSubmit) return
+    const firstTanggal = kronologi.find((e) => e.tanggal)?.tanggal ?? ""
     onSubmit({
       namaSekolah,
       unsurTerlibat: unsurTerlibat.filter((u) => u.kategori && u.peran && u.individu.some((ind) => ind.nama)),
-      tanggalTerjadi: tanggal,
+      tanggalTerjadi: firstTanggal,
+      kronologi: kronologi,
       kategori,
       tingkatKeparahan,
       pelapor,
+      motif: motif.trim() || undefined,
       pelaporLainnya: pelapor === "lainnya" ? pelaporLainnya.trim() : "",
       tindakLanjut: tindakLanjut.trim(),
       pic: pic.trim(),
@@ -610,13 +679,85 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-gray-700">Tanggal Kejadian <span className="text-red-500">*</span></label>
-            <input
-              type="date"
-              value={tanggal}
-              onChange={(e) => setTanggal(e.target.value)}
-              className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            />
+            <label className="text-xs font-semibold text-gray-700">Kronologi Kejadian <span className="text-red-500">*</span></label>
+            <div className="flex flex-col gap-2 mt-1">
+              {kronologi.map((entry, i) => (
+                <div key={i}>
+                  <div className="flex items-start gap-2">
+                    <div className="flex-1">
+                      {i === 0 && <label className="block text-xs text-gray-500 mb-1">Tanggal</label>}
+                      <input
+                        type="date"
+                        value={entry.tanggal ?? ""}
+                        onChange={(e) => {
+                          const next = [...kronologi]
+                          next[i] = { ...next[i], tanggal: e.target.value }
+                          setKronologi(next)
+                        }}
+                        className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      />
+                    </div>
+                    <div className="w-[100px] shrink-0">
+                      {i === 0 && <label className="block text-xs text-gray-500 mb-1">Jam</label>}
+                      <input
+                        type="time"
+                        value={entry.jam ?? ""}
+                        onChange={(e) => {
+                          const next = [...kronologi]
+                          next[i] = { ...next[i], jam: e.target.value }
+                          setKronologi(next)
+                        }}
+                        className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      />
+                    </div>
+                    <div className="flex-[1.5]">
+                      {i === 0 && <label className="block text-xs text-gray-500 mb-1">Lokasi</label>}
+                      <input
+                        type="text"
+                        value={entry.lokasi ?? ""}
+                        onChange={(e) => {
+                          const next = [...kronologi]
+                          next[i] = { ...next[i], lokasi: e.target.value }
+                          setKronologi(next)
+                        }}
+                        placeholder="Lokasi..."
+                        className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      />
+                    </div>
+                    <div className="flex-[2]">
+                      {i === 0 && <label className="block text-xs text-gray-500 mb-1">Keterangan</label>}
+                      <input
+                        type="text"
+                        value={entry.keterangan ?? ""}
+                        onChange={(e) => {
+                          const next = [...kronologi]
+                          next[i] = { ...next[i], keterangan: e.target.value }
+                          setKronologi(next)
+                        }}
+                        placeholder="Deskripsikan kejadian pada tanggal ini..."
+                        className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      />
+                    </div>
+                    {kronologi.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setKronologi(kronologi.filter((_, idx) => idx !== i))}
+                        className="p-1 mt-5 hover:bg-red-50 rounded text-red-400 hover:text-red-600 transition"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => setKronologi([...kronologi, { tanggal: "", jam: "", lokasi: "", keterangan: "" }])}
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+              >
+                <Plus className="w-3.5 h-3.5" /> Tambah Kronologi
+              </button>
+            </div>
           </div>
 
           <div>
@@ -753,6 +894,17 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
                 <Plus className="w-3.5 h-3.5" /> Tambah Kelompok Unsur
               </button>
             </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-gray-700">Motif Kejadian</label>
+            <textarea
+              value={motif}
+              onChange={(e) => setMotif(e.target.value)}
+              placeholder="Tuliskan motif kejadian..."
+              rows={3}
+              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y min-h-[60px]"
+            />
           </div>
 
           <div>

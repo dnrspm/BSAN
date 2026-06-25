@@ -16,6 +16,13 @@ interface IndividuItem {
   umur: string
 }
 
+interface KronologiEntry {
+  tanggal: string
+  jam: string
+  lokasi: string
+  keterangan: string
+}
+
 interface UnsurItem {
   peran: "pelaku" | "korban"
   kategori: string
@@ -29,6 +36,7 @@ interface PelanggaranItem {
   namaSekolah: string[]
   unsurTerlibat: UnsurItem[]
   tanggalTerjadi: string
+  kronologi?: KronologiEntry[]
   kategori: string
   tingkatKeparahan: TingkatKeparahan
   pelapor: Pelapor
@@ -37,6 +45,8 @@ interface PelanggaranItem {
   pic: string
   dokumentasi: string
   rekomendasi: string
+  motif?: string
+  tanggalPelaporan?: string
   status: StatusPelanggaran
   createdAt: string
   updatedAt: string
@@ -140,6 +150,7 @@ function emptyForm() {
     namaSekolah: [] as string[],
     unsurTerlibat: [{ peran: "pelaku", kategori: "", asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "" }] }] as UnsurItem[],
     tanggalTerjadi: "",
+    kronologi: [{ tanggal: "", jam: "", lokasi: "", keterangan: "" }],
     kategori: "",
     tingkatKeparahan: "ringan" as TingkatKeparahan,
     pelapor: "laporan_sekolah" as Pelapor,
@@ -148,6 +159,8 @@ function emptyForm() {
     tindakLanjut: "",
     dokumentasi: "",
     rekomendasi: "",
+    motif: "",
+    tanggalPelaporan: "",
     status: "baru" as StatusPelanggaran,
   }
 }
@@ -224,6 +237,7 @@ function TambahPelanggaranInner() {
             namaSekolah: normalized.namaSekolah,
             unsurTerlibat: normalized.unsurTerlibat.length > 0 ? normalized.unsurTerlibat : [{ peran: "pelaku", kategori: "", asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "" }] }],
             tanggalTerjadi: normalized.tanggalTerjadi?.split("T")[0] ?? "",
+            kronologi: Array.isArray((normalized as any).kronologi) ? (normalized as any).kronologi.map((e: any) => ({ tanggal: e.tanggal ?? "", jam: e.jam ?? "", lokasi: e.lokasi ?? "", keterangan: e.keterangan ?? "" })) : (normalized as any).kronologi ? [{ tanggal: normalized.tanggalTerjadi?.split("T")[0] ?? "", jam: "", lokasi: "", keterangan: (normalized as any).kronologi }] : [{ tanggal: "", jam: "", lokasi: "", keterangan: "" }],
             kategori: normalized.kategori,
             tingkatKeparahan: normalized.tingkatKeparahan,
             pelapor: normalized.pelapor,
@@ -232,6 +246,8 @@ function TambahPelanggaranInner() {
             tindakLanjut: normalized.tindakLanjut ?? "",
             dokumentasi: normalized.dokumentasi,
             rekomendasi: normalized.rekomendasi,
+            motif: (normalized as any).motif ?? "",
+            tanggalPelaporan: (normalized as any).tanggalPelaporan ?? "",
             status: normalized.status,
           })
         }
@@ -297,7 +313,7 @@ function TambahPelanggaranInner() {
   const canSubmit =
     form.namaSekolah.length > 0 &&
     form.unsurTerlibat.some((u) => u.kategori && u.peran && u.individu.some((ind) => ind.nama)) &&
-    form.tanggalTerjadi &&
+    form.kronologi.some((e) => e.tanggal) &&
     form.kategori &&
     form.tingkatKeparahan &&
     form.pelapor &&
@@ -305,6 +321,7 @@ function TambahPelanggaranInner() {
 
   const handleSubmit = () => {
     if (!canSubmit) return
+    const firstTanggal = form.kronologi.find((e) => e.tanggal)?.tanggal ?? ""
     const session = (() => {
       try { return JSON.parse(localStorage.getItem("auth") ?? "{}") } catch { return {} }
     })() as { role?: string; namaSekolah?: string; namaDinas?: string }
@@ -324,6 +341,7 @@ function TambahPelanggaranInner() {
             ? {
                 ...i,
                 ...form,
+                tanggalTerjadi: firstTanggal,
                 pelaporLainnya: form.pelapor === "lainnya" ? form.pelaporLainnya : "",
                 unsurTerlibat: form.unsurTerlibat.filter((u) => u.kategori && u.peran && u.individu.some((ind) => ind.nama)),
                 updatedAt: now,
@@ -339,6 +357,7 @@ function TambahPelanggaranInner() {
       } else {
         const newItem = {
           ...form,
+          tanggalTerjadi: firstTanggal,
           id: `pg-${Date.now()}`,
           createdAt: now,
           updatedAt: now,
@@ -737,19 +756,36 @@ function TambahPelanggaranInner() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel required>Tanggal Kejadian</FieldLabel>
-              <input
-                type="date"
-                value={form.tanggalTerjadi}
-                onChange={(e) => setForm((prev) => ({ ...prev, tanggalTerjadi: e.target.value }))}
-                className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel>Motif Kejadian</FieldLabel>
+                <input
+                  type="text"
+                  value={form.motif}
+                  onChange={(e) => setForm((prev) => ({ ...prev, motif: e.target.value }))}
+                  placeholder="Tuliskan motif kejadian..."
+                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel>Tanggal Pelaporan</FieldLabel>
+                <input
+                  type="date"
+                  value={form.tanggalPelaporan ?? ""}
+                  onChange={(e) => setForm((prev) => ({ ...prev, tanggalPelaporan: e.target.value }))}
+                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                />
+              </div>
             </div>
+          </div>
+        </SectionCard>
 
+        <SectionCard icon={<Clock className="w-4 h-4" />} title="Detail Kasus">
+          <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <FieldLabel required>Unsur yang Terlibat</FieldLabel>
-              <div className="flex flex-col gap-2 mt-1">
+            </div>
+            <div className="flex flex-col gap-4">
                 {form.unsurTerlibat.map((u, i) => {
                   const predefined = UNSUR_OPTIONS.filter((o) => o !== "Lainnya")
                   const isCustom = u.kategori && !predefined.includes(u.kategori)
@@ -773,76 +809,90 @@ function TambahPelanggaranInner() {
                     setForm((prev) => ({ ...prev, unsurTerlibat: next }))
                   }
                   return (
-                  <div key={i} className="border border-gray-200 rounded-lg px-3 py-2.5">
-                    <div className="grid grid-cols-[auto_1fr_1fr_72px_auto] gap-2 items-center">
-                      <select
-                        value={u.peran}
-                        onChange={(e) => {
-                          const next = [...form.unsurTerlibat]
-                          next[i] = { ...next[i], peran: e.target.value as "pelaku" | "korban" }
-                          setForm((prev) => ({ ...prev, unsurTerlibat: next }))
-                        }}
-                        className="h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      >
-                        <option value="pelaku">Terduga Pelaku</option>
-                        <option value="korban">Terduga Korban</option>
-                      </select>
-                      <select
-                        value={displayKategori}
-                        onChange={(e) => {
-                          const next = [...form.unsurTerlibat]
-                          next[i] = { ...next[i], kategori: e.target.value }
-                          setForm((prev) => ({ ...prev, unsurTerlibat: next }))
-                        }}
-                        className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white truncate"
-                      >
-                        <option value="" disabled>Jenis</option>
-                        {UNSUR_OPTIONS.map((o) => (
-                          <option key={o} value={o} disabled={o === "Lainnya" && lainDisabled}>{o} {o === "Lainnya" && lainDisabled ? "(maks 3)" : ""}</option>
-                        ))}
-                      </select>
-                      <input
-                        value={displayKategori === "Lainnya" ? (u.kategori !== "Lainnya" ? u.kategori : "") : u.asalSekolah}
-                        onChange={(e) => {
-                          const next = [...form.unsurTerlibat]
-                          if (displayKategori === "Lainnya") {
-                            next[i] = { ...next[i], kategori: e.target.value }
-                          } else {
-                            next[i] = { ...next[i], asalSekolah: e.target.value }
-                          }
-                          setForm((prev) => ({ ...prev, unsurTerlibat: next }))
-                        }}
-                        placeholder={displayKategori === "Lainnya" ? "Tulis..." : "Asal sekolah"}
-                        className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      />
-                      <input
-                        type="number"
-                        min="0"
-                        value={u.jumlah}
-                        onChange={(e) => {
-                          const next = [...form.unsurTerlibat]
-                          next[i] = { ...next[i], jumlah: e.target.value }
-                          syncIndividu(next)
-                        }}
-                        placeholder="Jml"
-                        className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      />
-                      {i > 0 ? (
-                        <button
-                          type="button"
-                          onClick={() => setForm((prev) => ({ ...prev, unsurTerlibat: prev.unsurTerlibat.filter((_, idx) => idx !== i) }))}
-                          className="p-1 hover:bg-red-50 rounded text-red-400 hover:text-red-600 transition"
+                  <div key={i}>
+                    <div className="grid grid-cols-[auto_1fr_1fr_72px_auto] gap-2 items-end">
+                      <div>
+                        {i === 0 && <label className="block text-xs text-gray-500 mb-1">Peran</label>}
+                        <select
+                          value={u.peran}
+                          onChange={(e) => {
+                            const next = [...form.unsurTerlibat]
+                            next[i] = { ...next[i], peran: e.target.value as "pelaku" | "korban" }
+                            setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                          }}
+                          className="h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                         >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      ) : (
-                        <div className="w-5" />
-                      )}
+                          <option value="pelaku">Terduga Pelaku</option>
+                          <option value="korban">Terduga Korban</option>
+                        </select>
+                      </div>
+                      <div>
+                        {i === 0 && <label className="block text-xs text-gray-500 mb-1">Jenis</label>}
+                        <select
+                          value={displayKategori}
+                          onChange={(e) => {
+                            const next = [...form.unsurTerlibat]
+                            next[i] = { ...next[i], kategori: e.target.value }
+                            setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                          }}
+                          className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white truncate"
+                        >
+                          <option value="" disabled>Jenis</option>
+                          {UNSUR_OPTIONS.map((o) => (
+                            <option key={o} value={o} disabled={o === "Lainnya" && lainDisabled}>{o} {o === "Lainnya" && lainDisabled ? "(maks 3)" : ""}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        {i === 0 && <label className="block text-xs text-gray-500 mb-1">Asal Sekolah</label>}
+                        <input
+                          value={displayKategori === "Lainnya" ? (u.kategori !== "Lainnya" ? u.kategori : "") : u.asalSekolah}
+                          onChange={(e) => {
+                            const next = [...form.unsurTerlibat]
+                            if (displayKategori === "Lainnya") {
+                              next[i] = { ...next[i], kategori: e.target.value }
+                            } else {
+                              next[i] = { ...next[i], asalSekolah: e.target.value }
+                            }
+                            setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                          }}
+                          placeholder={displayKategori === "Lainnya" ? "Tulis..." : "Asal sekolah"}
+                          className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        />
+                      </div>
+                      <div>
+                        {i === 0 && <label className="block text-xs text-gray-500 mb-1">Jml</label>}
+                        <input
+                          type="number"
+                          min="0"
+                          value={u.jumlah}
+                          onChange={(e) => {
+                            const next = [...form.unsurTerlibat]
+                            next[i] = { ...next[i], jumlah: e.target.value }
+                            syncIndividu(next)
+                          }}
+                          placeholder="Jml"
+                          className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        />
+                      </div>
+                      <div>
+                        {i > 0 ? (
+                          <button
+                            type="button"
+                            onClick={() => setForm((prev) => ({ ...prev, unsurTerlibat: prev.unsurTerlibat.filter((_, idx) => idx !== i) }))}
+                            className="p-1 hover:bg-red-50 rounded text-red-400 hover:text-red-600 transition"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        ) : (
+                          <div className="w-5" />
+                        )}
+                      </div>
                     </div>
                     {jml > 0 && (
-                      <div className="flex flex-col gap-2 mt-2">
+                      <div className="flex flex-col bg-gray-50 rounded-lg mt-4 mb-2 p-2 overflow-hidden">
                         {u.individu.map((ind, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
+                        <div key={idx} className="flex items-center gap-2 px-2 py-1.5">
                           <span className="text-sm text-gray-400 w-5 shrink-0 text-right">#{idx + 1}</span>
                           <input
                             value={ind.nama}
@@ -852,7 +902,7 @@ function TambahPelanggaranInner() {
                               setForm((prev) => ({ ...prev, unsurTerlibat: next }))
                             }}
                             placeholder="Nama"
-                            className="flex-1 min-w-0 h-7 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            className="flex-1 min-w-0 h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                           />
                           <input
                             type="number"
@@ -864,13 +914,14 @@ function TambahPelanggaranInner() {
                               setForm((prev) => ({ ...prev, unsurTerlibat: next }))
                             }}
                             placeholder="Umur"
-                            className="w-[72px] shrink-0 h-7 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            className="w-[72px] shrink-0 h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                           />
                           <div className="w-[22px] shrink-0" />
                         </div>
                         ))}
                       </div>
                     )}
+                    {i < form.unsurTerlibat.length - 1 && <hr className="border-gray-100 mt-4" />}
                   </div>
                 )})}
                 <button
@@ -880,15 +931,100 @@ function TambahPelanggaranInner() {
                 >
                   <Plus className="w-3.5 h-3.5" /> Tambah Kelompok Unsur
                 </button>
-              </div>
             </div>
 
+            <hr className="border-gray-300 -mx-5 my-2" />
+
             <div className="flex flex-col gap-1.5">
-              <FieldLabel required>Detail Kasus</FieldLabel>
+              <FieldLabel>Kronologi Kejadian</FieldLabel>
+            </div>
+            <div className="flex flex-col gap-2">
+            {form.kronologi.map((entry, i) => (
+              <div key={i}>
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    {i === 0 && <label className="block text-xs text-gray-500 mb-1">Tanggal</label>}
+                    <input
+                      type="date"
+                      value={entry.tanggal ?? ""}
+                      onChange={(e) => {
+                        const next = [...form.kronologi]
+                        next[i] = { ...next[i], tanggal: e.target.value }
+                        setForm((prev) => ({ ...prev, kronologi: next }))
+                      }}
+                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                  </div>
+                  <div className="w-[100px] shrink-0">
+                    {i === 0 && <label className="block text-xs text-gray-500 mb-1">Jam</label>}
+                    <input
+                      type="time"
+                      value={entry.jam ?? ""}
+                      onChange={(e) => {
+                        const next = [...form.kronologi]
+                        next[i] = { ...next[i], jam: e.target.value }
+                        setForm((prev) => ({ ...prev, kronologi: next }))
+                      }}
+                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                  </div>
+                  <div className="flex-[1.5]">
+                    {i === 0 && <label className="block text-xs text-gray-500 mb-1">Lokasi</label>}
+                    <input
+                      type="text"
+                      value={entry.lokasi ?? ""}
+                      onChange={(e) => {
+                        const next = [...form.kronologi]
+                        next[i] = { ...next[i], lokasi: e.target.value }
+                        setForm((prev) => ({ ...prev, kronologi: next }))
+                      }}
+                      placeholder="Lokasi..."
+                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                  </div>
+                  <div className="flex-[2]">
+                    {i === 0 && <label className="block text-xs text-gray-500 mb-1">Keterangan</label>}
+                    <input
+                      type="text"
+                      value={entry.keterangan ?? ""}
+                      onChange={(e) => {
+                        const next = [...form.kronologi]
+                        next[i] = { ...next[i], keterangan: e.target.value }
+                        setForm((prev) => ({ ...prev, kronologi: next }))
+                      }}
+                      placeholder="Deskripsikan kejadian pada tanggal ini..."
+                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                  </div>
+                  {form.kronologi.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setForm((prev) => ({ ...prev, kronologi: prev.kronologi.filter((_, idx) => idx !== i) }))}
+                      className="p-1 self-center hover:bg-red-50 rounded text-red-400 hover:text-red-600 transition"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setForm((prev) => ({ ...prev, kronologi: [...prev.kronologi, { tanggal: "", jam: "", lokasi: "", keterangan: "" }] }))}
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+            >
+              <Plus className="w-3.5 h-3.5" /> Tambah Kronologi
+            </button>
+            </div>
+
+            <hr className="border-gray-300 -mx-5 my-2" />
+
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel required>Keterangan Tambahan</FieldLabel>
               <textarea
                 value={form.rekomendasi}
                 onChange={(e) => setForm((prev) => ({ ...prev, rekomendasi: e.target.value }))}
-                placeholder="Tuliskan detail kasus..."
+                placeholder="Tuliskan keterangan tambahan..."
                 rows={4}
                 className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
               />
