@@ -592,7 +592,7 @@ function TambahPelanggaranInner() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={<Users className="w-4 h-4" />} title="Sumber Laporan & PIC">
+          <SectionCard icon={<Users className="w-4 h-4" />} title="Sumber Laporan & Penanggung Jawab">
             <div className="grid grid-cols-1 gap-4">
               <div className="flex flex-col gap-1.5">
                 <FieldLabel>Pelapor / Sumber Laporan</FieldLabel>
@@ -1110,7 +1110,7 @@ function TambahPelanggaranInner() {
           </div>
         </SectionCard>
 
-        <SectionCard icon={<FileText className="w-4 h-4" />} title="Sumber Laporan & PIC">
+          <SectionCard icon={<FileText className="w-4 h-4" />} title="Sumber Laporan & Penanggung Jawab">
           <div className="grid grid-cols-1 gap-4">
             <div className="flex flex-col gap-1.5">
               <FieldLabel required>Pelapor / Sumber Laporan</FieldLabel>

@@ -323,7 +323,7 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
             <p className="text-sm text-gray-900 ml-6 leading-relaxed">{item.rekomendasi}</p>
           </div>
 
-          <SectionDivider icon={<Users className="w-4 h-4" />} title="Sumber Laporan & PIC" />
+          <SectionDivider icon={<Users className="w-4 h-4" />} title="Sumber Laporan & Penanggung Jawab" />
 
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -919,7 +919,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
             />
           </div>
 
-          <SectionDivider icon={<FileText className="w-4 h-4" />} title="Sumber Laporan & PIC" />
+          <SectionDivider icon={<FileText className="w-4 h-4" />} title="Sumber Laporan & Penanggung Jawab" />
 
           <div>
             <label className="text-xs font-semibold text-gray-700">Pelapor / Sumber Laporan <span className="text-red-500">*</span></label>
