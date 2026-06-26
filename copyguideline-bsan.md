@@ -159,6 +159,7 @@ JANGAN paraphrase nama regulasi.
 
 ## **Content Behavior Rules (BSAN–Specific)**
 
+* **JANGAN tambahkan ellipsis (...) pada copy apapun** — semua placeholder, label, dan pesan harus berakhir dengan jelas tanpa tanda tiga titik
 * JANGAN menyiratkan bahwa pengajuan Kelompok Kerja akan disetujui secara otomatis tanpa tinjauan Admin Pusat.  
 * JANGAN menyiratkan bahwa Dinas berwenang menyetujui atau menolak — Dinas hanya memverifikasi.  
 * JANGAN gunakan bahasa yang bisa memperburuk atau mendramatisasi konteks kekerasan — copy harus tetap konstruktif dan berorientasi pada pencegahan dan solusi.  
@@ -208,13 +209,18 @@ Empty states HARUS:
 * Menyatakan alasan administratif dengan jelas  
 * Menginformasikan apakah ada tindakan yang perlu dilakukan  
 * Hindari kesan error sistem kecuali terkonfirmasi
+* **Judul/title empty state HARUS menggunakan Title Case** (setiap kata diawali huruf kapital, except prepositions & conjunctions)
 
 Contoh per peran:
 
-* **Admin Pusat:** "Belum ada pengajuan Kelompok Kerja yang masuk. Pengajuan dari Dinas akan muncul di sini."  
-* **Dinas:** "Belum ada Sumber Dukungan yang diusulkan oleh sekolah di wilayah Anda."  
-* **Sekolah:** "Anda belum mengusulkan Sumber Dukungan. Ajukan usulan pertama Anda untuk memulai."  
-* **Publik:** "Data Kelompok Kerja untuk wilayah ini belum tersedia."
+* **Admin Pusat:** "Belum Ada Pengajuan Kelompok Kerja yang Masuk. Pengajuan dari Dinas akan muncul di sini."  
+* **Dinas:** "Belum Ada Sumber Dukungan yang Diusulkan oleh Sekolah di Wilayah Anda."  
+* **Sekolah:** "Anda Belum Mengusulkan Sumber Dukungan. Ajukan usulan pertama Anda untuk memulai."  
+* **Publik:** "Data Kelompok Kerja untuk Wilayah Ini Belum Tersedia."
+
+### **Pelanggaran Empty State (Contoh Implementasi)**
+* ✅ "Belum Ada Data Pelanggaran"
+* ❌ "Belum ada data pelanggaran"
 
 ---
 
