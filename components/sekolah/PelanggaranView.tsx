@@ -1236,7 +1236,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-bold text-gray-900">Pelanggaran</h2>
           </div>
-          <p className="text-xs text-gray-500 mt-0.5">Pencatatan dan tracking kasus pelanggaran di sekolah</p>
+          <p className="text-xs text-gray-500 mt-0.5">Catat dan pantau penanganan kasus pelanggaran di satuan pendidikan</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           <button
