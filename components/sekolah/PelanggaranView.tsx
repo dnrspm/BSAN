@@ -1343,7 +1343,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
 
       {totalRows === 0 ? (
         <div className="bg-white rounded-xl border border-dashed border-gray-300 p-10 text-center">
-          <p className="font-semibold text-gray-700 text-sm">Belum ada data pelanggaran</p>
+          <p className="font-semibold text-gray-700 text-sm">Belum Ada Data Pelanggaran</p>
           {!readOnly && <p className="text-gray-500 text-xs mt-1">Klik "Buat Pelanggaran" untuk menambahkan data.</p>}
         </div>
       ) : (
