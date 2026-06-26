@@ -113,9 +113,9 @@ const KATEGORI_PELANGGARAN = [
 ]
 
 const TINGKAT_KEPARAHAN: { value: TingkatKeparahan; label: string; color: string }[] = [
-  { value: "biasa", label: "Biasa", color: "bg-yellow-100 text-yellow-700" },
-  { value: "urgen", label: "Urgen", color: "bg-orange-100 text-orange-700" },
-  { value: "sangat_urgen", label: "Sangat Urgen", color: "bg-red-100 text-red-700" },
+  { value: "biasa", label: "Kurang mendesak", color: "bg-yellow-100 text-yellow-700" },
+  { value: "urgen", label: "Mendesak", color: "bg-orange-100 text-orange-700" },
+  { value: "sangat_urgen", label: "Sangat Mendesak", color: "bg-red-100 text-red-700" },
 ]
 
 const PELAPOR_OPTIONS: { value: Pelapor; label: string }[] = [
@@ -340,7 +340,7 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Users className="w-4 h-4 text-gray-500" />
-                <span className="text-xs font-medium text-gray-500">Penanggung Jawab (PIC)</span>
+                <span className="text-xs font-medium text-gray-500">Penanggung Jawab</span>
               </div>
               <p className="text-sm font-semibold text-gray-900 ml-6">{item.pic}</p>
             </div>
@@ -437,12 +437,12 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-gray-700">Link Dokumentasi <span className="text-gray-400">(opsional)</span></label>
+            <label className="text-xs font-semibold text-gray-700">Tautan Dokumentasi <span className="text-gray-400">(opsional)</span></label>
                 <input
                   type="text"
                   value={dokumentasiStatus}
                   onChange={(e) => setDokumentasiStatus(e.target.value)}
-                  placeholder="Link atau keterangan dokumentasi..."
+            placeholder="Tautan atau keterangan dokumentasi"
                   className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 />
               </div>
@@ -838,7 +838,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
                         next[i] = { ...next[i], jumlah: e.target.value }
                         syncIndividu(next)
                       }}
-                      placeholder="Jml"
+                      placeholder="Jumlah"
                       className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     />
                     {i > 0 ? (
@@ -944,7 +944,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-gray-700">Penanggung Jawab (PIC) <span className="text-gray-400">(opsional)</span></label>
+            <label className="text-xs font-semibold text-gray-700">Penanggung Jawab <span className="text-gray-400">(opsional)</span></label>
             {!pic ? (
               <div className="relative mt-1">
                 <input
@@ -955,7 +955,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
                   onClick={() => setShowPicDropdown(true)}
                   onBlur={() => setTimeout(() => setShowPicDropdown(false), 200)}
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (filteredPicOptions.length > 0) selectPic(filteredPicOptions[0]) } }}
-                  placeholder="Cari nama anggota pokja..."
+                  placeholder="Masukkan nama anggota Kelompok Kerja"
                   className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 />
                 {showPicDropdown && filteredPicOptions.length > 0 && (
@@ -1008,19 +1008,18 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
             <textarea
               value={tindakLanjut}
               onChange={(e) => setTindakLanjut(e.target.value)}
-              placeholder="Catat apa yang sudah atau akan dilakukan..."
+              placeholder="Catat apa yang sudah atau akan dilakukan"
               rows={3}
               className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
             />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-gray-700">Link Dokumentasi <span className="text-gray-400">(opsional)</span></label>
+            <label className="text-xs font-semibold text-gray-700">Tautan Dokumentasi <span className="text-gray-400">(opsional)</span></label>
+
             <input
               type="text"
-              value={dokumentasi}
-              onChange={(e) => setDokumentasi(e.target.value)}
-              placeholder="Link atau keterangan dokumentasi..."
+              placeholder="Tautan atau keterangan dokumentasi"
               className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
           </div>

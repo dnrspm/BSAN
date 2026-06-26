@@ -80,9 +80,9 @@ const KATEGORI_PELANGGARAN = [
 ]
 
 const TINGKAT_KEPARAHAN: { value: TingkatKeparahan; label: string; color: string }[] = [
-  { value: "biasa", label: "Biasa", color: "bg-yellow-100 text-yellow-700" },
-  { value: "urgen", label: "Urgen", color: "bg-orange-100 text-orange-700" },
-  { value: "sangat_urgen", label: "Sangat Urgen", color: "bg-red-100 text-red-700" },
+  { value: "biasa", label: "Kurang mendesak", color: "bg-yellow-100 text-yellow-700" },
+  { value: "urgen", label: "Mendesak", color: "bg-orange-100 text-orange-700" },
+  { value: "sangat_urgen", label: "Sangat Mendesak", color: "bg-red-100 text-red-700" },
 ]
 
 const PELAPOR_OPTIONS: { value: Pelapor; label: string }[] = [
@@ -603,7 +603,7 @@ function TambahPelanggaranInner() {
               </div>
               {item.pic && (
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel>Penanggung Jawab (PIC)</FieldLabel>
+                  <FieldLabel>Penanggung Jawab</FieldLabel>
                   <TextInput value={item.pic} />
                 </div>
               )}
@@ -716,7 +716,7 @@ function TambahPelanggaranInner() {
   }
 
   // Create / Edit mode
-  const pageTitle = createMode ? "Buat Pelanggaran" : editId ? "Edit Pelanggaran" : ""
+  const pageTitle = createMode ? "Buat Laporan" : editId ? "Edit Laporan" : ""
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -731,7 +731,7 @@ function TambahPelanggaranInner() {
           </button>
           <div className="flex-1 min-w-0">
             <h1 className="text-base font-bold text-gray-900">{pageTitle}</h1>
-            <p className="text-xs text-gray-500">Lengkapi formulir pelaporan</p>
+            <p className="text-xs text-gray-500">Isi dan lengkapi detail laporan pelanggaran yang terjadi di sekolah</p>
           </div>
         </div>
       </div>
@@ -750,7 +750,7 @@ function TambahPelanggaranInner() {
                   onClick={() => setShowSekolahDropdown(true)}
                   onBlur={() => setTimeout(() => setShowSekolahDropdown(false), 200)}
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSekolah(sekolahInput) } }}
-                  placeholder="Tambah nama sekolah"
+                  placeholder="Ketik nama sekolah yang ingin dilaporkan"
                   className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 />
                 {showSekolahDropdown && filteredSekolahOptions.length > 0 && (
@@ -818,7 +818,7 @@ function TambahPelanggaranInner() {
                   type="text"
                   value={form.motif}
                   onChange={(e) => setForm((prev) => ({ ...prev, motif: e.target.value }))}
-                  placeholder="Tuliskan motif kejadian..."
+                  placeholder="Tulis alasan di balik kejadian"
                   className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 />
               </div>
@@ -950,7 +950,7 @@ function TambahPelanggaranInner() {
                             next[i] = { ...next[i], jumlah: e.target.value }
                             syncIndividu(next)
                           }}
-                          placeholder="Jml"
+                          placeholder="Jumlah"
                           className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                         />
                       </div>
@@ -1135,7 +1135,7 @@ function TambahPelanggaranInner() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <FieldLabel>Penanggung Jawab (PIC) <span className="text-gray-400">(opsional)</span></FieldLabel>
+              <FieldLabel>Penanggung Jawab <span className="text-gray-400">(opsional)</span></FieldLabel>
               {!form.pic ? (
                 <div className="relative mt-1">
                   <input
@@ -1146,7 +1146,7 @@ function TambahPelanggaranInner() {
                     onClick={() => setShowPicDropdown(true)}
                     onBlur={() => setTimeout(() => setShowPicDropdown(false), 200)}
                     onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (filteredPicOptions.length > 0) selectPic(filteredPicOptions[0]) } }}
-                    placeholder="Cari nama anggota pokja..."
+                    placeholder="Masukkan nama anggota Kelompok Kerja"
                     className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   />
                   {showPicDropdown && filteredPicOptions.length > 0 && (
@@ -1204,19 +1204,18 @@ function TambahPelanggaranInner() {
               <textarea
                 value={form.tindakLanjut}
                 onChange={(e) => setForm((prev) => ({ ...prev, tindakLanjut: e.target.value }))}
-                placeholder="Catat apa yang sudah atau akan dilakukan..."
+                placeholder="Catat apa yang sudah atau akan dilakukan"
                 rows={3}
                 className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <FieldLabel>Link Dokumentasi <span className="text-gray-400">(opsional)</span></FieldLabel>
-              <input
-                type="text"
-                value={form.dokumentasi}
-                onChange={(e) => setForm((prev) => ({ ...prev, dokumentasi: e.target.value }))}
-                placeholder="Link atau keterangan dokumentasi..."
+        <FieldLabel>Tautan Dokumentasi <span className="text-gray-400">(opsional)</span></FieldLabel>
+
+            <input
+              type="text"
+              placeholder="Tautan atau keterangan dokumentasi"
                 className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
@@ -1237,7 +1236,7 @@ function TambahPelanggaranInner() {
           disabled={!canSubmit}
           className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
-          {editId ? "Simpan Perubahan" : "Buat Pelanggaran"}
+            {editId ? "Simpan Perubahan" : "Buat Laporan"}
         </button>
       </div>
     </div>
