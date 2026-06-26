@@ -1041,7 +1041,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
             disabled={!canSubmit}
             className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {initialData ? "Simpan" : "Buat Laporan"}
+            {initialData ? "Simpan" : "Kirim Laporan"}
           </button>
         </div>
       </div>
