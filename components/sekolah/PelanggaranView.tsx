@@ -1042,7 +1042,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
             disabled={!canSubmit}
             className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {initialData ? "Simpan" : "Buat Pelanggaran"}
+            {initialData ? "Simpan" : "Buat Laporan"}
           </button>
         </div>
       </div>
@@ -1236,7 +1236,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-bold text-gray-900">Pelanggaran</h2>
           </div>
-          <p className="text-xs text-gray-500 mt-0.5">Catat dan pantau penanganan kasus pelanggaran di satuan pendidikan</p>
+          <p className="text-xs text-gray-500 mt-0.5">Buat laporan dan dan pantau penanganan kasus pelanggaran di satuan pendidikan</p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           <button
@@ -1252,7 +1252,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
               href="/tambah-pelanggaran?create"
               className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
             >
-              <Plus className="w-4 h-4" /> Buat Pelanggaran
+              <Plus className="w-4 h-4" /> Buat Laporan
             </a>
           )}
         </div>
@@ -1344,7 +1344,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
       {totalRows === 0 ? (
         <div className="bg-white rounded-xl border border-dashed border-gray-300 p-10 text-center">
           <p className="font-semibold text-gray-700 text-sm">Belum Ada Data Pelanggaran</p>
-          {!readOnly && <p className="text-gray-500 text-xs mt-1">Klik "Buat Pelanggaran" untuk menambahkan data.</p>}
+            {!readOnly && <p className="text-gray-500 text-xs mt-1">Klik &apos;Buat Laporan&apos; untuk mulai menambahkan data kasus pelanggaran.</p>}
         </div>
       ) : (
         <>
