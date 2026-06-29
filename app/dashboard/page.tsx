@@ -36,7 +36,7 @@ const E = emptyMember
 const SK0 = { file: null, nomorSK: "", tanggalSK: "", periodeMultai: "", periodeSelesai: "" }
 const B = (id: string, nama: string): PokjaItem => ({
   id, nama, status: "belum-dibentuk",
-  data: { region: nama, nomorKanal: "", members: { catatan: E() }, sk: SK0 }
+  data: { region: nama, nomorKanal: "", members: { catatan: E() }, sk: SK0, consent: false }
 })
 
 const MOCK_POKJA_LIST: PokjaItem[] = [
@@ -56,7 +56,8 @@ const MOCK_POKJA_LIST: PokjaItem[] = [
         kominfo:     { nama: "Bpk. Firman Hermawan, S.Kom", email: "firman@jatim.go.id", jenisKelamin: "Laki-Laki" as const,  noWhatsapp: "08121234574", instansi: "Dinas Kominfo Provinsi Jawa Timur",     jabatan: "Anggota" },
         dukbangga:   { nama: "Ibu Rina Hartati, M.Acc",     email: "rina@jatim.go.id",   jenisKelamin: "Perempuan" as const,  noWhatsapp: "08121234575", instansi: "BPKAD Provinsi Jawa Timur",             jabatan: "Anggota" },
       },
-      sk: { file: null, nomorSK: "420/001/2024", tanggalSK: "2024-01-15", periodeMultai: "2024-01-15", periodeSelesai: "2027-01-14" }
+      sk: { file: null, nomorSK: "420/001/2024", tanggalSK: "2024-01-15", periodeMultai: "2024-01-15", periodeSelesai: "2027-01-14" },
+      consent: false
     }
   },
   {
@@ -78,7 +79,8 @@ const MOCK_POKJA_LIST: PokjaItem[] = [
         kominfo:     { nama: "Bpk. Rizal Fauzi, S.Kom",email: "rizal@dki.go.id", jenisKelamin: "Laki-Laki" as const, noWhatsapp: "08131234574", instansi: "Dinas Kominfo DKI Jakarta",    jabatan: "Anggota" },
         dukbangga:   { nama: "Ibu Maya Kurniawati",    email: "maya@dki.go.id",   jenisKelamin: "Perempuan" as const, noWhatsapp: "08131234575", instansi: "BPKAD DKI Jakarta",            jabatan: "Anggota" },
       },
-      sk: { file: null, nomorSK: "456/002/2024", tanggalSK: "2024-01-20", periodeMultai: "2024-01-20", periodeSelesai: "2024-12-31" }
+      sk: { file: null, nomorSK: "456/002/2024", tanggalSK: "2024-01-20", periodeMultai: "2024-01-20", periodeSelesai: "2024-12-31" },
+      consent: false
     }
   },
   {
@@ -99,7 +101,8 @@ const MOCK_POKJA_LIST: PokjaItem[] = [
         pppa:        { nama: "Bpk. Undang Hasan, M.H",    email: "undang@jabar.go.id",jenisKelamin: "Laki-Laki" as const,  noWhatsapp: "08141234571", instansi: "DP3A Provinsi Jawa Barat",             jabatan: "Anggota" },
         sosial:      { nama: "Ibu Yanti Kusuma, S.Sos",   email: "yanti@jabar.go.id", jenisKelamin: "Perempuan" as const,  noWhatsapp: "08141234572", instansi: "Dinas Sosial Provinsi Jawa Barat",     jabatan: "Anggota" },
       },
-      sk: { file: null, nomorSK: "789/003/2024", tanggalSK: "2024-01-05", periodeMultai: "2024-01-05", periodeSelesai: "2027-01-04" }
+      sk: { file: null, nomorSK: "789/003/2024", tanggalSK: "2024-01-05", periodeMultai: "2024-01-05", periodeSelesai: "2027-01-04" },
+      consent: false
     }
   },
   {
@@ -115,7 +118,8 @@ const MOCK_POKJA_LIST: PokjaItem[] = [
         pppa:        { nama: "Bpk. Ali Akbar, M.H",           email: "ali@jateng.go.id",    jenisKelamin: "Laki-Laki" as const,  noWhatsapp: "08151234571", instansi: "DP3A Provinsi Jawa Tengah",              jabatan: "Anggota" },
         sosial:      { nama: "Ibu Ratna Sari, S.Sos",         email: "ratna@jateng.go.id",  jenisKelamin: "Perempuan" as const,  noWhatsapp: "08151234572", instansi: "Dinas Sosial Provinsi Jawa Tengah",      jabatan: "Anggota" },
       },
-      sk: { file: null, nomorSK: "101/004/2024", tanggalSK: "2024-02-01", periodeMultai: "2024-02-01", periodeSelesai: "2027-01-31" }
+      sk: { file: null, nomorSK: "101/004/2024", tanggalSK: "2024-02-01", periodeMultai: "2024-02-01", periodeSelesai: "2027-01-31" },
+      consent: false
     }
   },
   B("p5",  "Provinsi Aceh"),
@@ -298,6 +302,7 @@ function DashboardPageInner() {
               periodeMultai: draft.sk.periodeMulai,
               periodeSelesai: draft.sk.periodeSelesai,
             },
+            consent: false,
           },
           validasiLog: [],
         }

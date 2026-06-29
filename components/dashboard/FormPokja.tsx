@@ -452,6 +452,7 @@ export function FormPokja({ region, onClose, onSubmit }: FormPokjaProps) {
         periodeMultai: skDetail.periodeMulai,
         periodeSelesai: skDetail.periodeSelesai,
       },
+      consent: false,
     }
     setTimeout(() => onSubmit(payload), 1400)
   }
