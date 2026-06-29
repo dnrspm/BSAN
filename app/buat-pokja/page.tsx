@@ -1792,11 +1792,11 @@ export default function BuatPokjaPage() {
                     className="mt-1 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0"
                   />
                   <span className="text-sm text-gray-600 leading-relaxed">
-                    Saya, selaku Admin Dinas yang mendaftarkan akun Pokja, menyatakan telah membaca dan menyetujui{" "}
+                    Saya, selaku Admin Dinas yang mengajukan pembuatan Kelompok Kerja, menyatakan telah membaca dan menyetujui{" "}
                     <button type="button" onClick={() => setShowPrivacyModal(true)} className="text-blue-600 underline hover:text-blue-800 font-medium">
                       Kebijakan Privasi Platform BSAN
                     </button>
-                    . Saya juga menyatakan bahwa data pribadi pengurus Pokja yang saya masukkan adalah benar, dan saya berwenang serta telah memberitahukan kepada para pengurus tersebut mengenai pengumpulan dan pemrosesan data ini.
+                    . Saya juga menyatakan bahwa data pribadi pengurus Kelompok Kerja yang saya masukkan adalah benar, serta telah memberitahukan kepada pihak terkait mengenai pengumpulan dan pemrosesan data ini.
                   </span>
                 </label>
               </div>
