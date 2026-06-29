@@ -48,6 +48,7 @@ export interface PokjaData {
   nomorKanal: string
   members: Members
   sk: SkDokumen
+  consent: boolean
 }
 
 export type PokjaStatus =

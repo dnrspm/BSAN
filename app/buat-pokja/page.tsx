@@ -952,6 +952,10 @@ export default function BuatPokjaPage() {
   const [fileError, setFileError] = useState("")
   const [skDetail, setSkDetail] = useState({ nomorSK: "", tanggalSK: "", periodeMulai: "", periodeSelesai: "" })
 
+  // Consent
+  const [consent, setConsent] = useState(false)
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false)
+
   // ---------------------------------------------------------------------------
   // Draft state
   // ---------------------------------------------------------------------------
@@ -1039,10 +1043,12 @@ export default function BuatPokjaPage() {
   const canGoNext = () => {
     if (flowSteps === 3) {
       if (step === 1) return kanalPengaduan.trim().length > 0 && skFile !== null && !!skDetail.nomorSK && !!skDetail.tanggalSK && !!skDetail.periodeMulai && !!skDetail.periodeSelesai
+      if (step === 3) return consent
       return true
     }
     if (step === 1) return kanalPengaduan.trim().length > 0
     if (step === 3) return skFile !== null && !!skDetail.nomorSK && !!skDetail.tanggalSK && !!skDetail.periodeMulai && !!skDetail.periodeSelesai
+    if (step === 4) return consent
     return true
   }
 
@@ -1083,6 +1089,7 @@ export default function BuatPokjaPage() {
       nomorKanal: kanalPengaduan,
       members,
       sk: { file: skFile, nomorSK: skDetail.nomorSK, tanggalSK: skDetail.tanggalSK, periodeMultai: skDetail.periodeMulai, periodeSelesai: skDetail.periodeSelesai },
+      consent,
     }
     try {
       const role = (() => {
@@ -1767,11 +1774,137 @@ export default function BuatPokjaPage() {
                     />
                   </div>
                 )}
+
               </div>
             )}
+
               </div>
             </div>
-              <div className="flex items-center justify-between pb-8">
+
+            {/* Persetujuan */}
+            {((flowSteps === 3 && step === 3) || (flowSteps === 4 && step === 4)) && (
+              <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={consent}
+                    onChange={(e) => setConsent(e.target.checked)}
+                    className="mt-1 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0"
+                  />
+                  <span className="text-sm text-gray-600 leading-relaxed">
+                    Saya, selaku Admin Dinas yang mendaftarkan akun Pokja, menyatakan telah membaca dan menyetujui{" "}
+                    <button type="button" onClick={() => setShowPrivacyModal(true)} className="text-blue-600 underline hover:text-blue-800 font-medium">
+                      Kebijakan Privasi Platform BSAN
+                    </button>
+                    . Saya juga menyatakan bahwa data pribadi pengurus Pokja yang saya masukkan adalah benar, dan saya berwenang serta telah memberitahukan kepada para pengurus tersebut mengenai pengumpulan dan pemrosesan data ini.
+                  </span>
+                </label>
+              </div>
+            )}
+
+            {/* Privacy Policy Modal */}
+            {showPrivacyModal && (
+              <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                <div className="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col">
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
+                    <h3 className="text-base font-bold text-gray-900">Kebijakan Privasi Platform BSAN</h3>
+                    <button
+                      type="button"
+                      onClick={() => setShowPrivacyModal(false)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="overflow-y-auto px-6 py-4 text-sm text-gray-600 leading-relaxed space-y-4">
+                    <p><strong>Tanggal Efektif: [●● Bulan 2026]</strong></p>
+                    <p>
+                      Platform Budaya Sekolah Aman dan Nyaman (BSAN) merupakan sistem digital yang dikembangkan dan dikelola oleh Kementerian Pendidikan Dasar dan Menengah Republik Indonesia (selanjutnya disebut "Kementerian" atau "Pengelola Platform"), melalui Pusat Penguatan Karakter (Puspeka), untuk mendukung pembentukan, pemantauan, dan penguatan Kelompok Kerja (Pokja) BSAN di tingkat provinsi serta kabupaten/kota.
+                    </p>
+                    <p>
+                      Platform ini berfungsi sebagai sarana pendaftaran, verifikasi, dan pengelolaan data Pokja BSAN sebagai bagian dari pelaksanaan Peraturan Menteri Pendidikan Dasar dan Menengah Nomor 6 Tahun 2026 tentang Budaya Sekolah Aman dan Nyaman serta Keputusan Menteri Pendidikan Dasar dan Menengah Nomor 17 Tahun 2026 tentang Pedoman Penyelenggaraan Budaya Sekolah Aman dan Nyaman.
+                    </p>
+                    <p>
+                      Kebijakan Privasi ini disusun untuk menjelaskan prinsip, dasar hukum, serta tata cara Kementerian dalam memperoleh, mengumpulkan, menggunakan, menyimpan, memproses, melindungi, dan mengungkapkan Data Pribadi pengguna Platform BSAN. Kementerian berkomitmen memastikan setiap pemrosesan Data Pribadi dilakukan dengan itikad baik, secara sah, transparan, akurat, terbatas pada tujuan tertentu, dan sesuai dengan prinsip-prinsip yang diatur dalam Undang-Undang Nomor 27 Tahun 2022 tentang Perlindungan Data Pribadi ("UU PDP").
+                    </p>
+
+                    <h4 className="text-sm font-bold text-gray-800 mt-4">Ruang Lingkup Kebijakan Privasi</h4>
+                    <p>
+                      Kebijakan Privasi ini berlaku terhadap seluruh kegiatan pemrosesan Data Pribadi yang dilakukan melalui domain resmi Platform BSAN beserta seluruh modul dan sistem yang terintegrasi di dalamnya.
+                    </p>
+                    <p>
+                      Pengguna Platform BSAN mencakup: Admin Dinas, yaitu petugas pada Dinas Pendidikan atau perangkat daerah yang berwenang, yang mendaftarkan dan mengelola akun Pokja melalui Platform; dan Pengurus/Anggota Pokja BSAN, yaitu individu yang ditetapkan dalam Surat Keputusan (SK) pembentukan Pokja dan yang data pribadinya dimasukkan ke dalam Platform.
+                    </p>
+                    <p>
+                      Seluruh pemrosesan data dalam Platform dilakukan untuk kepentingan administratif dan operasional penyelenggaraan kebijakan BSAN, dan tidak digunakan untuk tujuan komersial, periklanan, atau pemasaran.
+                    </p>
+
+                    <h4 className="text-sm font-bold text-gray-800 mt-4">Jenis Data yang Dikumpulkan</h4>
+                    <p>Platform BSAN mengumpulkan dan mengelola kategori Data Pribadi sebagaimana diisikan pada formulir pendaftaran Pokja, yang meliputi:</p>
+                    <p>a. Data kelembagaan dan dokumen SK Pokja: Wilayah (provinsi/kabupaten/kota); Nomor Kanal Pengaduan; Berkas (file) Surat Keputusan; Nomor SK; Tanggal SK; dan Periode/masa berlaku kepengurusan.</p>
+                    <p>b. Data pribadi pengurus dan anggota Pokja: Nama lengkap beserta gelar; Jabatan dalam Pokja (misalnya Ketua, Wakil Ketua, Koordinator, Koordinator Bidang); Jenis kelamin; Instansi asal; Jabatan pada instansi; Alamat surel (email); dan Nomor telepon/HP.</p>
+                    <p>Platform BSAN tidak mengumpulkan data pribadi yang bersifat spesifik atau sensitif sebagaimana dimaksud dalam UU PDP (seperti data kesehatan, data biometrik, atau data keuangan), kecuali apabila diwajibkan oleh peraturan perundang-undangan.</p>
+
+                    <h4 className="text-sm font-bold text-gray-800 mt-4">Sumber dan Dasar Pemrosesan Data</h4>
+                    <p>Data Pribadi pada Platform BSAN diperoleh dari input yang dilakukan oleh Admin Dinas pada saat mendaftarkan akun dan kepengurusan Pokja, serta dari dokumen SK yang diunggah.</p>
+                    <p>Karena sebagian besar Data Pribadi pengurus Pokja diinput oleh Admin Dinas (bukan oleh subjek data secara langsung), Admin Dinas menyatakan dan menjamin bahwa: Data yang dimasukkan adalah benar, akurat, dan terkini; Admin Dinas memiliki kewenangan untuk menyampaikan data tersebut; dan Admin Dinas telah memberitahukan kepada para pengurus Pokja mengenai pengumpulan dan pemrosesan Data Pribadi mereka melalui Platform BSAN, sesuai prinsip transparansi dalam UU PDP.</p>
+                    <p>Pemrosesan Data Pribadi pada Platform dilakukan atas dasar pelaksanaan kewenangan dan kewajiban hukum Kementerian dalam penyelenggaraan kebijakan BSAN, serta untuk kepentingan administratif pemerintahan sebagaimana diatur dalam peraturan perundang-undangan.</p>
+
+                    <h4 className="text-sm font-bold text-gray-800 mt-4">Tujuan Pengumpulan dan Penggunaan Data</h4>
+                    <p>Kementerian dapat menggunakan seluruh atau sebagian Data Pribadi yang dikumpulkan untuk tujuan-tujuan yang sah dan proporsional, yaitu: mendaftarkan, memverifikasi, dan menetapkan keabsahan Pokja BSAN beserta kepengurusannya; mengelola hak akses dan akun Pokja pada Platform; melakukan pemantauan, pembinaan, dan penguatan Pokja BSAN di tingkat provinsi dan kabupaten/kota; menghubungi pengurus Pokja atau Admin Dinas dalam rangka koordinasi, pemberitahuan kegiatan, pengingat tugas, atau penyampaian informasi penting terkait kebijakan BSAN, pembaruan sistem, atau kendala teknis; menyusun rekapitulasi, statistik, dan laporan pelaksanaan kebijakan BSAN secara nasional maupun daerah; dan memelihara, menyempurnakan, dan menjaga keandalan serta keamanan layanan Platform, termasuk pemeliharaan server, debugging, audit keamanan, dan pengujian sistem.</p>
+                    <p>Kementerian tidak akan menjual, mengalihkan, mendistribusikan, atau meminjamkan Data Pribadi Pengguna kepada pihak mana pun tanpa dasar hukum atau persetujuan yang sah. Pengungkapan Data Pribadi hanya dilakukan apabila: (a) diwajibkan oleh peraturan perundang-undangan atau atas perintah otoritas yang berwenang; atau (b) diperlukan untuk mendukung integrasi layanan antar instansi pemerintah yang memiliki dasar kerja sama resmi dan jaminan perlindungan data yang setara.</p>
+
+                    <h4 className="text-sm font-bold text-gray-800 mt-4">Pemrosesan Data</h4>
+                    <p>Seluruh pengumpulan dan pemrosesan Data Pribadi dilakukan berdasarkan asas keperluan, proporsionalitas, akurasi, keamanan, dan akuntabilitas, dengan tetap menjunjung hak-hak Subjek Data Pribadi sebagaimana ditetapkan dalam UU PDP. Data Pribadi diproses secara terbatas, relevan, dan proporsional dengan tujuan administratif penyelenggaraan BSAN, serta tidak digunakan untuk kegiatan yang tidak relevan dengan tugas dan fungsi Kementerian.</p>
+
+                    <h4 className="text-sm font-bold text-gray-800 mt-4">Hak Pengguna sebagai Subjek Data Pribadi</h4>
+                    <p>Kementerian menjamin hak Pengguna sebagai Subjek Data Pribadi sesuai UU PDP dan peraturan pelaksananya, yang meliputi: hak atas informasi mengenai identitas Pengendali Data, dasar hukum, dan tujuan pemrosesan; hak untuk mengakses Data Pribadi yang tersimpan dalam sistem; hak untuk memperbaiki, memperbarui, atau melengkapi Data Pribadi yang tidak akurat atau tidak relevan; hak untuk membatasi atau menunda pemrosesan apabila terdapat keberatan atas akurasi atau legalitas pemrosesan; hak untuk menarik persetujuan sepanjang pemrosesan didasarkan pada persetujuan; hak untuk mengakhiri pemrosesan dan/atau menghapus Data Pribadi sesuai ketentuan yang berlaku; serta hak untuk mengajukan keberatan atau pengaduan kepada Kementerian dan/atau lembaga pengawas perlindungan data pribadi.</p>
+                    <p>Permintaan pelaksanaan hak Subjek Data dapat diajukan melalui kanal resmi yang disediakan (lihat bagian Kontak), dengan verifikasi identitas untuk memastikan keabsahan permintaan. Permintaan akan ditindaklanjuti sesuai prosedur internal Kementerian dalam jangka waktu yang wajar sesuai ketentuan hukum.</p>
+
+                    <h4 className="text-sm font-bold text-gray-800 mt-4">Cookies dan Teknologi Pelacakan</h4>
+                    <p>Platform BSAN dapat menggunakan cookies, yaitu file kecil yang tersimpan di perangkat Pengguna, untuk menyimpan preferensi dan sesi login, menyesuaikan konten, serta meningkatkan efisiensi dan keamanan layanan. Pengguna memiliki hak penuh untuk mengelola atau menonaktifkan cookies melalui pengaturan peramban (browser) masing-masing, dengan catatan bahwa hal ini dapat membatasi sebagian fungsionalitas Platform. Penggunaan cookies tunduk pada prinsip keadilan, transparansi, dan persetujuan Pengguna.</p>
+
+                    <h4 className="text-sm font-bold text-gray-800 mt-4">Penyimpanan dan Keamanan Data Pribadi</h4>
+                    <p>Data Pribadi disimpan selama jangka waktu yang diperlukan untuk memenuhi tujuan pemrosesan, sekurang-kurangnya selama masa berlaku kepengurusan Pokja, atau selama diwajibkan oleh ketentuan hukum dan peraturan kearsipan yang berlaku. Seluruh penyimpanan dilakukan secara aman di dalam infrastruktur sistem informasi yang dikelola atau ditunjuk secara resmi oleh Kementerian, dengan pengamanan teknis dan administratif yang mencakup kontrol akses berbasis peran, enkripsi, pencatatan log aktivitas, serta pemantauan keamanan secara berkala, sesuai prinsip integritas, kerahasiaan, dan ketersediaan data sebagaimana diatur dalam UU PDP.</p>
+
+                    <h4 className="text-sm font-bold text-gray-800 mt-4">Penghapusan dan Pemusnahan Data Pribadi</h4>
+                    <p>Kementerian akan menghapus atau memusnahkan Data Pribadi apabila data tersebut tidak lagi diperlukan untuk tujuan awal pengumpulannya, telah melewati masa penyimpanan yang ditentukan, atau berdasarkan permintaan yang sah. Pemusnahan dilakukan secara aman, permanen, dan terdokumentasi sesuai standar keamanan informasi serta ketentuan hukum yang berlaku. Penghapusan data dapat berdampak pada penghentian sebagian atau seluruh akses Pengguna terhadap fitur Platform yang memerlukan data tersebut.</p>
+
+                    <h4 className="text-sm font-bold text-gray-800 mt-4">Pihak Ketiga dan Pemrosesan oleh Mitra</h4>
+                    <p>Kementerian memastikan seluruh pemrosesan Data Pribadi, baik dilakukan secara internal maupun dengan melibatkan pihak ketiga (misalnya penyedia infrastruktur teknologi), tetap tunduk pada ketentuan UU PDP dan prinsip perlindungan data yang berlaku, serta diikat dengan kewajiban kerahasiaan dan keamanan yang setara.</p>
+
+                    <h4 className="text-sm font-bold text-gray-800 mt-4">Mekanisme Pengaduan dan Penyelesaian Sengketa</h4>
+                    <p>Pengguna yang menilai haknya atas perlindungan data pribadi telah dilanggar dapat mengajukan pengaduan secara tertulis melalui kanal resmi yang disediakan. Pengaduan akan diverifikasi dan ditindaklanjuti sesuai prosedur internal dalam jangka waktu yang wajar. Apabila tidak tercapai penyelesaian, sengketa diselesaikan sesuai ketentuan hukum yang berlaku di wilayah hukum Republik Indonesia.</p>
+
+                    <h4 className="text-sm font-bold text-gray-800 mt-4">Perubahan Kebijakan</h4>
+                    <p>Kementerian berhak mengubah Kebijakan Privasi ini sewaktu-waktu untuk menyesuaikan dengan perkembangan hukum, teknologi, atau operasional layanan. Perubahan diumumkan melalui Platform atau kanal resmi. Dengan tetap menggunakan layanan setelah pembaruan, Pengguna dianggap telah menyetujui Kebijakan Privasi yang diperbarui.</p>
+
+                    <h4 className="text-sm font-bold text-gray-800 mt-4">Ketentuan Lainnya dan Persetujuan</h4>
+                    <p>Dengan mengakses, mendaftarkan akun, atau melanjutkan penggunaan Platform BSAN, Pengguna menyatakan telah membaca, memahami, dan menyetujui seluruh ketentuan dalam Kebijakan Privasi ini, serta menerima untuk tunduk pada ketentuan hukum yang berlaku.</p>
+
+                    <h4 className="text-sm font-bold text-gray-800 mt-4">Kontak</h4>
+                    <p>
+                      Apabila terdapat pertanyaan, permintaan pelaksanaan hak, atau keluhan terkait Kebijakan Privasi ini, Pengguna dapat menghubungi:<br />
+                      Pusat Penguatan Karakter (Puspeka) — Kementerian Pendidikan Dasar dan Menengah<br />
+                      Surel: [●● alamat email resmi]<br />
+                      Kanal informasi/pengaduan: [●● tautan atau nomor kanal pengaduan]
+                    </p>
+                    <p>Setiap permintaan akan diproses sesuai prosedur layanan publik yang profesional, transparan, dan akuntabel.</p>
+                  </div>
+                  <div className="px-6 py-4 border-t border-gray-200 flex justify-end flex-shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setShowPrivacyModal(false)}
+                      className="px-5 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    >
+                      Tutup
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between pb-8">
           {step > 1 ? (
             <button onClick={handleBack} className="flex items-center gapx-4 mt-2 mb-4 px-4 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
               <ChevronLeft className="w-4 h-4" /> Sebelumnya
@@ -1795,7 +1928,12 @@ export default function BuatPokjaPage() {
             <div className="flex items-center gapx-4 mt-2 mb-4">
               <button
                 onClick={handleSubmit}
-                className="flex items-center gapx-4 mt-2 mb-4 px-6 py-2 text-sm font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                disabled={!consent}
+                className={`flex items-center gapx-4 mt-2 mb-4 px-6 py-2 text-sm font-semibold rounded-lg transition ${
+                  consent
+                    ? "bg-green-600 text-white hover:bg-green-700"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                }`}
               >
                 <CheckCircle2 className="w-4 h-4" />
                 {isPerbaikanMode ? "Kirim Perbaikan" : "Ajukan"}
