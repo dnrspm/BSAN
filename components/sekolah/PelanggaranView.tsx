@@ -25,6 +25,7 @@ import {
   Check,
 } from "lucide-react"
 import { readAuthSession } from "@/lib/auth-session"
+import { FormModeToggle, getIdealMode } from "@/components/FormModeToggle"
 
 type StatusPelanggaran = "baru" | "proses" | "selesai" | "ditutup"
 type TingkatKeparahan = "biasa" | "urgen" | "sangat_urgen"
@@ -43,9 +44,11 @@ interface KronologiEntry {
 }
 
 interface UnsurItem {
-  peran: "pelaku" | "korban"
+  peran: "pelaku" | "korban" | "saksi" | "lainnya" | ""
+  peranLainnya?: string
   kategori: string
   asalSekolah: string
+  asalLainnya?: string
   jumlah: string
   individu: IndividuItem[]
 }
@@ -53,6 +56,7 @@ interface UnsurItem {
 interface PelanggaranItem {
   id: string
   namaSekolah: string[]
+  npsnSekolah?: string[]
   unsurTerlibat: UnsurItem[]
   tanggalTerjadi: string
   kronologi?: KronologiEntry[]
@@ -97,6 +101,21 @@ function getSekolahColors(name: string) {
   return { bg: "bg-gray-500/10", text: "text-gray-700" }
 }
 
+const SELECT_BASE = "w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8"
+const SELECT_SM = "h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-6"
+const SELECT_FILTER = "rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8"
+
+function Select({ value, onChange, className, children }: { value: string; onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; className?: string; children: React.ReactNode }) {
+  return (
+    <div className="relative w-full">
+      <select value={value} onChange={onChange} className={`w-full ${className ?? ""}`}>
+        {children}
+      </select>
+      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+    </div>
+  )
+}
+
 const UNSUR_OPTIONS = ["Siswa Laki-laki", "Siswa Perempuan", "Guru", "Tenaga Kependidikan", "Kepala Sekolah", "Warga Sekolah", "Lainnya"]
 
 const KATEGORI_PELANGGARAN = [
@@ -113,7 +132,7 @@ const KATEGORI_PELANGGARAN = [
 ]
 
 const TINGKAT_KEPARAHAN: { value: TingkatKeparahan; label: string; color: string }[] = [
-  { value: "biasa", label: "Kurang mendesak", color: "bg-yellow-100 text-yellow-700" },
+  { value: "biasa", label: "Biasa", color: "bg-yellow-100 text-yellow-700" },
   { value: "urgen", label: "Mendesak", color: "bg-orange-100 text-orange-700" },
   { value: "sangat_urgen", label: "Sangat Mendesak", color: "bg-red-100 text-red-700" },
 ]
@@ -202,6 +221,9 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
                 <span key={i} className="inline-flex items-center gap-1 text-sm font-semibold text-gray-900 bg-gray-50 px-2 py-0.5 rounded border border-gray-200">
                   <GraduationCap className="w-3 h-3 text-gray-400" />
                   {s}
+                  {item.npsnSekolah?.[i] && (
+                    <span className="text-xs text-gray-400 font-normal ml-1">NPSN {item.npsnSekolah[i]}</span>
+                  )}
                 </span>
               ))}
             </div>
@@ -284,9 +306,9 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
                 <div key={i} className="border border-gray-200 rounded-lg px-3 py-2 space-y-1">
                   <div className="flex items-center gap-2">
                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                      u.peran === "pelaku" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
+                      u.peran === "pelaku" ? "bg-red-100 text-red-700" : u.peran === "korban" ? "bg-blue-100 text-blue-700" : u.peran === "saksi" ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-700"
                     }`}>
-                      {u.peran === "pelaku" ? "Pelaku" : "Korban"}
+                      {u.peran === "pelaku" ? "Pelaku" : u.peran === "korban" ? "Korban" : u.peran === "saksi" ? "Saksi" : u.peran === "lainnya" ? (u.peranLainnya || "Lainnya") : u.peran || "-"}
                     </span>
                     <span className="text-xs font-medium text-gray-500">{u.kategori || "-"}</span>
                     {u.asalSekolah && <span className="text-xs text-gray-500">· {u.asalSekolah}</span>}
@@ -458,14 +480,15 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
   )
 }
 
-function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; onSubmit: (data: Omit<PelanggaranItem, "id" | "createdAt" | "updatedAt" | "dibuatOleh" | "diperbaruiOleh">) => void; initialData?: PelanggaranItem }) {
+function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: () => void; onSubmit: (data: Omit<PelanggaranItem, "id" | "createdAt" | "updatedAt" | "dibuatOleh" | "diperbaruiOleh">) => void; initialData?: PelanggaranItem; isIdealMode: boolean }) {
   const [namaSekolah, setNamaSekolah] = useState<string[]>(initialData?.namaSekolah ?? [])
+  const [npsnSekolah, setNpsnSekolah] = useState<string[]>(initialData?.npsnSekolah ?? initialData?.namaSekolah?.map(() => "") ?? [])
   const [sekolahInput, setSekolahInput] = useState("")
   const [showSekolahDropdown, setShowSekolahDropdown] = useState(false)
   const [unsurTerlibat, setUnsurTerlibat] = useState<UnsurItem[]>(
     Array.isArray(initialData?.unsurTerlibat) && initialData!.unsurTerlibat.length > 0
       ? initialData!.unsurTerlibat
-      : [{ peran: "pelaku", kategori: "", asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "" }] }]
+      : [{ peran: "", kategori: "", asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "" }] }]
   )
   const [kronologi, setKronologi] = useState<KronologiEntry[]>(
     Array.isArray(initialData?.kronologi)
@@ -475,8 +498,8 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
         : [{ tanggal: "", jam: "", lokasi: "", keterangan: "" }]
   )
   const [kategori, setKategori] = useState(initialData?.kategori ?? "")
-  const [tingkatKeparahan, setTingkatKeparahan] = useState<TingkatKeparahan>(initialData?.tingkatKeparahan ?? "biasa")
-  const [pelapor, setPelapor] = useState<Pelapor>(initialData?.pelapor ?? "laporan_sekolah")
+  const [tingkatKeparahan, setTingkatKeparahan] = useState<TingkatKeparahan | "">(initialData?.tingkatKeparahan ?? "")
+  const [pelapor, setPelapor] = useState<Pelapor | "">(initialData?.pelapor ?? "")
   const [pelaporLainnya, setPelaporLainnya] = useState(initialData?.pelaporLainnya ?? "")
   const [pic, setPic] = useState(initialData?.pic ?? "")
   const [picInput, setPicInput] = useState("")
@@ -485,7 +508,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
   const [dokumentasi, setDokumentasi] = useState(initialData?.dokumentasi ?? "")
   const [motif, setMotif] = useState(initialData?.motif ?? "")
   const [rekomendasi, setRekomendasi] = useState(initialData?.rekomendasi ?? "")
-  const [status, setStatus] = useState<StatusPelanggaran>(initialData?.status ?? "baru")
+  const [status, setStatus] = useState<StatusPelanggaran | "">(initialData?.status ?? "")
 
   const allPicOptions = useMemo(() => {
     const names = new Set<string>()
@@ -525,10 +548,11 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
     ? allSchoolSuggestions.filter((s) => s.toLowerCase().includes(sekolahInput.toLowerCase()) && !namaSekolah.includes(s))
     : allSchoolSuggestions.filter((s) => !namaSekolah.includes(s))
 
-  const addSekolah = (name: string) => {
+  const addSekolah = (name: string, npsn?: string) => {
     const trimmed = name.trim()
     if (trimmed && !namaSekolah.includes(trimmed)) {
       setNamaSekolah((prev) => [...prev, trimmed])
+      setNpsnSekolah((prev) => [...prev, npsn?.trim() ?? ""])
     }
     setSekolahInput("")
     setShowSekolahDropdown(false)
@@ -536,6 +560,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
 
   const removeSekolah = (index: number) => {
     setNamaSekolah((prev) => prev.filter((_, i) => i !== index))
+    setNpsnSekolah((prev) => prev.filter((_, i) => i !== index))
   }
 
   const filteredPicOptions = picInput
@@ -553,13 +578,17 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
     setPicInput("")
   }
 
-  const canSubmit = namaSekolah.length > 0 && unsurTerlibat.some((u) => u.kategori && u.peran && u.individu.some((ind) => ind.nama)) && kronologi.some((e) => e.tanggal) && kategori && rekomendasi.trim() && tingkatKeparahan && pelapor
+  const canSubmit = namaSekolah.some((s) => s.trim()) && unsurTerlibat.some((u) => u.kategori && u.peran && parseInt(u.jumlah) > 0 && u.individu.some((ind) => ind.nama)) && kronologi.some((e) => e.tanggal) && kategori && rekomendasi.trim() && tingkatKeparahan && pelapor
 
   const handleSubmit = () => {
     if (!canSubmit) return
+    const cleanedSekolah = namaSekolah
+      .map((s, i) => ({ nama: s.trim(), npsn: npsnSekolah[i]?.trim() || "" }))
+      .filter((x) => x.nama)
     const firstTanggal = kronologi.find((e) => e.tanggal)?.tanggal ?? ""
     onSubmit({
-      namaSekolah,
+      namaSekolah: cleanedSekolah.map((x) => x.nama),
+      npsnSekolah: cleanedSekolah.map((x) => x.npsn),
       unsurTerlibat: unsurTerlibat.filter((u) => u.kategori && u.peran && u.individu.some((ind) => ind.nama)),
       tanggalTerjadi: firstTanggal,
       kronologi: kronologi,
@@ -572,7 +601,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
       pic: pic.trim(),
       dokumentasi: dokumentasi.trim(),
       rekomendasi: rekomendasi.trim(),
-      status,
+      status: (status || "baru") as StatusPelanggaran,
     })
   }
 
@@ -608,36 +637,100 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
           <SectionDivider icon={<AlertTriangle className="w-4 h-4" />} title="Informasi Pelanggaran" />
 
           <div>
-            <label className="text-xs font-semibold text-gray-700">Nama Sekolah <span className="text-red-500">*</span></label>
-            <div className="relative mt-1">
-              <input
-                type="text"
-                value={sekolahInput}
-                onChange={(e) => { setSekolahInput(e.target.value); setShowSekolahDropdown(true) }}
-                onFocus={() => setShowSekolahDropdown(true)}
-                onClick={() => setShowSekolahDropdown(true)}
-                onBlur={() => setTimeout(() => setShowSekolahDropdown(false), 200)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSekolah(sekolahInput) } }}
-                placeholder="Tambah nama sekolah"
-                className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-              />
-              {showSekolahDropdown && filteredSekolahOptions.length > 0 && (
-                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                  {filteredSekolahOptions.map((o) => (
-                    <button
-                      key={o}
-                      type="button"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => addSekolah(o)}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 text-gray-700"
-                    >
-                      {o}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            {namaSekolah.length > 0 && (
+            {isIdealMode && <label className="text-xs font-semibold text-gray-700">Nama Sekolah <span className="text-red-500">*</span></label>}
+            {isIdealMode ? (
+              <div className="relative mt-1">
+                <input
+                  type="text"
+                  value={sekolahInput}
+                  onChange={(e) => { setSekolahInput(e.target.value); setShowSekolahDropdown(true) }}
+                  onFocus={() => setShowSekolahDropdown(true)}
+                  onClick={() => setShowSekolahDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowSekolahDropdown(false), 200)}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSekolah(sekolahInput) } }}
+                  placeholder="Tambah nama sekolah"
+                  className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                />
+                {showSekolahDropdown && filteredSekolahOptions.length > 0 && (
+                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    {filteredSekolahOptions.map((o) => (
+                      <button
+                        key={o}
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => addSekolah(o)}
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 text-gray-700"
+                      >
+                        {o}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (() => {
+              const namaRows = namaSekolah.length > 0 ? namaSekolah : [""]
+              const npsnRows = npsnSekolah.length > 0 ? npsnSekolah : [""]
+              return (
+              <div className="flex flex-col gap-2 mt-1">
+                {namaRows.map((s, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <div className="flex-1 border border-gray-200 rounded-lg p-3">
+                      <div className="grid grid-cols-[1fr_120px] gap-2">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1">Nama Sekolah</label>
+                          <input
+                            type="text"
+                            value={s}
+                            onChange={(e) => {
+                              const next = [...namaRows]
+                              next[i] = e.target.value
+                              setNamaSekolah(next)
+                              if (npsnSekolah.length === 0) setNpsnSekolah(npsnRows)
+                            }}
+                            placeholder="Nama sekolah"
+                            className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1">NPSN</label>
+                          <input
+                            type="text"
+                            value={npsnRows[i] ?? ""}
+                            onChange={(e) => {
+                              const next = [...npsnRows]
+                              next[i] = e.target.value
+                              setNpsnSekolah(next)
+                              if (namaSekolah.length === 0) setNamaSekolah(namaRows)
+                            }}
+                            placeholder="NPSN"
+                            className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    {namaRows.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeSekolah(i)}
+                        className="mt-1 p-1 shrink-0 hover:bg-red-50 rounded text-red-400 hover:text-red-600 transition"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => { setNamaSekolah([...namaRows, ""]); setNpsnSekolah([...npsnRows, ""]) }}
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Tambah Sekolah
+                </button>
+                <hr className="border-gray-300 -mx-5 my-2" />
+              </div>
+              )
+            })()}
+            {isIdealMode && namaSekolah.length > 0 && (
               <div className="flex flex-col gap-1.5 mt-3">
                 {namaSekolah.map((s, i) => (
                   <div key={i} className="flex items-center gap-2 py-1.5 px-2 bg-gray-50 rounded-lg">
@@ -654,103 +747,141 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-semibold text-gray-700">Kategori Pelanggaran <span className="text-red-500">*</span></label>
-              <select
+              <Select
                 value={kategori}
                 onChange={(e) => setKategori(e.target.value)}
-                className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className={`${SELECT_BASE} ${!kategori ? "text-gray-400" : ""}`}
               >
                 <option value="" disabled>Pilih kategori</option>
                 {KATEGORI_PELANGGARAN.map((k) => (
                   <option key={k} value={k}>{k}</option>
                 ))}
-              </select>
+              </Select>
             </div>
             <div>
               <label className="text-xs font-semibold text-gray-700">Tingkat Urgensi <span className="text-red-500">*</span></label>
-              <select
+              <Select
                 value={tingkatKeparahan}
-                onChange={(e) => setTingkatKeparahan(e.target.value as TingkatKeparahan)}
-                className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                onChange={(e) => setTingkatKeparahan(e.target.value as TingkatKeparahan | "")}
+                className={`${SELECT_BASE} ${!tingkatKeparahan ? "text-gray-400" : ""}`}
               >
+                <option value="" disabled>Pilih tingkat urgensi</option>
                 {TINGKAT_KEPARAHAN.map((t) => (
                   <option key={t.value} value={t.value}>{t.label}</option>
                 ))}
-              </select>
+              </Select>
             </div>
           </div>
 
           <div>
             <label className="text-xs font-semibold text-gray-700">Kronologi Kejadian <span className="text-red-500">*</span></label>
-            <div className="flex flex-col gap-2 mt-1">
-              {kronologi.map((entry, i) => (
-                <div key={i}>
-                  <div className="flex items-start gap-2">
-                    <div className="flex-1">
-                      {i === 0 && <label className="block text-xs text-gray-500 mb-1">Tanggal</label>}
-                      <input
-                        type="date"
-                        value={entry.tanggal ?? ""}
-                        onChange={(e) => {
-                          const next = [...kronologi]
-                          next[i] = { ...next[i], tanggal: e.target.value }
-                          setKronologi(next)
-                        }}
-                        className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      />
-                    </div>
-                    <div className="w-[100px] shrink-0">
-                      {i === 0 && <label className="block text-xs text-gray-500 mb-1">Jam</label>}
-                      <input
-                        type="time"
-                        value={entry.jam ?? ""}
-                        onChange={(e) => {
-                          const next = [...kronologi]
-                          next[i] = { ...next[i], jam: e.target.value }
-                          setKronologi(next)
-                        }}
-                        className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      />
-                    </div>
-                    <div className="flex-[1.5]">
-                      {i === 0 && <label className="block text-xs text-gray-500 mb-1">Lokasi</label>}
-                      <input
-                        type="text"
-                        value={entry.lokasi ?? ""}
-                        onChange={(e) => {
-                          const next = [...kronologi]
-                          next[i] = { ...next[i], lokasi: e.target.value }
-                          setKronologi(next)
-                        }}
-                        placeholder="Lokasi..."
-                        className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      />
-                    </div>
-                    <div className="flex-[2]">
-                      {i === 0 && <label className="block text-xs text-gray-500 mb-1">Keterangan</label>}
-                      <input
-                        type="text"
-                        value={entry.keterangan ?? ""}
-                        onChange={(e) => {
-                          const next = [...kronologi]
-                          next[i] = { ...next[i], keterangan: e.target.value }
-                          setKronologi(next)
-                        }}
-                        placeholder="Deskripsikan kejadian pada tanggal ini..."
-                        className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      />
-                    </div>
-                    {kronologi.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => setKronologi(kronologi.filter((_, idx) => idx !== i))}
-                        className="p-1 mt-5 hover:bg-red-50 rounded text-red-400 hover:text-red-600 transition"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    )}
+            <div className="flex flex-col gap-4 mt-1">
+              {kronologi.map((entry, i) => {
+                const tanggalField = (
+                  <div className="flex-1">
+                    <label className="block text-xs text-gray-700 mb-1">Tanggal</label>
+                    <input
+                      type="date"
+                      value={entry.tanggal ?? ""}
+                      onChange={(e) => {
+                        const next = [...kronologi]
+                        next[i] = { ...next[i], tanggal: e.target.value }
+                        setKronologi(next)
+                      }}
+                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
                   </div>
+                )
+                const jamField = (
+                  <div className="w-[100px] shrink-0">
+                    <label className="block text-xs text-gray-700 mb-1">Jam</label>
+                    <input
+                      type="time"
+                      value={entry.jam ?? ""}
+                      onChange={(e) => {
+                        const next = [...kronologi]
+                        next[i] = { ...next[i], jam: e.target.value }
+                        setKronologi(next)
+                      }}
+                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                  </div>
+                )
+                const lokasiField = (
+                  <div className="flex-[1.5]">
+                    <label className="block text-xs text-gray-700 mb-1">Lokasi</label>
+                    <input
+                      type="text"
+                      value={entry.lokasi ?? ""}
+                      onChange={(e) => {
+                        const next = [...kronologi]
+                        next[i] = { ...next[i], lokasi: e.target.value }
+                        setKronologi(next)
+                      }}
+                      placeholder="Lokasi..."
+                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                  </div>
+                )
+                return (
+                <div key={i} className="flex items-start gap-2">
+                <div className="flex-1 border border-gray-200 rounded-lg p-3">
+                  {isIdealMode ? (
+                    <div className="flex items-end gap-2">
+                      {tanggalField}
+                      {jamField}
+                      {lokasiField}
+                      <div className="flex-[2]">
+                        <label className="block text-xs text-gray-700 mb-1">Keterangan</label>
+                        <input
+                          type="text"
+                          value={entry.keterangan ?? ""}
+                          onChange={(e) => {
+                            const next = [...kronologi]
+                            next[i] = { ...next[i], keterangan: e.target.value }
+                            setKronologi(next)
+                          }}
+                          placeholder="Deskripsikan kejadian pada tanggal ini..."
+                          className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-end gap-2">
+                        {tanggalField}
+                        {jamField}
+                        {lokasiField}
+                      </div>
+                      <div className="mt-2 bg-gray-50 rounded-lg px-3 py-2">
+                        <label className="block text-xs text-gray-700 mb-1">Keterangan</label>
+                        <textarea
+                          value={entry.keterangan ?? ""}
+                          onChange={(e) => {
+                            const next = [...kronologi]
+                            next[i] = { ...next[i], keterangan: e.target.value }
+                            setKronologi(next)
+                          }}
+                          placeholder="Deskripsikan kejadian pada tanggal ini..."
+                          rows={3}
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
-              ))}
+                  {kronologi.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setKronologi(kronologi.filter((_, idx) => idx !== i))}
+                      className="mt-1 p-1 shrink-0 hover:bg-red-50 rounded text-red-400 hover:text-red-600 transition"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+                )
+              })}
               <button
                 type="button"
                 onClick={() => setKronologi([...kronologi, { tanggal: "", jam: "", lokasi: "", keterangan: "" }])}
@@ -770,6 +901,11 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
                 const displayKategori = isCustom ? "Lainnya" : u.kategori
                 const lainCount = unsurTerlibat.filter((_, idx) => idx !== i && (_.kategori === "Lainnya" || (!predefined.includes(_.kategori) && _.kategori))).length
                 const lainDisabled = lainCount >= 3
+                const peranLainCount = unsurTerlibat.filter((_, idx) => idx !== i && _.peran === "lainnya").length
+                const peranLainDisabled = peranLainCount >= 3
+                const displayAsal = u.asalSekolah && !namaSekolah.includes(u.asalSekolah) && u.asalSekolah !== "" ? "lainnya" : u.asalSekolah
+                const asalLainCount = unsurTerlibat.filter((_, idx) => idx !== i && u.asalSekolah !== "" && !namaSekolah.includes(_.asalSekolah) && _.asalSekolah !== "").length
+                const asalLainDisabled = asalLainCount >= 3
                 const jml = parseInt(u.jumlah) || 0
                 const syncIndividu = (next: UnsurItem[]) => {
                   const entry = next[i]
@@ -786,73 +922,145 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
                   if (newJml === 0) entry.individu = [{ nama: "", umur: "" }]
                   setUnsurTerlibat(next)
                 }
-                return (
-                <div key={i} className="border border-gray-200 rounded-lg px-3 py-2.5">
-                  <div className="grid grid-cols-[auto_1fr_1fr_72px_auto] gap-2 items-center">
-                    <select
-                      value={u.peran}
-                      onChange={(e) => {
-                        const next = [...unsurTerlibat]
-                        next[i] = { ...next[i], peran: e.target.value as "pelaku" | "korban" }
-                        setUnsurTerlibat(next)
-                      }}
-                      className="h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                    >
-                      <option value="pelaku">Terduga Pelaku</option>
-                      <option value="korban">Terduga Korban</option>
-                    </select>
-                    <select
-                      value={displayKategori}
-                      onChange={(e) => {
-                        const next = [...unsurTerlibat]
-                        next[i] = { ...next[i], kategori: e.target.value }
-                        setUnsurTerlibat(next)
-                      }}
-                      className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white truncate"
-                    >
-                      <option value="" disabled>Jenis</option>
-                      {UNSUR_OPTIONS.map((o) => (
-                        <option key={o} value={o} disabled={o === "Lainnya" && lainDisabled}>{o} {o === "Lainnya" && lainDisabled ? "(maks 3)" : ""}</option>
-                      ))}
-                    </select>
-                    <input
-                      value={displayKategori === "Lainnya" ? (u.kategori !== "Lainnya" ? u.kategori : "") : u.asalSekolah}
-                      onChange={(e) => {
-                        const next = [...unsurTerlibat]
-                        if (displayKategori === "Lainnya") {
+                const peranField = (
+                  <div>
+                    <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                      <Select
+                        value={u.peran}
+                        onChange={(e) => {
+                          const next = [...unsurTerlibat]
+                          const val = e.target.value as UnsurItem["peran"]
+                          next[i] = { ...next[i], peran: val, peranLainnya: val === "lainnya" ? next[i].peranLainnya ?? "" : undefined }
+                          setUnsurTerlibat(next)
+                        }}
+                        className={`${SELECT_SM} border-0 rounded-none ${!u.peran ? "text-gray-400" : ""}`}
+                      >
+                        <option value="" disabled>Pilih peran</option>
+                        <option value="pelaku">Terduga Pelaku</option>
+                        <option value="korban">Terduga Korban</option>
+                        <option value="saksi">Saksi</option>
+                        <option value="lainnya" disabled={peranLainDisabled}>Lainnya{peranLainDisabled ? " (maks 3)" : ""}</option>
+                      </Select>
+                      {u.peran === "lainnya" && (
+                        <input
+                          value={u.peranLainnya ?? ""}
+                          onChange={(e) => {
+                            const next = [...unsurTerlibat]
+                            next[i] = { ...next[i], peranLainnya: e.target.value }
+                            setUnsurTerlibat(next)
+                          }}
+                          placeholder="Tulis peran..."
+                          className="w-full h-9 px-2 text-sm border-t border-gray-300 focus:outline-none bg-white"
+                        />
+                      )}
+                    </div>
+                  </div>
+                )
+                const asalField = (
+                  <div>
+                    <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                      <Select
+                        value={displayAsal}
+                        onChange={(e) => {
+                          const next = [...unsurTerlibat]
+                          next[i] = { ...next[i], asalSekolah: e.target.value, asalLainnya: e.target.value === "lainnya" ? next[i].asalLainnya ?? "" : undefined }
+                          setUnsurTerlibat(next)
+                        }}
+                        className={`${SELECT_SM} border-0 rounded-none ${!u.asalSekolah ? "text-gray-400" : ""}`}
+                      >
+                        <option value="" disabled>Pilih asal</option>
+                        {namaSekolah.filter((s) => s.trim()).map((s) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                        <option value="lainnya" disabled={asalLainDisabled}>Lainnya{asalLainDisabled ? " (maks 3)" : ""}</option>
+                      </Select>
+                      {displayAsal === "lainnya" && (
+                        <input
+                          value={u.asalLainnya ?? ""}
+                          onChange={(e) => {
+                            const next = [...unsurTerlibat]
+                            next[i] = { ...next[i], asalSekolah: "lainnya", asalLainnya: e.target.value }
+                            setUnsurTerlibat(next)
+                          }}
+                          placeholder="Tulis asal..."
+                          className="w-full h-9 px-2 text-sm border-t border-gray-300 focus:outline-none bg-white"
+                        />
+                      )}
+                    </div>
+                  </div>
+                )
+                const statusField = (
+                  <div>
+                    <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                      <Select
+                        value={displayKategori}
+                        onChange={(e) => {
+                          const next = [...unsurTerlibat]
                           next[i] = { ...next[i], kategori: e.target.value }
-                        } else {
-                          next[i] = { ...next[i], asalSekolah: e.target.value }
-                        }
-                        setUnsurTerlibat(next)
-                      }}
-                      placeholder={displayKategori === "Lainnya" ? "Tulis..." : "Asal sekolah"}
-                      className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                    />
+                          setUnsurTerlibat(next)
+                        }}
+                        className={`${SELECT_SM} border-0 rounded-none truncate ${!u.kategori ? "text-gray-400" : ""}`}
+                      >
+                        <option value="" disabled>Pilih status</option>
+                        {UNSUR_OPTIONS.map((o) => (
+                          <option key={o} value={o} disabled={o === "Lainnya" && lainDisabled}>{o} {o === "Lainnya" && lainDisabled ? "(maks 3)" : ""}</option>
+                        ))}
+                      </Select>
+                      {displayKategori === "Lainnya" && (
+                        <input
+                          value={u.kategori !== "Lainnya" ? u.kategori : ""}
+                          onChange={(e) => {
+                            const next = [...unsurTerlibat]
+                            next[i] = { ...next[i], kategori: e.target.value }
+                            setUnsurTerlibat(next)
+                          }}
+                          placeholder="Tulis status..."
+                          className="w-full h-9 px-2 text-sm border-t border-gray-300 focus:outline-none bg-white"
+                        />
+                      )}
+                    </div>
+                  </div>
+                )
+                const jumlahField = (
+                  <div>
                     <input
                       type="number"
-                      min="0"
+                      min="1"
                       value={u.jumlah}
                       onChange={(e) => {
                         const next = [...unsurTerlibat]
                         next[i] = { ...next[i], jumlah: e.target.value }
                         syncIndividu(next)
                       }}
-                      placeholder="Jumlah"
-                      className="w-full h-8 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      placeholder="Jml"
+                      className="w-full h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     />
-                    {i > 0 ? (
-                      <button
-                        type="button"
-                        onClick={() => setUnsurTerlibat((prev) => prev.filter((_, idx) => idx !== i))}
-                        className="p-1 hover:bg-red-50 rounded text-red-400 hover:text-red-600 transition"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
+                  </div>
+                )
+                return (
+                <div key={i} className="flex items-start gap-2">
+                <div className="flex-1 border border-gray-200 rounded-lg px-3 py-2.5">
+                  <div className="space-y-2">
+                    {isIdealMode ? (
+                      <div className="grid grid-cols-[1fr_1fr_1fr_90px] gap-2 items-start">
+                        {peranField}
+                        {asalField}
+                        {statusField}
+                        {jumlahField}
+                      </div>
                     ) : (
-                      <div className="w-5" />
+                      <>
+                        <div className="grid grid-cols-[1fr_1fr] gap-2 items-start">
+                          {peranField}
+                          {asalField}
+                        </div>
+                        <div className="grid grid-cols-[1fr_1fr] gap-2 items-start">
+                          {statusField}
+                          {jumlahField}
+                        </div>
+                      </>
                     )}
-                    </div>
+                  </div>
                     {jml > 0 && (
                       <div className="flex flex-col gap-2 mt-2">
                         {u.individu.map((ind, idx) => (
@@ -866,7 +1074,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
                               setUnsurTerlibat(next)
                             }}
                             placeholder="Nama"
-                            className="flex-1 min-w-0 h-7 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            className="flex-1 min-w-0 h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                           />
                           <input
                             type="number"
@@ -878,18 +1086,27 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
                               setUnsurTerlibat(next)
                             }}
                             placeholder="Umur"
-                            className="w-[72px] shrink-0 h-7 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            className="w-[72px] shrink-0 h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                           />
-                          <div className="w-[22px] shrink-0" />
                         </div>
                         ))}
                       </div>
                     )}
                 </div>
+                  {unsurTerlibat.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setUnsurTerlibat((prev) => prev.filter((_, idx) => idx !== i))}
+                      className="mt-1 p-1 shrink-0 hover:bg-red-50 rounded text-red-400 hover:text-red-600 transition"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
               )})}
               <button
                 type="button"
-                onClick={() => setUnsurTerlibat((prev) => [...prev, { peran: "pelaku", kategori: "", asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "" }] }])}
+                onClick={() => setUnsurTerlibat((prev) => [...prev, { peran: "", kategori: "", asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "" }] }])}
                 className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
               >
                 <Plus className="w-3.5 h-3.5" /> Tambah Kelompok Unsur
@@ -923,15 +1140,16 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
 
           <div>
             <label className="text-xs font-semibold text-gray-700">Pelapor / Sumber Laporan <span className="text-red-500">*</span></label>
-            <select
+            <Select
               value={pelapor}
-              onChange={(e) => setPelapor(e.target.value as Pelapor)}
-              className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              onChange={(e) => setPelapor(e.target.value as Pelapor | "")}
+              className={`${SELECT_BASE} ${!pelapor ? "text-gray-400" : ""}`}
             >
+              <option value="" disabled>Pilih pelapor</option>
               {PELAPOR_OPTIONS.map((p) => (
                 <option key={p.value} value={p.value}>{p.label}</option>
               ))}
-            </select>
+            </Select>
             {pelapor === "lainnya" && (
               <input
                 type="text"
@@ -991,16 +1209,17 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
 
           <div>
             <label className="text-xs font-semibold text-gray-700">Status Pelanggaran</label>
-            <select
+            <Select
               value={status}
-              onChange={(e) => setStatus(e.target.value as StatusPelanggaran)}
-              className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              onChange={(e) => setStatus(e.target.value as StatusPelanggaran | "")}
+              className={`${SELECT_BASE} ${!status ? "text-gray-400" : ""}`}
             >
+              <option value="" disabled>Pilih status</option>
               <option value="baru">Baru</option>
               <option value="proses">Diproses</option>
               <option value="selesai">Selesai</option>
               <option value="ditutup">Ditutup</option>
-            </select>
+            </Select>
           </div>
 
           <div>
@@ -1039,7 +1258,7 @@ function FormModal({ onClose, onSubmit, initialData }: { onClose: () => void; on
             type="button"
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${canSubmit ? "text-white bg-emerald-600 hover:bg-emerald-700" : "text-gray-400 bg-gray-200 cursor-not-allowed"}`}
           >
             {initialData ? "Simpan" : "Kirim Laporan"}
           </button>
@@ -1059,6 +1278,11 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
   const [editingItem, setEditingItem] = useState<PelanggaranItem | undefined>(undefined)
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [isIdealMode, setIsIdealMode] = useState(false)
+
+  useEffect(() => {
+    setIsIdealMode(getIdealMode())
+  }, [])
 
   useEffect(() => {
     const stored = localStorage.getItem("pelanggaranList")
@@ -1202,7 +1426,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
       ...filtered.map((item) =>
         [
           `"${(Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah]).join("; ")}"`,
-          `"${(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u) => `${u.kategori} (${u.peran}) ${u.asalSekolah} - ${(u.individu || []).map((ind) => `${ind.nama}${ind.umur ? `(${ind.umur})` : ""}`).join(", ")}`).join("; ")}"`,
+          `"${(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u) => `${u.kategori} (${u.peran === "lainnya" ? (u.peranLainnya || "lainnya") : u.peran}) ${u.asalSekolah} - ${(u.individu || []).map((ind) => `${ind.nama}${ind.umur ? `(${ind.umur})` : ""}`).join(", ")}`).join("; ")}"`,
           `"${item.tanggalTerjadi}"`,
           `"${item.kategori}"`,
           `"${TINGKAT_KEPARAHAN.find((t) => t.value === item.tingkatKeparahan)?.label ?? item.tingkatKeparahan}"`,
@@ -1317,27 +1541,27 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
             className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
           />
         </div>
-        <select
+        <Select
           value={filterKategori}
           onChange={(e) => setFilterKategori(e.target.value)}
-          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          className={SELECT_FILTER}
         >
           <option value="semua">Semua Kategori</option>
           {KATEGORI_PELANGGARAN.map((k) => (
             <option key={k} value={k}>{k}</option>
           ))}
-        </select>
-        <select
+        </Select>
+        <Select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value as StatusPelanggaran | "semua")}
-          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          className={SELECT_FILTER}
         >
           <option value="semua">Semua Status</option>
           <option value="baru">Baru</option>
           <option value="proses">Diproses</option>
           <option value="selesai">Selesai</option>
           <option value="ditutup">Ditutup</option>
-        </select>
+        </Select>
       </div>
 
       {totalRows === 0 ? (
@@ -1371,9 +1595,9 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
                           <div key={i} className="mb-1 last:mb-0">
                             <span className="text-xs text-gray-500">{u.kategori}</span>
                             <span className={`ml-1 text-xs font-medium px-1.5 py-0.5 rounded-full ${
-                              u.peran === "pelaku" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
+                              u.peran === "pelaku" ? "bg-red-100 text-red-700" : u.peran === "korban" ? "bg-blue-100 text-blue-700" : u.peran === "saksi" ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-700"
                             }`}>
-                              {u.peran === "pelaku" ? "P" : "K"}
+                              {u.peran === "pelaku" ? "P" : u.peran === "korban" ? "K" : u.peran === "saksi" ? "S" : u.peran === "lainnya" ? (u.peranLainnya || "L") : "-"}
                             </span>
                             <div className="text-xs text-gray-700 pl-1">
                               {(u.individu || []).map((ind, idx) => (
@@ -1467,8 +1691,10 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
           }}
           onSubmit={editingItem ? handleUpdate : handleCreate}
           initialData={editingItem}
+          isIdealMode={isIdealMode}
         />
       )}
+      <FormModeToggle onChange={setIsIdealMode} />
     </div>
   )
 }
