@@ -899,6 +899,7 @@ function TambahPelanggaranInner() {
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
         <SectionCard icon={<AlertTriangle className="w-4 h-4" />} title="Informasi Pelanggaran">
           <div className="grid grid-cols-1 gap-4">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Sekolah Terlibat</p>
             <div className="flex flex-col gap-1.5">
               {isIdealMode && <FieldLabel required>Nama Sekolah</FieldLabel>}
               {isIdealMode ? (
@@ -1005,6 +1006,8 @@ function TambahPelanggaranInner() {
               )}
             </div>
 
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Klasifikasi Pelanggaran</p>
+
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
                 <FieldLabel required>Kategori Pelanggaran</FieldLabel>
@@ -1097,9 +1100,7 @@ function TambahPelanggaranInner() {
 
         <SectionCard icon={<Clock className="w-4 h-4" />} title="Detail Kasus">
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel required>Unsur yang Terlibat</FieldLabel>
-            </div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Unsur yang Terlibat <span className="text-red-500 normal-case">*</span></p>
             <div className="flex flex-col gap-4">
                 {(() => {
                   const customAsalTotal = form.unsurTerlibat.reduce(
@@ -1228,7 +1229,7 @@ function TambahPelanggaranInner() {
                           <div className="flex-1 border border-gray-200 rounded-lg p-3 bg-white">
                             <div className="grid grid-cols-[1fr_90px] gap-2 items-start">
                               <div>
-                                <label className="block text-xs text-gray-700 mb-1">Asal Sekolah</label>
+                                <label className="block text-xs font-semibold text-gray-700 mb-1">Asal Sekolah</label>
                                 <div className="relative border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
                                   {displayAsal === "lainnya" ? (
                                     <>
@@ -1277,7 +1278,7 @@ function TambahPelanggaranInner() {
                                 </div>
                               </div>
                               <div>
-                                <label className="block text-xs text-gray-700 mb-1">Jumlah Orang</label>
+                                <label className="block text-xs font-semibold text-gray-700 mb-1">Jumlah Orang</label>
                                 <input
                                   type="number"
                                   min="1"
@@ -1453,14 +1454,12 @@ function TambahPelanggaranInner() {
 
             <hr className="border-gray-300 -mx-5 my-2" />
 
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel>Kronologi Kejadian</FieldLabel>
-            </div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Kronologi Kejadian</p>
             <div className="flex flex-col gap-4">
             {form.kronologi.map((entry, i) => {
               const tanggalField = (
                 <div className="flex-1">
-                  <label className="block text-xs text-gray-700 mb-1">Tanggal</label>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Tanggal</label>
                   <input
                     type="date"
                     value={entry.tanggal ?? ""}
@@ -1475,7 +1474,7 @@ function TambahPelanggaranInner() {
               )
               const jamField = (
                 <div className="w-[100px] shrink-0">
-                  <label className="block text-xs text-gray-700 mb-1">Jam</label>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Jam</label>
                   <input
                     type="time"
                     value={entry.jam ?? ""}
@@ -1490,7 +1489,7 @@ function TambahPelanggaranInner() {
               )
               const lokasiField = (
                 <div className="flex-[1.5]">
-                  <label className="block text-xs text-gray-700 mb-1">Lokasi</label>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Lokasi</label>
                   <input
                     type="text"
                     value={entry.lokasi ?? ""}
@@ -1513,7 +1512,7 @@ function TambahPelanggaranInner() {
                     {jamField}
                     {lokasiField}
                     <div className="flex-[2]">
-                      <label className="block text-xs text-gray-700 mb-1">Keterangan</label>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Keterangan</label>
                       <input
                         type="text"
                         value={entry.keterangan ?? ""}
@@ -1535,7 +1534,7 @@ function TambahPelanggaranInner() {
                       {lokasiField}
                     </div>
                     <div className="mt-2 bg-gray-50 rounded-lg px-3 py-2">
-                      <label className="block text-xs text-gray-700 mb-1">Keterangan</label>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Keterangan</label>
                       <textarea
                         value={entry.keterangan ?? ""}
                         onChange={(e) => {
@@ -1589,6 +1588,7 @@ function TambahPelanggaranInner() {
 
           <SectionCard icon={<FileText className="w-4 h-4" />} title="Sumber Laporan & Penanggung Jawab">
           <div className="grid grid-cols-1 gap-4">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Sumber Laporan</p>
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
                 <FieldLabel required>Pelapor / Sumber Laporan</FieldLabel>
@@ -1642,6 +1642,10 @@ function TambahPelanggaranInner() {
             </div>
 
             {role === "pusat" && <hr className="border-gray-300 -mx-5 my-2" />}
+
+            {role === "pusat" && (
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Kelompok Kerja Penanggung Jawab</p>
+            )}
 
             {role === "pusat" && (
               <div className="grid grid-cols-2 gap-3">
