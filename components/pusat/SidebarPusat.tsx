@@ -1,17 +1,18 @@
 "use client"
-import { LayoutDashboard, Users, LogOut, GraduationCap, BookOpenCheck, CalendarDays, Menu, X, FileText } from "lucide-react"
+import { LayoutDashboard, Users, LogOut, GraduationCap, BookOpenCheck, CalendarDays, Menu, X, FileText, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { clearAuthAndRedirectToLogin } from "@/lib/logout"
 
-export type PusatMenu = "dashboard" | "pokja" | "sumber-rujukan" | "kegiatan" | "laporan-akhir-tahun"
+export type PusatMenu = "dashboard" | "pokja" | "sumber-rujukan" | "kegiatan" | "laporan-akhir-tahun" | "pelanggaran"
 
 const navItems = [
   { id: "dashboard" as PusatMenu, label: "Beranda", icon: LayoutDashboard },
   { id: "pokja" as PusatMenu, label: "Kelompok Kerja", icon: Users },
   { id: "sumber-rujukan" as PusatMenu, label: "Sumber Dukungan", icon: BookOpenCheck },
   { id: "k" as PusatMenu, label: " Kegiatan", icon: CalendarDays },
+  { id: "pelanggaran" as PusatMenu, label: "Pelanggaran", icon: AlertTriangle },
   { id: "laporan-akhir-tahun" as PusatMenu, label: "Laporan Akhir Tahun", icon: FileText },
 ]
 

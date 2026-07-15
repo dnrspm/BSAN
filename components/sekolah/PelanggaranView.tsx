@@ -101,6 +101,35 @@ function getSekolahColors(name: string) {
   return { bg: "bg-gray-500/10", text: "text-gray-700" }
 }
 
+interface DisplayIndividu {
+  nama: string
+  umur?: string
+  status?: string
+  jenisKelamin?: string
+}
+
+interface DisplayAsalGroup {
+  asalSekolah: string
+  asalLainnya?: string
+  individu: DisplayIndividu[]
+}
+
+function getAsalGroups(u: any): DisplayAsalGroup[] {
+  if (Array.isArray(u?.asalGroups)) {
+    return u.asalGroups.map((ag: any) => ({
+      asalSekolah: ag.asalSekolah ?? "",
+      asalLainnya: ag.asalLainnya,
+      individu: Array.isArray(ag.individu) ? ag.individu : [],
+    }))
+  }
+  // Legacy flat shape: asalSekolah/individu directly on the unsur group
+  return [{
+    asalSekolah: u?.asalSekolah ?? "",
+    asalLainnya: u?.asalLainnya,
+    individu: Array.isArray(u?.individu) ? u.individu : [],
+  }]
+}
+
 const SELECT_BASE = "w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8"
 const SELECT_SM = "h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-6"
 const SELECT_FILTER = "rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8"
@@ -303,21 +332,28 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
             </div>
             <div className="ml-6 space-y-1.5">
               {(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u, i) => (
-                <div key={i} className="border border-gray-200 rounded-lg px-3 py-2 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                      u.peran === "pelaku" ? "bg-red-100 text-red-700" : u.peran === "korban" ? "bg-blue-100 text-blue-700" : u.peran === "saksi" ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-700"
-                    }`}>
-                      {u.peran === "pelaku" ? "Pelaku" : u.peran === "korban" ? "Korban" : u.peran === "saksi" ? "Saksi" : u.peran === "lainnya" ? (u.peranLainnya || "Lainnya") : u.peran || "-"}
-                    </span>
-                    <span className="text-xs font-medium text-gray-500">{u.kategori || "-"}</span>
-                    {u.asalSekolah && <span className="text-xs text-gray-500">· {u.asalSekolah}</span>}
-                  </div>
-                  {Array.isArray(u.individu) && u.individu.length > 0 && u.individu.map((ind, idx) => (
-                    <div key={idx} className="flex items-center gap-3 pl-4 text-sm">
-                      <span className="text-gray-400 text-xs">#{idx + 1}</span>
-                      <span className="font-semibold text-gray-900">{ind.nama || "-"}</span>
-                      {ind.umur && <span className="text-gray-500 text-xs">{ind.umur} thn</span>}
+                <div key={i} className="border border-gray-200 rounded-lg px-3 py-2 space-y-1.5">
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                    u.peran === "pelaku" ? "bg-red-100 text-red-700" : u.peran === "korban" ? "bg-blue-100 text-blue-700" : u.peran === "saksi" ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-700"
+                  }`}>
+                    {u.peran === "pelaku" ? "Pelaku" : u.peran === "korban" ? "Korban" : u.peran === "saksi" ? "Saksi" : u.peran === "lainnya" ? (u.peranLainnya || "Lainnya") : u.peran || "-"}
+                  </span>
+                  {getAsalGroups(u).map((ag, gi) => (
+                    <div key={gi} className="pl-3 border-l-2 border-gray-100">
+                      {ag.asalSekolah && (
+                        <p className="text-xs font-medium text-gray-500">
+                          Asal Sekolah: {ag.asalSekolah === "lainnya" ? ag.asalLainnya : ag.asalSekolah}
+                        </p>
+                      )}
+                      {ag.individu.map((ind, idx) => (
+                        <div key={idx} className="flex items-center gap-3 pl-1 text-sm">
+                          <span className="text-gray-400 text-xs">#{idx + 1}</span>
+                          <span className="font-semibold text-gray-900">{ind.nama || "-"}</span>
+                          {ind.status && <span className="text-gray-500 text-xs">{ind.status}</span>}
+                          {ind.jenisKelamin && <span className="text-gray-500 text-xs">{ind.jenisKelamin}</span>}
+                          {ind.umur && <span className="text-gray-500 text-xs">{ind.umur} thn</span>}
+                        </div>
+                      ))}
                     </div>
                   ))}
                 </div>
@@ -578,7 +614,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
     setPicInput("")
   }
 
-  const canSubmit = namaSekolah.some((s) => s.trim()) && unsurTerlibat.some((u) => u.kategori && u.peran && parseInt(u.jumlah) > 0 && u.individu.some((ind) => ind.nama)) && kronologi.some((e) => e.tanggal) && kategori && rekomendasi.trim() && tingkatKeparahan && pelapor
+  const canSubmit = namaSekolah.some((s) => s.trim()) && unsurTerlibat.some((u) => u.kategori && u.peran && parseInt(u.jumlah) > 0 && u.individu.some((ind) => ind.nama)) && kronologi.some((e) => e.tanggal) && kategori && kategori !== "Lainnya" && rekomendasi.trim() && tingkatKeparahan && pelapor
 
   const handleSubmit = () => {
     if (!canSubmit) return
@@ -747,16 +783,34 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-semibold text-gray-700">Kategori Pelanggaran <span className="text-red-500">*</span></label>
-              <Select
-                value={kategori}
-                onChange={(e) => setKategori(e.target.value)}
-                className={`${SELECT_BASE} ${!kategori ? "text-gray-400" : ""}`}
-              >
-                <option value="" disabled>Pilih kategori</option>
-                {KATEGORI_PELANGGARAN.map((k) => (
-                  <option key={k} value={k}>{k}</option>
-                ))}
-              </Select>
+              {(() => {
+                const predefinedKategori = KATEGORI_PELANGGARAN.filter((k) => k !== "Lainnya")
+                const isKategoriCustom = kategori !== "" && !predefinedKategori.includes(kategori)
+                const displayKategori = isKategoriCustom ? "Lainnya" : kategori
+                return (
+                  <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                    <Select
+                      value={displayKategori}
+                      onChange={(e) => setKategori(e.target.value)}
+                      className={`${SELECT_BASE} border-0 rounded-none focus:ring-0 focus:outline-none ${!kategori ? "text-gray-400" : ""}`}
+                    >
+                      <option value="" disabled>Pilih kategori</option>
+                      {KATEGORI_PELANGGARAN.map((k) => (
+                        <option key={k} value={k}>{k}</option>
+                      ))}
+                    </Select>
+                    {isKategoriCustom && (
+                      <input
+                        type="text"
+                        value={kategori !== "Lainnya" ? kategori : ""}
+                        onChange={(e) => setKategori(e.target.value)}
+                        placeholder="Tulis kategori lainnya..."
+                        className="w-full h-9 px-3 text-sm border-t border-gray-300 focus:outline-none bg-white"
+                      />
+                    )}
+                  </div>
+                )
+              })()}
             </div>
             <div>
               <label className="text-xs font-semibold text-gray-700">Tingkat Urgensi <span className="text-red-500">*</span></label>
@@ -1363,9 +1417,11 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
     const session = readAuthSession()
     return session?.role === "dinas"
       ? `Admin Dinas ${session.namaDinas ?? ""}`
-      : session?.namaSekolah
-        ? `Admin Sekolah ${session.namaSekolah}`
-        : "Admin Sekolah"
+      : session?.role === "pusat"
+        ? "Admin Pusat"
+        : session?.namaSekolah
+          ? `Admin Sekolah ${session.namaSekolah}`
+          : "Admin Sekolah"
   }
 
   const handleCreate = (data: Omit<PelanggaranItem, "id" | "createdAt" | "updatedAt" | "dibuatOleh" | "diperbaruiOleh">) => {
@@ -1426,7 +1482,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
       ...filtered.map((item) =>
         [
           `"${(Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah]).join("; ")}"`,
-          `"${(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u) => `${u.kategori} (${u.peran === "lainnya" ? (u.peranLainnya || "lainnya") : u.peran}) ${u.asalSekolah} - ${(u.individu || []).map((ind) => `${ind.nama}${ind.umur ? `(${ind.umur})` : ""}`).join(", ")}`).join("; ")}"`,
+          `"${(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u) => `(${u.peran === "lainnya" ? (u.peranLainnya || "lainnya") : u.peran}) ${getAsalGroups(u).map((ag) => `${ag.asalSekolah === "lainnya" ? ag.asalLainnya : ag.asalSekolah}: ${ag.individu.map((ind) => `${ind.nama}${ind.umur ? `(${ind.umur})` : ""}`).join(", ")}`).join(" | ")}`).join("; ")}"`,
           `"${item.tanggalTerjadi}"`,
           `"${item.kategori}"`,
           `"${TINGKAT_KEPARAHAN.find((t) => t.value === item.tingkatKeparahan)?.label ?? item.tingkatKeparahan}"`,
@@ -1531,8 +1587,8 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-2 items-end flex-wrap">
-        <div className="relative flex-1 min-w-[200px]">
+      <div className="flex flex-row gap-2 items-center">
+        <div className="relative flex-1 min-w-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             value={search}
@@ -1541,27 +1597,31 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
             className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
           />
         </div>
-        <Select
-          value={filterKategori}
-          onChange={(e) => setFilterKategori(e.target.value)}
-          className={SELECT_FILTER}
-        >
-          <option value="semua">Semua Kategori</option>
-          {KATEGORI_PELANGGARAN.map((k) => (
-            <option key={k} value={k}>{k}</option>
-          ))}
-        </Select>
-        <Select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value as StatusPelanggaran | "semua")}
-          className={SELECT_FILTER}
-        >
-          <option value="semua">Semua Status</option>
-          <option value="baru">Baru</option>
-          <option value="proses">Diproses</option>
-          <option value="selesai">Selesai</option>
-          <option value="ditutup">Ditutup</option>
-        </Select>
+        <div className="flex-shrink-0 w-[140px] sm:w-[180px]">
+          <Select
+            value={filterKategori}
+            onChange={(e) => setFilterKategori(e.target.value)}
+            className={SELECT_FILTER}
+          >
+            <option value="semua">Semua Kategori</option>
+            {KATEGORI_PELANGGARAN.map((k) => (
+              <option key={k} value={k}>{k}</option>
+            ))}
+          </Select>
+        </div>
+        <div className="flex-shrink-0 w-[120px] sm:w-[150px]">
+          <Select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value as StatusPelanggaran | "semua")}
+            className={SELECT_FILTER}
+          >
+            <option value="semua">Semua Status</option>
+            <option value="baru">Baru</option>
+            <option value="proses">Diproses</option>
+            <option value="selesai">Selesai</option>
+            <option value="ditutup">Ditutup</option>
+          </Select>
+        </div>
       </div>
 
       {totalRows === 0 ? (
@@ -1592,16 +1652,22 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
                       </td>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
                         {(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u, i) => (
-                          <div key={i} className="mb-1 last:mb-0">
-                            <span className="text-xs text-gray-500">{u.kategori}</span>
-                            <span className={`ml-1 text-xs font-medium px-1.5 py-0.5 rounded-full ${
+                          <div key={i} className="mb-1.5 last:mb-0">
+                            <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${
                               u.peran === "pelaku" ? "bg-red-100 text-red-700" : u.peran === "korban" ? "bg-blue-100 text-blue-700" : u.peran === "saksi" ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-700"
                             }`}>
-                              {u.peran === "pelaku" ? "P" : u.peran === "korban" ? "K" : u.peran === "saksi" ? "S" : u.peran === "lainnya" ? (u.peranLainnya || "L") : "-"}
+                              {u.peran === "pelaku" ? "Pelaku" : u.peran === "korban" ? "Korban" : u.peran === "saksi" ? "Saksi" : u.peran === "lainnya" ? (u.peranLainnya || "Lainnya") : "-"}
                             </span>
-                            <div className="text-xs text-gray-700 pl-1">
-                              {(u.individu || []).map((ind, idx) => (
-                                <span key={idx}>{ind.nama}{idx < u.individu.length - 1 ? ", " : ""}</span>
+                            <div className="pl-2 mt-0.5 space-y-0.5">
+                              {getAsalGroups(u).map((ag, gi) => (
+                                <div key={gi} className="text-xs text-gray-700">
+                                  {ag.asalSekolah && (
+                                    <span className="text-gray-400">{ag.asalSekolah === "lainnya" ? ag.asalLainnya : ag.asalSekolah}: </span>
+                                  )}
+                                  {ag.individu.map((ind, idx) => (
+                                    <span key={idx}>{ind.nama}{idx < ag.individu.length - 1 ? ", " : ""}</span>
+                                  ))}
+                                </div>
                               ))}
                             </div>
                           </div>

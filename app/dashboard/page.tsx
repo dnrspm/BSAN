@@ -201,6 +201,14 @@ function DashboardPageInner() {
     }
   }, [searchParams])
 
+  // Handle ?menu= URL param for pusat
+  useEffect(() => {
+    const menuParam = searchParams.get("menu") as PusatMenu | null
+    if (menuParam === "pelanggaran") {
+      setPusatMenu(menuParam)
+    }
+  }, [searchParams])
+
   useEffect(() => {
     try {
       const stored = localStorage.getItem("pokjaList")
@@ -555,6 +563,7 @@ function DashboardPageInner() {
               )}
               {pusatMenu === "sumber-rujukan" && <SumberRujukanView />}
               {pusatMenu === "k" && < KegiatanView />}
+              {pusatMenu === "pelanggaran" && <PelanggaranView editId={searchParams.get("edit") ?? undefined} />}
               {pusatMenu === "laporan-akhir-tahun" && <LaporanAkhirTahunPusatView />}
             </main>
           </div>

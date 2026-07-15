@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import {
   ArrowLeft, AlertTriangle, Users, Calendar, FileText,
-  CheckCircle, Clock, Plus, X, XCircle, ChevronDown,
+  CheckCircle, Clock, Plus, X, XCircle, ChevronDown, Trash2, MoreVertical,
 } from "lucide-react"
 import { FormModeToggle, getIdealMode } from "@/components/FormModeToggle"
 
@@ -15,6 +15,16 @@ type Pelapor = "laporan_masyarakat" | "laporan_sekolah" | "laporan_kemendikdasme
 interface IndividuItem {
   nama: string
   umur: string
+  status: string
+  statusLainnya?: string
+  jenisKelamin: "Laki-laki" | "Perempuan" | ""
+}
+
+interface AsalGroup {
+  asalSekolah: string
+  asalLainnya?: string
+  jumlah: string
+  individu: IndividuItem[]
 }
 
 interface KronologiEntry {
@@ -28,10 +38,7 @@ interface UnsurItem {
   peran: "pelaku" | "korban" | "saksi" | "lainnya" | ""
   peranLainnya?: string
   kategori: string
-  asalSekolah: string
-  asalLainnya?: string
-  jumlah: string
-  individu: IndividuItem[]
+  asalGroups: AsalGroup[]
 }
 
 interface PelanggaranItem {
@@ -45,8 +52,11 @@ interface PelanggaranItem {
   tingkatKeparahan: TingkatKeparahan
   pelapor: Pelapor
   pelaporLainnya?: string
+  kontakPelapor?: string
   tindakLanjut: string
   pic: string
+  wilayah?: string
+  kabupatenKota?: string
   dokumentasi: string
   rekomendasi: string
   motif?: string
@@ -75,7 +85,19 @@ const SEKOLAH_OPTIONS = [
   { npsn: "11001002", nama: "SMAN 2 Palembang" },
 ]
 
-const UNSUR_OPTIONS = ["Siswa Laki-laki", "Siswa Perempuan", "Guru", "Tenaga Kependidikan", "Kepala Sekolah", "Warga Sekolah", "Lainnya"]
+const UNSUR_OPTIONS = ["Siswa", "Guru", "Tenaga Kependidikan", "Kepala Sekolah", "Warga Sekolah", "Lainnya"]
+
+const PROVINSI_OPTIONS = [
+  "Aceh", "Sumatera Utara", "Sumatera Barat", "Riau", "Kepulauan Riau",
+  "Jambi", "Sumatera Selatan", "Kepulauan Bangka Belitung", "Bengkulu",
+  "Lampung", "DKI Jakarta", "Jawa Barat", "Banten", "Jawa Tengah",
+  "DI Yogyakarta", "Jawa Timur", "Bali", "Nusa Tenggara Barat",
+  "Nusa Tenggara Timur", "Kalimantan Barat", "Kalimantan Tengah",
+  "Kalimantan Selatan", "Kalimantan Timur", "Kalimantan Utara",
+  "Sulawesi Utara", "Gorontalo", "Sulawesi Tengah", "Sulawesi Barat",
+  "Sulawesi Selatan", "Sulawesi Tenggara", "Maluku", "Maluku Utara",
+  "Papua Barat", "Papua",
+]
 
 const KATEGORI_PELANGGARAN = [
   "Perundungan (Bullying)", "Pelecehan Seksual", "Kekerasan Fisik",
@@ -87,6 +109,12 @@ const TINGKAT_KEPARAHAN: { value: TingkatKeparahan; label: string; color: string
   { value: "biasa", label: "Biasa", color: "bg-yellow-100 text-yellow-700" },
   { value: "urgen", label: "Mendesak", color: "bg-orange-100 text-orange-700" },
   { value: "sangat_urgen", label: "Sangat Mendesak", color: "bg-red-100 text-red-700" },
+]
+
+const TINGKAT_URGENSI_SEGMENTS: { value: TingkatKeparahan; label: string; desc: string; selected: string; selectedDesc: string }[] = [
+  { value: "biasa", label: "Biasa", desc: "Ditangani sesuai antrean", selected: "border-green-600 bg-green-50 text-green-600", selectedDesc: "text-green-600" },
+  { value: "urgen", label: "Mendesak", desc: "Perlu respons ≤ 3 hari", selected: "border-amber-600 bg-amber-50 text-amber-600", selectedDesc: "text-amber-600" },
+  { value: "sangat_urgen", label: "Sangat Mendesak", desc: "Ada risiko keselamatan", selected: "border-red-600 bg-red-50 text-red-600", selectedDesc: "text-red-600" },
 ]
 
 const PELAPOR_OPTIONS: { value: Pelapor; label: string }[] = [
@@ -101,15 +129,68 @@ const PELAPOR_OPTIONS: { value: Pelapor; label: string }[] = [
 const SELECT_BASE = "w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8"
 const SELECT_SM = "h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-6"
 
-function Select({ value, onChange, className, children }: { value: string; onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; className?: string; children: React.ReactNode }) {
+function Select({ value, onChange, className, children, id }: { value: string; onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; className?: string; children: React.ReactNode; id?: string }) {
   return (
     <div className="relative w-full">
-      <select value={value} onChange={onChange} className={`w-full ${className ?? ""}`}>
+      <select id={id} value={value} onChange={onChange} className={`w-full ${className ?? ""}`}>
         {children}
       </select>
       <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
     </div>
   )
+}
+
+function openSelectPicker(id: string) {
+  requestAnimationFrame(() => {
+    const el = document.getElementById(id) as HTMLSelectElement | null
+    if (!el) return
+    el.focus()
+    try { (el as any).showPicker?.() } catch {}
+  })
+}
+
+function normalizeUnsurTerlibat(raw: unknown): UnsurItem[] {
+  if (!Array.isArray(raw)) return []
+  return raw.map((u: any): UnsurItem => {
+    if (Array.isArray(u.asalGroups)) {
+      return {
+        peran: u.peran ?? "",
+        peranLainnya: u.peranLainnya,
+        kategori: u.kategori ?? "",
+        asalGroups: u.asalGroups.map((ag: any) => ({
+          asalSekolah: ag.asalSekolah ?? "",
+          asalLainnya: ag.asalLainnya,
+          jumlah: ag.jumlah ?? "",
+          individu: Array.isArray(ag.individu) && ag.individu.length > 0
+            ? ag.individu.map((ind: any) => ({
+                nama: ind.nama ?? "",
+                umur: ind.umur ?? "",
+                status: ind.status ?? "",
+                jenisKelamin: ind.jenisKelamin ?? "",
+              }))
+            : [{ nama: "", umur: "", status: "", jenisKelamin: "" }],
+        })),
+      }
+    }
+    // Legacy flat shape: { asalSekolah, jumlah, individu: [{ nama, umur, asalSekolah? }] }
+    const legacyIndividu = Array.isArray(u.individu) && u.individu.length > 0 ? u.individu : [{ nama: "", umur: "" }]
+    return {
+      peran: u.peran ?? "",
+      peranLainnya: u.peranLainnya,
+      kategori: u.kategori ?? "",
+      asalGroups: [{
+        asalSekolah: u.asalSekolah ?? "",
+        asalLainnya: u.asalLainnya,
+        jumlah: u.jumlah ?? "",
+        individu: legacyIndividu.map((ind: any) => ({
+          nama: ind.nama ?? "",
+          umur: ind.umur ?? "",
+          status: ind.status ?? "",
+          jenisKelamin: ind.jenisKelamin ?? "",
+        })),
+      }],
+    }
+  })
 }
 
 function FieldLabel({ children, required }: { children: React.ReactNode; required?: boolean }) {
@@ -177,14 +258,17 @@ function emptyForm() {
   return {
     namaSekolah: [] as string[],
     npsnSekolah: [] as string[],
-    unsurTerlibat: [{ peran: "", kategori: "", asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "" }] }] as UnsurItem[],
+    unsurTerlibat: [{ peran: "", kategori: "", asalGroups: [{ asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "", status: "", jenisKelamin: "" }] }] }] as UnsurItem[],
     tanggalTerjadi: "",
     kronologi: [{ tanggal: "", jam: "", lokasi: "", keterangan: "" }],
     kategori: "",
     tingkatKeparahan: "" as TingkatKeparahan | "",
     pelapor: "" as Pelapor | "",
     pelaporLainnya: "",
+    kontakPelapor: "",
     pic: "",
+    wilayah: "",
+    kabupatenKota: "",
     tindakLanjut: "",
     dokumentasi: "",
     rekomendasi: "",
@@ -228,6 +312,8 @@ function TambahPelanggaranInner() {
   const [asalSekolahQuery, setAsalSekolahQuery] = useState<Record<number, string>>({})
   const [openAsalSekolahIdx, setOpenAsalSekolahIdx] = useState<number | null>(null)
   const [submitted, setSubmitted] = useState(false)
+  const [openPeranMenu, setOpenPeranMenu] = useState<number | null>(null)
+  const [kategoriMemo, setKategoriMemo] = useState("")
 
   const selectPic = (name: string) => {
     setForm((prev) => ({ ...prev, pic: name }))
@@ -258,7 +344,7 @@ function TambahPelanggaranInner() {
         const normalized = {
           ...found,
           namaSekolah: Array.isArray(found.namaSekolah) ? found.namaSekolah : [found.namaSekolah as any],
-          unsurTerlibat: Array.isArray(found.unsurTerlibat) ? found.unsurTerlibat : [],
+          unsurTerlibat: normalizeUnsurTerlibat(found.unsurTerlibat),
           dokumentasi: Array.isArray(found.dokumentasi) ? found.dokumentasi[0] ?? "" : found.dokumentasi,
           tingkatKeparahan: (found as any).tingkatKeparahan ?? "biasa",
           pelapor: (found as any).pelapor ?? "laporan_sekolah",
@@ -272,14 +358,17 @@ function TambahPelanggaranInner() {
           setForm({
             namaSekolah: normalized.namaSekolah,
             npsnSekolah: (normalized as any).npsnSekolah ?? normalized.namaSekolah.map(() => ""),
-            unsurTerlibat: normalized.unsurTerlibat.length > 0 ? normalized.unsurTerlibat : [{ peran: "", kategori: "", asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "" }] }],
+            unsurTerlibat: normalized.unsurTerlibat.length > 0 ? normalized.unsurTerlibat : [{ peran: "", kategori: "", asalGroups: [{ asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "", status: "", jenisKelamin: "" }] }] }],
             tanggalTerjadi: normalized.tanggalTerjadi?.split("T")[0] ?? "",
             kronologi: Array.isArray((normalized as any).kronologi) ? (normalized as any).kronologi.map((e: any) => ({ tanggal: e.tanggal ?? "", jam: e.jam ?? "", lokasi: e.lokasi ?? "", keterangan: e.keterangan ?? "" })) : (normalized as any).kronologi ? [{ tanggal: normalized.tanggalTerjadi?.split("T")[0] ?? "", jam: "", lokasi: "", keterangan: (normalized as any).kronologi }] : [{ tanggal: "", jam: "", lokasi: "", keterangan: "" }],
             kategori: normalized.kategori,
             tingkatKeparahan: normalized.tingkatKeparahan,
             pelapor: normalized.pelapor,
             pelaporLainnya: normalized.pelaporLainnya ?? "",
+            kontakPelapor: (normalized as any).kontakPelapor ?? "",
             pic: normalized.pic ?? "",
+            wilayah: (normalized as any).wilayah ?? "",
+            kabupatenKota: (normalized as any).kabupatenKota ?? "",
             tindakLanjut: normalized.tindakLanjut ?? "",
             dokumentasi: normalized.dokumentasi,
             rekomendasi: normalized.rekomendasi,
@@ -357,11 +446,18 @@ function TambahPelanggaranInner() {
 
   const canSubmit =
     form.namaSekolah.some((s) => s.trim()) &&
-    form.unsurTerlibat.some((u) => u.kategori && u.peran && parseInt(u.jumlah) > 0 && u.individu.some((ind) => ind.nama)) &&
+    form.unsurTerlibat.some((u) => u.peran && u.asalGroups.some((ag) => parseInt(ag.jumlah) > 0 && ag.individu.some((ind) => ind.nama))) &&
     form.kronologi.some((e) => e.tanggal) &&
     form.kategori &&
+    form.kategori !== "Lainnya" &&
     form.tingkatKeparahan &&
     form.pelapor
+
+  const cleanUnsurTerlibat = (list: UnsurItem[]): UnsurItem[] =>
+    list
+      .filter((u) => u.peran)
+      .map((u) => ({ ...u, asalGroups: u.asalGroups.filter((ag) => ag.individu.some((ind) => ind.nama)) }))
+      .filter((u) => u.asalGroups.length > 0)
 
   const handleSubmit = () => {
     if (!canSubmit) return
@@ -375,9 +471,11 @@ function TambahPelanggaranInner() {
     const now = new Date().toISOString()
     const dibuatOleh = session?.role === "dinas"
       ? `Admin Dinas ${session.namaDinas ?? ""}`
-      : session?.namaSekolah
-        ? `Admin Sekolah ${session.namaSekolah}`
-        : "Admin Sekolah"
+      : session?.role === "pusat"
+        ? "Admin Pusat"
+        : session?.namaSekolah
+          ? `Admin Sekolah ${session.namaSekolah}`
+          : "Admin Sekolah"
 
     try {
       const stored = JSON.parse(localStorage.getItem("pelanggaranList") ?? "[]") as PelanggaranItem[]
@@ -392,7 +490,7 @@ function TambahPelanggaranInner() {
                 npsnSekolah: cleanedSekolah.map((x) => x.npsn),
                 tanggalTerjadi: firstTanggal,
                 pelaporLainnya: form.pelapor === "lainnya" ? form.pelaporLainnya : "",
-                unsurTerlibat: form.unsurTerlibat.filter((u) => u.kategori && u.peran && u.individu.some((ind) => ind.nama)),
+                unsurTerlibat: cleanUnsurTerlibat(form.unsurTerlibat),
                 updatedAt: now,
                 diperbaruiOleh: dibuatOleh,
                 logStatus: [
@@ -415,7 +513,7 @@ function TambahPelanggaranInner() {
           dibuatOleh,
           diperbaruiOleh: dibuatOleh,
           pelaporLainnya: form.pelapor === "lainnya" ? form.pelaporLainnya : "",
-          unsurTerlibat: form.unsurTerlibat.filter((u) => u.kategori && u.peran && u.individu.some((ind) => ind.nama)),
+          unsurTerlibat: cleanUnsurTerlibat(form.unsurTerlibat),
           logStatus: [{ status: form.status, keterangan: form.tindakLanjut.trim(), dokumentasi: form.dokumentasi || "", dibuatOleh, aksi: "buat", waktu: now }],
         }
         localStorage.setItem("pelanggaranList", JSON.stringify([newItem, ...stored]))
@@ -450,9 +548,11 @@ function TambahPelanggaranInner() {
     })() as { role?: string; namaSekolah?: string; namaDinas?: string }
     const updaterName = session?.role === "dinas"
       ? `Admin Dinas ${session.namaDinas ?? ""}`
-      : session?.namaSekolah
-        ? `Admin Sekolah ${session.namaSekolah}`
-        : "Admin Sekolah"
+      : session?.role === "pusat"
+        ? "Admin Pusat"
+        : session?.namaSekolah
+          ? `Admin Sekolah ${session.namaSekolah}`
+          : "Admin Sekolah"
     try {
       const stored = JSON.parse(localStorage.getItem("pelanggaranList") ?? "[]") as PelanggaranItem[]
       const updated = stored.map((i) =>
@@ -583,14 +683,23 @@ function TambahPelanggaranInner() {
                         }`}>
                           {u.peran === "pelaku" ? "Pelaku" : u.peran === "korban" ? "Korban" : u.peran === "saksi" ? "Saksi" : u.peran === "lainnya" ? (u.peranLainnya || "Lainnya") : u.peran || "-"}
                         </span>
-                        <span className="text-xs font-medium text-gray-500">{u.kategori || "-"}</span>
-                        {u.asalSekolah && <span className="text-xs text-gray-500">· {u.asalSekolah}</span>}
                       </div>
-                      {Array.isArray(u.individu) && u.individu.length > 0 && u.individu.map((ind, idx) => (
-                        <div key={idx} className="flex items-center gap-3 pl-4 text-sm">
-                          <span className="text-gray-400 text-xs">#{idx + 1}</span>
-                          <span className="font-semibold text-gray-900">{ind.nama || "-"}</span>
-                          {ind.umur && <span className="text-gray-500 text-xs">{ind.umur} thn</span>}
+                      {Array.isArray(u.asalGroups) && u.asalGroups.length > 0 && u.asalGroups.map((ag, gi) => (
+                        <div key={gi} className="pl-4">
+                          {ag.asalSekolah && (
+                            <p className="text-xs font-medium text-gray-500 mt-1">
+                              Asal Sekolah: {ag.asalSekolah === "lainnya" ? ag.asalLainnya : ag.asalSekolah}
+                            </p>
+                          )}
+                          {Array.isArray(ag.individu) && ag.individu.map((ind, idx) => (
+                            <div key={idx} className="flex flex-wrap items-center gap-x-2 gap-y-0.5 pl-2 text-sm">
+                              <span className="text-gray-400 text-xs">#{idx + 1}</span>
+                              <span className="font-semibold text-gray-900">{ind.nama || "-"}</span>
+                              {ind.status && <span className="text-gray-500 text-xs">{ind.status}</span>}
+                              {ind.jenisKelamin && <span className="text-gray-500 text-xs">{ind.jenisKelamin}</span>}
+                              {ind.umur && <span className="text-gray-500 text-xs">{ind.umur} thn</span>}
+                            </div>
+                          ))}
                         </div>
                       ))}
                     </div>
@@ -637,11 +746,19 @@ function TambahPelanggaranInner() {
 
           <SectionCard icon={<Users className="w-4 h-4" />} title="Sumber Laporan & Penanggung Jawab">
             <div className="grid grid-cols-1 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel>Pelapor / Sumber Laporan</FieldLabel>
-                <TextInput value={PELAPOR_OPTIONS.find((p) => p.value === item.pelapor)?.label ?? item.pelapor} />
-                {item.pelapor === "lainnya" && item.pelaporLainnya && (
-                  <TextInput value={item.pelaporLainnya} />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel>Pelapor / Sumber Laporan</FieldLabel>
+                  <TextInput value={PELAPOR_OPTIONS.find((p) => p.value === item.pelapor)?.label ?? item.pelapor} />
+                  {item.pelapor === "lainnya" && item.pelaporLainnya && (
+                    <TextInput value={item.pelaporLainnya} />
+                  )}
+                </div>
+                {(item as any).kontakPelapor && (
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel>Kontak Pelapor</FieldLabel>
+                    <TextInput value={(item as any).kontakPelapor} />
+                  </div>
                 )}
               </div>
               {item.pic && (
@@ -738,7 +855,7 @@ function TambahPelanggaranInner() {
           </div>
         )}
 
-        {role === "dinas" && (
+        {(role === "dinas" || role === "pusat") && (
           <div className="max-w-2xl mx-auto px-4 pb-8 flex gap-3">
             <a href={`/dashboard?menu=pelanggaran&edit=${item.id}`} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition text-center">Edit</a>
             <button onClick={handleDelete} className="flex-1 py-2.5 rounded-lg border border-red-300 text-red-600 font-medium text-sm hover:bg-red-50 transition">Hapus</button>
@@ -891,42 +1008,55 @@ function TambahPelanggaranInner() {
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
                 <FieldLabel required>Kategori Pelanggaran</FieldLabel>
-                <Select
-                  value={form.kategori}
-                  onChange={(e) => setForm((prev) => ({ ...prev, kategori: e.target.value }))}
-                  className={`${SELECT_BASE} ${!form.kategori ? "text-gray-400" : ""}`}
-                >
-                  <option value="" disabled>Pilih kategori</option>
-                  {KATEGORI_PELANGGARAN.map((k) => (
-                    <option key={k} value={k}>{k}</option>
-                  ))}
-                </Select>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel required>Tingkat Urgensi</FieldLabel>
-                <Select
-                  value={form.tingkatKeparahan}
-                  onChange={(e) => setForm((prev) => ({ ...prev, tingkatKeparahan: e.target.value as TingkatKeparahan }))}
-                  className={`${SELECT_BASE} ${!form.tingkatKeparahan ? "text-gray-400" : ""}`}
-                >
-                  <option value="" disabled>Pilih tingkat urgensi</option>
-                  {TINGKAT_KEPARAHAN.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
-                  ))}
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel>Motif Kejadian</FieldLabel>
-                <input
-                  type="text"
-                  value={form.motif}
-                  onChange={(e) => setForm((prev) => ({ ...prev, motif: e.target.value }))}
-                  placeholder="Tulis alasan di balik kejadian"
-                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                />
+                {(() => {
+                  const predefinedKategori = KATEGORI_PELANGGARAN.filter((k) => k !== "Lainnya")
+                  const isKategoriCustom = form.kategori !== "" && !predefinedKategori.includes(form.kategori)
+                  const displayKategori = isKategoriCustom ? "Lainnya" : form.kategori
+                  return (
+                    <div className="relative mt-1 border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                      {isKategoriCustom ? (
+                        <>
+                          <input
+                            type="text"
+                            autoFocus
+                            value={form.kategori !== "Lainnya" ? form.kategori : ""}
+                            onChange={(e) => {
+                              setForm((prev) => ({ ...prev, kategori: e.target.value }))
+                              setKategoriMemo(e.target.value)
+                            }}
+                            placeholder="Tulis kategori lainnya..."
+                            className="w-full h-9 px-3 text-sm bg-white focus:outline-none pr-8"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setForm((prev) => ({ ...prev, kategori: "" }))
+                              openSelectPicker("kategori-select")
+                            }}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                          >
+                            <ChevronDown className="w-4 h-4" />
+                          </button>
+                        </>
+                      ) : (
+                        <Select
+                          id="kategori-select"
+                          value={form.kategori}
+                          onChange={(e) => {
+                            const val = e.target.value
+                            setForm((prev) => ({ ...prev, kategori: val === "Lainnya" && kategoriMemo ? kategoriMemo : val }))
+                          }}
+                          className={`w-full h-9 px-3 text-sm bg-white appearance-none focus:outline-none pr-8 ${!form.kategori ? "text-gray-400" : ""}`}
+                        >
+                          <option value="" disabled>Pilih kategori</option>
+                          {KATEGORI_PELANGGARAN.map((k) => (
+                            <option key={k} value={k}>{k}</option>
+                          ))}
+                        </Select>
+                      )}
+                    </div>
+                  )
+                })()}
               </div>
               <div className="flex flex-col gap-1.5">
                 <FieldLabel>Tanggal Pelaporan</FieldLabel>
@@ -938,6 +1068,30 @@ function TambahPelanggaranInner() {
                 />
               </div>
             </div>
+
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel required>Tingkat Urgensi</FieldLabel>
+              <div className="grid grid-cols-3 gap-2 mt-1">
+                {TINGKAT_URGENSI_SEGMENTS.map((t) => {
+                  const isSelected = form.tingkatKeparahan === t.value
+                  return (
+                    <button
+                      key={t.value}
+                      type="button"
+                      onClick={() => setForm((prev) => ({ ...prev, tingkatKeparahan: t.value }))}
+                      className={`px-2 py-2.5 rounded-lg border text-center text-[13px] font-semibold transition-colors ${
+                        isSelected ? t.selected : "border-gray-300 bg-white text-gray-700 hover:border-gray-400"
+                      }`}
+                    >
+                      {t.label}
+                      <span className={`block text-[11px] font-normal mt-0.5 ${isSelected ? t.selectedDesc : "text-gray-400"}`}>
+                        {t.desc}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
           </div>
         </SectionCard>
 
@@ -947,226 +1101,354 @@ function TambahPelanggaranInner() {
               <FieldLabel required>Unsur yang Terlibat</FieldLabel>
             </div>
             <div className="flex flex-col gap-4">
-                {form.unsurTerlibat.map((u, i) => {
+                {(() => {
+                  const customAsalTotal = form.unsurTerlibat.reduce(
+                    (acc, g) => acc + g.asalGroups.filter((ag) => ag.asalSekolah !== "" && !form.namaSekolah.includes(ag.asalSekolah)).length,
+                    0
+                  )
                   const predefined = UNSUR_OPTIONS.filter((o) => o !== "Lainnya")
-                  const isCustom = u.kategori && !predefined.includes(u.kategori)
-                  const displayKategori = isCustom ? "Lainnya" : u.kategori
-                  const lainCount = form.unsurTerlibat.filter((_, idx) => idx !== i && (_.kategori === "Lainnya" || (!predefined.includes(_.kategori) && _.kategori))).length
-                  const lainDisabled = lainCount >= 3
+                  return form.unsurTerlibat.map((u, i) => {
                   const peranLainCount = form.unsurTerlibat.filter((_, idx) => idx !== i && _.peran === "lainnya").length
                   const peranLainDisabled = peranLainCount >= 3
-                  const displayAsal = u.asalSekolah && !form.namaSekolah.includes(u.asalSekolah) && u.asalSekolah !== "" ? "lainnya" : u.asalSekolah
-                  const asalLainCount = form.unsurTerlibat.filter((_, idx) => idx !== i && u.asalSekolah !== "" && !form.namaSekolah.includes(_.asalSekolah) && _.asalSekolah !== "").length
-                  const asalLainDisabled = asalLainCount >= 3
-                  const jml = parseInt(u.jumlah) || 0
-                  const syncIndividu = (next: UnsurItem[]) => {
-                    const entry = next[i]
-                    if (!entry) return
-                    const newJml = parseInt(entry.jumlah) || 0
-                    if (!entry.individu) entry.individu = []
-                    const current = entry.individu.length
+                  const usedPeranSet = new Set(form.unsurTerlibat.filter((_, idx) => idx !== i && _.peran && _.peran !== "lainnya").map((_) => _.peran))
+                  const PERAN_CHIPS: { value: "pelaku" | "korban" | "saksi" | "lainnya"; label: string; selected: string; line: string }[] = [
+                    { value: "pelaku", label: "Terduga Pelaku", selected: "border-amber-600 bg-amber-50 text-amber-600", line: "border-amber-400" },
+                    { value: "korban", label: "Terduga Korban", selected: "border-red-600 bg-red-50 text-red-600", line: "border-red-400" },
+                    { value: "saksi", label: "Saksi", selected: "border-blue-600 bg-blue-50 text-blue-600", line: "border-blue-400" },
+                    { value: "lainnya", label: "Lainnya", selected: "border-gray-600 bg-gray-100 text-gray-700", line: "border-gray-400" },
+                  ]
+                  const peranLineColor = PERAN_CHIPS.find((opt) => opt.value === u.peran)?.line ?? "border-gray-300"
+                  const isGroupEmpty = u.asalGroups.every((ag) => ag.asalSekolah === "" && ag.jumlah === "")
+                  const canDeleteGroup = form.unsurTerlibat.length > 1 && isGroupEmpty
+                  const syncIndividu = (next: UnsurItem[], gi: number) => {
+                    const group = next[i]
+                    if (!group) return
+                    const ag = group.asalGroups[gi]
+                    if (!ag) return
+                    const newJml = parseInt(ag.jumlah) || 0
+                    if (!ag.individu) ag.individu = []
+                    const current = ag.individu.length
                     if (newJml > current) {
-                      const add = Array.from({ length: newJml - current }, () => ({ nama: "", umur: "" }))
-                      entry.individu = [...entry.individu, ...add]
+                      const add: IndividuItem[] = Array.from({ length: newJml - current }, () => ({ nama: "", umur: "", status: "", jenisKelamin: "" }))
+                      ag.individu = [...ag.individu, ...add]
                     } else if (newJml < current) {
-                      entry.individu = entry.individu.slice(0, newJml)
+                      ag.individu = ag.individu.slice(0, newJml)
                     }
-                    if (newJml === 0) entry.individu = [{ nama: "", umur: "" }]
+                    if (newJml === 0) ag.individu = [{ nama: "", umur: "", status: "", jenisKelamin: "" }]
                     setForm((prev) => ({ ...prev, unsurTerlibat: next }))
                   }
                   const peranField = (
                     <div>
-                      <label className="block text-xs text-gray-700 mb-1">Peran</label>
-                      <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
-                        <Select
-                          value={u.peran}
+                      <label className="block text-xs font-semibold text-gray-700 mb-1">Peran</label>
+                      <div className="flex flex-nowrap gap-1.5 overflow-x-auto">
+                        {PERAN_CHIPS.map((opt) => {
+                          const isSelected = u.peran === opt.value
+                          const isDisabled = opt.value === "lainnya" ? (peranLainDisabled && !isSelected) : (usedPeranSet.has(opt.value) && !isSelected)
+                          return (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              disabled={isDisabled}
+                              onClick={() => {
+                                const next = [...form.unsurTerlibat]
+                                next[i] = { ...next[i], peran: opt.value, peranLainnya: opt.value === "lainnya" ? next[i].peranLainnya ?? "" : undefined }
+                                setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                              }}
+                              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+                                isSelected ? opt.selected : isDisabled ? "border-gray-200 bg-gray-100 text-gray-300 cursor-not-allowed" : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
+                              }`}
+                            >
+                              {opt.label}
+                            </button>
+                          )
+                        })}
+                      </div>
+                      {u.peran === "lainnya" && (
+                        <input
+                          value={u.peranLainnya ?? ""}
                           onChange={(e) => {
                             const next = [...form.unsurTerlibat]
-                            const val = e.target.value as UnsurItem["peran"]
-                            next[i] = { ...next[i], peran: val, peranLainnya: val === "lainnya" ? next[i].peranLainnya ?? "" : undefined }
+                            next[i] = { ...next[i], peranLainnya: e.target.value }
                             setForm((prev) => ({ ...prev, unsurTerlibat: next }))
                           }}
-                          className={`${SELECT_SM} border-0 rounded-none ${!u.peran ? "text-gray-400" : ""}`}
-                        >
-                          <option value="" disabled>Pilih peran</option>
-                          <option value="pelaku">Terduga Pelaku</option>
-                          <option value="korban">Terduga Korban</option>
-                          <option value="saksi">Saksi</option>
-                          <option value="lainnya" disabled={peranLainDisabled}>Lainnya{peranLainDisabled ? " (maks 3)" : ""}</option>
-                        </Select>
-                        {u.peran === "lainnya" && (
-                          <input
-                            value={u.peranLainnya ?? ""}
-                            onChange={(e) => {
-                              const next = [...form.unsurTerlibat]
-                              next[i] = { ...next[i], peranLainnya: e.target.value }
-                              setForm((prev) => ({ ...prev, unsurTerlibat: next }))
-                            }}
-                            placeholder="Tulis peran..."
-                            className="w-full h-9 px-2 text-sm border-t border-gray-300 focus:outline-none bg-white"
-                          />
-                        )}
-                      </div>
-                    </div>
-                  )
-                  const asalField = (
-                    <div>
-                      <label className="block text-xs text-gray-700 mb-1">Asal</label>
-                      <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
-                        <Select
-                          value={displayAsal}
-                          onChange={(e) => {
-                            const next = [...form.unsurTerlibat]
-                            next[i] = { ...next[i], asalSekolah: e.target.value, asalLainnya: e.target.value === "lainnya" ? next[i].asalLainnya ?? "" : undefined }
-                            setForm((prev) => ({ ...prev, unsurTerlibat: next }))
-                          }}
-                          className={`${SELECT_SM} border-0 rounded-none ${!u.asalSekolah ? "text-gray-400" : ""}`}
-                        >
-                          <option value="" disabled>Pilih asal</option>
-                          {form.namaSekolah.filter((s) => s.trim()).map((s) => (
-                            <option key={s} value={s}>{s}</option>
-                          ))}
-                          <option value="lainnya" disabled={asalLainDisabled}>Lainnya{asalLainDisabled ? " (maks 3)" : ""}</option>
-                        </Select>
-                        {displayAsal === "lainnya" && (
-                          <input
-                            value={u.asalLainnya ?? ""}
-                            onChange={(e) => {
-                              const next = [...form.unsurTerlibat]
-                              next[i] = { ...next[i], asalSekolah: "lainnya", asalLainnya: e.target.value }
-                              setForm((prev) => ({ ...prev, unsurTerlibat: next }))
-                            }}
-                            placeholder="Tulis asal..."
-                            className="w-full h-9 px-2 text-sm border-t border-gray-300 focus:outline-none bg-white"
-                          />
-                        )}
-                      </div>
-                    </div>
-                  )
-                  const statusField = (
-                    <div>
-                      <label className="block text-xs text-gray-700 mb-1">Status</label>
-                      <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
-                        <Select
-                          value={displayKategori}
-                          onChange={(e) => {
-                            const next = [...form.unsurTerlibat]
-                            next[i] = { ...next[i], kategori: e.target.value }
-                            setForm((prev) => ({ ...prev, unsurTerlibat: next }))
-                          }}
-                          className={`${SELECT_SM} border-0 rounded-none truncate ${!u.kategori ? "text-gray-400" : ""}`}
-                        >
-                          <option value="" disabled>Pilih status</option>
-                          {UNSUR_OPTIONS.map((o) => (
-                            <option key={o} value={o} disabled={o === "Lainnya" && lainDisabled}>{o} {o === "Lainnya" && lainDisabled ? "(maks 3)" : ""}</option>
-                          ))}
-                        </Select>
-                        {displayKategori === "Lainnya" && (
-                          <input
-                            value={u.kategori !== "Lainnya" ? u.kategori : ""}
-                            onChange={(e) => {
-                              const next = [...form.unsurTerlibat]
-                              next[i] = { ...next[i], kategori: e.target.value }
-                              setForm((prev) => ({ ...prev, unsurTerlibat: next }))
-                            }}
-                            placeholder="Tulis status..."
-                            className="w-full h-9 px-2 text-sm border-t border-gray-300 focus:outline-none bg-white"
-                          />
-                        )}
-                      </div>
-                    </div>
-                  )
-                  const jumlahField = (
-                    <div>
-                      <label className="block text-xs text-gray-700 mb-1">Jumlah</label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={u.jumlah}
-                        onChange={(e) => {
-                          const next = [...form.unsurTerlibat]
-                          next[i] = { ...next[i], jumlah: e.target.value }
-                          syncIndividu(next)
-                        }}
-                        placeholder="Jml"
-                        className="w-full h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      />
+                          placeholder="Tulis peran..."
+                          className="w-full h-9 px-2 mt-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                        />
+                      )}
                     </div>
                   )
                   return (
-                  <div key={i} className="flex items-start gap-2">
-                  <div className="flex-1 border border-gray-200 rounded-lg p-3">
-                    <div className="space-y-2">
-                      {isIdealMode ? (
-                        <div className="grid grid-cols-[1fr_1fr_1fr_90px] gap-2 items-start">
-                          {peranField}
-                          {asalField}
-                          {statusField}
-                          {jumlahField}
+                  <div key={i} className="flex flex-col gap-3">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-1">
+                        {peranField}
+                      </div>
+                      {canDeleteGroup ? (
+                        <div className="relative mt-6 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => setOpenPeranMenu((prev) => (prev === i ? null : i))}
+                            className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition"
+                          >
+                            <MoreVertical className="w-3.5 h-3.5" />
+                          </button>
+                          {openPeranMenu === i && (
+                            <>
+                              <div className="fixed inset-0 z-10" onClick={() => setOpenPeranMenu(null)} />
+                              <div className="absolute right-0 top-full mt-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 w-32">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setOpenPeranMenu(null)
+                                    setForm((prev) => ({ ...prev, unsurTerlibat: prev.unsurTerlibat.filter((_, idx) => idx !== i) }))
+                                  }}
+                                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" /> Hapus
+                                </button>
+                              </div>
+                            </>
+                          )}
                         </div>
                       ) : (
-                        <>
-                          <div className="grid grid-cols-[1fr_1fr] gap-2 items-start">
-                            {peranField}
-                            {asalField}
-                          </div>
-                          <div className="grid grid-cols-[1fr_1fr] gap-2 items-start">
-                            {statusField}
-                            {jumlahField}
-                          </div>
-                        </>
+                        <div className="mt-6 w-[26px] h-[26px] shrink-0" />
                       )}
                     </div>
-                    {jml > 0 && (
-                      <div className="flex flex-col bg-gray-50 rounded-lg mt-4 mb-2 p-2 overflow-hidden">
-                        {u.individu.map((ind, idx) => (
-                        <div key={idx} className="flex items-center gap-2 px-2 py-1.5">
-                          <span className="text-sm text-gray-400 w-5 shrink-0 text-right">#{idx + 1}</span>
-                          <input
-                            value={ind.nama}
-                            onChange={(e) => {
-                              const next = [...form.unsurTerlibat]
-                              next[i].individu[idx] = { ...next[i].individu[idx], nama: e.target.value }
-                              setForm((prev) => ({ ...prev, unsurTerlibat: next }))
-                            }}
-                            placeholder="Nama"
-                            className="flex-1 min-w-0 h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                          />
-                          <input
-                            type="number"
-                            min="1"
-                            value={ind.umur}
-                            onChange={(e) => {
-                              const next = [...form.unsurTerlibat]
-                              next[i].individu[idx] = { ...next[i].individu[idx], umur: e.target.value }
-                              setForm((prev) => ({ ...prev, unsurTerlibat: next }))
-                            }}
-                            placeholder="Umur"
-                            className="w-[88px] shrink-0 h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                          />
-                        </div>
-                        ))}
+                    {u.peran !== "" && (
+                    <div className="relative pl-3">
+                      <div className={`absolute left-0 top-0 bottom-0 border-l-2 ${peranLineColor}`} />
+                      <div className="flex flex-col gap-2">
+                      {u.asalGroups.map((ag, gi) => {
+                        const isAsalCustom = ag.asalSekolah !== "" && !form.namaSekolah.includes(ag.asalSekolah)
+                        const displayAsal = isAsalCustom ? "lainnya" : ag.asalSekolah
+                        const asalLainDisabled = (customAsalTotal - (isAsalCustom ? 1 : 0)) >= 3
+                        const jmlAg = parseInt(ag.jumlah) || 0
+                        return (
+                          <div key={gi} className="flex items-start gap-2">
+                          <div className="flex-1 border border-gray-200 rounded-lg p-3 bg-white">
+                            <div className="grid grid-cols-[1fr_90px] gap-2 items-start">
+                              <div>
+                                <label className="block text-xs text-gray-700 mb-1">Asal Sekolah</label>
+                                <div className="relative border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                                  {displayAsal === "lainnya" ? (
+                                    <>
+                                      <input
+                                        autoFocus
+                                        value={ag.asalLainnya ?? ""}
+                                        onChange={(e) => {
+                                          const next = [...form.unsurTerlibat]
+                                          next[i].asalGroups[gi] = { ...next[i].asalGroups[gi], asalSekolah: "lainnya", asalLainnya: e.target.value }
+                                          setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                                        }}
+                                        placeholder="Tulis asal sekolah..."
+                                        className={`${SELECT_SM} w-full border-0 rounded-none focus:ring-0 focus:outline-none pr-8`}
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const next = [...form.unsurTerlibat]
+                                          next[i].asalGroups[gi] = { ...next[i].asalGroups[gi], asalSekolah: "" }
+                                          setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                                          openSelectPicker(`asal-select-${i}-${gi}`)
+                                        }}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                      >
+                                        <ChevronDown className="w-4 h-4" />
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <Select
+                                      id={`asal-select-${i}-${gi}`}
+                                      value={ag.asalSekolah}
+                                      onChange={(e) => {
+                                        const next = [...form.unsurTerlibat]
+                                        next[i].asalGroups[gi] = { ...next[i].asalGroups[gi], asalSekolah: e.target.value, asalLainnya: e.target.value === "lainnya" ? next[i].asalGroups[gi].asalLainnya ?? "" : undefined }
+                                        setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                                      }}
+                                      className={`${SELECT_SM} w-full border-0 rounded-none focus:ring-0 focus:outline-none ${!ag.asalSekolah ? "text-gray-400" : ""}`}
+                                    >
+                                      <option value="" disabled>Pilih asal sekolah</option>
+                                      {form.namaSekolah.filter((s) => s.trim()).map((s) => (
+                                        <option key={s} value={s}>{s}</option>
+                                      ))}
+                                      <option value="lainnya" disabled={asalLainDisabled}>Lainnya{asalLainDisabled ? " (maks 3)" : ""}</option>
+                                    </Select>
+                                  )}
+                                </div>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-700 mb-1">Jumlah Orang</label>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  value={ag.jumlah}
+                                  onChange={(e) => {
+                                    const next = [...form.unsurTerlibat]
+                                    next[i].asalGroups[gi] = { ...next[i].asalGroups[gi], jumlah: e.target.value }
+                                    syncIndividu(next, gi)
+                                  }}
+                                  placeholder="Jml"
+                                  className="w-full h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                />
+                              </div>
+                            </div>
+                            {jmlAg > 0 && (
+                              <div className="bg-gray-50 rounded-lg mt-4 mb-2 divide-y divide-gray-200">
+                                {ag.individu.map((ind, idx) => {
+                                  const isStatusCustom = ind.status !== "" && !predefined.includes(ind.status)
+                                  const displayStatus = isStatusCustom ? "Lainnya" : ind.status
+                                  return (
+                                  <div key={idx} className="p-2.5">
+                                    <div className="flex items-start gap-2">
+                                      <span className={`text-sm text-gray-400 w-5 shrink-0 text-right ${idx === 0 ? "mt-7" : "mt-2"}`}>#{idx + 1}</span>
+                                      <div className="flex-1 grid grid-cols-[1.4fr_1fr_1fr_80px] gap-2">
+                                        <div>
+                                          {idx === 0 && <label className="block text-xs text-gray-700 mb-1">Nama/Inisial</label>}
+                                          <input
+                                            value={ind.nama}
+                                            onChange={(e) => {
+                                              const next = [...form.unsurTerlibat]
+                                              next[i].asalGroups[gi].individu[idx] = { ...next[i].asalGroups[gi].individu[idx], nama: e.target.value }
+                                              setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                                            }}
+                                            placeholder="Nama/Inisial"
+                                            className="w-full h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                          />
+                                        </div>
+                                        <div>
+                                          {idx === 0 && <label className="block text-xs text-gray-700 mb-1">Status</label>}
+                                          <div className="relative border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                                            {isStatusCustom ? (
+                                              <>
+                                                <input
+                                                  autoFocus
+                                                  value={ind.statusLainnya ?? ""}
+                                                  onChange={(e) => {
+                                                    const next = [...form.unsurTerlibat]
+                                                    next[i].asalGroups[gi].individu[idx] = { ...next[i].asalGroups[gi].individu[idx], status: "Lainnya", statusLainnya: e.target.value }
+                                                    setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                                                  }}
+                                                  placeholder="Tulis status..."
+                                                  className={`${SELECT_SM} w-full border-0 rounded-none focus:ring-0 focus:outline-none pr-8`}
+                                                />
+                                                <button
+                                                  type="button"
+                                                  onClick={() => {
+                                                    const next = [...form.unsurTerlibat]
+                                                    next[i].asalGroups[gi].individu[idx] = { ...next[i].asalGroups[gi].individu[idx], status: "" }
+                                                    setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                                                    openSelectPicker(`status-select-${i}-${gi}-${idx}`)
+                                                  }}
+                                                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                                >
+                                                  <ChevronDown className="w-4 h-4" />
+                                                </button>
+                                              </>
+                                            ) : (
+                                              <Select
+                                                id={`status-select-${i}-${gi}-${idx}`}
+                                                value={ind.status}
+                                                onChange={(e) => {
+                                                  const val = e.target.value
+                                                  const next = [...form.unsurTerlibat]
+                                                  const cur = next[i].asalGroups[gi].individu[idx]
+                                                  next[i].asalGroups[gi].individu[idx] = { ...cur, status: val === "Lainnya" && cur.statusLainnya ? cur.statusLainnya : val }
+                                                  setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                                                }}
+                                                className={`${SELECT_SM} border-0 rounded-none truncate focus:ring-0 focus:outline-none ${!ind.status ? "text-gray-400" : ""}`}
+                                              >
+                                                <option value="" disabled>Pilih status</option>
+                                                {UNSUR_OPTIONS.map((o) => (
+                                                  <option key={o} value={o}>{o}</option>
+                                                ))}
+                                              </Select>
+                                            )}
+                                          </div>
+                                        </div>
+                                        <div>
+                                          {idx === 0 && <label className="block text-xs text-gray-700 mb-1">Jenis Kelamin</label>}
+                                          <Select
+                                            value={ind.jenisKelamin}
+                                            onChange={(e) => {
+                                              const next = [...form.unsurTerlibat]
+                                              next[i].asalGroups[gi].individu[idx] = { ...next[i].asalGroups[gi].individu[idx], jenisKelamin: e.target.value as IndividuItem["jenisKelamin"] }
+                                              setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                                            }}
+                                            className={`${SELECT_SM} ${!ind.jenisKelamin ? "text-gray-400" : ""}`}
+                                          >
+                                            <option value="" disabled>Pilih</option>
+                                            <option value="Laki-laki">Laki-laki</option>
+                                            <option value="Perempuan">Perempuan</option>
+                                          </Select>
+                                        </div>
+                                        <div>
+                                          {idx === 0 && <label className="block text-xs text-gray-700 mb-1">Umur</label>}
+                                          <input
+                                            type="number"
+                                            min="1"
+                                            value={ind.umur}
+                                            onChange={(e) => {
+                                              const next = [...form.unsurTerlibat]
+                                              next[i].asalGroups[gi].individu[idx] = { ...next[i].asalGroups[gi].individu[idx], umur: e.target.value }
+                                              setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                                            }}
+                                            placeholder="Umur"
+                                            className="w-full h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  )
+                                })}
+                              </div>
+                            )}
+                          </div>
+                          {u.asalGroups.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const next = [...form.unsurTerlibat]
+                                next[i] = { ...next[i], asalGroups: next[i].asalGroups.filter((_, idx) => idx !== gi) }
+                                setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                              }}
+                              className="mt-6 p-1 shrink-0 rounded transition text-red-400 hover:bg-red-50 hover:text-red-600"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                          </div>
+                        )
+                      })}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = [...form.unsurTerlibat]
+                          next[i] = { ...next[i], asalGroups: [...next[i].asalGroups, { asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "", status: "", jenisKelamin: "" }] }] }
+                          setForm((prev) => ({ ...prev, unsurTerlibat: next }))
+                        }}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-2.5 py-1.5 transition w-full justify-center"
+                      >
+                        <Plus className="w-3 h-3" /> Tambah Asal Sekolah
+                      </button>
                       </div>
+                    </div>
                     )}
                   </div>
-                  {form.unsurTerlibat.length > 1 && (
+                )})
+                })()}
+                {form.unsurTerlibat.every((u) => u.peran !== "") && (
+                  <>
+                    <hr className="border-gray-200" />
                     <button
                       type="button"
-                      onClick={() => setForm((prev) => ({ ...prev, unsurTerlibat: prev.unsurTerlibat.filter((_, idx) => idx !== i) }))}
-                      className="mt-1 p-1 shrink-0 hover:bg-red-50 rounded text-red-400 hover:text-red-600 transition"
+                      onClick={() => setForm((prev) => ({ ...prev, unsurTerlibat: [...prev.unsurTerlibat, { peran: "", kategori: "", asalGroups: [{ asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "", status: "", jenisKelamin: "" }] }] }] }))}
+                      className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <Plus className="w-3.5 h-3.5" /> Tambah Kelompok Unsur
                     </button>
-                  )}
-                  </div>
-                )})}
-                <button
-                  type="button"
-                  onClick={() => setForm((prev) => ({ ...prev, unsurTerlibat: [...prev.unsurTerlibat, { peran: "", kategori: "", asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "" }] }] }))}
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
-                >
-                  <Plus className="w-3.5 h-3.5" /> Tambah Kelompok Unsur
-                </button>
+                  </>
+                )}
             </div>
 
             <hr className="border-gray-300 -mx-5 my-2" />
@@ -1263,7 +1545,7 @@ function TambahPelanggaranInner() {
                         }}
                         placeholder="Deskripsikan kejadian pada tanggal ini..."
                         rows={3}
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
                       />
                     </div>
                   </>
@@ -1293,13 +1575,13 @@ function TambahPelanggaranInner() {
             <hr className="border-gray-300 -mx-5 my-2" />
 
             <div className="flex flex-col gap-1.5">
-              <FieldLabel>Keterangan Tambahan</FieldLabel>
+              <FieldLabel>Motif Kejadian</FieldLabel>
               <textarea
-                value={form.rekomendasi}
-                onChange={(e) => setForm((prev) => ({ ...prev, rekomendasi: e.target.value }))}
-                placeholder="Tuliskan keterangan tambahan..."
+                value={form.motif}
+                onChange={(e) => setForm((prev) => ({ ...prev, motif: e.target.value }))}
+                placeholder="Tuliskan motif atau alasan di balik kejadian..."
                 rows={4}
-                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
+                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
               />
             </div>
           </div>
@@ -1307,31 +1589,90 @@ function TambahPelanggaranInner() {
 
           <SectionCard icon={<FileText className="w-4 h-4" />} title="Sumber Laporan & Penanggung Jawab">
           <div className="grid grid-cols-1 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel required>Pelapor / Sumber Laporan</FieldLabel>
-              <Select
-                value={form.pelapor}
-                onChange={(e) => setForm((prev) => ({ ...prev, pelapor: e.target.value as Pelapor }))}
-                className={`${SELECT_BASE} ${!form.pelapor ? "text-gray-400" : ""}`}
-              >
-                <option value="" disabled>Pilih pelapor</option>
-                {PELAPOR_OPTIONS.map((p) => (
-                  <option key={p.value} value={p.value}>{p.label}</option>
-                ))}
-              </Select>
-              {form.pelapor === "lainnya" && (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel required>Pelapor / Sumber Laporan</FieldLabel>
+                <div className="relative mt-1 border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                  {form.pelapor === "lainnya" ? (
+                    <>
+                      <input
+                        type="text"
+                        autoFocus
+                        value={form.pelaporLainnya}
+                        onChange={(e) => setForm((prev) => ({ ...prev, pelaporLainnya: e.target.value }))}
+                        placeholder="Tuliskan sumber laporan..."
+                        className="w-full h-9 px-3 text-sm bg-white focus:outline-none pr-8"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForm((prev) => ({ ...prev, pelapor: "" }))
+                          openSelectPicker("pelapor-select")
+                        }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </>
+                  ) : (
+                    <Select
+                      id="pelapor-select"
+                      value={form.pelapor}
+                      onChange={(e) => setForm((prev) => ({ ...prev, pelapor: e.target.value as Pelapor }))}
+                      className={`w-full h-9 px-3 text-sm bg-white appearance-none focus:outline-none pr-8 ${!form.pelapor ? "text-gray-400" : ""}`}
+                    >
+                      <option value="" disabled>Pilih pelapor</option>
+                      {PELAPOR_OPTIONS.map((p) => (
+                        <option key={p.value} value={p.value}>{p.label}</option>
+                      ))}
+                    </Select>
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel>Kontak Pelapor <span className="text-gray-400">(opsional)</span></FieldLabel>
                 <input
                   type="text"
-                  value={form.pelaporLainnya}
-                  onChange={(e) => setForm((prev) => ({ ...prev, pelaporLainnya: e.target.value }))}
-                  placeholder="Tuliskan sumber laporan..."
-                  className="w-full h-9 px-3 mt-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  value={form.kontakPelapor}
+                  onChange={(e) => setForm((prev) => ({ ...prev, kontakPelapor: e.target.value }))}
+                  placeholder="Nama / no. HP untuk konfirmasi"
+                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 />
-              )}
+              </div>
             </div>
 
+            {role === "pusat" && <hr className="border-gray-300 -mx-5 my-2" />}
+
+            {role === "pusat" && (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel>Wilayah/Daerah <span className="text-gray-400">(opsional)</span></FieldLabel>
+                  <Select
+                    value={form.wilayah ?? ""}
+                    onChange={(e) => setForm((prev) => ({ ...prev, wilayah: e.target.value }))}
+                    className={`${SELECT_BASE} ${!form.wilayah ? "text-gray-400" : ""}`}
+                  >
+                    <option value="" disabled>Pilih provinsi</option>
+                    {PROVINSI_OPTIONS.map((p) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </Select>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel>Kabupaten/Kota <span className="text-gray-400">(opsional)</span></FieldLabel>
+                  <input
+                    type="text"
+                    value={form.kabupatenKota ?? ""}
+                    onChange={(e) => setForm((prev) => ({ ...prev, kabupatenKota: e.target.value }))}
+                    placeholder="Nama kabupaten/kota"
+                    className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-col gap-1.5">
-              <FieldLabel>Penanggung Jawab <span className="text-gray-400">(opsional)</span></FieldLabel>
+              <FieldLabel>{role === "pusat" ? "Nama Penanggung Jawab" : "Penanggung Jawab"} <span className="text-gray-400">(opsional)</span></FieldLabel>
               {!form.pic ? (
                 <div className="relative mt-1">
                   <input
@@ -1403,7 +1744,7 @@ function TambahPelanggaranInner() {
                 onChange={(e) => setForm((prev) => ({ ...prev, tindakLanjut: e.target.value }))}
                 placeholder="Catat apa yang sudah atau akan dilakukan"
                 rows={3}
-                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
+                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
               />
             </div>
 
