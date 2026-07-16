@@ -1651,27 +1651,17 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
                         {item.namaSekolah.join(", ")}
                       </td>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
-                        {(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u, i) => (
-                          <div key={i} className="mb-1.5 last:mb-0">
-                            <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${
-                              u.peran === "pelaku" ? "bg-red-100 text-red-700" : u.peran === "korban" ? "bg-blue-100 text-blue-700" : u.peran === "saksi" ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-700"
-                            }`}>
-                              {u.peran === "pelaku" ? "Pelaku" : u.peran === "korban" ? "Korban" : u.peran === "saksi" ? "Saksi" : u.peran === "lainnya" ? (u.peranLainnya || "Lainnya") : "-"}
-                            </span>
-                            <div className="pl-2 mt-0.5 space-y-0.5">
-                              {getAsalGroups(u).map((ag, gi) => (
-                                <div key={gi} className="text-xs text-gray-700">
-                                  {ag.asalSekolah && (
-                                    <span className="text-gray-400">{ag.asalSekolah === "lainnya" ? ag.asalLainnya : ag.asalSekolah}: </span>
-                                  )}
-                                  {ag.individu.map((ind, idx) => (
-                                    <span key={idx}>{ind.nama}{idx < ag.individu.length - 1 ? ", " : ""}</span>
-                                  ))}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
+                        <div className="flex flex-wrap gap-1">
+                          {(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u, i) => {
+                            const total = getAsalGroups(u).reduce((sum, ag) => sum + ag.individu.length, 0)
+                            const label = u.peran === "pelaku" ? "Pelaku" : u.peran === "korban" ? "Korban" : u.peran === "saksi" ? "Saksi" : u.peran === "lainnya" ? (u.peranLainnya || "Lainnya") : u.peran || "-"
+                            return (
+                              <span key={i} className="inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                                {label}{total > 0 && <span className="opacity-60">({total})</span>}
+                              </span>
+                            )
+                          })}
+                        </div>
                       </td>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
                         {new Date(item.tanggalTerjadi).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}

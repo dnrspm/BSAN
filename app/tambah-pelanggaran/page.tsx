@@ -600,6 +600,26 @@ function TambahPelanggaranInner() {
 
   // View mode
   if (isView && item) {
+    const peranLabel = (peran: string, peranLainnya?: string) => {
+      if (peran === "pelaku") return "Terduga Pelaku"
+      if (peran === "korban") return "Terduga Korban"
+      if (peran === "saksi") return "Saksi"
+      if (peran === "lainnya") return peranLainnya || "Lainnya"
+      return peran || "-"
+    }
+    const peranColor = (peran: string) => {
+      if (peran === "pelaku") return "bg-amber-100 text-amber-700"
+      if (peran === "korban") return "bg-red-100 text-red-700"
+      if (peran === "saksi") return "bg-blue-100 text-blue-700"
+      return "bg-gray-100 text-gray-700"
+    }
+    const peranLineColor = (peran: string) => {
+      if (peran === "pelaku") return "border-amber-400"
+      if (peran === "korban") return "border-red-400"
+      if (peran === "saksi") return "border-blue-400"
+      return "border-gray-400"
+    }
+
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -623,19 +643,30 @@ function TambahPelanggaranInner() {
         <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
           <SectionCard icon={<AlertTriangle className="w-4 h-4" />} title="Informasi Pelanggaran">
             <div className="grid grid-cols-1 gap-4">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Sekolah Terlibat</p>
               <div className="flex flex-col gap-1.5">
                 <FieldLabel>Nama Sekolah</FieldLabel>
-                <div className="flex flex-col gap-1.5 mt-1">
+                <div className="flex flex-col gap-2 mt-1">
                   {item.namaSekolah.length > 0 ? item.namaSekolah.map((s, i) => (
-                    <div key={i} className="flex items-center gap-2 py-1.5 px-2 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium text-gray-700">{s}</span>
-                      {(item as any).npsnSekolah?.[i] && (
-                        <span className="text-xs text-gray-400">NPSN {(item as any).npsnSekolah[i]}</span>
-                      )}
+                    <div key={i} className="flex items-start gap-2">
+                      <div className="flex-1 border border-gray-200 rounded-lg p-3">
+                        <div className="grid grid-cols-[1fr_140px] gap-2">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1">Nama Sekolah</label>
+                            <TextInput value={s} />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1">NPSN</label>
+                            <TextInput value={(item as any).npsnSekolah?.[i] || "-"} />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )) : <span className="text-sm text-gray-400">-</span>}
                 </div>
               </div>
+
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Klasifikasi Pelanggaran</p>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
@@ -643,109 +674,149 @@ function TambahPelanggaranInner() {
                   <TextInput value={item.kategori} />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel>Tingkat Urgensi</FieldLabel>
-                  <TextInput value={TINGKAT_KEPARAHAN.find((t) => t.value === item.tingkatKeparahan)?.label ?? item.tingkatKeparahan} />
+                  <FieldLabel>Tanggal Pelaporan</FieldLabel>
+                  <TextInput value={(item as any).tanggalPelaporan ? new Date((item as any).tanggalPelaporan).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) : "-"} />
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <FieldLabel>Tanggal Kejadian</FieldLabel>
-                <TextInput value={new Date(item.tanggalTerjadi).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} />
+                <FieldLabel>Tingkat Urgensi</FieldLabel>
+                <div className="grid grid-cols-3 gap-2 mt-1">
+                  {TINGKAT_URGENSI_SEGMENTS.map((t) => {
+                    const isSelected = item.tingkatKeparahan === t.value
+                    return (
+                      <div
+                        key={t.value}
+                        className={`px-2 py-2.5 rounded-lg border text-center text-[13px] font-semibold transition-colors ${
+                          isSelected ? t.selected : "border-gray-200 bg-gray-50 text-gray-400"
+                        }`}
+                      >
+                        {t.label}
+                        <span className={`block text-[11px] font-normal mt-0.5 ${isSelected ? t.selectedDesc : "text-gray-300"}`}>
+                          {t.desc}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                {(item as any).motif && (
-                  <div className="flex flex-col gap-1.5">
-                    <FieldLabel>Motif Kejadian</FieldLabel>
-                    <TextInput value={(item as any).motif} />
-                  </div>
-                )}
-                {(item as any).tanggalPelaporan && (
-                  <div className="flex flex-col gap-1.5">
-                    <FieldLabel>Tanggal Pelaporan</FieldLabel>
-                    <TextInput value={new Date((item as any).tanggalPelaporan).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} />
-                  </div>
-                )}
-              </div>
             </div>
           </SectionCard>
 
           <SectionCard icon={<Clock className="w-4 h-4" />} title="Detail Kasus">
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel>Unsur yang Terlibat</FieldLabel>
-                <div className="flex flex-col gap-2 mt-1">
-                  {item.unsurTerlibat.length > 0 ? item.unsurTerlibat.map((u, i) => (
-                    <div key={i} className="border border-gray-200 rounded-lg px-3 py-2 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                          u.peran === "pelaku" ? "bg-red-100 text-red-700" : u.peran === "korban" ? "bg-blue-100 text-blue-700" : u.peran === "saksi" ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-700"
-                        }`}>
-                          {u.peran === "pelaku" ? "Pelaku" : u.peran === "korban" ? "Korban" : u.peran === "saksi" ? "Saksi" : u.peran === "lainnya" ? (u.peranLainnya || "Lainnya") : u.peran || "-"}
-                        </span>
-                      </div>
-                      {Array.isArray(u.asalGroups) && u.asalGroups.length > 0 && u.asalGroups.map((ag, gi) => (
-                        <div key={gi} className="pl-4">
-                          {ag.asalSekolah && (
-                            <p className="text-xs font-medium text-gray-500 mt-1">
-                              Asal Sekolah: {ag.asalSekolah === "lainnya" ? ag.asalLainnya : ag.asalSekolah}
-                            </p>
-                          )}
-                          {Array.isArray(ag.individu) && ag.individu.map((ind, idx) => (
-                            <div key={idx} className="flex flex-wrap items-center gap-x-2 gap-y-0.5 pl-2 text-sm">
-                              <span className="text-gray-400 text-xs">#{idx + 1}</span>
-                              <span className="font-semibold text-gray-900">{ind.nama || "-"}</span>
-                              {ind.status && <span className="text-gray-500 text-xs">{ind.status}</span>}
-                              {ind.jenisKelamin && <span className="text-gray-500 text-xs">{ind.jenisKelamin}</span>}
-                              {ind.umur && <span className="text-gray-500 text-xs">{ind.umur} thn</span>}
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Unsur yang Terlibat</p>
+              <div className="flex flex-col gap-4">
+                {item.unsurTerlibat.length > 0 ? item.unsurTerlibat.map((u, i) => (
+                  <div key={i} className="flex flex-col gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${peranColor(u.peran)}`}>
+                        {peranLabel(u.peran, u.peranLainnya)}
+                      </span>
+                    </div>
+                    {u.peran !== "" && (
+                      <div className="relative pl-3">
+                        <div className={`absolute left-0 top-0 bottom-0 border-l-2 ${peranLineColor(u.peran)}`} />
+                        <div className="flex flex-col gap-2">
+                          {Array.isArray(u.asalGroups) && u.asalGroups.map((ag, gi) => (
+                            <div key={gi} className="flex items-start gap-2">
+                              <div className="flex-1 border border-gray-200 rounded-lg p-3 bg-white">
+                                <div className="grid grid-cols-[1fr_90px] gap-2 items-start">
+                                  <div>
+                                    <label className="block text-xs font-semibold text-gray-700 mb-1">Asal Sekolah</label>
+                                    <TextInput value={ag.asalSekolah === "lainnya" ? (ag.asalLainnya || "-") : (ag.asalSekolah || "-")} />
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs font-semibold text-gray-700 mb-1">Jumlah Orang</label>
+                                    <TextInput value={ag.jumlah || "-"} />
+                                  </div>
+                                </div>
+                                {Array.isArray(ag.individu) && ag.individu.some((ind) => ind.nama) && (
+                                  <div className="bg-gray-50 rounded-lg mt-3 mb-2 divide-y divide-gray-200">
+                                    {ag.individu.map((ind, idx) => (
+                                      <div key={idx} className="p-2.5">
+                                        <div className="flex items-start gap-2">
+                                          <span className={`text-sm text-gray-400 w-5 shrink-0 text-right ${idx === 0 ? "mt-7" : "mt-2"}`}>#{idx + 1}</span>
+                                          <div className="flex-1 grid grid-cols-[1.4fr_1fr_1fr_80px] gap-2">
+                                            <div>
+                                              {idx === 0 && <label className="block text-xs text-gray-700 mb-1">Nama/Inisial</label>}
+                                              <TextInput value={ind.nama || "-"} />
+                                            </div>
+                                            <div>
+                                              {idx === 0 && <label className="block text-xs text-gray-700 mb-1">Status</label>}
+                                              <TextInput value={ind.status || "-"} />
+                                            </div>
+                                            <div>
+                                              {idx === 0 && <label className="block text-xs text-gray-700 mb-1">Jenis Kelamin</label>}
+                                              <TextInput value={ind.jenisKelamin || "-"} />
+                                            </div>
+                                            <div>
+                                              {idx === 0 && <label className="block text-xs text-gray-700 mb-1">Umur</label>}
+                                              <TextInput value={ind.umur ? `${ind.umur} thn` : "-"} />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           ))}
                         </div>
-                      ))}
-                    </div>
-                  )) : <span className="text-sm text-gray-400">-</span>}
-                </div>
+                      </div>
+                    )}
+                  </div>
+                )) : <span className="text-sm text-gray-400">-</span>}
               </div>
 
-              <hr className="border-gray-300 -mx-5" />
+              <hr className="border-gray-300 -mx-5 my-2" />
 
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel>Kronologi Kejadian</FieldLabel>
-                {Array.isArray((item as any).kronologi) && (item as any).kronologi.length > 0 ? (
-                  <div className="flex flex-col gap-2 mt-1">
-                    {(item as any).kronologi.map((entry: { tanggal?: string; jam?: string; lokasi?: string; keterangan?: string }, i: number) => (
-                      <div key={i} className="flex gap-3 text-sm">
-                        <div className="flex flex-col items-center">
-                          <div className="w-2 h-2 rounded-full bg-gray-400 mt-1.5 shrink-0" />
-                          {i < (item as any).kronologi.length - 1 && <div className="w-px flex-1 bg-gray-200 mt-1" />}
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Kronologi Kejadian</p>
+              {Array.isArray((item as any).kronologi) && (item as any).kronologi.length > 0 ? (
+                <div className="flex flex-col gap-4 mt-1">
+                  {(item as any).kronologi.map((entry: { tanggal?: string; jam?: string; lokasi?: string; keterangan?: string }, i: number) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <div className="flex-1 border border-gray-200 rounded-lg p-3">
+                        <div className="flex items-end gap-2">
+                          <div className="flex-1">
+                            <label className="block text-xs font-semibold text-gray-700 mb-1">Tanggal</label>
+                            <TextInput value={entry.tanggal ? new Date(entry.tanggal).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) : "-"} />
+                          </div>
+                          <div className="w-[100px] shrink-0">
+                            <label className="block text-xs font-semibold text-gray-700 mb-1">Jam</label>
+                            <TextInput value={entry.jam || "-"} />
+                          </div>
+                          <div className="flex-[1.5]">
+                            <label className="block text-xs font-semibold text-gray-700 mb-1">Lokasi</label>
+                            <TextInput value={entry.lokasi || "-"} />
+                          </div>
                         </div>
-                        <div className="pb-3">
-                          {(entry.tanggal || entry.jam) && (
-                            <p className="text-xs text-gray-400 mb-0.5">
-                              {entry.tanggal && new Date(entry.tanggal).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
-                              {entry.jam && ` · ${entry.jam}`}
-                              {entry.lokasi && ` · ${entry.lokasi}`}
-                            </p>
-                          )}
-                          <p className="text-gray-700">{entry.keterangan || "-"}</p>
+                        <div className="mt-2 bg-gray-50 rounded-lg px-3 py-2">
+                          <label className="block text-xs font-semibold text-gray-700 mb-1">Keterangan</label>
+                          <div className="text-sm text-gray-600 whitespace-pre-wrap min-h-[20px]">{entry.keterangan || "-"}</div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                ) : <span className="text-sm text-gray-400 mt-1">-</span>}
-              </div>
+                    </div>
+                  ))}
+                </div>
+              ) : <span className="text-sm text-gray-400">-</span>}
 
-              <hr className="border-gray-300 -mx-5" />
+              <hr className="border-gray-300 -mx-5 my-2" />
 
               <div className="flex flex-col gap-1.5">
-                <FieldLabel>Keterangan Tambahan</FieldLabel>
-                <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">{item.rekomendasi || "-"}</p>
+                <FieldLabel>Motif Kejadian</FieldLabel>
+                <div className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-default min-h-[80px] whitespace-pre-wrap">
+                  {(item as any).motif || "-"}
+                </div>
               </div>
             </div>
           </SectionCard>
 
           <SectionCard icon={<Users className="w-4 h-4" />} title="Sumber Laporan & Penanggung Jawab">
             <div className="grid grid-cols-1 gap-4">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Sumber Laporan</p>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
                   <FieldLabel>Pelapor / Sumber Laporan</FieldLabel>
@@ -761,10 +832,35 @@ function TambahPelanggaranInner() {
                   </div>
                 )}
               </div>
+
+              {role === "pusat" && ((item as any).wilayah || (item as any).kabupatenKota) && (
+                <>
+                  <hr className="border-gray-300 -mx-5 my-2" />
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Kelompok Kerja Penanggung Jawab</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {(item as any).wilayah && (
+                      <div className="flex flex-col gap-1.5">
+                        <FieldLabel>Wilayah/Daerah</FieldLabel>
+                        <TextInput value={(item as any).wilayah} />
+                      </div>
+                    )}
+                    {(item as any).kabupatenKota && (
+                      <div className="flex flex-col gap-1.5">
+                        <FieldLabel>Kabupaten/Kota</FieldLabel>
+                        <TextInput value={(item as any).kabupatenKota} />
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+
               {item.pic && (
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel>Penanggung Jawab</FieldLabel>
-                  <TextInput value={item.pic} />
+                  <FieldLabel>{role === "pusat" ? "Nama Penanggung Jawab" : "Penanggung Jawab"}</FieldLabel>
+                  <div className="flex items-center gap-2 py-1.5 px-2 mt-1 bg-gray-50 rounded-lg">
+                    <Users className="w-3.5 h-3.5 text-gray-400" />
+                    <span className="text-sm font-medium text-gray-700 flex-1">{item.pic}</span>
+                  </div>
                 </div>
               )}
             </div>
@@ -773,26 +869,24 @@ function TambahPelanggaranInner() {
           <SectionCard icon={<CheckCircle className="w-4 h-4" />} title="Riwayat Status Pelanggaran">
             <div className="grid grid-cols-1 gap-4">
               <div className="flex flex-col gap-3">
-                <div className="flex flex-col gap-3">
-                  {Array.isArray((item as any).logStatus) && (item as any).logStatus.map((entry: { status: StatusPelanggaran; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }, i: number) => {
-                    const dibuatOleh = entry.dibuatOleh || entry.keterangan.match(/oleh (.+)$/)?.[1] || ""
-                    const labelAksi = entry.aksi === "perbaharui_status" ? "Diperbaharui" : entry.aksi === "edit" ? "Diedit" : "Dibuat"
-                    const keterangan = entry.keterangan.replace(/ — oleh .+$/, "").replace(/^Laporan awal (dibuat )?/, "").trim()
-                    return (
-                      <div key={i} className="p-3 bg-gray-50 rounded-lg space-y-1">
-                        <div className="flex items-center gap-2">
-                          <StatusBadge status={entry.status} />
-                          <span className="text-xs text-gray-500">{labelAksi} oleh {dibuatOleh}</span>
-                        </div>
-                        {keterangan && <p className="text-xs text-gray-700"><span className="font-medium">Keterangan:</span> {keterangan}</p>}
-                        {(entry as any).dokumentasi ? <p className="text-xs text-gray-700"><span className="font-medium">Dokumentasi:</span> {(entry as any).dokumentasi.startsWith("http") ? <a href={(entry as any).dokumentasi} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{(entry as any).dokumentasi}</a> : (entry as any).dokumentasi}</p> : null}
-                        <p className="text-xs text-gray-400">
-                          {new Date(entry.waktu).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
-                        </p>
+                {Array.isArray((item as any).logStatus) && (item as any).logStatus.length > 0 ? (item as any).logStatus.map((entry: { status: StatusPelanggaran; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }, i: number) => {
+                  const dibuatOleh = entry.dibuatOleh || entry.keterangan.match(/oleh (.+)$/)?.[1] || ""
+                  const labelAksi = entry.aksi === "perbaharui_status" ? "Diperbaharui" : entry.aksi === "edit" ? "Diedit" : "Dibuat"
+                  const keterangan = entry.keterangan.replace(/ — oleh .+$/, "").replace(/^Laporan awal (dibuat )?/, "").trim()
+                  return (
+                    <div key={i} className="p-3 bg-gray-50 rounded-lg space-y-1">
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={entry.status} />
+                        <span className="text-xs text-gray-500">{labelAksi} oleh {dibuatOleh}</span>
                       </div>
-                    )
-                  })}
-                </div>
+                      {keterangan && <p className="text-xs text-gray-700"><span className="font-medium">Keterangan:</span> {keterangan}</p>}
+                      {(entry as any).dokumentasi ? <p className="text-xs text-gray-700"><span className="font-medium">Dokumentasi:</span> {(entry as any).dokumentasi.startsWith("http") ? <a href={(entry as any).dokumentasi} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{(entry as any).dokumentasi}</a> : (entry as any).dokumentasi}</p> : null}
+                      <p className="text-xs text-gray-400">
+                        {new Date(entry.waktu).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                      </p>
+                    </div>
+                  )
+                }) : <span className="text-sm text-gray-400">Belum ada riwayat status.</span>}
               </div>
             </div>
           </SectionCard>
@@ -857,7 +951,7 @@ function TambahPelanggaranInner() {
 
         {(role === "dinas" || role === "pusat") && (
           <div className="max-w-2xl mx-auto px-4 pb-8 flex gap-3">
-            <a href={`/dashboard?menu=pelanggaran&edit=${item.id}`} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition text-center">Edit</a>
+            <a href={`/tambah-pelanggaran?edit=${item.id}`} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition text-center">Edit</a>
             <button onClick={handleDelete} className="flex-1 py-2.5 rounded-lg border border-red-300 text-red-600 font-medium text-sm hover:bg-red-50 transition">Hapus</button>
             <button onClick={() => { setNewStatus(item.status); setKeteranganStatus(""); setDokumentasiStatus(""); setShowStatusModal(true) }} className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition">Perbaharui Status</button>
           </div>
