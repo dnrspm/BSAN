@@ -28,7 +28,7 @@ import { readAuthSession } from "@/lib/auth-session"
 import { FormModeToggle, getIdealMode } from "@/components/FormModeToggle"
 
 type StatusPelanggaran = "baru" | "proses" | "selesai" | "ditutup"
-type TingkatKeparahan = "biasa" | "urgen" | "sangat_urgen"
+type TingkatKeparahan = "urgen" | "sangat_urgen"
 type Pelapor = "laporan_masyarakat" | "laporan_sekolah" | "laporan_kemendikdasmen" | "temuan_pengawas" | "media" | "lainnya"
 
 interface IndividuItem {
@@ -148,22 +148,15 @@ function Select({ value, onChange, className, children }: { value: string; onCha
 const UNSUR_OPTIONS = ["Siswa Laki-laki", "Siswa Perempuan", "Guru", "Tenaga Kependidikan", "Kepala Sekolah", "Warga Sekolah", "Lainnya"]
 
 const KATEGORI_PELANGGARAN = [
-  "Perundungan (Bullying)",
-  "Pelecehan Seksual",
-  "Kekerasan Fisik",
-  "Kekerasan Verbal",
-  "Pencurian",
-  "Vandalisme",
-  "Penggunaan NAPZA",
-  "Melanggar Aturan Sekolah",
-  "Pelanggaran Hukum",
-  "Lainnya",
+  "Perundungan", "Perundungan Siber", "Kekerasan Fisik",
+  "Kekerasan Seksual", "Kekerasan Psikis", "Diskriminasi",
+  "Intoleransi", "Pencurian", "Vandalisme", "Penyalahgunaan NAPZA",
+  "Pelanggaran Aturan Sekolah", "Pelanggaran Hukum", "Lainnya",
 ]
 
 const TINGKAT_KEPARAHAN: { value: TingkatKeparahan; label: string; color: string }[] = [
-  { value: "biasa", label: "Biasa", color: "bg-yellow-100 text-yellow-700" },
-  { value: "urgen", label: "Mendesak", color: "bg-orange-100 text-orange-700" },
-  { value: "sangat_urgen", label: "Sangat Mendesak", color: "bg-red-100 text-red-700" },
+  { value: "urgen", label: "Mendesak", color: "text-amber-600" },
+  { value: "sangat_urgen", label: "Sangat Mendesak", color: "text-red-600" },
 ]
 
 const PELAPOR_OPTIONS: { value: Pelapor; label: string }[] = [
@@ -179,7 +172,7 @@ function StatusBadge({ status }: { status: StatusPelanggaran }) {
     case "baru":
       return (
         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-          <FileText className="w-3 h-3" /> Baru
+          <FileText className="w-3 h-3" /> Belum Diproses
         </span>
       )
     case "proses":
@@ -458,7 +451,7 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
             </div>
             <div className="p-5 space-y-3">
               {([
-                { value: "baru" as StatusPelanggaran, label: "Baru", desc: "Laporan baru masuk, belum ditindaklanjuti", color: "bg-blue-500" },
+                { value: "baru" as StatusPelanggaran, label: "Belum Diproses", desc: "Laporan baru masuk, belum ditindaklanjuti", color: "bg-blue-500" },
                 { value: "proses" as StatusPelanggaran, label: "Diproses", desc: "Kasus sedang dalam proses penanganan", color: "bg-amber-500" },
                 { value: "selesai" as StatusPelanggaran, label: "Selesai", desc: "Kasus sudah ditangani dan selesai", color: "bg-green-500" },
                 { value: "ditutup" as StatusPelanggaran, label: "Ditutup", desc: "Dihentikan tanpa penyelesaian (tidak terbukti, duplikat, luar kewenangan)", color: "bg-gray-500" },
@@ -1269,7 +1262,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
               className={`${SELECT_BASE} ${!status ? "text-gray-400" : ""}`}
             >
               <option value="" disabled>Pilih status</option>
-              <option value="baru">Baru</option>
+              <option value="baru">Belum Diproses</option>
               <option value="proses">Diproses</option>
               <option value="selesai">Selesai</option>
               <option value="ditutup">Ditutup</option>
@@ -1327,6 +1320,8 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
   const [search, setSearch] = useState("")
   const [filterStatus, setFilterStatus] = useState<StatusPelanggaran | "semua">("semua")
   const [filterKategori, setFilterKategori] = useState<string>("semua")
+  const [filterTingkatUrgensi, setFilterTingkatUrgensi] = useState<TingkatKeparahan | "semua">("semua")
+  const [filterPIC, setFilterPIC] = useState<string>("semua")
   const [selected, setSelected] = useState<PelanggaranItem | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [editingItem, setEditingItem] = useState<PelanggaranItem | undefined>(undefined)
@@ -1350,7 +1345,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
             namaSekolah: Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah as any],
             unsurTerlibat: unsur,
             dokumentasi: Array.isArray(item.dokumentasi) ? item.dokumentasi[0] ?? "" : item.dokumentasi,
-            tingkatKeparahan: (item as any).tingkatKeparahan ?? "biasa",
+            tingkatKeparahan: (item as any).tingkatKeparahan ?? "urgen",
             pelapor: (item as any).pelapor ?? "laporan_sekolah",
             pelaporLainnya: (item as any).pelaporLainnya ?? "",
             tindakLanjut: (item as any).tindakLanjut ?? "",
@@ -1377,6 +1372,12 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
     return Array.from(cats).sort()
   }, [list])
 
+  const uniquePIC = useMemo(() => {
+    const names = new Set<string>()
+    list.forEach((item) => { if (item.pic) names.add(item.pic) })
+    return Array.from(names).sort()
+  }, [list])
+
   const filtered = useMemo(() => {
     return list
       .filter((item) => {
@@ -1387,10 +1388,12 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
           item.kategori.toLowerCase().includes(search.toLowerCase())
         const matchStatus = filterStatus === "semua" || item.status === filterStatus
         const matchKategori = filterKategori === "semua" || item.kategori === filterKategori
-        return matchSearch && matchStatus && matchKategori
+        const matchTingkat = filterTingkatUrgensi === "semua" || item.tingkatKeparahan === filterTingkatUrgensi
+        const matchPIC = filterPIC === "semua" || item.pic === filterPIC
+        return matchSearch && matchStatus && matchKategori && matchTingkat && matchPIC
       })
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-  }, [list, search, filterStatus, filterKategori])
+  }, [list, search, filterStatus, filterKategori, filterTingkatUrgensi, filterPIC])
 
   const totalRows = filtered.length
   const totalPages = Math.ceil(totalRows / rowsPerPage)
@@ -1499,14 +1502,14 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `pelanggaran-${new Date().toISOString().slice(0, 10)}.csv`
+    a.download = `pelanggaran-${new Date().toISOString().slice(0, 10)}.xlsx`
     a.click()
     URL.revokeObjectURL(url)
   }
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [search, filterStatus, filterKategori])
+  }, [search, filterStatus, filterKategori, filterTingkatUrgensi, filterPIC])
 
   return (
     <div className="space-y-5">
@@ -1524,7 +1527,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
             disabled={filtered.length === 0}
             className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <Download className="w-4 h-4" /> Ekspor CSV
+            <Download className="w-4 h-4" /> Ekspor Excel
           </button>
           {!readOnly && (
             <a
@@ -1555,7 +1558,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
           </div>
           <div>
             <p className="text-xl font-bold text-gray-900">{stats.baru}</p>
-            <p className="text-xs text-gray-500">Baru</p>
+            <p className="text-xs text-gray-500">Belum Diproses</p>
           </div>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
@@ -1616,10 +1619,34 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
             className={SELECT_FILTER}
           >
             <option value="semua">Semua Status</option>
-            <option value="baru">Baru</option>
+            <option value="baru">Belum Diproses</option>
             <option value="proses">Diproses</option>
             <option value="selesai">Selesai</option>
             <option value="ditutup">Ditutup</option>
+          </Select>
+        </div>
+        <div className="flex-shrink-0 w-[120px] sm:w-[150px]">
+          <Select
+            value={filterTingkatUrgensi}
+            onChange={(e) => setFilterTingkatUrgensi(e.target.value as TingkatKeparahan | "semua")}
+            className={SELECT_FILTER}
+          >
+            <option value="semua">Semua Urgensi</option>
+            {TINGKAT_KEPARAHAN.map((t) => (
+              <option key={t.value} value={t.value}>{t.label}</option>
+            ))}
+          </Select>
+        </div>
+        <div className="flex-shrink-0 w-[120px] sm:w-[150px]">
+          <Select
+            value={filterPIC}
+            onChange={(e) => setFilterPIC(e.target.value)}
+            className={SELECT_FILTER}
+          >
+            <option value="semua">Semua PIC</option>
+            {uniquePIC.map((name) => (
+              <option key={name} value={name}>{name}</option>
+            ))}
           </Select>
         </div>
       </div>
@@ -1640,13 +1667,15 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Unsur Terlibat</th>
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Tanggal</th>
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Kategori</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Urgensi</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">PIC</th>
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {paginatedData.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={item.id} className={`hover:bg-gray-50 transition-colors ${item.tingkatKeparahan === "sangat_urgen" ? "border-l-4 border-l-red-500" : ""}`}>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
                         {item.namaSekolah.join(", ")}
                       </td>
@@ -1668,6 +1697,19 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
                       </td>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
                         {item.kategori}
+                      </td>
+                      <td className="px-4 py-3.5 text-sm text-gray-800">
+                        {(() => {
+                          const t = TINGKAT_KEPARAHAN.find((t) => t.value === item.tingkatKeparahan)
+                          return t ? (
+                            <span className="text-sm">{t.label}</span>
+                          ) : (
+                            <span className="text-gray-400 text-xs">-</span>
+                          )
+                        })()}
+                      </td>
+                      <td className="px-4 py-3.5 text-sm text-gray-800">
+                        {item.pic || <span className="text-gray-400">-</span>}
                       </td>
                       <td className="px-4 py-3.5">
                         <StatusBadge status={item.status} />
