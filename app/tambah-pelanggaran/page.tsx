@@ -6,7 +6,6 @@ import {
   ArrowLeft, AlertTriangle, Users, Calendar, FileText,
   CheckCircle, Clock, Plus, X, XCircle, ChevronDown, Trash2, MoreVertical,
 } from "lucide-react"
-import { FormModeToggle, getIdealMode } from "@/components/FormModeToggle"
 
 type StatusPelanggaran = "baru" | "proses" | "selesai" | "ditutup"
 type TingkatKeparahan = "urgen" | "sangat_urgen"
@@ -106,6 +105,72 @@ const KATEGORI_PELANGGARAN = [
   "Pelanggaran Aturan Sekolah", "Pelanggaran Hukum", "Lainnya",
 ]
 
+const EDIT_FIELD_LABELS: Record<string, string> = {
+  namaSekolah: "Nama Sekolah",
+  tanggalTerjadi: "Tanggal Terjadi",
+  kronologi: "Kronologi Kejadian",
+  unsurTerlibat: "Unsur yang Terlibat",
+  kategori: "Kategori Pelanggaran",
+  tingkatKeparahan: "Tingkat Keparahan",
+  pelapor: "Pelapor",
+  pelaporLainnya: "Pelapor Lainnya",
+  kontakPelapor: "Kontak Pelapor",
+  pic: "Penanggung Jawab",
+  wilayah: "Wilayah",
+  kabupatenKota: "Kabupaten/Kota",
+  tindakLanjut: "Tindak Lanjut",
+  dokumentasi: "Dokumentasi",
+  rekomendasi: "Rekomendasi",
+  motif: "Motif Kejadian",
+  tanggalPelaporan: "Tanggal Pelaporan",
+  status: "Status",
+}
+
+function formatEditFieldValue(key: string, value: unknown): string {
+  if (value === null || value === undefined || value === "") return "-"
+  if (key === "kronologi" && Array.isArray(value)) {
+    if (value.length === 0) return "-"
+    return value
+      .map((e: any) => {
+        const waktu = [e?.tanggal, e?.jam].filter(Boolean).join(" ")
+        return `${waktu || "-"}${e?.lokasi ? ` @ ${e.lokasi}` : ""}: ${e?.keterangan || "-"}`
+      })
+      .join(" | ")
+  }
+  if (key === "unsurTerlibat" && Array.isArray(value)) {
+    if (value.length === 0) return "-"
+    return value
+      .map((u: any) => {
+        const asal = Array.isArray(u?.asalGroups)
+          ? u.asalGroups
+              .map((g: any) => {
+                const individu = Array.isArray(g?.individu)
+                  ? g.individu.map((p: any) => p?.nama).filter(Boolean).join(", ")
+                  : ""
+                return `${g?.asalSekolah || "-"}${g?.jumlah ? ` (${g.jumlah} orang)` : ""}${individu ? `: ${individu}` : ""}`
+              })
+              .join("; ")
+          : ""
+        return `${u?.peran || "-"}${u?.kategori ? ` - ${u.kategori}` : ""}${asal ? ` [${asal}]` : ""}`
+      })
+      .join(" | ")
+  }
+  if (Array.isArray(value)) {
+    return value.length > 0 ? value.join(", ") : "-"
+  }
+  return String(value)
+}
+
+function diffPelanggaranFields(before: Record<string, unknown>, after: Record<string, unknown>) {
+  return Object.keys(EDIT_FIELD_LABELS)
+    .map((key) => {
+      const from = formatEditFieldValue(key, before[key])
+      const to = formatEditFieldValue(key, after[key])
+      return from !== to ? { field: EDIT_FIELD_LABELS[key], from, to } : null
+    })
+    .filter((change): change is { field: string; from: string; to: string } => change !== null)
+}
+
 const TINGKAT_KEPARAHAN: { value: TingkatKeparahan; label: string; color: string }[] = [
   { value: "urgen", label: "Mendesak", color: "bg-orange-100 text-orange-700" },
   { value: "sangat_urgen", label: "Sangat Mendesak", color: "bg-red-100 text-red-700" },
@@ -201,6 +266,25 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
   )
 }
 
+function isLikelyUrl(value: string): boolean {
+  if (/^https?:\/\//i.test(value)) return true
+  return !/\s/.test(value) && /\.[a-z]{2,}/i.test(value)
+}
+
+function toDocHref(value: string): string {
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`
+}
+
+function DocumentasiValue({ value }: { value: string }) {
+  return isLikelyUrl(value) ? (
+    <a href={toDocHref(value)} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+      {value}
+    </a>
+  ) : (
+    <span>{value}</span>
+  )
+}
+
 function TextInput({ value }: { value: string }) {
   return (
     <input
@@ -289,11 +373,6 @@ function TambahPelanggaranInner() {
   const isView = !!viewId
 
   const [role, setRole] = useState("")
-  const [isIdealMode, setIsIdealMode] = useState(false)
-
-  useEffect(() => {
-    setIsIdealMode(getIdealMode())
-  }, [])
 
   // View mode state
   const [item, setItem] = useState<(PelanggaranItem & { logStatus?: { status: StatusPelanggaran; keterangan: string; waktu: string }[] }) | null>(null)
@@ -482,25 +561,28 @@ function TambahPelanggaranInner() {
       const stored = JSON.parse(localStorage.getItem("pelanggaranList") ?? "[]") as PelanggaranItem[]
 
       if (editId) {
-        const updated = stored.map((i) =>
-          i.id === editId
-            ? {
-                ...i,
-                ...form,
-                namaSekolah: cleanedSekolah.map((x) => x.nama),
-                npsnSekolah: cleanedSekolah.map((x) => x.npsn),
-                tanggalTerjadi: firstTanggal,
-                pelaporLainnya: form.pelapor === "lainnya" ? form.pelaporLainnya : "",
-                unsurTerlibat: cleanUnsurTerlibat(form.unsurTerlibat),
-                updatedAt: now,
-                diperbaruiOleh: dibuatOleh,
-                logStatus: [
-                  ...(Array.isArray((i as any).logStatus) ? (i as any).logStatus : []),
-                  { status: form.status, keterangan: "", dokumentasi: "", dibuatOleh, aksi: "edit", waktu: now },
-                ],
-              }
-            : i
-        )
+        const updated = stored.map((i) => {
+          if (i.id !== editId) return i
+          const nextValues = {
+            ...i,
+            ...form,
+            namaSekolah: cleanedSekolah.map((x) => x.nama),
+            npsnSekolah: cleanedSekolah.map((x) => x.npsn),
+            tanggalTerjadi: firstTanggal,
+            pelaporLainnya: form.pelapor === "lainnya" ? form.pelaporLainnya : "",
+            unsurTerlibat: cleanUnsurTerlibat(form.unsurTerlibat),
+          }
+          const perubahan = diffPelanggaranFields(i as any, nextValues as any)
+          return {
+            ...nextValues,
+            updatedAt: now,
+            diperbaruiOleh: dibuatOleh,
+            logStatus: [
+              ...(Array.isArray((i as any).logStatus) ? (i as any).logStatus : []),
+              { status: form.status, keterangan: "", dokumentasi: "", dibuatOleh, aksi: "edit", waktu: now, perubahan },
+            ],
+          }
+        })
         localStorage.setItem("pelanggaranList", JSON.stringify(updated))
       } else {
         const newItem = {
@@ -809,6 +891,15 @@ function TambahPelanggaranInner() {
                   {(item as any).motif || "-"}
                 </div>
               </div>
+
+              {item.dokumentasi && (
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel>Tautan Dokumentasi</FieldLabel>
+                  <div className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 min-h-[36px] break-all text-gray-600">
+                    <DocumentasiValue value={item.dokumentasi} />
+                  </div>
+                </div>
+              )}
             </div>
           </SectionCard>
 
@@ -878,7 +969,32 @@ function TambahPelanggaranInner() {
                         <span className="text-xs text-gray-500">{labelAksi} oleh {dibuatOleh}</span>
                       </div>
                       {keterangan && <p className="text-xs text-gray-700"><span className="font-medium">Keterangan:</span> {keterangan}</p>}
-                      {(entry as any).dokumentasi ? <p className="text-xs text-gray-700"><span className="font-medium">Dokumentasi:</span> {(entry as any).dokumentasi.startsWith("http") ? <a href={(entry as any).dokumentasi} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{(entry as any).dokumentasi}</a> : (entry as any).dokumentasi}</p> : null}
+                      {(entry as any).dokumentasi ? <p className="text-xs text-gray-700"><span className="font-medium">Dokumentasi:</span> <DocumentasiValue value={(entry as any).dokumentasi} /></p> : null}
+                      {Array.isArray((entry as any).perubahan) && (entry as any).perubahan.length > 0 && (
+                        <div className="text-xs text-gray-700">
+                          <span className="font-medium">Perubahan:</span>
+                          <div className="mt-1 border border-gray-200 rounded-lg overflow-hidden">
+                            <table className="w-full text-xs border-collapse">
+                              <thead>
+                                <tr className="bg-gray-100">
+                                  <th className="text-left font-medium text-gray-500 px-2 py-1 w-1/4">Field</th>
+                                  <th className="text-left font-medium text-gray-500 px-2 py-1 w-[37.5%]">Sebelum</th>
+                                  <th className="text-left font-medium text-gray-500 px-2 py-1 w-[37.5%]">Sesudah</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {(entry as any).perubahan.map((p: { field: string; from: string; to: string }, pi: number) => (
+                                  <tr key={pi} className="border-t border-gray-200 align-top">
+                                    <td className="px-2 py-1 font-medium text-gray-700">{p.field}</td>
+                                    <td className="px-2 py-1 text-gray-600">{p.from}</td>
+                                    <td className="px-2 py-1 text-gray-900">{p.to}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      )}
                       <p className="text-xs text-gray-400">
                         {new Date(entry.waktu).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                       </p>
@@ -951,7 +1067,7 @@ function TambahPelanggaranInner() {
           <div className="max-w-2xl mx-auto px-4 pb-8 flex gap-3">
             <a href={`/tambah-pelanggaran?edit=${item.id}`} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition text-center">Edit</a>
             <button onClick={handleDelete} className="flex-1 py-2.5 rounded-lg border border-red-300 text-red-600 font-medium text-sm hover:bg-red-50 transition">Hapus</button>
-            <button onClick={() => { setNewStatus(item.status); setKeteranganStatus(""); setDokumentasiStatus(""); setShowStatusModal(true) }} className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition">Perbaharui Status</button>
+            <button onClick={() => { setNewStatus(item.status); setKeteranganStatus(""); setDokumentasiStatus(""); setShowStatusModal(true) }} className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition">Perbarui Status</button>
           </div>
         )}
       </div>
@@ -993,98 +1109,36 @@ function TambahPelanggaranInner() {
           <div className="grid grid-cols-1 gap-4">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Sekolah Terlibat</p>
             <div className="flex flex-col gap-1.5">
-              {isIdealMode && <FieldLabel required>Nama Sekolah</FieldLabel>}
-              {isIdealMode ? (
-                <div className="relative mt-1">
-                  <input
-                    type="text"
-                    value={sekolahInput}
-                    onChange={(e) => { setSekolahInput(e.target.value); setShowSekolahDropdown(true) }}
-                    onFocus={() => setShowSekolahDropdown(true)}
-                    onClick={() => setShowSekolahDropdown(true)}
-                    onBlur={() => setTimeout(() => setShowSekolahDropdown(false), 200)}
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSekolah(sekolahInput) } }}
-                    placeholder="Ketik nama sekolah yang ingin dilaporkan"
-                    className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  />
-                  {showSekolahDropdown && filteredSekolahOptions.length > 0 && (
-                    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                      {filteredSekolahOptions.map((o) => (
-                        <button
-                          key={o.nama}
-                          type="button"
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => addSekolah(o.nama)}
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex flex-col"
-                        >
-                          <span className="text-gray-800">{o.nama}{o.npsn && <span className="text-xs text-gray-400 ml-2">NPSN {o.npsn}</span>}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (() => {
-                const namaRows = form.namaSekolah.length > 0 ? form.namaSekolah : [""]
-                const npsnRows = form.npsnSekolah && form.npsnSekolah.length > 0 ? form.npsnSekolah : [""]
-                return (
-                <div className="flex flex-col gap-2 mt-1">
-                  {namaRows.map((s, i) => (
-                    <div key={i} className="flex items-start gap-2">
-                      <div className="flex-1 border border-gray-200 rounded-lg p-3">
-                        <div className="grid grid-cols-[1fr_140px] gap-2">
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">Nama Sekolah <span className="text-red-500">*</span></label>
-                            <input
-                              type="text"
-                              value={s}
-                              onChange={(e) => {
-                                const next = [...namaRows]
-                                next[i] = e.target.value
-                                setForm((prev) => ({ ...prev, namaSekolah: next, npsnSekolah: prev.npsnSekolah && prev.npsnSekolah.length > 0 ? prev.npsnSekolah : npsnRows }))
-                              }}
-                              placeholder="Nama sekolah"
-                              className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">NPSN <span className="text-red-500">*</span></label>
-                            <input
-                              type="text"
-                              value={npsnRows[i] ?? ""}
-                              onChange={(e) => {
-                                const next = [...npsnRows]
-                                next[i] = e.target.value
-                                setForm((prev) => ({ ...prev, namaSekolah: prev.namaSekolah.length > 0 ? prev.namaSekolah : namaRows, npsnSekolah: next }))
-                              }}
-                              placeholder="NPSN"
-                              className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      {namaRows.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeSekolah(i)}
-                          className="mt-1 p-1 shrink-0 hover:bg-red-50 rounded text-red-400 hover:text-red-600 transition"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => setForm((prev) => ({ ...prev, namaSekolah: [...namaRows, ""], npsnSekolah: [...npsnRows, ""] }))}
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
-                  >
-                    <Plus className="w-3.5 h-3.5" /> Tambah Sekolah
-                  </button>
-                  <hr className="border-gray-300 -mx-5 my-2" />
-                </div>
-                )
-              })()}
-              {isIdealMode && form.namaSekolah.length > 0 && (
+              <FieldLabel required>Nama Sekolah</FieldLabel>
+              <div className="relative mt-1">
+                <input
+                  type="text"
+                  value={sekolahInput}
+                  onChange={(e) => { setSekolahInput(e.target.value); setShowSekolahDropdown(true) }}
+                  onFocus={() => setShowSekolahDropdown(true)}
+                  onClick={() => setShowSekolahDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowSekolahDropdown(false), 200)}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSekolah(sekolahInput) } }}
+                  placeholder="Ketik nama sekolah yang ingin dilaporkan"
+                  className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                />
+                {showSekolahDropdown && filteredSekolahOptions.length > 0 && (
+                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    {filteredSekolahOptions.map((o) => (
+                      <button
+                        key={o.nama}
+                        type="button"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => addSekolah(o.nama)}
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex flex-col"
+                      >
+                        <span className="text-gray-800">{o.nama}{o.npsn && <span className="text-xs text-gray-400 ml-2">NPSN {o.npsn}</span>}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {form.namaSekolah.length > 0 && (
                 <div className="flex flex-col gap-1.5 mt-3">
                   {form.namaSekolah.map((s, i) => (
                     <div key={i} className="flex items-center gap-2 py-1.5 px-2 bg-gray-50 rounded-lg">
@@ -1208,8 +1262,7 @@ function TambahPelanggaranInner() {
                     { value: "lainnya", label: "Lainnya", selected: "border-gray-600 bg-gray-100 text-gray-700", line: "border-gray-400" },
                   ]
                   const peranLineColor = PERAN_CHIPS.find((opt) => opt.value === u.peran)?.line ?? "border-gray-300"
-                  const isGroupEmpty = u.asalGroups.every((ag) => ag.asalSekolah === "" && ag.jumlah === "")
-                  const canDeleteGroup = form.unsurTerlibat.length > 1 && isGroupEmpty
+                  const canDeleteGroup = form.unsurTerlibat.length > 1
                   const syncIndividu = (next: UnsurItem[], gi: number) => {
                     const group = next[i]
                     if (!group) return
@@ -1599,51 +1652,26 @@ function TambahPelanggaranInner() {
               return (
               <div key={i} className="flex items-start gap-2">
               <div className="flex-1 border border-gray-200 rounded-lg p-3">
-                {isIdealMode ? (
-                  <div className="flex items-end gap-2">
-                    {tanggalField}
-                    {jamField}
-                    {lokasiField}
-                    <div className="flex-[2]">
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">Keterangan <span className="text-red-500">*</span></label>
-                      <input
-                        type="text"
-                        required
-                        value={entry.keterangan ?? ""}
-                        onChange={(e) => {
-                          const next = [...form.kronologi]
-                          next[i] = { ...next[i], keterangan: e.target.value }
-                          setForm((prev) => ({ ...prev, kronologi: next }))
-                        }}
-                        placeholder="Deskripsikan kejadian pada waktu yang sudah dipilih, termasuk dampak yang terjadi pada terduga korban dan terduga pelaku."
-                        className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <div className="flex items-end gap-2">
-                      {tanggalField}
-                      {jamField}
-                      {lokasiField}
-                    </div>
-                    <div className="mt-2 bg-gray-50 rounded-lg px-3 py-2">
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">Keterangan <span className="text-red-500">*</span></label>
-                      <textarea
-                        required
-                        value={entry.keterangan ?? ""}
-                        onChange={(e) => {
-                          const next = [...form.kronologi]
-                          next[i] = { ...next[i], keterangan: e.target.value }
-                          setForm((prev) => ({ ...prev, kronologi: next }))
-                        }}
-                        placeholder="Deskripsikan kejadian pada waktu yang sudah dipilih, termasuk dampak yang terjadi pada terduga korban dan terduga pelaku."
-                        rows={3}
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
-                      />
-                    </div>
-                  </>
-                )}
+                <div className="flex items-end gap-2">
+                  {tanggalField}
+                  {jamField}
+                  {lokasiField}
+                </div>
+                <div className="mt-2 bg-gray-50 rounded-lg px-3 py-2">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Keterangan <span className="text-red-500">*</span></label>
+                  <textarea
+                    required
+                    value={entry.keterangan ?? ""}
+                    onChange={(e) => {
+                      const next = [...form.kronologi]
+                      next[i] = { ...next[i], keterangan: e.target.value }
+                      setForm((prev) => ({ ...prev, kronologi: next }))
+                    }}
+                    placeholder="Deskripsikan kejadian pada waktu yang sudah dipilih, termasuk dampak yang terjadi pada terduga korban dan terduga pelaku."
+                    rows={3}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
+                  />
+                </div>
               </div>
               {form.kronologi.length > 1 && (
                 <button
@@ -1674,7 +1702,7 @@ function TambahPelanggaranInner() {
               <textarea
                 value={form.motif}
                 onChange={(e) => setForm((prev) => ({ ...prev, motif: e.target.value }))}
-                placeholder="Tuliskan motif atau alasan (perselisihan, candaan, diskriminasi, senioritas, balas dendam, dll.) misalnya di balik kejadian jika sudah diketahui. Jika belum silakan tulis Belum diketahui."
+                placeholder='Tuliskan motif atau alasan di balik kejadian (misalnya perselisihan, candaan, diskriminasi, senioritas, balas dendam, atau lainnya) jika sudah diketahui. Jika belum diketahui, tuliskan "Belum diketahui".'
                 rows={4}
                 className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
               />
@@ -1916,7 +1944,6 @@ function TambahPelanggaranInner() {
           {editId ? "Simpan Perubahan" : "Kirim Laporan"}
         </button>
       </div>
-      <FormModeToggle onChange={setIsIdealMode} />
     </div>
   )
 }
