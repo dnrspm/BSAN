@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import {
   ArrowLeft, AlertTriangle, Users, Calendar, FileText,
-  CheckCircle, Clock, Plus, X, XCircle, ChevronDown, Trash2, MoreVertical,
+  CheckCircle, Clock, Plus, X, XCircle, ChevronDown, Trash2, MoreVertical, Copy, Check,
 } from "lucide-react"
 
 type StatusPelanggaran = "baru" | "proses" | "selesai" | "ditutup"
@@ -42,6 +42,7 @@ interface UnsurItem {
 
 interface PelanggaranItem {
   id: string
+  nomorKasus?: string
   namaSekolah: string[]
   npsnSekolah?: string[]
   unsurTerlibat: UnsurItem[]
@@ -67,6 +68,14 @@ interface PelanggaranItem {
   diperbaruiOleh: string
 }
 
+function generateNomorKasus(existing: PelanggaranItem[]): string {
+  const maxNomor = existing.reduce((max, item) => {
+    const n = parseInt(item.nomorKasus ?? "", 10)
+    return Number.isFinite(n) && n > max ? n : max
+  }, 0)
+  return String(maxNomor + 1).padStart(3, "0")
+}
+
 const SEKOLAH_OPTIONS = [
   { npsn: "10101001", nama: "SDN 1 Banda Aceh" },
   { npsn: "10101002", nama: "SDN 2 Banda Aceh" },
@@ -84,7 +93,13 @@ const SEKOLAH_OPTIONS = [
   { npsn: "11001002", nama: "SMAN 2 Palembang" },
 ]
 
-const UNSUR_OPTIONS = ["Siswa", "Guru", "Tenaga Kependidikan", "Kepala Sekolah", "Warga Sekolah", "Lainnya"]
+const UNSUR_OPTIONS = [
+  "Murid TKA", "Murid TKB",
+  "Murid K1", "Murid K2", "Murid K3", "Murid K4", "Murid K5", "Murid K6",
+  "Murid K7", "Murid K8", "Murid K9", "Murid K10", "Murid K11", "Murid K12", "Murid K13",
+  "Pesdik Nonformal",
+  "Guru", "Tenaga Kependidikan", "Kepala Sekolah", "Warga Sekolah", "Lainnya",
+]
 
 const PROVINSI_OPTIONS = [
   "Aceh", "Sumatera Utara", "Sumatera Barat", "Riau", "Kepulauan Riau",
@@ -296,15 +311,37 @@ function TextInput({ value }: { value: string }) {
   )
 }
 
-function SectionCard({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
+function SectionCard({ icon, title, right, children }: { icon: React.ReactNode; title: string; right?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
       <div className="flex items-center gap-2.5 px-5 py-4 bg-gray-50 border-b border-gray-200 rounded-t-xl">
         <span className="text-gray-900 flex-shrink-0">{icon}</span>
-        <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
+        <h3 className="text-sm font-semibold text-gray-900 flex-1">{title}</h3>
+        {right}
       </div>
       <div className="p-5">{children}</div>
     </div>
+  )
+}
+
+function NomorKasusBadge({ nomorKasus }: { nomorKasus: string }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(nomorKasus)
+          setCopied(true)
+          setTimeout(() => setCopied(false), 1500)
+        } catch {}
+      }}
+      title="Salin nomor kasus"
+      className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 transition"
+    >
+      <span>No. Kasus: {nomorKasus}</span>
+      {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5 text-gray-400" />}
+    </button>
   )
 }
 
@@ -373,6 +410,17 @@ function TambahPelanggaranInner() {
   const isView = !!viewId
 
   const [role, setRole] = useState("")
+  const [previewNomorKasus, setPreviewNomorKasus] = useState("")
+
+  useEffect(() => {
+    if (!createMode) return
+    try {
+      const stored = JSON.parse(localStorage.getItem("pelanggaranList") ?? "[]") as PelanggaranItem[]
+      setPreviewNomorKasus(generateNomorKasus(stored))
+    } catch {
+      setPreviewNomorKasus("001")
+    }
+  }, [createMode])
 
   // View mode state
   const [item, setItem] = useState<(PelanggaranItem & { logStatus?: { status: StatusPelanggaran; keterangan: string; waktu: string }[] }) | null>(null)
@@ -591,6 +639,7 @@ function TambahPelanggaranInner() {
           npsnSekolah: cleanedSekolah.map((x) => x.npsn),
           tanggalTerjadi: firstTanggal,
           id: `pg-${Date.now()}`,
+          nomorKasus: generateNomorKasus(stored),
           createdAt: now,
           updatedAt: now,
           dibuatOleh,
@@ -724,7 +773,7 @@ function TambahPelanggaranInner() {
         </div>
 
         <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-          <SectionCard icon={<AlertTriangle className="w-4 h-4" />} title="Informasi Pelanggaran">
+          <SectionCard icon={<AlertTriangle className="w-4 h-4" />} title="Informasi Pelanggaran" right={(item as any).nomorKasus ? <NomorKasusBadge nomorKasus={(item as any).nomorKasus} /> : null}>
             <div className="grid grid-cols-1 gap-4">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Sekolah Terlibat</p>
               <div className="flex flex-col gap-1.5">
@@ -1105,7 +1154,10 @@ function TambahPelanggaranInner() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-        <SectionCard icon={<AlertTriangle className="w-4 h-4" />} title="Informasi Pelanggaran">
+        <SectionCard icon={<AlertTriangle className="w-4 h-4" />} title="Informasi Pelanggaran" right={(() => {
+          const nomorKasus = createMode ? previewNomorKasus : (item as any)?.nomorKasus
+          return nomorKasus ? <NomorKasusBadge nomorKasus={nomorKasus} /> : null
+        })()}>
           <div className="grid grid-cols-1 gap-4">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Sekolah Terlibat</p>
             <div className="flex flex-col gap-1.5">
