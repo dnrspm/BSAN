@@ -1754,7 +1754,7 @@ function TambahPelanggaranInner() {
               <textarea
                 value={form.motif}
                 onChange={(e) => setForm((prev) => ({ ...prev, motif: e.target.value }))}
-                placeholder='Tuliskan motif atau alasan di balik kejadian (misalnya perselisihan, candaan, diskriminasi, senioritas, balas dendam, atau lainnya) jika sudah diketahui. Jika belum diketahui, tuliskan "Belum diketahui".'
+                placeholder="Jika sudah diketahui, tulis motif atau alasan pelanggaran (contoh: perselisihan, candaan, diskriminasi, senioritas, balas dendam, dll.). Jika belum, mohon tulis “Belum diketahui”."
                 rows={4}
                 className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
               />
@@ -1959,7 +1959,7 @@ function TambahPelanggaranInner() {
               <textarea
                 value={form.tindakLanjut}
                 onChange={(e) => setForm((prev) => ({ ...prev, tindakLanjut: e.target.value }))}
-                placeholder="Jelaskan apa saja tindakan awal yang sudah dilakukan, misalnya korban telah diamankan, orang tua telah dihubungi, kepala sekolah telah diberi tahu, atau telah dilakukan mediasi."
+                placeholder="Jelaskan tindakan penanganan awal yang sudah dilakukan. Contoh: korban telah diamankan, orang tua telah dihubungi, kepala sekolah telah diinformasikan, atau telah dilakukan mediasi."
                 rows={3}
                 className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
               />
@@ -1967,7 +1967,7 @@ function TambahPelanggaranInner() {
 
             <div className="flex flex-col gap-1.5">
         <FieldLabel>Tautan Dokumentasi <span className="text-gray-400">(opsional)</span></FieldLabel>
-              <p className="text-xs text-gray-400">Silakan menyiapkan tautan penyimpanan awan (Google Drive, OneDrive, atau lainnya) yang bisa diakses terbatas (harus request access untuk mengakses) yang dapat berisi Foto, Video, Dokumen, Screenshot, Audio.</p>
+              <p className="text-xs text-gray-400">Gunakan cloud storage seperti Google Drive, OneDrive, dll. dengan akses terbatas (dapat dibuka jika melakukan pengajuan akses) untuk mengunggah foto, video, dokumen, tangkapan layar, atau audio. Salin dan masukkan tautannya di kolom ini</p>
             <input
               type="url"
               value={form.dokumentasi ?? ""}
