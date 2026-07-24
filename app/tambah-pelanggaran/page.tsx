@@ -98,8 +98,10 @@ const UNSUR_OPTIONS = [
   "Murid K1", "Murid K2", "Murid K3", "Murid K4", "Murid K5", "Murid K6",
   "Murid K7", "Murid K8", "Murid K9", "Murid K10", "Murid K11", "Murid K12", "Murid K13",
   "Pesdik Nonformal",
-  "Guru", "Tenaga Kependidikan", "Kepala Sekolah", "Warga Sekolah", "Lainnya",
+  "Guru", "Tenaga Kependidikan", "Kepala Sekolah", "Warga Sekolah",
 ]
+  .sort((a, b) => a.localeCompare(b, "id", { numeric: true }))
+  .concat("Lainnya")
 
 const PROVINSI_OPTIONS = [
   "Aceh", "Sumatera Utara", "Sumatera Barat", "Riau", "Kepulauan Riau",

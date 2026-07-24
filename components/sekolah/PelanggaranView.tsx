@@ -55,6 +55,7 @@ interface UnsurItem {
 
 interface PelanggaranItem {
   id: string
+  nomorKasus?: string
   namaSekolah: string[]
   npsnSekolah?: string[]
   unsurTerlibat: UnsurItem[]
@@ -1481,9 +1482,10 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
 
   const downloadCsv = () => {
     const rows = [
-      ["Nama Sekolah", "Unsur Terlibat", "Tanggal", "Kategori", "Tingkat Urgensi", "Pelapor", "PIC", "Status", "Detail Kasus", "Tindak Lanjut", "Dibuat"].join(","),
+      ["No. Kasus", "Nama Sekolah", "Unsur Terlibat", "Tanggal", "Kategori", "Tingkat Urgensi", "Pelapor", "PIC", "Status", "Detail Kasus", "Tindak Lanjut", "Dibuat"].join(","),
       ...filtered.map((item) =>
         [
+          `"${item.nomorKasus ?? ""}"`,
           `"${(Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah]).join("; ")}"`,
           `"${(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u) => `(${u.peran === "lainnya" ? (u.peranLainnya || "lainnya") : u.peran}) ${getAsalGroups(u).map((ag) => `${ag.asalSekolah === "lainnya" ? ag.asalLainnya : ag.asalSekolah}: ${ag.individu.map((ind) => `${ind.nama}${ind.umur ? `(${ind.umur})` : ""}`).join(", ")}`).join(" | ")}`).join("; ")}"`,
           `"${item.tanggalTerjadi}"`,
@@ -1663,6 +1665,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
               <table className="w-full text-sm min-w-[640px]">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200 text-left">
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">No. Kasus</th>
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Nama Sekolah</th>
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Unsur Terlibat</th>
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Tanggal</th>
@@ -1677,19 +1680,25 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
                   {paginatedData.map((item) => (
                     <tr key={item.id} className={`hover:bg-gray-50 transition-colors ${item.tingkatKeparahan === "sangat_urgen" ? "border-l-4 border-l-red-500" : ""}`}>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
+                        {item.nomorKasus || <span className="text-gray-400">-</span>}
+                      </td>
+                      <td className="px-4 py-3.5 text-sm text-gray-800">
                         {item.namaSekolah.join(", ")}
                       </td>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
                         <div className="flex flex-wrap gap-1">
-                          {(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u, i) => {
-                            const total = getAsalGroups(u).reduce((sum, ag) => sum + ag.individu.length, 0)
-                            const label = u.peran === "pelaku" ? "Pelaku" : u.peran === "korban" ? "Korban" : u.peran === "saksi" ? "Saksi" : u.peran === "lainnya" ? (u.peranLainnya || "Lainnya") : u.peran || "-"
-                            return (
+                          {(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : [])
+                            .map((u) => {
+                              const total = getAsalGroups(u).reduce((sum, ag) => sum + ag.individu.length, 0)
+                              const label = u.peran === "pelaku" ? "Pelaku" : u.peran === "korban" ? "Korban" : u.peran === "saksi" ? "Saksi" : u.peran === "lainnya" ? (u.peranLainnya || "Lainnya") : u.peran || "-"
+                              return { label, total }
+                            })
+                            .sort((a, b) => a.label.localeCompare(b.label, "id"))
+                            .map((u, i) => (
                               <span key={i} className="inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600">
-                                {label}{total > 0 && <span className="opacity-60">({total})</span>}
+                                {u.label}{u.total > 0 && <span className="opacity-60">({u.total})</span>}
                               </span>
-                            )
-                          })}
+                            ))}
                         </div>
                       </td>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
