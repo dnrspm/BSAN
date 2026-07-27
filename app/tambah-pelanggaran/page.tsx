@@ -581,7 +581,8 @@ function TambahPelanggaranInner() {
     form.kategori &&
     form.kategori !== "Lainnya" &&
     form.tingkatKeparahan &&
-    form.pelapor
+    form.pelapor &&
+    (role !== "pusat" || (!!form.wilayah && !!form.kabupatenKota?.trim() && !!form.pic))
 
   const cleanUnsurTerlibat = (list: UnsurItem[]): UnsurItem[] =>
     list
@@ -1828,7 +1829,7 @@ function TambahPelanggaranInner() {
             {role === "pusat" && (
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel>Wilayah/Daerah <span className="text-gray-400">(opsional)</span></FieldLabel>
+                  <FieldLabel required>Wilayah/Daerah</FieldLabel>
                   <Select
                     value={form.wilayah ?? ""}
                     onChange={(e) => setForm((prev) => ({ ...prev, wilayah: e.target.value }))}
@@ -1841,7 +1842,7 @@ function TambahPelanggaranInner() {
                   </Select>
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel>Kabupaten/Kota <span className="text-gray-400">(opsional)</span></FieldLabel>
+                  <FieldLabel required>Kabupaten/Kota</FieldLabel>
                   <input
                     type="text"
                     value={form.kabupatenKota ?? ""}
@@ -1854,7 +1855,7 @@ function TambahPelanggaranInner() {
             )}
 
             <div className="flex flex-col gap-1.5">
-              <FieldLabel>{role === "pusat" ? "Nama Penanggung Jawab" : "Penanggung Jawab"} <span className="text-gray-400">(opsional)</span></FieldLabel>
+              <FieldLabel required={role === "pusat"}>{role === "pusat" ? "Nama Penanggung Jawab" : "Penanggung Jawab"}{role !== "pusat" && <span className="text-gray-400"> (opsional)</span>}</FieldLabel>
               {!form.pic ? (
                 picManualMode ? (
                   <div className="flex items-center gap-2 mt-1">
