@@ -6,6 +6,7 @@ import {
   ArrowLeft, AlertTriangle, Users, Calendar, FileText,
   CheckCircle, Clock, Plus, X, XCircle, ChevronDown, Trash2, MoreVertical, Copy, Check,
 } from "lucide-react"
+import { KAB_KOTA_BY_PROVINSI } from "@/data/kabKotaData"
 
 type StatusPelanggaran = "baru" | "proses" | "selesai" | "ditutup"
 type TingkatKeparahan = "urgen" | "sangat_urgen"
@@ -220,10 +221,10 @@ const PELAPOR_OPTIONS: { value: Pelapor; label: string }[] = [
 const SELECT_BASE = "w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8"
 const SELECT_SM = "h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-6"
 
-function Select({ value, onChange, className, children, id }: { value: string; onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; className?: string; children: React.ReactNode; id?: string }) {
+function Select({ value, onChange, className, children, id, disabled }: { value: string; onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; className?: string; children: React.ReactNode; id?: string; disabled?: boolean }) {
   return (
     <div className="relative w-full">
-      <select id={id} value={value} onChange={onChange} className={`w-full ${className ?? ""}`}>
+      <select id={id} value={value} onChange={onChange} disabled={disabled} className={`w-full ${className ?? ""} ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}>
         {children}
       </select>
       <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
@@ -1885,7 +1886,7 @@ function TambahPelanggaranInner() {
                   <FieldLabel required>Provinsi</FieldLabel>
                   <Select
                     value={form.wilayah ?? ""}
-                    onChange={(e) => setForm((prev) => ({ ...prev, wilayah: e.target.value }))}
+                    onChange={(e) => setForm((prev) => ({ ...prev, wilayah: e.target.value, kabupatenKota: "" }))}
                     className={`${SELECT_BASE} ${!form.wilayah ? "text-gray-400" : ""}`}
                   >
                     <option value="" disabled>Pilih provinsi</option>
@@ -1897,13 +1898,17 @@ function TambahPelanggaranInner() {
                 {form.tingkatKelompokKerja === "kabkota" && (
                   <div className="flex flex-col gap-1.5">
                     <FieldLabel required>Kabupaten/Kota</FieldLabel>
-                    <input
-                      type="text"
+                    <Select
                       value={form.kabupatenKota ?? ""}
                       onChange={(e) => setForm((prev) => ({ ...prev, kabupatenKota: e.target.value }))}
-                      placeholder="Nama kabupaten/kota"
-                      className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                    />
+                      className={`${SELECT_BASE} ${!form.kabupatenKota ? "text-gray-400" : ""}`}
+                      disabled={!form.wilayah}
+                    >
+                      <option value="" disabled>Pilih kabupaten/kota</option>
+                      {(KAB_KOTA_BY_PROVINSI[form.wilayah ?? ""] ?? []).map((k) => (
+                        <option key={k} value={k}>{k}</option>
+                      ))}
+                    </Select>
                   </div>
                 )}
               </div>
