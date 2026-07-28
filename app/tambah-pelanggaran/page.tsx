@@ -1880,7 +1880,7 @@ function TambahPelanggaranInner() {
             )}
 
             {role === "pusat" && !!form.tingkatKelompokKerja && (
-              <div className="grid grid-cols-2 gap-3">
+              <div className={`grid gap-3 ${form.tingkatKelompokKerja === "kabkota" ? "grid-cols-2" : "grid-cols-1"}`}>
                 <div className="flex flex-col gap-1.5">
                   <FieldLabel required>Provinsi</FieldLabel>
                   <Select
