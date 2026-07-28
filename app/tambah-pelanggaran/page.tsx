@@ -55,6 +55,7 @@ interface PelanggaranItem {
   kontakPelapor?: string
   tindakLanjut: string
   pic: string
+  tingkatKelompokKerja?: "" | "provinsi" | "kabkota"
   wilayah?: string
   kabupatenKota?: string
   dokumentasi: string
@@ -133,7 +134,8 @@ const EDIT_FIELD_LABELS: Record<string, string> = {
   pelaporLainnya: "Pelapor Lainnya",
   kontakPelapor: "Kontak Pelapor",
   pic: "Penanggung Jawab",
-  wilayah: "Wilayah",
+  tingkatKelompokKerja: "Kewenangan",
+  wilayah: "Provinsi",
   kabupatenKota: "Kabupaten/Kota",
   tindakLanjut: "Tindak Lanjut",
   dokumentasi: "Dokumentasi",
@@ -145,6 +147,9 @@ const EDIT_FIELD_LABELS: Record<string, string> = {
 
 function formatEditFieldValue(key: string, value: unknown): string {
   if (value === null || value === undefined || value === "") return "-"
+  if (key === "tingkatKelompokKerja") {
+    return value === "provinsi" ? "Kelompok Kerja Provinsi" : value === "kabkota" ? "Kelompok Kerja Kab/Kota" : "-"
+  }
   if (key === "kronologi" && Array.isArray(value)) {
     if (value.length === 0) return "-"
     return value
@@ -196,6 +201,11 @@ const TINGKAT_KEPARAHAN: { value: TingkatKeparahan; label: string; color: string
 const TINGKAT_URGENSI_SEGMENTS: { value: TingkatKeparahan; label: string; desc: string; selected: string; selectedDesc: string }[] = [
   { value: "urgen", label: "Mendesak", desc: "Perlu respons ≤ 3 hari", selected: "border-amber-600 bg-amber-50 text-amber-600", selectedDesc: "text-amber-600" },
   { value: "sangat_urgen", label: "Sangat Mendesak", desc: "Ada risiko keselamatan", selected: "border-red-600 bg-red-50 text-red-600", selectedDesc: "text-red-600" },
+]
+
+const KEWENANGAN_CHIPS: { value: "provinsi" | "kabkota"; label: string; selected: string }[] = [
+  { value: "provinsi", label: "Kelompok Kerja Provinsi", selected: "border-blue-600 bg-blue-50 text-blue-600" },
+  { value: "kabkota", label: "Kelompok Kerja Kab/Kota", selected: "border-blue-600 bg-blue-50 text-blue-600" },
 ]
 
 const PELAPOR_OPTIONS: { value: Pelapor; label: string }[] = [
@@ -389,6 +399,7 @@ function emptyForm() {
     pelaporLainnya: "",
     kontakPelapor: "",
     pic: "",
+    tingkatKelompokKerja: "" as "" | "provinsi" | "kabkota",
     wilayah: "",
     kabupatenKota: "",
     tindakLanjut: "",
@@ -497,6 +508,8 @@ function TambahPelanggaranInner() {
             pelaporLainnya: normalized.pelaporLainnya ?? "",
             kontakPelapor: (normalized as any).kontakPelapor ?? "",
             pic: normalized.pic ?? "",
+            tingkatKelompokKerja: (normalized as any).tingkatKelompokKerja
+              ?? ((normalized as any).kabupatenKota ? "kabkota" : (normalized as any).wilayah ? "provinsi" : ""),
             wilayah: (normalized as any).wilayah ?? "",
             kabupatenKota: (normalized as any).kabupatenKota ?? "",
             tindakLanjut: normalized.tindakLanjut ?? "",
@@ -582,7 +595,12 @@ function TambahPelanggaranInner() {
     form.kategori !== "Lainnya" &&
     form.tingkatKeparahan &&
     form.pelapor &&
-    (role !== "pusat" || (!!form.wilayah && !!form.kabupatenKota?.trim() && !!form.pic))
+    (role !== "pusat" || (
+      !!form.tingkatKelompokKerja &&
+      !!form.wilayah &&
+      (form.tingkatKelompokKerja === "provinsi" || !!form.kabupatenKota?.trim()) &&
+      !!form.pic
+    ))
 
   const cleanUnsurTerlibat = (list: UnsurItem[]): UnsurItem[] =>
     list
@@ -978,10 +996,16 @@ function TambahPelanggaranInner() {
                 <>
                   <hr className="border-gray-300 -mx-5 my-2" />
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Kelompok Kerja Penanggung Jawab</p>
+                  {(item as any).tingkatKelompokKerja && (
+                    <div className="flex flex-col gap-1.5">
+                      <FieldLabel>Kewenangan</FieldLabel>
+                      <TextInput value={(item as any).tingkatKelompokKerja === "provinsi" ? "Kelompok Kerja Provinsi" : "Kelompok Kerja Kab/Kota"} />
+                    </div>
+                  )}
                   <div className="grid grid-cols-2 gap-3">
                     {(item as any).wilayah && (
                       <div className="flex flex-col gap-1.5">
-                        <FieldLabel>Wilayah/Daerah</FieldLabel>
+                        <FieldLabel>Provinsi</FieldLabel>
                         <TextInput value={(item as any).wilayah} />
                       </div>
                     )}
@@ -1827,9 +1851,38 @@ function TambahPelanggaranInner() {
             )}
 
             {role === "pusat" && (
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel required>Kewenangan</FieldLabel>
+                <div className="flex flex-wrap gap-1.5 mt-1">
+                  {KEWENANGAN_CHIPS.map((opt) => {
+                    const isSelected = form.tingkatKelompokKerja === opt.value
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() =>
+                          setForm((prev) => ({
+                            ...prev,
+                            tingkatKelompokKerja: opt.value,
+                            ...(opt.value === "provinsi" ? { kabupatenKota: "" } : {}),
+                          }))
+                        }
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+                          isSelected ? opt.selected : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {role === "pusat" && !!form.tingkatKelompokKerja && (
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel required>Wilayah/Daerah</FieldLabel>
+                  <FieldLabel required>Provinsi</FieldLabel>
                   <Select
                     value={form.wilayah ?? ""}
                     onChange={(e) => setForm((prev) => ({ ...prev, wilayah: e.target.value }))}
@@ -1841,19 +1894,22 @@ function TambahPelanggaranInner() {
                     ))}
                   </Select>
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <FieldLabel required>Kabupaten/Kota</FieldLabel>
-                  <input
-                    type="text"
-                    value={form.kabupatenKota ?? ""}
-                    onChange={(e) => setForm((prev) => ({ ...prev, kabupatenKota: e.target.value }))}
-                    placeholder="Nama kabupaten/kota"
-                    className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  />
-                </div>
+                {form.tingkatKelompokKerja === "kabkota" && (
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel required>Kabupaten/Kota</FieldLabel>
+                    <input
+                      type="text"
+                      value={form.kabupatenKota ?? ""}
+                      onChange={(e) => setForm((prev) => ({ ...prev, kabupatenKota: e.target.value }))}
+                      placeholder="Nama kabupaten/kota"
+                      className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    />
+                  </div>
+                )}
               </div>
             )}
 
+            {(role !== "pusat" || !!form.tingkatKelompokKerja) && (
             <div className="flex flex-col gap-1.5">
               <FieldLabel required={role === "pusat"}>{role === "pusat" ? "Nama Penanggung Jawab" : "Penanggung Jawab"}{role !== "pusat" && <span className="text-gray-400"> (opsional)</span>}</FieldLabel>
               {!form.pic ? (
@@ -1932,6 +1988,7 @@ function TambahPelanggaranInner() {
                 </div>
               )}
             </div>
+            )}
           </div>
         </SectionCard>
 
