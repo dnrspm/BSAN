@@ -94,6 +94,27 @@ const SEKOLAH_OPTIONS = [
   "SMAN 2 Palembang",
 ]
 
+const NPSN_BY_SEKOLAH: Record<string, string> = {
+  "SDN 1 Banda Aceh": "10101001",
+  "SDN 2 Banda Aceh": "10101002",
+  "SMPN 1 Banda Aceh": "10101003",
+  "SMAN 1 Banda Aceh": "10101004",
+  "SMKN 1 Banda Aceh": "10101005",
+  "SDN 1 Medan": "10201001",
+  "SMPN 2 Jakarta Pusat": "10301002",
+  "SMAN 3 Surabaya": "10401003",
+  "SDN 4 Bandung": "10501004",
+  "SMPN 5 Yogyakarta": "10601005",
+  "SMKN 2 Semarang": "10701002",
+  "SDN 1 Denpasar": "10801001",
+  "SMPN 3 Makassar": "10901003",
+  "SMAN 2 Palembang": "11001002",
+}
+
+function getNpsn(item: { namaSekolah: string[]; npsnSekolah?: string[] }, index: number) {
+  return item.npsnSekolah?.[index]?.trim() || NPSN_BY_SEKOLAH[item.namaSekolah[index]] || ""
+}
+
 function getSekolahColors(name: string) {
   const lower = name.toLowerCase()
   if (lower.startsWith("sdn") || lower.startsWith("sd ")) return { bg: "bg-amber-500/10", text: "text-amber-700" }
@@ -240,15 +261,18 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
               <span className="text-xs font-medium text-gray-500">Nama Sekolah</span>
             </div>
             <div className="ml-6 flex flex-wrap gap-1.5">
-              {item.namaSekolah.map((s, i) => (
-                <span key={i} className="inline-flex items-center gap-1 text-sm font-semibold text-gray-900 bg-gray-50 px-2 py-0.5 rounded border border-gray-200">
-                  <GraduationCap className="w-3 h-3 text-gray-400" />
-                  {s}
-                  {item.npsnSekolah?.[i] && (
-                    <span className="text-xs text-gray-400 font-normal ml-1">NPSN {item.npsnSekolah[i]}</span>
-                  )}
-                </span>
-              ))}
+              {item.namaSekolah.map((s, i) => {
+                const npsn = getNpsn(item, i)
+                return (
+                  <span key={i} className="inline-flex items-center gap-1 text-sm font-semibold text-gray-900 bg-gray-50 px-2 py-0.5 rounded border border-gray-200">
+                    <GraduationCap className="w-3 h-3 text-gray-400" />
+                    {s}
+                    {npsn && (
+                      <span className="text-xs text-gray-400 font-normal ml-1">(NPSN {npsn})</span>
+                    )}
+                  </span>
+                )
+              })}
             </div>
           </div>
 
@@ -1383,9 +1407,11 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
     return list
       .filter((item) => {
         const sekolahList = Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah]
+        const npsnList = sekolahList.map((_, i) => getNpsn({ namaSekolah: sekolahList, npsnSekolah: item.npsnSekolah }, i))
         const matchSearch =
           search.trim() === "" ||
           sekolahList.some((s) => s.toLowerCase().includes(search.toLowerCase())) ||
+          npsnList.some((n) => n.includes(search.trim())) ||
           item.kategori.toLowerCase().includes(search.toLowerCase())
         const matchStatus = filterStatus === "semua" || item.status === filterStatus
         const matchKategori = filterKategori === "semua" || item.kategori === filterKategori
@@ -1598,7 +1624,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari sekolah"
+            placeholder="Cari sekolah atau NPSN"
             className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
           />
         </div>
@@ -1683,7 +1709,19 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
                         {item.nomorKasus || <span className="text-gray-400">-</span>}
                       </td>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
-                        {item.namaSekolah.join(", ")}
+                        <div className="flex flex-col gap-0.5">
+                          {item.namaSekolah.map((s, i) => {
+                            const npsn = getNpsn(item, i)
+                            return (
+                              <span key={`${s}-${i}`}>
+                                {s}
+                                {npsn && (
+                                  <span className="text-xs text-gray-400 font-normal ml-1">(NPSN {npsn})</span>
+                                )}
+                              </span>
+                            )
+                          })}
+                        </div>
                       </td>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
                         <div className="flex flex-wrap gap-1">

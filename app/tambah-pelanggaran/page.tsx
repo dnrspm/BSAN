@@ -424,17 +424,6 @@ function TambahPelanggaranInner() {
   const isView = !!viewId
 
   const [role, setRole] = useState("")
-  const [previewNomorKasus, setPreviewNomorKasus] = useState("")
-
-  useEffect(() => {
-    if (!createMode) return
-    try {
-      const stored = JSON.parse(localStorage.getItem("pelanggaranList") ?? "[]") as PelanggaranItem[]
-      setPreviewNomorKasus(generateNomorKasus(stored))
-    } catch {
-      setPreviewNomorKasus("001")
-    }
-  }, [createMode])
 
   // View mode state
   const [item, setItem] = useState<(PelanggaranItem & { logStatus?: { status: StatusPelanggaran; keterangan: string; waktu: string }[] }) | null>(null)
@@ -588,6 +577,8 @@ function TambahPelanggaranInner() {
     }))
   }
 
+  const isAdminWilayah = role === "pusat" || role === "dinas"
+
   const canSubmit =
     form.namaSekolah.some((s) => s.trim()) &&
     form.unsurTerlibat.some((u) => u.peran && u.asalGroups.some((ag) => parseInt(ag.jumlah) > 0 && ag.individu.some((ind) => ind.nama))) &&
@@ -596,6 +587,7 @@ function TambahPelanggaranInner() {
     form.kategori !== "Lainnya" &&
     form.tingkatKeparahan &&
     form.pelapor &&
+    (!isAdminWilayah || !!form.pic) &&
     (role !== "pusat" || (
       !!form.tingkatKelompokKerja &&
       !!form.wilayah &&
@@ -1182,10 +1174,7 @@ function TambahPelanggaranInner() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-        <SectionCard icon={<AlertTriangle className="w-4 h-4" />} title="Informasi Pelanggaran" right={(() => {
-          const nomorKasus = createMode ? previewNomorKasus : (item as any)?.nomorKasus
-          return nomorKasus ? <NomorKasusBadge nomorKasus={nomorKasus} /> : null
-        })()}>
+        <SectionCard icon={<AlertTriangle className="w-4 h-4" />} title="Informasi Pelanggaran" right={(item as any)?.nomorKasus ? <NomorKasusBadge nomorKasus={(item as any).nomorKasus} /> : null}>
           <div className="grid grid-cols-1 gap-4">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Sekolah Terlibat</p>
             <div className="flex flex-col gap-1.5">
@@ -1916,7 +1905,7 @@ function TambahPelanggaranInner() {
 
             {(role !== "pusat" || !!form.tingkatKelompokKerja) && (
             <div className="flex flex-col gap-1.5">
-              <FieldLabel required={role === "pusat"}>{role === "pusat" ? "Nama Penanggung Jawab" : "Penanggung Jawab"}{role !== "pusat" && <span className="text-gray-400"> (opsional)</span>}</FieldLabel>
+              <FieldLabel required={isAdminWilayah}>{role === "pusat" ? "Nama Penanggung Jawab" : "Penanggung Jawab"}{!isAdminWilayah && <span className="text-gray-400"> (opsional)</span>}</FieldLabel>
               {!form.pic ? (
                 picManualMode ? (
                   <div className="flex items-center gap-2 mt-1">
