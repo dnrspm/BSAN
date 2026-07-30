@@ -579,21 +579,25 @@ function TambahPelanggaranInner() {
 
   const isAdminWilayah = role === "pusat" || role === "dinas"
 
-  const canSubmit =
-    form.namaSekolah.some((s) => s.trim()) &&
-    form.unsurTerlibat.some((u) => u.peran && u.asalGroups.some((ag) => parseInt(ag.jumlah) > 0 && ag.individu.some((ind) => ind.nama))) &&
-    form.kronologi.some((e) => e.tanggal) &&
-    form.kategori &&
-    form.kategori !== "Lainnya" &&
-    form.tingkatKeparahan &&
-    form.pelapor &&
-    (!isAdminWilayah || !!form.pic) &&
-    (role !== "pusat" || (
-      !!form.tingkatKelompokKerja &&
-      !!form.wilayah &&
-      (form.tingkatKelompokKerja === "provinsi" || !!form.kabupatenKota?.trim()) &&
-      !!form.pic
-    ))
+  const missingFields = (() => {
+    const missing: string[] = []
+    if (!form.namaSekolah.some((s) => s.trim())) missing.push("Nama Sekolah")
+    if (!form.unsurTerlibat.some((u) => u.peran && u.asalGroups.some((ag) => parseInt(ag.jumlah) > 0 && ag.individu.some((ind) => ind.nama))))
+      missing.push("Unsur Terlibat (peran, jumlah, dan nama individu)")
+    if (!form.kronologi.some((e) => e.tanggal)) missing.push("Tanggal pada Kronologi")
+    if (!form.kategori || form.kategori === "Lainnya") missing.push("Kategori Pelanggaran")
+    if (!form.tingkatKeparahan) missing.push("Tingkat Urgensi")
+    if (!form.pelapor) missing.push("Pelapor")
+    if (role === "pusat") {
+      if (!form.tingkatKelompokKerja) missing.push("Kewenangan Kelompok Kerja")
+      if (!form.wilayah) missing.push("Provinsi")
+      if (!!form.tingkatKelompokKerja && form.tingkatKelompokKerja !== "provinsi" && !form.kabupatenKota?.trim()) missing.push("Kabupaten/Kota")
+    }
+    if (isAdminWilayah && !form.pic) missing.push("Penanggung Jawab")
+    return missing
+  })()
+
+  const canSubmit = missingFields.length === 0
 
   const cleanUnsurTerlibat = (list: UnsurItem[]): UnsurItem[] =>
     list
@@ -2034,6 +2038,19 @@ function TambahPelanggaranInner() {
         </SectionCard>
         )}
       </div>
+
+      {!canSubmit && (
+        <div className="max-w-2xl mx-auto px-4 pb-3">
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
+            <p className="text-xs font-semibold text-amber-800">Lengkapi dulu bagian berikut:</p>
+            <ul className="mt-1 list-disc pl-4 text-xs text-amber-700 space-y-0.5">
+              {missingFields.map((f) => (
+                <li key={f}>{f}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-2xl mx-auto px-4 pb-8 flex gap-3">
         <a
