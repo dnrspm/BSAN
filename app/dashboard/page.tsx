@@ -17,6 +17,7 @@ import { DaftarPengajuanView } from "@/components/pusat/DaftarPengajuanView"
 import { DetailPengajuan } from "@/components/pusat/DetailPengajuan"
 import { ValidatePokjaDrawer } from "@/components/pusat/ValidatePokjaDrawer"
 import { LaporanAkhirTahunPusatView } from "@/components/pusat/LaporanAkhirTahunPusatView"
+import { ManajemenPenggunaView } from "@/components/pusat/ManajemenPenggunaView"
 
 import { SekolahDashboard } from "@/components/sekolah/SekolahDashboard"
 import { PelanggaranView } from "@/components/sekolah/PelanggaranView"
@@ -204,7 +205,7 @@ function DashboardPageInner() {
   // Handle ?menu= URL param for pusat
   useEffect(() => {
     const menuParam = searchParams.get("menu") as PusatMenu | null
-    if (menuParam === "pelanggaran") {
+    if (menuParam === "pelanggaran" || menuParam === "pengguna") {
       setPusatMenu(menuParam)
     }
   }, [searchParams])
@@ -565,6 +566,7 @@ function DashboardPageInner() {
               {pusatMenu === "k" && < KegiatanView />}
               {pusatMenu === "pelanggaran" && <PelanggaranView editId={searchParams.get("edit") ?? undefined} />}
               {pusatMenu === "laporan-akhir-tahun" && <LaporanAkhirTahunPusatView />}
+              {pusatMenu === "pengguna" && <ManajemenPenggunaView />}
             </main>
           </div>
           {selectedPengajuan && (
