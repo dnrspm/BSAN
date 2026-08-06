@@ -218,7 +218,9 @@ const PELAPOR_OPTIONS: { value: Pelapor; label: string }[] = [
   { value: "lainnya", label: "Lainnya" },
 ]
 
-const SELECT_BASE = "w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8"
+const SELECT_BASE = "w-full h-9 px-3 mt-1 text-sm border rounded-lg focus:outline-none focus:ring-2 bg-white appearance-none pr-8 border-gray-300 focus:ring-blue-500"
+/** Kelas dasar select tanpa warna border, dipakai saat field bertanda error. */
+const SELECT_BASE_ERROR = "w-full h-9 px-3 mt-1 text-sm border rounded-lg focus:outline-none focus:ring-2 bg-white appearance-none pr-8 border-red-400 focus:ring-red-400"
 const SELECT_SM = "h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-6"
 
 function Select({ value, onChange, className, children, id, disabled }: { value: string; onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; className?: string; children: React.ReactNode; id?: string; disabled?: boolean }) {
@@ -292,6 +294,12 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
       {required && <span className="text-red-500 ml-0.5">*</span>}
     </label>
   )
+}
+
+/** Pesan error di bawah field wajib yang belum diisi. */
+function HelperWajib({ show }: { show: boolean }) {
+  if (!show) return null
+  return <p className="text-xs text-red-600 mt-1">Wajib diisi</p>
 }
 
 function isLikelyUrl(value: string): boolean {
@@ -439,6 +447,8 @@ function TambahPelanggaranInner() {
   const [picInput, setPicInput] = useState("")
   const [showPicDropdown, setShowPicDropdown] = useState(false)
   const [picManualMode, setPicManualMode] = useState(false)
+  /** Tanda merah pada field wajib baru muncul setelah tombol kirim ditekan. */
+  const [showErrors, setShowErrors] = useState(false)
   const [asalSekolahQuery, setAsalSekolahQuery] = useState<Record<number, string>>({})
   const [openAsalSekolahIdx, setOpenAsalSekolahIdx] = useState<number | null>(null)
   const [submitted, setSubmitted] = useState(false)
@@ -579,25 +589,25 @@ function TambahPelanggaranInner() {
 
   const isAdminWilayah = role === "pusat" || role === "dinas"
 
-  const missingFields = (() => {
-    const missing: string[] = []
-    if (!form.namaSekolah.some((s) => s.trim())) missing.push("Nama Sekolah")
-    if (!form.unsurTerlibat.some((u) => u.peran && u.asalGroups.some((ag) => parseInt(ag.jumlah) > 0 && ag.individu.some((ind) => ind.nama))))
-      missing.push("Unsur Terlibat (peran, jumlah, dan nama individu)")
-    if (!form.kronologi.some((e) => e.tanggal)) missing.push("Tanggal pada Kronologi")
-    if (!form.kategori || form.kategori === "Lainnya") missing.push("Kategori Pelanggaran")
-    if (!form.tingkatKeparahan) missing.push("Tingkat Urgensi")
-    if (!form.pelapor) missing.push("Pelapor")
-    if (role === "pusat") {
-      if (!form.tingkatKelompokKerja) missing.push("Kewenangan Kelompok Kerja")
-      if (!form.wilayah) missing.push("Provinsi")
-      if (!!form.tingkatKelompokKerja && form.tingkatKelompokKerja !== "provinsi" && !form.kabupatenKota?.trim()) missing.push("Kabupaten/Kota")
-    }
-    if (isAdminWilayah && !form.pic) missing.push("Penanggung Jawab")
-    return missing
-  })()
+  /** Field wajib yang masih kosong; dipakai untuk menandai input saat submit. */
+  const wajibKosong = {
+    namaSekolah: !form.namaSekolah.some((s) => s.trim()),
+    unsurTerlibat: !form.unsurTerlibat.some((u) => u.peran && u.asalGroups.some((ag) => parseInt(ag.jumlah) > 0 && ag.individu.some((ind) => ind.nama))),
+    kronologiTanggal: !form.kronologi.some((e) => e.tanggal),
+    kategori: !form.kategori || form.kategori === "Lainnya",
+    tingkatKeparahan: !form.tingkatKeparahan,
+    pelapor: !form.pelapor,
+    tingkatKelompokKerja: role === "pusat" && !form.tingkatKelompokKerja,
+    wilayah: role === "pusat" && !form.wilayah,
+    kabupatenKota:
+      role === "pusat" && !!form.tingkatKelompokKerja && form.tingkatKelompokKerja !== "provinsi" && !form.kabupatenKota?.trim(),
+    pic: isAdminWilayah && !form.pic,
+  }
 
-  const canSubmit = missingFields.length === 0
+  const adaWajibKosong = Object.values(wajibKosong).some(Boolean)
+
+  /** Error baru ditampilkan setelah pengguna menekan tombol kirim. */
+  const err = (key: keyof typeof wajibKosong) => showErrors && wajibKosong[key]
 
   const cleanUnsurTerlibat = (list: UnsurItem[]): UnsurItem[] =>
     list
@@ -606,7 +616,14 @@ function TambahPelanggaranInner() {
       .filter((u) => u.asalGroups.length > 0)
 
   const handleSubmit = () => {
-    if (!canSubmit) return
+    if (adaWajibKosong) {
+      setShowErrors(true)
+      // Bawa pengguna ke field bermasalah yang pertama.
+      requestAnimationFrame(() => {
+        document.querySelector("[data-error-wajib='1']")?.scrollIntoView({ behavior: "smooth", block: "center" })
+      })
+      return
+    }
     const cleanedSekolah = form.namaSekolah
       .map((s, i) => ({ nama: s.trim(), npsn: form.npsnSekolah?.[i]?.trim() || "" }))
       .filter((x) => x.nama)
@@ -1183,7 +1200,7 @@ function TambahPelanggaranInner() {
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Sekolah Terlibat</p>
             <div className="flex flex-col gap-1.5">
               <FieldLabel required>Nama Sekolah</FieldLabel>
-              <div className="relative mt-1">
+              <div className="relative mt-1" data-error-wajib={err("namaSekolah") ? "1" : undefined}>
                 <input
                   type="text"
                   value={sekolahInput}
@@ -1193,7 +1210,9 @@ function TambahPelanggaranInner() {
                   onBlur={() => setTimeout(() => setShowSekolahDropdown(false), 200)}
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSekolah(sekolahInput) } }}
                   placeholder="Ketik nama sekolah yang ingin dilaporkan"
-                  className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className={`w-full h-9 px-3 text-sm border rounded-lg focus:outline-none focus:ring-2 bg-white ${
+                    err("namaSekolah") ? "border-red-400 focus:ring-red-400" : "border-gray-300 focus:ring-blue-500"
+                  }`}
                 />
                 {showSekolahDropdown && filteredSekolahOptions.length > 0 && (
                   <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
@@ -1211,6 +1230,7 @@ function TambahPelanggaranInner() {
                   </div>
                 )}
               </div>
+              <HelperWajib show={err("namaSekolah")} />
               {form.namaSekolah.length > 0 && (
                 <div className="flex flex-col gap-1.5 mt-3">
                   {form.namaSekolah.map((s, i) => (
@@ -1235,7 +1255,14 @@ function TambahPelanggaranInner() {
                   const isKategoriCustom = form.kategori !== "" && !predefinedKategori.includes(form.kategori)
                   const displayKategori = isKategoriCustom ? "Lainnya" : form.kategori
                   return (
-                    <div className="relative mt-1 border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                    <div
+                      data-error-wajib={err("kategori") ? "1" : undefined}
+                      className={`relative mt-1 border rounded-lg overflow-hidden focus-within:ring-2 ${
+                        err("kategori")
+                          ? "border-red-400 focus-within:ring-red-400"
+                          : "border-gray-300 focus-within:ring-blue-500 focus-within:border-blue-400"
+                      }`}
+                    >
                       {isKategoriCustom ? (
                         <>
                           <input
@@ -1279,6 +1306,7 @@ function TambahPelanggaranInner() {
                     </div>
                   )
                 })()}
+                <HelperWajib show={err("kategori")} />
               </div>
               <div className="flex flex-col gap-1.5">
                 <FieldLabel>Tanggal Pelaporan</FieldLabel>
@@ -1293,7 +1321,7 @@ function TambahPelanggaranInner() {
 
             <div className="flex flex-col gap-1.5">
               <FieldLabel required>Tingkat Urgensi</FieldLabel>
-              <div className="grid grid-cols-2 gap-2 mt-1">
+              <div className="grid grid-cols-2 gap-2 mt-1" data-error-wajib={err("tingkatKeparahan") ? "1" : undefined}>
                 {TINGKAT_URGENSI_SEGMENTS.map((t) => {
                   const isSelected = form.tingkatKeparahan === t.value
                   return (
@@ -1302,7 +1330,11 @@ function TambahPelanggaranInner() {
                       type="button"
                       onClick={() => setForm((prev) => ({ ...prev, tingkatKeparahan: t.value }))}
                       className={`px-2 py-2.5 rounded-lg border text-center text-[13px] font-semibold transition-colors ${
-                        isSelected ? t.selected : "border-gray-300 bg-white text-gray-700 hover:border-gray-400"
+                        isSelected
+                          ? t.selected
+                          : err("tingkatKeparahan")
+                            ? "border-red-400 bg-white text-gray-700"
+                            : "border-gray-300 bg-white text-gray-700 hover:border-gray-400"
                       }`}
                     >
                       {t.label}
@@ -1310,6 +1342,7 @@ function TambahPelanggaranInner() {
                   )
                 })}
               </div>
+              <HelperWajib show={err("tingkatKeparahan")} />
             </div>
           </div>
         </SectionCard>
@@ -1317,6 +1350,11 @@ function TambahPelanggaranInner() {
         <SectionCard icon={<Clock className="w-4 h-4" />} title="Detail Kasus">
           <div className="flex flex-col gap-4">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Unsur yang Terlibat</p>
+            {err("unsurTerlibat") && (
+              <p className="text-xs text-red-600" data-error-wajib="1">
+                Wajib diisi — lengkapi peran, jumlah, dan nama individu minimal satu unsur
+              </p>
+            )}
             <div className="flex flex-col gap-4">
                 {(() => {
                   const customAsalTotal = form.unsurTerlibat.reduce(
@@ -1672,8 +1710,9 @@ function TambahPelanggaranInner() {
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Kronologi Kejadian</p>
             <div className="flex flex-col gap-4">
             {form.kronologi.map((entry, i) => {
+              const tanggalKosong = err("kronologiTanggal") && !entry.tanggal
               const tanggalField = (
-                <div className="flex-1">
+                <div className="flex-1" data-error-wajib={tanggalKosong ? "1" : undefined}>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Tanggal <span className="text-red-500">*</span></label>
                   <input
                     type="date"
@@ -1684,8 +1723,11 @@ function TambahPelanggaranInner() {
                       next[i] = { ...next[i], tanggal: e.target.value }
                       setForm((prev) => ({ ...prev, kronologi: next }))
                     }}
-                    className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className={`w-full h-9 px-3 text-sm border rounded-lg focus:outline-none focus:ring-2 bg-white ${
+                      tanggalKosong ? "border-red-400 focus:ring-red-400" : "border-gray-300 focus:ring-blue-500"
+                    }`}
                   />
+                  <HelperWajib show={tanggalKosong} />
                 </div>
               )
               const jamField = (
@@ -1789,7 +1831,14 @@ function TambahPelanggaranInner() {
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
                 <FieldLabel required>Pelapor / Sumber Laporan</FieldLabel>
-                <div className="relative mt-1 border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                <div
+                  data-error-wajib={err("pelapor") ? "1" : undefined}
+                  className={`relative mt-1 border rounded-lg overflow-hidden focus-within:ring-2 ${
+                    err("pelapor")
+                      ? "border-red-400 focus-within:ring-red-400"
+                      : "border-gray-300 focus-within:ring-blue-500 focus-within:border-blue-400"
+                  }`}
+                >
                   {form.pelapor === "lainnya" ? (
                     <>
                       <input
@@ -1825,6 +1874,7 @@ function TambahPelanggaranInner() {
                     </Select>
                   )}
                 </div>
+                <HelperWajib show={err("pelapor")} />
               </div>
               <div className="flex flex-col gap-1.5">
                 <FieldLabel>Kontak Pelapor <span className="text-gray-400">(opsional)</span></FieldLabel>
@@ -1847,7 +1897,7 @@ function TambahPelanggaranInner() {
             {role === "pusat" && (
               <div className="flex flex-col gap-1.5">
                 <FieldLabel required>Kewenangan</FieldLabel>
-                <div className="flex flex-wrap gap-1.5 mt-1">
+                <div className="flex flex-wrap gap-1.5 mt-1" data-error-wajib={err("tingkatKelompokKerja") ? "1" : undefined}>
                   {KEWENANGAN_CHIPS.map((opt) => {
                     const isSelected = form.tingkatKelompokKerja === opt.value
                     return (
@@ -1862,7 +1912,11 @@ function TambahPelanggaranInner() {
                           }))
                         }
                         className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-                          isSelected ? opt.selected : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
+                          isSelected
+                            ? opt.selected
+                            : err("tingkatKelompokKerja")
+                              ? "border-red-400 bg-white text-gray-600"
+                              : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
                         }`}
                       >
                         {opt.label}
@@ -1870,6 +1924,7 @@ function TambahPelanggaranInner() {
                     )
                   })}
                 </div>
+                <HelperWajib show={err("tingkatKelompokKerja")} />
               </div>
             )}
 
@@ -1880,13 +1935,15 @@ function TambahPelanggaranInner() {
                   <Select
                     value={form.wilayah ?? ""}
                     onChange={(e) => setForm((prev) => ({ ...prev, wilayah: e.target.value, kabupatenKota: "" }))}
-                    className={`${SELECT_BASE} ${!form.wilayah ? "text-gray-400" : ""}`}
+                    data-error-wajib={err("wilayah") ? "1" : undefined}
+                    className={`${err("wilayah") ? SELECT_BASE_ERROR : SELECT_BASE} ${!form.wilayah ? "text-gray-400" : ""}`}
                   >
                     <option value="" disabled>Pilih provinsi</option>
                     {PROVINSI_OPTIONS.map((p) => (
                       <option key={p} value={p}>{p}</option>
                     ))}
                   </Select>
+                  <HelperWajib show={err("wilayah")} />
                 </div>
                 {form.tingkatKelompokKerja === "kabkota" && (
                   <div className="flex flex-col gap-1.5">
@@ -1894,7 +1951,8 @@ function TambahPelanggaranInner() {
                     <Select
                       value={form.kabupatenKota ?? ""}
                       onChange={(e) => setForm((prev) => ({ ...prev, kabupatenKota: e.target.value }))}
-                      className={`${SELECT_BASE} ${!form.kabupatenKota ? "text-gray-400" : ""}`}
+                      data-error-wajib={err("kabupatenKota") ? "1" : undefined}
+                      className={`${err("kabupatenKota") ? SELECT_BASE_ERROR : SELECT_BASE} ${!form.kabupatenKota ? "text-gray-400" : ""}`}
                       disabled={!form.wilayah}
                     >
                       <option value="" disabled>Pilih kabupaten/kota</option>
@@ -1902,6 +1960,7 @@ function TambahPelanggaranInner() {
                         <option key={k} value={k}>{k}</option>
                       ))}
                     </Select>
+                    <HelperWajib show={err("kabupatenKota")} />
                   </div>
                 )}
               </div>
@@ -1939,7 +1998,7 @@ function TambahPelanggaranInner() {
                     </button>
                   </div>
                 ) : (
-                  <div className="relative mt-1">
+                  <div className="relative mt-1" data-error-wajib={err("pic") ? "1" : undefined}>
                     <input
                       type="text"
                       value={picInput}
@@ -1949,7 +2008,9 @@ function TambahPelanggaranInner() {
                       onBlur={() => setTimeout(() => setShowPicDropdown(false), 200)}
                       onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (picInput.trim()) selectPic(picInput.trim()) } }}
                       placeholder="Masukkan nama anggota Kelompok Kerja"
-                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className={`w-full h-9 px-3 text-sm border rounded-lg focus:outline-none focus:ring-2 bg-white ${
+                        err("pic") ? "border-red-400 focus:ring-red-400" : "border-gray-300 focus:ring-blue-500"
+                      }`}
                     />
                     {showPicDropdown && (picInput.trim() || filteredPicOptions.length > 0) && (
                       <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
@@ -1985,6 +2046,7 @@ function TambahPelanggaranInner() {
                   </button>
                 </div>
               )}
+              <HelperWajib show={err("pic")} />
             </div>
             )}
           </div>
@@ -2039,19 +2101,6 @@ function TambahPelanggaranInner() {
         )}
       </div>
 
-      {!canSubmit && (
-        <div className="max-w-2xl mx-auto px-4 pb-3">
-          <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
-            <p className="text-xs font-semibold text-amber-800">Lengkapi dulu bagian berikut:</p>
-            <ul className="mt-1 list-disc pl-4 text-xs text-amber-700 space-y-0.5">
-              {missingFields.map((f) => (
-                <li key={f}>{f}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
-
       <div className="max-w-2xl mx-auto px-4 pb-8 flex gap-3">
         <a
           href="/dashboard?menu=pelanggaran"
@@ -2061,8 +2110,7 @@ function TambahPelanggaranInner() {
         </a>
         <button
           onClick={handleSubmit}
-          disabled={!canSubmit}
-          className={`flex-1 py-2.5 rounded-lg font-medium text-sm transition ${canSubmit ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+          className="flex-1 py-2.5 rounded-lg font-medium text-sm transition bg-blue-600 text-white hover:bg-blue-700"
         >
           {editId ? "Simpan Perubahan" : "Kirim Laporan"}
         </button>
