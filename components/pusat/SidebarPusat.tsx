@@ -19,7 +19,7 @@ const navItems = [
   { id: "k" as PusatMenu, label: " Kegiatan", icon: CalendarDays },
   { id: "pelanggaran" as PusatMenu, label: "Pelanggaran", icon: AlertTriangle },
   { id: "laporan-akhir-tahun" as PusatMenu, label: "Laporan Akhir Tahun", icon: FileText },
-  { id: "pengguna" as PusatMenu, label: "Manajemen Pengguna", icon: UserCog },
+  { id: "pengguna" as PusatMenu, label: "Akses Pengguna", icon: UserCog },
 ]
 
 export function SidebarPusat({ activeMenu, onMenuChange }: SidebarPusatProps) {

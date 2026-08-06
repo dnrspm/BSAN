@@ -9,8 +9,6 @@ import { readAuthSession } from "@/lib/auth-session"
 export type AksesModul = "sumberDukungan" | "pelanggaran"
 export type AksesAksi = "buat" | "edit" | "hapus"
 
-export type PeranPengguna = "pusat" | "dinas" | "sekolah"
-
 export type TingkatWilayah = "provinsi" | "kabkota"
 
 export type AksesPengguna = Record<AksesModul, Record<AksesAksi, boolean>>
@@ -19,7 +17,6 @@ export interface PenggunaAkses {
   id: string
   email: string
   instansi: string
-  peran: PeranPengguna
   /** Cakupan penugasan: tingkat provinsi atau tingkat kabupaten/kota. */
   tingkatWilayah: TingkatWilayah
   provinsi: string
@@ -29,15 +26,15 @@ export interface PenggunaAkses {
   akses: AksesPengguna
   /** ISO datetime terakhir data diubah dari halaman Admin Pusat. */
   diperbaruiPada: string
-  /** Nama/akun yang melakukan perubahan terakhir. */
+  /** Email akun yang melakukan perubahan terakhir. */
   diperbaruiOleh: string
 }
 
-export const PERAN_LABEL: Record<PeranPengguna, string> = {
-  pusat: "Admin Pusat",
-  dinas: "Admin Dinas",
-  sekolah: "Admin Sekolah",
-}
+/**
+ * Whitelist ini hanya untuk admin dinas — tidak ada peran lain — jadi
+ * jabatannya tetap dan ditampilkan di bawah email.
+ */
+export const JABATAN_LABEL = "Admin Dinas Pendidikan"
 
 export const TINGKAT_LABEL: Record<TingkatWilayah, string> = {
   provinsi: "Provinsi",
@@ -60,7 +57,15 @@ export const AKSI_LIST: AksesAksi[] = ["buat", "edit", "hapus"]
 
 export const STORAGE_KEY = "penggunaAkses"
 /** Dinaikkan tiap struktur data berubah; data tersimpan versi lama dibuang. */
-export const STORAGE_VERSI = 5
+export const STORAGE_VERSI = 9
+
+/** Semua hak (buat, ubah, hapus) di kedua modul — akses penuh. */
+export function aksesPenuh(): AksesPengguna {
+  return {
+    sumberDukungan: { buat: true, edit: true, hapus: true },
+    pelanggaran: { buat: true, edit: true, hapus: true },
+  }
+}
 
 export function emptyAkses(): AksesPengguna {
   return {
@@ -69,154 +74,217 @@ export function emptyAkses(): AksesPengguna {
   }
 }
 
-type AksiTriplet = [buat: boolean, edit: boolean, hapus: boolean]
-
-function akses(sd: AksiTriplet, pl: AksiTriplet): AksesPengguna {
-  return {
-    sumberDukungan: { buat: sd[0], edit: sd[1], hapus: sd[2] },
-    pelanggaran: { buat: pl[0], edit: pl[1], hapus: pl[2] },
-  }
-}
-
 export const DEFAULT_PENGGUNA: PenggunaAkses[] = [
   {
-    id: "u1", email: "rani@puspeka.kemdikbud.go.id",
-    instansi: "Puspeka", peran: "pusat",
+    id: "u1", email: "lestari@jakarta.go.id",
+    instansi: "Dinas Pendidikan Provinsi DKI Jakarta",
     tingkatWilayah: "provinsi", provinsi: "DKI Jakarta", kabKota: "",
-    status: "aktif", akses: akses([true, true, true], [true, true, true]),
-    diperbaruiPada: "2026-01-12T09:15:00", diperbaruiOleh: "Admin Pusat",
+    status: "aktif", akses: aksesPenuh(),
+    diperbaruiPada: "2026-01-12T09:15:00", diperbaruiOleh: "rani@puspeka.kemdikbud.go.id",
   },
   {
-    id: "u2", email: "dimas@puspeka.kemdikbud.go.id",
-    instansi: "Puspeka", peran: "pusat",
-    tingkatWilayah: "provinsi", provinsi: "DKI Jakarta", kabKota: "",
-    status: "aktif", akses: akses([true, true, false], [true, true, false]),
-    diperbaruiPada: "2026-01-20T14:40:00", diperbaruiOleh: "Rani Puspitasari",
+    id: "u2", email: "rahmat@jatengprov.go.id",
+    instansi: "Dinas Pendidikan Provinsi Jawa Tengah",
+    tingkatWilayah: "provinsi", provinsi: "Jawa Tengah", kabKota: "",
+    status: "aktif", akses: aksesPenuh(),
+    diperbaruiPada: "2026-01-20T14:40:00", diperbaruiOleh: "rani@puspeka.kemdikbud.go.id",
   },
   {
     id: "u3", email: "siti@acehprov.go.id",
-    instansi: "Dinas Pendidikan Provinsi Aceh", peran: "dinas",
+    instansi: "Dinas Pendidikan Provinsi Aceh",
     tingkatWilayah: "provinsi", provinsi: "Aceh", kabKota: "",
-    status: "aktif", akses: akses([true, true, true], [true, true, false]),
-    diperbaruiPada: "2026-02-02T10:05:00", diperbaruiOleh: "Rani Puspitasari",
+    status: "aktif", akses: aksesPenuh(),
+    diperbaruiPada: "2026-02-02T10:05:00", diperbaruiOleh: "rani@puspeka.kemdikbud.go.id",
   },
   {
     id: "u4", email: "budi@jatimprov.go.id",
-    instansi: "Dinas Pendidikan Kota Surabaya", peran: "dinas",
+    instansi: "Dinas Pendidikan Kota Surabaya",
     tingkatWilayah: "kabkota", provinsi: "Jawa Timur", kabKota: "Surabaya",
-    status: "aktif", akses: akses([true, false, false], [true, true, false]),
-    diperbaruiPada: "2026-02-10T16:22:00", diperbaruiOleh: "Dimas Ardiansyah",
+    status: "aktif", akses: aksesPenuh(),
+    diperbaruiPada: "2026-02-10T16:22:00", diperbaruiOleh: "dimas@puspeka.kemdikbud.go.id",
   },
   {
-    id: "u5", email: "wati@sman1bandaaceh.sch.id",
-    instansi: "SMAN 1 Banda Aceh", peran: "sekolah",
+    id: "u5", email: "teuku@bandaacehkota.go.id",
+    instansi: "Dinas Pendidikan Kota Banda Aceh",
     tingkatWilayah: "kabkota", provinsi: "Aceh", kabKota: "Banda Aceh",
-    status: "nonaktif", akses: emptyAkses(),
-    diperbaruiPada: "2026-02-18T08:30:00", diperbaruiOleh: "Rani Puspitasari",
+    status: "aktif", akses: aksesPenuh(),
+    diperbaruiPada: "2026-02-18T08:30:00", diperbaruiOleh: "rani@puspeka.kemdikbud.go.id",
   },
   {
     id: "u6", email: "ahmad@jabarprov.go.id",
-    instansi: "Dinas Pendidikan Provinsi Jawa Barat", peran: "dinas",
+    instansi: "Dinas Pendidikan Provinsi Jawa Barat",
     tingkatWilayah: "provinsi", provinsi: "Jawa Barat", kabKota: "",
-    status: "aktif", akses: akses([true, true, false], [false, false, false]),
-    diperbaruiPada: "2026-02-24T11:45:00", diperbaruiOleh: "Dimas Ardiansyah",
+    status: "aktif", akses: aksesPenuh(),
+    diperbaruiPada: "2026-02-24T11:45:00", diperbaruiOleh: "dimas@puspeka.kemdikbud.go.id",
   },
   {
     id: "u7", email: "devi@semarangkota.go.id",
-    instansi: "Dinas Pendidikan Kota Semarang", peran: "dinas",
+    instansi: "Dinas Pendidikan Kota Semarang",
     tingkatWilayah: "kabkota", provinsi: "Jawa Tengah", kabKota: "Semarang",
-    status: "aktif", akses: akses([true, false, false], [true, false, false]),
-    diperbaruiPada: "2026-03-03T13:10:00", diperbaruiOleh: "Rani Puspitasari",
+    status: "aktif", akses: aksesPenuh(),
+    diperbaruiPada: "2026-03-03T13:10:00", diperbaruiOleh: "rani@puspeka.kemdikbud.go.id",
   },
   {
     id: "u8", email: "hadi@makassarkota.go.id",
-    instansi: "Dinas Pendidikan Kota Makassar", peran: "dinas",
+    instansi: "Dinas Pendidikan Kota Makassar",
     tingkatWilayah: "kabkota", provinsi: "Sulawesi Selatan", kabKota: "Makassar",
-    status: "aktif", akses: akses([true, true, true], [true, true, true]),
-    diperbaruiPada: "2026-03-09T09:05:00", diperbaruiOleh: "Dimas Ardiansyah",
+    status: "aktif", akses: aksesPenuh(),
+    diperbaruiPada: "2026-03-09T09:05:00", diperbaruiOleh: "dimas@puspeka.kemdikbud.go.id",
   },
   {
-    id: "u9", email: "nugroho@sman3denpasar.sch.id",
-    instansi: "SMAN 3 Denpasar", peran: "sekolah",
+    id: "u9", email: "ketut@denpasarkota.go.id",
+    instansi: "Dinas Pendidikan Kota Denpasar",
     tingkatWilayah: "kabkota", provinsi: "Bali", kabKota: "Denpasar",
-    status: "aktif", akses: akses([false, false, false], [true, false, false]),
-    diperbaruiPada: "2026-03-15T15:30:00", diperbaruiOleh: "Rani Puspitasari",
+    status: "aktif", akses: aksesPenuh(),
+    diperbaruiPada: "2026-03-15T15:30:00", diperbaruiOleh: "rani@puspeka.kemdikbud.go.id",
+  },
+  {
+    id: "u10", email: "sinta@medankota.go.id",
+    instansi: "Dinas Pendidikan Kota Medan",
+    tingkatWilayah: "kabkota", provinsi: "Sumatera Utara", kabKota: "Medan",
+    status: "aktif", akses: aksesPenuh(),
+    diperbaruiPada: "2026-03-22T09:40:00", diperbaruiOleh: "rani@puspeka.kemdikbud.go.id",
+  },
+  {
+    id: "u11", email: "agus@bandungkota.go.id",
+    instansi: "Dinas Pendidikan Kota Bandung",
+    tingkatWilayah: "kabkota", provinsi: "Jawa Barat", kabKota: "Bandung",
+    status: "aktif", akses: aksesPenuh(),
+    diperbaruiPada: "2026-03-28T14:15:00", diperbaruiOleh: "dimas@puspeka.kemdikbud.go.id",
+  },
+  {
+    id: "u12", email: "indah@jatimprov.go.id",
+    instansi: "Dinas Pendidikan Provinsi Jawa Timur",
+    tingkatWilayah: "provinsi", provinsi: "Jawa Timur", kabKota: "",
+    status: "aktif", akses: aksesPenuh(),
+    diperbaruiPada: "2026-04-02T11:20:00", diperbaruiOleh: "rani@puspeka.kemdikbud.go.id",
   },
 ]
 
 /**
- * Direktori akun yang terdaftar di tiap wilayah. Dipakai saat menambah
- * pengguna: Admin Pusat memilih wilayah dahulu, lalu memilih email dari
- * daftar ini — instansi dan peran ikut terbawa dari direktori.
+ * Direktori akun dinas. Dipakai sebagai sumber saran saat Admin Pusat
+ * mencari email di modal Beri Akses — instansi dan wilayahnya ikut
+ * terbawa dari direktori.
  */
 export interface KandidatPengguna {
   email: string
   instansi: string
-  peran: PeranPengguna
+  /** Jabatan akun, mis. "Admin Dinas Pendidikan" atau "Kepala Sekolah". */
+  jabatan: string
+  /** Hanya admin dinas yang boleh diberi akses lewat halaman ini. */
+  adminDinas: boolean
   tingkatWilayah: TingkatWilayah
   provinsi: string
   kabKota: string
 }
 
-const K = (
+/**
+ * Label jabatan lengkap dengan instansinya, mis.
+ * "Admin Dinas Pendidikan Kota Makassar" atau "Kepala Sekolah SMAN 5 Surabaya".
+ */
+export function labelJabatan(k: { instansi: string; jabatan?: string; adminDinas?: boolean }): string {
+  if (k.adminDinas !== false) return `Admin ${k.instansi}`
+  const jabatan = (k.jabatan ?? "").trim()
+  // Hindari pengulangan bila jabatan sudah menyebut instansinya.
+  if (!jabatan) return k.instansi
+  if (jabatan.toLowerCase().includes(k.instansi.toLowerCase())) return jabatan
+  return `${jabatan} ${k.instansi}`
+}
+
+/** Kandidat admin dinas — boleh dipilih. */
+const K = (email: string, instansi: string, provinsi: string, kabKota = ""): KandidatPengguna => ({
+  email, instansi, jabatan: JABATAN_LABEL, adminDinas: true,
+  tingkatWilayah: kabKota ? "kabkota" : "provinsi",
+  provinsi, kabKota,
+})
+
+/** Akun non-dinas — muncul di pencarian tetapi tidak bisa dipilih. */
+const KL = (
   email: string,
   instansi: string,
-  peran: PeranPengguna,
+  jabatan: string,
   provinsi: string,
   kabKota = ""
 ): KandidatPengguna => ({
-  email, instansi, peran,
+  email, instansi, jabatan, adminDinas: false,
   tingkatWilayah: kabKota ? "kabkota" : "provinsi",
   provinsi, kabKota,
 })
 
 export const KANDIDAT_PENGGUNA: KandidatPengguna[] = [
   // Tingkat provinsi
-  K("rani@puspeka.kemdikbud.go.id", "Puspeka", "pusat", "DKI Jakarta"),
-  K("dimas@puspeka.kemdikbud.go.id", "Puspeka", "pusat", "DKI Jakarta"),
-  K("lestari@jakarta.go.id", "Dinas Pendidikan Provinsi DKI Jakarta", "dinas", "DKI Jakarta"),
-  K("siti@acehprov.go.id", "Dinas Pendidikan Provinsi Aceh", "dinas", "Aceh"),
-  K("maulana@acehprov.go.id", "Dinas Pendidikan Provinsi Aceh", "dinas", "Aceh"),
-  K("ahmad@jabarprov.go.id", "Dinas Pendidikan Provinsi Jawa Barat", "dinas", "Jawa Barat"),
-  K("yuni@jabarprov.go.id", "Dinas Pendidikan Provinsi Jawa Barat", "dinas", "Jawa Barat"),
-  K("rahmat@jatengprov.go.id", "Dinas Pendidikan Provinsi Jawa Tengah", "dinas", "Jawa Tengah"),
-  K("indah@jatimprov.go.id", "Dinas Pendidikan Provinsi Jawa Timur", "dinas", "Jawa Timur"),
-  K("firman@sumutprov.go.id", "Dinas Pendidikan Provinsi Sumatera Utara", "dinas", "Sumatera Utara"),
-  K("gede@baliprov.go.id", "Dinas Pendidikan Provinsi Bali", "dinas", "Bali"),
-  K("asri@sulselprov.go.id", "Dinas Pendidikan Provinsi Sulawesi Selatan", "dinas", "Sulawesi Selatan"),
+  K("lestari@jakarta.go.id", "Dinas Pendidikan Provinsi DKI Jakarta", "DKI Jakarta"),
+  K("hendra@jakarta.go.id", "Dinas Pendidikan Provinsi DKI Jakarta", "DKI Jakarta"),
+  K("siti@acehprov.go.id", "Dinas Pendidikan Provinsi Aceh", "Aceh"),
+  K("maulana@acehprov.go.id", "Dinas Pendidikan Provinsi Aceh", "Aceh"),
+  K("ahmad@jabarprov.go.id", "Dinas Pendidikan Provinsi Jawa Barat", "Jawa Barat"),
+  K("yuni@jabarprov.go.id", "Dinas Pendidikan Provinsi Jawa Barat", "Jawa Barat"),
+  K("rahmat@jatengprov.go.id", "Dinas Pendidikan Provinsi Jawa Tengah", "Jawa Tengah"),
+  K("indah@jatimprov.go.id", "Dinas Pendidikan Provinsi Jawa Timur", "Jawa Timur"),
+  K("firman@sumutprov.go.id", "Dinas Pendidikan Provinsi Sumatera Utara", "Sumatera Utara"),
+  K("gede@baliprov.go.id", "Dinas Pendidikan Provinsi Bali", "Bali"),
+  K("asri@sulselprov.go.id", "Dinas Pendidikan Provinsi Sulawesi Selatan", "Sulawesi Selatan"),
 
   // Tingkat kabupaten/kota
-  K("budi@jatimprov.go.id", "Dinas Pendidikan Kota Surabaya", "dinas", "Jawa Timur", "Surabaya"),
-  K("laras@surabaya.go.id", "Dinas Pendidikan Kota Surabaya", "dinas", "Jawa Timur", "Surabaya"),
-  K("kepsek@sman5surabaya.sch.id", "SMAN 5 Surabaya", "sekolah", "Jawa Timur", "Surabaya"),
-  K("devi@semarangkota.go.id", "Dinas Pendidikan Kota Semarang", "dinas", "Jawa Tengah", "Semarang"),
-  K("kepsek@sman1semarang.sch.id", "SMAN 1 Semarang", "sekolah", "Jawa Tengah", "Semarang"),
-  K("hadi@makassarkota.go.id", "Dinas Pendidikan Kota Makassar", "dinas", "Sulawesi Selatan", "Makassar"),
-  K("kepsek@sman2makassar.sch.id", "SMAN 2 Makassar", "sekolah", "Sulawesi Selatan", "Makassar"),
-  K("wati@sman1bandaaceh.sch.id", "SMAN 1 Banda Aceh", "sekolah", "Aceh", "Banda Aceh"),
-  K("teuku@bandaacehkota.go.id", "Dinas Pendidikan Kota Banda Aceh", "dinas", "Aceh", "Banda Aceh"),
-  K("nugroho@sman3denpasar.sch.id", "SMAN 3 Denpasar", "sekolah", "Bali", "Denpasar"),
-  K("ketut@denpasarkota.go.id", "Dinas Pendidikan Kota Denpasar", "dinas", "Bali", "Denpasar"),
-  K("sinta@medankota.go.id", "Dinas Pendidikan Kota Medan", "dinas", "Sumatera Utara", "Medan"),
-  K("kepsek@sman4medan.sch.id", "SMAN 4 Medan", "sekolah", "Sumatera Utara", "Medan"),
-  K("agus@bandungkota.go.id", "Dinas Pendidikan Kota Bandung", "dinas", "Jawa Barat", "Bandung"),
-  K("kepsek@sman8bandung.sch.id", "SMAN 8 Bandung", "sekolah", "Jawa Barat", "Bandung"),
+  K("budi@jatimprov.go.id", "Dinas Pendidikan Kota Surabaya", "Jawa Timur", "Surabaya"),
+  K("laras@surabaya.go.id", "Dinas Pendidikan Kota Surabaya", "Jawa Timur", "Surabaya"),
+  K("devi@semarangkota.go.id", "Dinas Pendidikan Kota Semarang", "Jawa Tengah", "Semarang"),
+  K("prasetyo@semarangkota.go.id", "Dinas Pendidikan Kota Semarang", "Jawa Tengah", "Semarang"),
+  K("hadi@makassarkota.go.id", "Dinas Pendidikan Kota Makassar", "Sulawesi Selatan", "Makassar"),
+  K("nurul@makassarkota.go.id", "Dinas Pendidikan Kota Makassar", "Sulawesi Selatan", "Makassar"),
+  K("teuku@bandaacehkota.go.id", "Dinas Pendidikan Kota Banda Aceh", "Aceh", "Banda Aceh"),
+  K("cut@bandaacehkota.go.id", "Dinas Pendidikan Kota Banda Aceh", "Aceh", "Banda Aceh"),
+  K("ketut@denpasarkota.go.id", "Dinas Pendidikan Kota Denpasar", "Bali", "Denpasar"),
+  K("wayan@denpasarkota.go.id", "Dinas Pendidikan Kota Denpasar", "Bali", "Denpasar"),
+  K("sinta@medankota.go.id", "Dinas Pendidikan Kota Medan", "Sumatera Utara", "Medan"),
+  K("rudi@medankota.go.id", "Dinas Pendidikan Kota Medan", "Sumatera Utara", "Medan"),
+  K("agus@bandungkota.go.id", "Dinas Pendidikan Kota Bandung", "Jawa Barat", "Bandung"),
+  K("mira@bandungkota.go.id", "Dinas Pendidikan Kota Bandung", "Jawa Barat", "Bandung"),
+
+  // Akun non-dinas: ikut muncul saat dicari, tetapi tidak bisa diberi akses
+  KL("kepsek@sman5surabaya.sch.id", "SMAN 5 Surabaya", "Kepala Sekolah", "Jawa Timur", "Surabaya"),
+  KL("operator@sman5surabaya.sch.id", "SMAN 5 Surabaya", "Operator Sekolah", "Jawa Timur", "Surabaya"),
+  KL("kepsek@sman1semarang.sch.id", "SMAN 1 Semarang", "Kepala Sekolah", "Jawa Tengah", "Semarang"),
+  KL("guru.bk@sman1semarang.sch.id", "SMAN 1 Semarang", "Guru BK", "Jawa Tengah", "Semarang"),
+  KL("kepsek@sman1bandaaceh.sch.id", "SMAN 1 Banda Aceh", "Kepala Sekolah", "Aceh", "Banda Aceh"),
+  KL("kepsek@sman3denpasar.sch.id", "SMAN 3 Denpasar", "Kepala Sekolah", "Bali", "Denpasar"),
+  KL("kepsek@sman2makassar.sch.id", "SMAN 2 Makassar", "Kepala Sekolah", "Sulawesi Selatan", "Makassar"),
+  KL("rani@puspeka.kemdikbud.go.id", "Puspeka", "Admin Puspeka", "DKI Jakarta"),
+  KL("dimas@puspeka.kemdikbud.go.id", "Puspeka", "Admin Puspeka", "DKI Jakarta"),
+  KL("humas@disdikjabar.go.id", "Dinas Pendidikan Provinsi Jawa Barat", "Staf Humas", "Jawa Barat"),
 ]
 
-/** Kandidat pada satu wilayah, terurut menurut email. */
-export function cariKandidat(
-  tingkatWilayah: TingkatWilayah,
-  provinsi: string,
-  kabKota: string
+/**
+ * Cari kandidat lewat kata kunci (email, instansi, atau wilayah) untuk
+ * dropdown saran di modal Beri Akses. Email pada `kecuali` disembunyikan
+ * karena sudah punya akses atau sudah dipilih.
+ */
+export function cariKandidatEmail(
+  query: string,
+  kecuali: string[] = [],
+  batas = 6
 ): KandidatPengguna[] {
-  if (!provinsi) return []
-  if (tingkatWilayah === "kabkota" && !kabKota) return []
-  return KANDIDAT_PENGGUNA.filter(
-    (k) =>
-      k.tingkatWilayah === tingkatWilayah &&
-      k.provinsi === provinsi &&
-      (tingkatWilayah === "provinsi" || k.kabKota === kabKota)
-  ).sort((a, b) => a.email.localeCompare(b.email, "id"))
+  const q = query.trim().toLowerCase()
+  if (!q) return []
+  const tersembunyi = new Set(kecuali.map((e) => e.trim().toLowerCase()))
+  return KANDIDAT_PENGGUNA.filter((k) => {
+    if (tersembunyi.has(k.email.toLowerCase())) return false
+    return (
+      k.email.toLowerCase().includes(q) ||
+      k.instansi.toLowerCase().includes(q) ||
+      k.provinsi.toLowerCase().includes(q) ||
+      k.kabKota.toLowerCase().includes(q)
+    )
+  })
+    .sort((a, b) => {
+      // Admin dinas (yang bisa dipilih) di atas, lalu yang emailnya
+      // diawali kata kunci.
+      if (a.adminDinas !== b.adminDinas) return a.adminDinas ? -1 : 1
+      const aAwal = a.email.toLowerCase().startsWith(q) ? 0 : 1
+      const bAwal = b.email.toLowerCase().startsWith(q) ? 0 : 1
+      return aAwal - bAwal || a.email.localeCompare(b.email, "id")
+    })
+    .slice(0, batas)
 }
 
 function normalizeAkses(raw: unknown): AksesPengguna {
@@ -233,13 +301,11 @@ function normalizePengguna(raw: unknown): PenggunaAkses | null {
   if (!raw || typeof raw !== "object") return null
   const p = raw as Record<string, unknown>
   if (typeof p.id !== "string" || typeof p.email !== "string") return null
-  const peran = p.peran === "pusat" || p.peran === "dinas" || p.peran === "sekolah" ? p.peran : "dinas"
   const tingkatWilayah = p.tingkatWilayah === "kabkota" ? "kabkota" : "provinsi"
   return {
     id: p.id,
     email: p.email,
     instansi: typeof p.instansi === "string" ? p.instansi : "",
-    peran,
     tingkatWilayah,
     provinsi: typeof p.provinsi === "string" ? p.provinsi : "",
     kabKota: tingkatWilayah === "kabkota" && typeof p.kabKota === "string" ? p.kabKota : "",
@@ -282,10 +348,12 @@ export function namaWilayahPenugasan(p: PenggunaAkses): string {
   return (p.tingkatWilayah === "kabkota" ? p.kabKota : p.provinsi) || "-"
 }
 
-/** Nama pelaku perubahan untuk log; fallback bila sesi tidak punya nama. */
+/** Email pelaku perubahan untuk log; fallback bila sesi belum menyimpan email. */
 export function getAktorSaatIni(): string {
   const auth = readAuthSession()
-  return auth?.username?.trim() || "Admin Pusat"
+  const username = auth?.username?.trim()
+  if (username?.includes("@")) return username
+  return "admin.pusat@puspeka.kemdikbud.go.id"
 }
 
 /** Jumlah aksi yang diizinkan untuk satu pengguna (0–6). */
