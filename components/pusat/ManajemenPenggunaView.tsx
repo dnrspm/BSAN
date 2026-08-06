@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useMemo, useState } from "react"
-import { Search, Plus, ShieldOff, X, UserCog, UserPlus, AlertTriangle, Info } from "lucide-react"
+import { Search, Plus, ShieldOff, X, UserCog, UserPlus, AlertTriangle, Info, ArrowUp } from "lucide-react"
 import {
   JABATAN_LABEL,
   TINGKAT_LABEL,
@@ -15,19 +15,30 @@ import {
   type TingkatWilayah,
 } from "@/lib/user-access"
 
+type KolomUrut = "email" | "wilayah" | "diperbarui"
+
+/** Penanda arah urutan di header kolom — satu ikon, diputar saat menurun. */
+function IkonUrut({ aktif, arah }: { aktif: boolean; arah: "asc" | "desc" }) {
+  return (
+    <ArrowUp
+      className={`w-3.5 h-3.5 transition-transform ${aktif ? "text-gray-600" : "text-gray-300"} ${
+        aktif && arah === "desc" ? "rotate-180" : ""
+      }`}
+    />
+  )
+}
+
 function nowISO(): string {
   const d = new Date()
   const pad = (n: number) => String(n).padStart(2, "0")
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
 }
 
-function formatDateTime(value: string): string {
+function formatTanggal(value: string): string {
   if (!value) return "-"
   const d = new Date(value)
   if (Number.isNaN(d.getTime())) return "-"
-  const tanggal = d.toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })
-  const jam = d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })
-  return `${tanggal}, ${jam}`
+  return d.toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })
 }
 
 /** Satu pengguna yang dipilih untuk diberi akses. */
@@ -294,7 +305,21 @@ export function ManajemenPenggunaView() {
   const [deleting, setDeleting] = useState<PenggunaAkses | null>(null)
   const [halaman, setHalaman] = useState(1)
 
+  const [urutKolom, setUrutKolom] = useState<KolomUrut>("email")
+  const [urutArah, setUrutArah] = useState<"asc" | "desc">("asc")
+
   const perHalaman = 10
+
+  /** Klik kolom yang sama membalik arah; kolom lain mulai dari arah wajarnya. */
+  const ubahUrutan = (kolom: KolomUrut) => {
+    if (kolom === urutKolom) {
+      setUrutArah((a) => (a === "asc" ? "desc" : "asc"))
+    } else {
+      setUrutKolom(kolom)
+      setUrutArah(kolom === "diperbarui" ? "desc" : "asc")
+    }
+    setHalaman(1)
+  }
 
   useEffect(() => {
     setList(readPenggunaAkses())
@@ -317,8 +342,16 @@ export function ManajemenPenggunaView() {
           p.provinsi.toLowerCase().includes(q) ||
           p.kabKota.toLowerCase().includes(q)
       )
-      .sort((a, b) => a.email.localeCompare(b.email, "id"))
-  }, [list, search])
+      .sort((a, b) => {
+        const selisih =
+          urutKolom === "email"
+            ? a.email.localeCompare(b.email, "id")
+            : urutKolom === "wilayah"
+              ? namaWilayahPenugasan(a).localeCompare(namaWilayahPenugasan(b), "id")
+              : a.diperbaruiPada.localeCompare(b.diperbaruiPada)
+        return urutArah === "asc" ? selisih : -selisih
+      })
+  }, [list, search, urutKolom, urutArah])
 
   const totalHalaman = Math.max(1, Math.ceil(filtered.length / perHalaman))
   const halamanAktif = Math.min(halaman, totalHalaman)
@@ -385,29 +418,54 @@ export function ManajemenPenggunaView() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm min-w-[640px]">
+            {/* Lebar kolom dipatok agar tidak bergeser mengikuti panjang isinya. */}
+            <table className="w-full text-sm min-w-[860px] table-fixed">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50">
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Pengguna</th>
-                  <th className="text-left px-3 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Wilayah Penugasan</th>
-                  <th className="text-left px-3 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Diperbarui</th>
-                  <th className="px-3 py-3" />
+                  <th className="w-[34%] text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    <button
+                      onClick={() => ubahUrutan("email")}
+                      className="inline-flex items-center gap-1 uppercase tracking-wide hover:text-gray-700"
+                    >
+                      Pengguna
+                      <IkonUrut aktif={urutKolom === "email"} arah={urutArah} />
+                    </button>
+                  </th>
+                  <th className="w-[22%] text-left px-3 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    <button
+                      onClick={() => ubahUrutan("wilayah")}
+                      className="inline-flex items-center gap-1 uppercase tracking-wide hover:text-gray-700"
+                    >
+                      Wilayah Penugasan
+                      <IkonUrut aktif={urutKolom === "wilayah"} arah={urutArah} />
+                    </button>
+                  </th>
+                  <th className="w-[26%] text-left px-3 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">
+                    <button
+                      onClick={() => ubahUrutan("diperbarui")}
+                      className="inline-flex items-center gap-1 uppercase tracking-wide hover:text-gray-700"
+                    >
+                      Diberikan Akses
+                      <IkonUrut aktif={urutKolom === "diperbarui"} arah={urutArah} />
+                    </button>
+                  </th>
+                  <th className="w-[18%] px-3 py-3" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {halamanIni.map((p) => (
                   <tr key={p.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3.5">
-                      <p className="font-medium text-gray-900 leading-tight">{p.email}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{JABATAN_LABEL}</p>
+                      <p className="font-medium text-gray-900 leading-tight truncate">{p.email}</p>
+                      <p className="text-xs text-gray-500 mt-0.5 truncate">{JABATAN_LABEL}</p>
                     </td>
                     <td className="px-3 py-3.5">
-                      <p className="text-xs text-gray-400">{TINGKAT_LABEL[p.tingkatWilayah]}</p>
-                      <p className="text-gray-900 mt-0.5">{namaWilayahPenugasan(p)}</p>
+                      <p className="text-xs text-gray-400 truncate">{TINGKAT_LABEL[p.tingkatWilayah]}</p>
+                      <p className="text-gray-900 mt-0.5 truncate">{namaWilayahPenugasan(p)}</p>
                     </td>
                     <td className="px-3 py-3.5 hidden lg:table-cell">
-                      <p className="text-gray-600">{formatDateTime(p.diperbaruiPada)}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">oleh {p.diperbaruiOleh || "-"}</p>
+                      <p className="text-gray-600 truncate">{formatTanggal(p.diperbaruiPada)}</p>
+                      <p className="text-xs text-gray-400 mt-0.5 truncate">oleh {p.diperbaruiOleh || "-"}</p>
                     </td>
                     <td className="px-3 py-3.5">
                       <div className="flex items-center justify-end">
