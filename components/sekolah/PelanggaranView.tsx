@@ -170,11 +170,46 @@ function Select({ value, onChange, className, children }: { value: string; onCha
 const UNSUR_OPTIONS = ["Siswa Laki-laki", "Siswa Perempuan", "Guru", "Tenaga Kependidikan", "Kepala Sekolah", "Warga Sekolah", "Lainnya"]
 
 const KATEGORI_PELANGGARAN = [
-  "Perundungan", "Perundungan Siber", "Kekerasan Fisik",
-  "Kekerasan Seksual", "Kekerasan Psikis", "Diskriminasi",
-  "Intoleransi", "Pencurian", "Vandalisme", "Penyalahgunaan NAPZA",
-  "Pelanggaran Aturan Sekolah", "Pelanggaran Hukum", "Lainnya",
+  "Ancaman atau tindakan yang membahayakan",
+  "Diskriminasi dan pembatasan hak",
+  "Kekerasan atau kejahatan seksual",
+  "Penghinaan atau pencemaran nama baik",
+  "Kejahatan siber/digital",
+  "Kekerasan fisik atau penganiayaan",
+  "Kekerasan verbal atau psikis",
+  "Pencurian",
+  "Penipuan",
+  "Penyalahgunaan narkotika psikotropika dan zat adiktif lainnya (NAPZA)",
+  "Perjudian",
+  "Perundungan",
+  "Perusakan barang atau fasilitas",
+  "Pornografi atau konten seksual",
+  "Etika komunikasi dan media digital",
+  "Ketidakjujuran akademik",
+  "Pelanggaran kode etik terkait nama baik sekolah",
+  "Pelanggaran privasi atau kerahasiaan",
+  "Penghinaan atau ucapan yang merendahkan",
+  "Penyalahgunaan kewenangan",
+  "Perekaman atau penyebaran konten tanpa izin",
+  "Perilaku tidak sopan atau tidak menghormati",
+  "Sikap tidak adil atau intoleran",
+  "Membawa atau mengonsumsi minuman keras",
+  "Merokok",
+  "Pelanggaran tanggung jawab",
+  "Pelanggaran kehadiran dan kedisiplinan waktu",
+  "Pelanggaran kesusilaan",
+  "Pelanggaran ketertiban kegiatan pembelajaran",
+  "Penggunaan fasilitas sekolah tidak sesuai ketentuan",
+  "Pelanggaran seragam dan atribut sekolah",
+  "Lainnya",
 ]
+
+function splitKategori(value: string): string[] {
+  return value
+    .split(/,\s*|\s*;\s*/)
+    .map((v) => v.trim())
+    .filter(Boolean)
+}
 
 const TINGKAT_KEPARAHAN: { value: TingkatKeparahan; label: string; color: string }[] = [
   { value: "urgen", label: "Mendesak", color: "text-amber-600" },
@@ -1414,7 +1449,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
           npsnList.some((n) => n.includes(search.trim())) ||
           item.kategori.toLowerCase().includes(search.toLowerCase())
         const matchStatus = filterStatus === "semua" || item.status === filterStatus
-        const matchKategori = filterKategori === "semua" || item.kategori === filterKategori
+        const matchKategori = filterKategori === "semua" || splitKategori(item.kategori).includes(filterKategori)
         const matchTingkat = filterTingkatUrgensi === "semua" || item.tingkatKeparahan === filterTingkatUrgensi
         const matchPIC = filterPIC === "semua" || item.pic === filterPIC
         return matchSearch && matchStatus && matchKategori && matchTingkat && matchPIC

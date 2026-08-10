@@ -118,11 +118,141 @@ const PROVINSI_OPTIONS = [
 ]
 
 const KATEGORI_PELANGGARAN = [
-  "Perundungan", "Perundungan Siber", "Kekerasan Fisik",
-  "Kekerasan Seksual", "Kekerasan Psikis", "Diskriminasi",
-  "Intoleransi", "Pencurian", "Vandalisme", "Penyalahgunaan NAPZA",
-  "Pelanggaran Aturan Sekolah", "Pelanggaran Hukum", "Lainnya",
+  "Ancaman atau tindakan yang membahayakan",
+  "Diskriminasi dan pembatasan hak",
+  "Kekerasan atau kejahatan seksual",
+  "Penghinaan atau pencemaran nama baik",
+  "Kejahatan siber/digital",
+  "Kekerasan fisik atau penganiayaan",
+  "Kekerasan verbal atau psikis",
+  "Pencurian",
+  "Penipuan",
+  "Penyalahgunaan narkotika psikotropika dan zat adiktif lainnya (NAPZA)",
+  "Perjudian",
+  "Perundungan",
+  "Perusakan barang atau fasilitas",
+  "Pornografi atau konten seksual",
+  "Etika komunikasi dan media digital",
+  "Ketidakjujuran akademik",
+  "Pelanggaran kode etik terkait nama baik sekolah",
+  "Pelanggaran privasi atau kerahasiaan",
+  "Penghinaan atau ucapan yang merendahkan",
+  "Penyalahgunaan kewenangan",
+  "Perekaman atau penyebaran konten tanpa izin",
+  "Perilaku tidak sopan atau tidak menghormati",
+  "Sikap tidak adil atau intoleran",
+  "Membawa atau mengonsumsi minuman keras",
+  "Merokok",
+  "Pelanggaran tanggung jawab",
+  "Pelanggaran kehadiran dan kedisiplinan waktu",
+  "Pelanggaran kesusilaan",
+  "Pelanggaran ketertiban kegiatan pembelajaran",
+  "Penggunaan fasilitas sekolah tidak sesuai ketentuan",
+  "Pelanggaran seragam dan atribut sekolah",
+  "Lainnya",
 ]
+
+function splitKategori(value: string): string[] {
+  return value
+    .split(/,\s*|\s*;\s*/)
+    .map((v) => v.trim())
+    .filter(Boolean)
+}
+
+function KategoriMultiSelect({ selected, lainnya, custom, error, onChange }: {
+  selected: string[]
+  lainnya: boolean
+  custom: string
+  error: boolean
+  onChange: (updates: { selected?: string[]; lainnya?: boolean; custom?: string }) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const predefined = KATEGORI_PELANGGARAN.filter((k) => k !== "Lainnya")
+
+  const toggle = (k: string) => {
+    onChange({ selected: selected.includes(k) ? selected.filter((x) => x !== k) : [...selected, k] })
+  }
+
+  return (
+    <div data-error-wajib={error ? "1" : undefined} className="flex flex-col gap-2">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className={`w-full min-h-9 px-3 py-2 text-sm text-left border rounded-lg focus:outline-none focus:ring-2 bg-white flex items-center justify-between gap-2 ${
+          error
+            ? "border-red-400 focus:ring-red-400"
+            : "border-gray-300 focus:ring-blue-500 focus:border-blue-400"
+        }`}
+      >
+        <span className={selected.length === 0 && !lainnya ? "text-gray-400" : "text-gray-800"}>
+          {selected.length === 0 && !lainnya ? "Pilih kategori (boleh lebih dari satu)" : `${selected.length + (lainnya ? 1 : 0)} kategori terpilih`}
+        </span>
+        <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform flex-shrink-0 ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {(selected.length > 0 || lainnya) && (
+        <div className="flex flex-wrap gap-1.5">
+          {selected.map((k) => (
+            <span key={k} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-medium">
+              {k}
+              <button type="button" onClick={() => toggle(k)} className="hover:text-blue-900">
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          ))}
+          {lainnya && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 text-xs font-medium">
+              {custom.trim() ? custom : "Lainnya"}
+              <button type="button" onClick={() => onChange({ lainnya: false })} className="hover:text-gray-900">
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          )}
+        </div>
+      )}
+
+      {open && (
+        <div className="relative">
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute z-20 mt-0.5 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+            {predefined.map((k) => (
+              <label key={k} className="flex items-start gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selected.includes(k)}
+                  onChange={() => toggle(k)}
+                  className="mt-0.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700 leading-snug">{k}</span>
+              </label>
+            ))}
+            <label className="flex items-start gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer border-t border-gray-100">
+              <input
+                type="checkbox"
+                checked={lainnya}
+                onChange={() => onChange({ lainnya: !lainnya })}
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm text-gray-700">Lainnya</span>
+            </label>
+            {lainnya && (
+              <div className="px-3 pb-3">
+                <input
+                  type="text"
+                  autoFocus
+                  value={custom}
+                  onChange={(e) => onChange({ custom: e.target.value })}
+                  placeholder="Tulis kategori lainnya..."
+                  className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 const EDIT_FIELD_LABELS: Record<string, string> = {
   namaSekolah: "Nama Sekolah",
@@ -453,6 +583,8 @@ function TambahPelanggaranInner() {
   const [openAsalSekolahIdx, setOpenAsalSekolahIdx] = useState<number | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [openPeranMenu, setOpenPeranMenu] = useState<number | null>(null)
+  const [kategoriSel, setKategoriSel] = useState<string[]>([])
+  const [kategoriLainnya, setKategoriLainnya] = useState(false)
   const [kategoriMemo, setKategoriMemo] = useState("")
 
   const selectPic = (name: string) => {
@@ -465,6 +597,18 @@ function TambahPelanggaranInner() {
     setForm((prev) => ({ ...prev, pic: "" }))
     setPicInput("")
     setPicManualMode(false)
+  }
+
+  const handleKategoriChange = (updates: { selected?: string[]; lainnya?: boolean; custom?: string }) => {
+    const sel = updates.selected ?? kategoriSel
+    const lain = updates.lainnya ?? kategoriLainnya
+    const memo = updates.custom ?? kategoriMemo
+    setKategoriSel(sel)
+    setKategoriLainnya(lain)
+    setKategoriMemo(memo)
+    const parts = [...sel]
+    if (lain) parts.push(memo.trim() || "Lainnya")
+    setForm((prev) => ({ ...prev, kategori: parts.join(", ") }))
   }
 
   useEffect(() => {
@@ -519,6 +663,12 @@ function TambahPelanggaranInner() {
             tanggalPelaporan: (normalized as any).tanggalPelaporan ?? "",
             status: normalized.status,
           })
+          const katArr = splitKategori(normalized.kategori ?? "")
+          const predefinedSet = new Set(KATEGORI_PELANGGARAN.filter((k) => k !== "Lainnya"))
+          setKategoriSel(katArr.filter((k) => predefinedSet.has(k)))
+          const custom = katArr.filter((k) => !predefinedSet.has(k))
+          setKategoriLainnya(custom.length > 0)
+          setKategoriMemo(custom.join(", "))
         }
       }
     } catch {}
@@ -594,7 +744,7 @@ function TambahPelanggaranInner() {
     namaSekolah: !form.namaSekolah.some((s) => s.trim()),
     unsurTerlibat: !form.unsurTerlibat.some((u) => u.peran && u.asalGroups.some((ag) => parseInt(ag.jumlah) > 0 && ag.individu.some((ind) => ind.nama))),
     kronologiTanggal: !form.kronologi.some((e) => e.tanggal),
-    kategori: !form.kategori || form.kategori === "Lainnya",
+    kategori: !form.kategori || (kategoriLainnya && kategoriSel.length === 0 && !kategoriMemo.trim()),
     tingkatKeparahan: !form.tingkatKeparahan,
     pelapor: !form.pelapor,
     tingkatKelompokKerja: role === "pusat" && !form.tingkatKelompokKerja,
@@ -1250,62 +1400,13 @@ function TambahPelanggaranInner() {
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
                 <FieldLabel required>Kategori Pelanggaran</FieldLabel>
-                {(() => {
-                  const predefinedKategori = KATEGORI_PELANGGARAN.filter((k) => k !== "Lainnya")
-                  const isKategoriCustom = form.kategori !== "" && !predefinedKategori.includes(form.kategori)
-                  const displayKategori = isKategoriCustom ? "Lainnya" : form.kategori
-                  return (
-                    <div
-                      data-error-wajib={err("kategori") ? "1" : undefined}
-                      className={`relative mt-1 border rounded-lg overflow-hidden focus-within:ring-2 ${
-                        err("kategori")
-                          ? "border-red-400 focus-within:ring-red-400"
-                          : "border-gray-300 focus-within:ring-blue-500 focus-within:border-blue-400"
-                      }`}
-                    >
-                      {isKategoriCustom ? (
-                        <>
-                          <input
-                            type="text"
-                            autoFocus
-                            value={form.kategori !== "Lainnya" ? form.kategori : ""}
-                            onChange={(e) => {
-                              setForm((prev) => ({ ...prev, kategori: e.target.value }))
-                              setKategoriMemo(e.target.value)
-                            }}
-                            placeholder="Tulis kategori lainnya..."
-                            className="w-full h-9 px-3 text-sm bg-white focus:outline-none pr-8"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setForm((prev) => ({ ...prev, kategori: "" }))
-                              openSelectPicker("kategori-select")
-                            }}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                          >
-                            <ChevronDown className="w-4 h-4" />
-                          </button>
-                        </>
-                      ) : (
-                        <Select
-                          id="kategori-select"
-                          value={form.kategori}
-                          onChange={(e) => {
-                            const val = e.target.value
-                            setForm((prev) => ({ ...prev, kategori: val === "Lainnya" && kategoriMemo ? kategoriMemo : val }))
-                          }}
-                          className={`w-full h-9 px-3 text-sm bg-white appearance-none focus:outline-none pr-8 ${!form.kategori ? "text-gray-400" : ""}`}
-                        >
-                          <option value="" disabled>Pilih kategori</option>
-                          {KATEGORI_PELANGGARAN.map((k) => (
-                            <option key={k} value={k}>{k}</option>
-                          ))}
-                        </Select>
-                      )}
-                    </div>
-                  )
-                })()}
+                <KategoriMultiSelect
+                  selected={kategoriSel}
+                  lainnya={kategoriLainnya}
+                  custom={kategoriMemo}
+                  error={err("kategori")}
+                  onChange={handleKategoriChange}
+                />
                 <HelperWajib show={err("kategori")} />
               </div>
               <div className="flex flex-col gap-1.5">
