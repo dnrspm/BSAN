@@ -275,8 +275,7 @@ function CabutAksesModal({
           </div>
         </div>
         <p className="text-sm text-gray-600 mt-4">
-          <span className="font-medium text-gray-900">{pengguna.email}</span> akan kembali ke akses lihat saja —
-          tidak lagi bisa membuat, mengubah, atau menghapus Sumber Dukungan dan Kasus Pelanggaran.
+          <span className="font-medium text-gray-900">{pengguna.email}</span> hanya dapat melihat dan tidak lagi bisa membuat, mengubah, atau menghapus Sumber Dukungan dan Kasus Pelanggaran.
         </p>
         <div className="flex items-center justify-end gap-2 mt-5">
           <button
@@ -289,7 +288,7 @@ function CabutAksesModal({
             onClick={onConfirm}
             className="px-4 py-2 text-sm font-medium rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
           >
-            Cabut Akses
+            Ya, Cabut Akses
           </button>
         </div>
       </div>
