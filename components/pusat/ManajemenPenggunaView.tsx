@@ -270,13 +270,11 @@ function CabutAksesModal({
             <AlertTriangle className="w-5 h-5 text-red-600" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-gray-900">Cabut Akses Pengguna</h3>
-            <p className="text-xs text-gray-500">Hak buat, ubah, dan hapus akan dicabut</p>
+            <h3 className="text-base font-bold text-gray-900">Cabut Akses Pengguna?</h3>
           </div>
         </div>
         <p className="text-sm text-gray-600 mt-4">
-          <span className="font-medium text-gray-900">{pengguna.email}</span> akan kembali ke akses lihat saja —
-          tidak lagi bisa membuat, mengubah, atau menghapus Sumber Dukungan dan Kasus Pelanggaran.
+          <span className="font-medium text-gray-900">{pengguna.email}</span> hanya dapat melihat dan tidak lagi bisa membuat, mengubah, atau menghapus Sumber Dukungan dan Kasus Pelanggaran.
         </p>
         <div className="flex items-center justify-end gap-2 mt-5">
           <button
@@ -289,7 +287,7 @@ function CabutAksesModal({
             onClick={onConfirm}
             className="px-4 py-2 text-sm font-medium rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
           >
-            Cabut Akses
+            Ya, Cabut Akses
           </button>
         </div>
       </div>
@@ -379,7 +377,7 @@ export function ManajemenPenggunaView() {
         <div>
           <h1 className="text-xl font-bold text-gray-900">Akses Pengguna</h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            Tentukan siapa yang boleh membuat, mengubah, dan menghapus Sumber Dukungan serta Kasus Pelanggaran.
+            Atur dan tentukan akses pengguna yang bisa membuat, mengubah, dan menghapus Sumber Dukungan serta Kasus Pelanggaran.
           </p>
         </div>
         <button
@@ -405,7 +403,7 @@ export function ManajemenPenggunaView() {
               type="search"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setHalaman(1) }}
-              placeholder="Cari email, atau wilayah"
+              placeholder="Cari email atau wilayah"
               className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
             />
           </div>
