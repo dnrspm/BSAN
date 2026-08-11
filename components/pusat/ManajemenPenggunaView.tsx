@@ -377,7 +377,7 @@ export function ManajemenPenggunaView() {
         <div>
           <h1 className="text-xl font-bold text-gray-900">Akses Pengguna</h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            Tentukan siapa yang boleh membuat, mengubah, dan menghapus Sumber Dukungan serta Kasus Pelanggaran.
+            Atur dan tentukan akses pengguna yang bisa membuat, mengubah, dan menghapus Sumber Dukungan serta Kasus Pelanggaran.
           </p>
         </div>
         <button
