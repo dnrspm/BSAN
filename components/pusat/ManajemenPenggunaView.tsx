@@ -403,7 +403,7 @@ export function ManajemenPenggunaView() {
               type="search"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setHalaman(1) }}
-              placeholder="Cari email, atau wilayah"
+              placeholder="Cari email atau wilayah"
               className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
             />
           </div>
