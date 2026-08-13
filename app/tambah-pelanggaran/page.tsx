@@ -167,7 +167,7 @@ function KategoriMultiSelect({ selected, lainnya, custom, error, onChange }: {
   onChange: (updates: { selected?: string[]; lainnya?: boolean; custom?: string }) => void
 }) {
   const [open, setOpen] = useState(false)
-  const predefined = KATEGORI_PELANGGARAN.filter((k) => k !== "Lainnya")
+  const predefined = KATEGORI_PELANGGARAN.filter((k) => k !== "Lainnya").sort((a, b) => a.localeCompare(b, "id"))
 
   const toggle = (k: string) => {
     onChange({ selected: selected.includes(k) ? selected.filter((x) => x !== k) : [...selected, k] })
