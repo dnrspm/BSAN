@@ -55,6 +55,7 @@ interface PelanggaranItem {
   pelaporLainnya?: string
   kontakPelapor?: string
   tindakLanjut: string
+  rencanaProgram?: string
   pic: string
   tingkatKelompokKerja?: "" | "provinsi" | "kabkota"
   wilayah?: string
@@ -269,6 +270,7 @@ const EDIT_FIELD_LABELS: Record<string, string> = {
   wilayah: "Provinsi",
   kabupatenKota: "Kabupaten/Kota",
   tindakLanjut: "Tindak Lanjut",
+  rencanaProgram: "Rencana Program Pencegahan",
   dokumentasi: "Dokumentasi",
   rekomendasi: "Rekomendasi",
   motif: "Motif Kejadian",
@@ -542,6 +544,7 @@ function emptyForm() {
     wilayah: "",
     kabupatenKota: "",
     tindakLanjut: "",
+    rencanaProgram: "",
     dokumentasi: "",
     rekomendasi: "",
     motif: "",
@@ -635,6 +638,7 @@ function TambahPelanggaranInner() {
           pelapor: (found as any).pelapor ?? "laporan_sekolah",
           pelaporLainnya: (found as any).pelaporLainnya ?? "",
           tindakLanjut: (found as any).tindakLanjut ?? "",
+          rencanaProgram: (found as any).rencanaProgram ?? "",
           pic: (found as any).pic ?? "",
           logStatus: Array.isArray((found as any).logStatus) ? (found as any).logStatus : [],
         }
@@ -657,6 +661,7 @@ function TambahPelanggaranInner() {
             wilayah: (normalized as any).wilayah ?? "",
             kabupatenKota: (normalized as any).kabupatenKota ?? "",
             tindakLanjut: normalized.tindakLanjut ?? "",
+            rencanaProgram: (normalized as any).rencanaProgram ?? "",
             dokumentasi: normalized.dokumentasi,
             rekomendasi: normalized.rekomendasi,
             motif: (normalized as any).motif ?? "",
@@ -1197,6 +1202,14 @@ function TambahPelanggaranInner() {
 
           <SectionCard icon={<CheckCircle className="w-4 h-4" />} title="Riwayat Status Pelanggaran">
             <div className="grid grid-cols-1 gap-4">
+              {(item as any).rencanaProgram && (
+                <div className="flex flex-col gap-1.5">
+                  <FieldLabel>Rencana Program untuk Mencegah/Mengatasi Pelanggaran di Masa Depan</FieldLabel>
+                  <div className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-default whitespace-pre-wrap">
+                    {(item as any).rencanaProgram}
+                  </div>
+                </div>
+              )}
               <div className="flex flex-col gap-3">
                 {Array.isArray((item as any).logStatus) && (item as any).logStatus.length > 0 ? (item as any).logStatus.slice().reverse().map((entry: { status: StatusPelanggaran; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }, i: number) => {
                   const dibuatOleh = entry.dibuatOleh || entry.keterangan.match(/oleh (.+)$/)?.[1] || ""
@@ -2181,6 +2194,18 @@ function TambahPelanggaranInner() {
                 value={form.tindakLanjut}
                 onChange={(e) => setForm((prev) => ({ ...prev, tindakLanjut: e.target.value }))}
                 placeholder="Jelaskan tindakan penanganan awal yang sudah dilakukan. Contoh: korban telah diamankan, orang tua telah dihubungi, kepala sekolah telah diinformasikan, atau telah dilakukan mediasi."
+                rows={3}
+                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel>Rencana Program untuk Mencegah/Mengatasi Pelanggaran di Masa Depan <span className="text-gray-400">(opsional)</span></FieldLabel>
+              <p className="text-xs text-gray-400">Isi program atau kegiatan yang akan dilakukan selama/pasca penanganan kasus untuk mencegah permasalahan serupa terulang.</p>
+              <textarea
+                value={form.rencanaProgram}
+                onChange={(e) => setForm((prev) => ({ ...prev, rencanaProgram: e.target.value }))}
+                placeholder="Contoh: sosialisasi pencegahan perundungan tiap semester, pembentukan tim satgas sekolah, pelatihan guru BK, atau penyusunan SOP penanganan kasus."
                 rows={3}
                 className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
               />

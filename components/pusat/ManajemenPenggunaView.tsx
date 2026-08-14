@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useMemo, useState } from "react"
 import { Search, Plus, ShieldOff, X, UserCog, UserPlus, AlertTriangle, Info, ArrowUp } from "lucide-react"
+import { KAB_KOTA_BY_PROVINSI } from "@/data/kabKotaData"
 import {
   JABATAN_LABEL,
   TINGKAT_LABEL,
@@ -54,6 +55,18 @@ interface FormState {
   terpilih: PenggunaTerpilih[]
 }
 
+/** Provinsi yang punya daftar kab/kota — dipakai di form input manual. */
+const PROVINSI_OPTIONS = Object.keys(KAB_KOTA_BY_PROVINSI).sort((a, b) => a.localeCompare(b, "id"))
+
+const POLA_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+/** Nama instansi untuk pengguna yang diinput manual, mengikuti wilayah kewenangannya. */
+function instansiManual(tingkat: TingkatWilayah, provinsi: string, kabKota: string): string {
+  return tingkat === "kabkota"
+    ? `Dinas Pendidikan Kab/Kota ${kabKota}`
+    : `Dinas Pendidikan Provinsi ${provinsi}`
+}
+
 function PenggunaFormModal({
   emailTerdaftar,
   onClose,
@@ -66,6 +79,15 @@ function PenggunaFormModal({
   const [terpilih, setTerpilih] = useState<PenggunaTerpilih[]>([])
   const [query, setQuery] = useState("")
   const [error, setError] = useState("")
+
+  // Input manual: dipakai saat email belum terdaftar di direktori, sehingga
+  // wilayah kewenangannya harus ditentukan sendiri oleh admin.
+  const [manualOpen, setManualOpen] = useState(false)
+  const [manualEmail, setManualEmail] = useState("")
+  const [manualTingkat, setManualTingkat] = useState<TingkatWilayah | "">("")
+  const [manualProvinsi, setManualProvinsi] = useState("")
+  const [manualKabKota, setManualKabKota] = useState("")
+  const [manualError, setManualError] = useState("")
 
   const emailDikecualikan = useMemo(
     () => [...emailTerdaftar, ...terpilih.map((t) => t.email)],
@@ -84,6 +106,56 @@ function PenggunaFormModal({
   }
 
   const hapusTerpilih = (email: string) => setTerpilih((t) => t.filter((x) => x.email !== email))
+
+  const bukaManual = () => {
+    const q = query.trim()
+    setManualEmail(q.includes("@") ? q : "")
+    setManualTingkat("")
+    setManualProvinsi("")
+    setManualKabKota("")
+    setManualError("")
+    setManualOpen(true)
+    setError("")
+  }
+
+  const tutupManual = () => {
+    setManualOpen(false)
+    setManualError("")
+  }
+
+  const tambahManual = () => {
+    const email = manualEmail.trim().toLowerCase()
+    if (!POLA_EMAIL.test(email)) {
+      setManualError("Masukkan alamat email yang valid")
+      return
+    }
+    if (emailDikecualikan.some((e) => e.trim().toLowerCase() === email)) {
+      setManualError("Email ini sudah punya akses atau sudah dipilih")
+      return
+    }
+    if (!manualTingkat) {
+      setManualError("Pilih wilayah kewenangan")
+      return
+    }
+    if (!manualProvinsi) {
+      setManualError("Pilih provinsi")
+      return
+    }
+    if (manualTingkat === "kabkota" && !manualKabKota) {
+      setManualError("Pilih kabupaten/kota")
+      return
+    }
+    const kabKota = manualTingkat === "kabkota" ? manualKabKota : ""
+    tambah({
+      email,
+      instansi: instansiManual(manualTingkat, manualProvinsi, kabKota),
+      tingkatWilayah: manualTingkat,
+      provinsi: manualProvinsi,
+      kabKota,
+    })
+    setManualOpen(false)
+    setManualError("")
+  }
 
   const submit = () => {
     if (terpilih.length === 0) {
@@ -120,7 +192,7 @@ function PenggunaFormModal({
             <div className="flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2.5 mb-3 flex-shrink-0">
               <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-blue-800">
-                Hanya pengguna yang terdaftar sebagai Admin Dinas Pendidikan yang bisa diberi akses
+                Hanya pengguna yang terdaftar sebagai Admin Dinas Pendidikan yang bisa diberi akses. Bila emailnya belum terdaftar, input manual beserta wilayah kewenangannya.
               </p>
             </div>
 
@@ -182,8 +254,130 @@ function PenggunaFormModal({
                   )}
                 </div>
               )}
+
+              {!manualOpen && (
+                <button
+                  type="button"
+                  onClick={bukaManual}
+                  className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Email tidak ditemukan? Input manual
+                </button>
+              )}
             </div>
             {error && <p className="text-xs text-red-600 mt-1 flex-shrink-0">{error}</p>}
+
+            {/* Input manual: email di luar direktori, wilayah kewenangan ditentukan admin */}
+            {manualOpen && (
+              <div className="mt-3 rounded-lg border border-gray-200 bg-gray-50/60 p-3 min-h-0 overflow-y-auto">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-semibold text-gray-700">Input Pengguna Manual</p>
+                  <button
+                    type="button"
+                    onClick={tutupManual}
+                    className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                    aria-label="Tutup input manual"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-2.5">
+                  <div>
+                    <label className="text-xs font-medium text-gray-700">Email</label>
+                    <input
+                      type="email"
+                      value={manualEmail}
+                      onChange={(e) => { setManualEmail(e.target.value); setManualError("") }}
+                      placeholder="nama@instansi.go.id"
+                      className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium text-gray-700">Wilayah Kewenangan</label>
+                    <div className="grid grid-cols-2 gap-2 mt-1">
+                      {(["provinsi", "kabkota"] as TingkatWilayah[]).map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => {
+                            setManualTingkat(t)
+                            if (t === "provinsi") setManualKabKota("")
+                            setManualError("")
+                          }}
+                          className={`h-9 rounded-lg border text-sm font-medium transition ${
+                            manualTingkat === t
+                              ? "border-blue-600 bg-blue-50 text-blue-600"
+                              : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
+                          }`}
+                        >
+                          {TINGKAT_LABEL[t]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {!!manualTingkat && (
+                    <div className={`grid gap-2 ${manualTingkat === "kabkota" ? "grid-cols-2" : "grid-cols-1"}`}>
+                      <div>
+                        <label className="text-xs font-medium text-gray-700">Provinsi</label>
+                        <select
+                          value={manualProvinsi}
+                          onChange={(e) => { setManualProvinsi(e.target.value); setManualKabKota(""); setManualError("") }}
+                          className={`w-full h-9 px-2 mt-1 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                            manualProvinsi ? "text-gray-900" : "text-gray-400"
+                          }`}
+                        >
+                          <option value="" disabled>Pilih provinsi</option>
+                          {PROVINSI_OPTIONS.map((p) => (
+                            <option key={p} value={p} className="text-gray-900">{p}</option>
+                          ))}
+                        </select>
+                      </div>
+                      {manualTingkat === "kabkota" && (
+                        <div>
+                          <label className="text-xs font-medium text-gray-700">Kabupaten/Kota</label>
+                          <select
+                            value={manualKabKota}
+                            onChange={(e) => { setManualKabKota(e.target.value); setManualError("") }}
+                            disabled={!manualProvinsi}
+                            className={`w-full h-9 px-2 mt-1 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                              manualKabKota ? "text-gray-900" : "text-gray-400"
+                            }`}
+                          >
+                            <option value="" disabled>Pilih kabupaten/kota</option>
+                            {(KAB_KOTA_BY_PROVINSI[manualProvinsi] ?? []).map((k) => (
+                              <option key={k} value={k} className="text-gray-900">{k}</option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {manualError && <p className="text-xs text-red-600">{manualError}</p>}
+
+                  <div className="flex items-center justify-end gap-2 pt-0.5">
+                    <button
+                      type="button"
+                      onClick={tutupManual}
+                      className="px-3 h-8 text-xs font-medium rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      type="button"
+                      onClick={tambahManual}
+                      className="px-3 h-8 text-xs font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+                    >
+                      Tambahkan
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Yang sudah dipilih, tampil sebagai daftar seperti hasil pencarian */}
             {terpilih.length > 0 && (
@@ -217,7 +411,7 @@ function PenggunaFormModal({
             )}
 
             {/* Kondisi awal: belum mengetik dan belum memilih siapa pun */}
-            {terpilih.length === 0 && !query.trim() && (
+            {terpilih.length === 0 && !query.trim() && !manualOpen && (
               <div className="mt-4 flex flex-1 min-h-0 flex-col items-center justify-center text-center px-6">
                 <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
                   <UserPlus className="w-6 h-6 text-gray-400" />
