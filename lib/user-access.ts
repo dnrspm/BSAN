@@ -504,6 +504,32 @@ export function savePenggunaAkses(list: PenggunaAkses[]): void {
   }
 }
 
+/**
+ * Pesan sukses yang dititipkan satu halaman untuk ditampilkan halaman berikutnya
+ * (mis. Beri Akses → tabel Akses Pengguna). Sekali baca, langsung dihapus.
+ */
+const NOTIF_KEY = "penggunaAksesNotif"
+
+export function simpanNotifAkses(pesan: string): void {
+  if (typeof window === "undefined") return
+  try {
+    sessionStorage.setItem(NOTIF_KEY, pesan)
+  } catch {
+    /* storage tidak tersedia — abaikan */
+  }
+}
+
+export function ambilNotifAkses(): string {
+  if (typeof window === "undefined") return ""
+  try {
+    const pesan = sessionStorage.getItem(NOTIF_KEY) ?? ""
+    if (pesan) sessionStorage.removeItem(NOTIF_KEY)
+    return pesan
+  } catch {
+    return ""
+  }
+}
+
 /** Nama wilayah penugasan tanpa tingkatnya, mis. "Surabaya" atau "Aceh". */
 export function namaWilayahPenugasan(p: PenggunaAkses): string {
   if (p.tingkatWilayah === "nasional") return "Seluruh Indonesia"

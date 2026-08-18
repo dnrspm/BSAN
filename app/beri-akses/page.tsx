@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Info, Plus, Search, Trash2, UserPlus, X } from "lucide-react"
+import { AlertCircle, ArrowLeft, Info, Mail, Plus, Trash2, UserPlus, X } from "lucide-react"
 import { KAB_KOTA_BY_PROVINSI } from "@/data/kabKotaData"
 import {
   PERAN_LABEL_SINGKAT,
@@ -16,6 +16,7 @@ import {
   labelJabatan,
   readPenggunaAkses,
   savePenggunaAkses,
+  simpanNotifAkses,
   type PenggunaAkses,
   type PeranPengguna,
   type TingkatWilayah,
@@ -70,6 +71,8 @@ export default function BeriAksesPage() {
   const [terpilih, setTerpilih] = useState<PenggunaTerpilih[]>([])
   const [query, setQuery] = useState("")
   const [error, setError] = useState("")
+  /** Validasi format email baru ditampilkan setelah tombol Beri Akses ditekan. */
+  const [validasiTampil, setValidasiTampil] = useState(false)
 
   // Input manual: dipakai saat email belum terdaftar di direktori, sehingga
   // peran dan wilayah kewenangannya harus ditentukan sendiri oleh admin.
@@ -91,10 +94,27 @@ export default function BeriAksesPage() {
     [daftar, terpilih]
   )
 
+  const emailQuery = query.trim().toLowerCase()
+  const formatEmailValid = POLA_EMAIL.test(emailQuery)
+
+  // Pencarian dibatasi ke alamat email saja, bukan instansi atau wilayah.
   const saran = useMemo(
-    () => cariKandidatEmail(query, emailDikecualikan, 8),
-    [query, emailDikecualikan]
+    () =>
+      cariKandidatEmail(emailQuery, emailDikecualikan, 8).filter((k) =>
+        k.email.toLowerCase().includes(emailQuery)
+      ),
+    [emailQuery, emailDikecualikan]
   )
+
+  /** Email yang diketik sudah ada di daftar akses atau sudah dipilih di sesi ini. */
+  const sudahDipakai =
+    formatEmailValid && emailDikecualikan.some((e) => e.trim().toLowerCase() === emailQuery)
+
+  /** Isian search bukan email dan sudah dicoba disimpan — tandai sebagai salah. */
+  const formatSalah = validasiTampil && !!emailQuery && !formatEmailValid
+
+  /** Formatnya sudah benar tapi emailnya tidak ada di direktori — tawarkan input manual. */
+  const emailTidakTersedia = formatEmailValid && !sudahDipakai && saran.length === 0
 
   const tambah = (p: PenggunaTerpilih) => {
     setTerpilih((t) => [...t, p])
@@ -105,9 +125,8 @@ export default function BeriAksesPage() {
   const hapusTerpilih = (email: string) => setTerpilih((t) => t.filter((x) => x.email !== email))
 
   const bukaManual = () => {
-    const q = query.trim()
-    // Kata kunci yang berbentuk email dibawa ke kolom email agar tidak diketik ulang.
-    setManualEmails([q.includes("@") ? q : ""])
+    // Email yang dicari dibawa ke kolom email agar tidak diketik ulang.
+    setManualEmails([POLA_EMAIL.test(emailQuery) ? emailQuery : ""])
     setManualPeran("")
     setManualTingkat("")
     setManualProvinsi("")
@@ -223,6 +242,8 @@ export default function BeriAksesPage() {
 
   const simpan = () => {
     if (terpilih.length === 0) {
+      // Kolom pencarian ikut divalidasi supaya jelas kenapa belum ada yang terpilih.
+      setValidasiTampil(true)
       setError("Pilih minimal satu pengguna")
       return
     }
@@ -236,6 +257,8 @@ export default function BeriAksesPage() {
       ...jejak,
     }))
     savePenggunaAkses([...daftar, ...baru])
+    // Snackbar-nya ditampilkan tabel Akses Pengguna setelah halaman ini ditutup.
+    simpanNotifAkses(`Akses berhasil diberikan ke ${baru.length} pengguna`)
     router.push(URL_KEMBALI)
   }
 
@@ -269,72 +292,105 @@ export default function BeriAksesPage() {
           </p>
         </div>
 
-        <SectionCard title="Cari Pengguna" deskripsi="Ketik email, instansi, atau wilayah pengguna">
+        <SectionCard title="Cari Pengguna" deskripsi="Ketik alamat email pengguna">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
             <input
-              type="text"
+              type="email"
+              inputMode="email"
+              autoComplete="off"
               value={query}
-              onChange={(e) => { setQuery(e.target.value); setError("") }}
+              onChange={(e) => { setQuery(e.target.value); setError(""); setValidasiTampil(false) }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault()
                   // Enter memilih saran pertama yang memang boleh dipilih.
                   const pertama = saran.find((k) => k.peran !== null)
-                  if (pertama?.peran) tambah({ ...pertama, peran: pertama.peran })
+                  if (pertama?.peran) { tambah({ ...pertama, peran: pertama.peran }); return }
+                  // Emailnya valid tapi tidak ada di direktori — langsung ke input manual.
+                  if (emailTidakTersedia) bukaManual()
                 }
               }}
-              placeholder="Ketik email, instansi atau wilayah"
-              className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="nama@instansi.go.id"
+              aria-invalid={formatSalah}
+              className={`w-full h-10 pl-9 pr-3 text-sm border rounded-lg focus:outline-none focus:ring-2 ${
+                formatSalah
+                  ? "border-red-300 focus:ring-red-500 focus:border-red-500"
+                  : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              }`}
             />
           </div>
 
-          {query.trim() && (
+          {/* Penjagaan format: peringatan baru muncul saat pengguna menekan
+              Beri Akses, bukan saat email masih diketik. */}
+          {formatSalah && (
+            <p className="text-xs text-red-600 mt-2">
+              Masukkan alamat email yang lengkap dan valid, contoh: nama@instansi.go.id
+            </p>
+          )}
+
+          {sudahDipakai && (
+            <p className="text-xs text-gray-500 mt-2">
+              {emailQuery} sudah punya akses atau sudah dipilih.
+            </p>
+          )}
+
+          {saran.length > 0 && (
             <div className="mt-2 w-full border border-gray-200 rounded-lg overflow-hidden max-h-80 overflow-y-auto">
-              {saran.length > 0 ? (
-                saran.map((k) => (
-                  <button
-                    key={k.email}
-                    type="button"
-                    disabled={k.peran === null}
-                    onClick={() => { if (k.peran) tambah({ ...k, peran: k.peran }) }}
-                    className={`w-full text-left px-3 py-2.5 border-b border-gray-100 last:border-b-0 ${
-                      k.peran ? "hover:bg-gray-50" : "bg-gray-50/60 cursor-not-allowed"
+              {saran.map((k) => (
+                <button
+                  key={k.email}
+                  type="button"
+                  disabled={k.peran === null}
+                  onClick={() => { if (k.peran) tambah({ ...k, peran: k.peran }) }}
+                  className={`w-full text-left px-3 py-2.5 border-b border-gray-100 last:border-b-0 ${
+                    k.peran ? "hover:bg-gray-50" : "bg-gray-50/60 cursor-not-allowed"
+                  }`}
+                >
+                  <span
+                    className={`block text-sm font-medium truncate ${
+                      k.peran ? "text-gray-900" : "text-gray-400"
                     }`}
                   >
-                    <span
-                      className={`block text-sm font-medium truncate ${
-                        k.peran ? "text-gray-900" : "text-gray-400"
-                      }`}
-                    >
-                      {k.email}
-                    </span>
-                    {/* Instansi sudah memuat nama wilayahnya, jadi tidak
-                        perlu diulang di baris ini. */}
-                    <span
-                      className={`block text-xs truncate ${k.peran ? "text-gray-500" : "text-gray-400"}`}
-                    >
-                      {labelJabatan(k)}
-                    </span>
-                  </button>
-                ))
-              ) : (
-                <p className="px-3 py-3 text-xs text-gray-500">
-                  Tidak ada pengguna cocok dengan “{query.trim()}”.
-                </p>
-              )}
+                    {k.email}
+                  </span>
+                  {/* Instansi sudah memuat nama wilayahnya, jadi tidak
+                      perlu diulang di baris ini. */}
+                  <span
+                    className={`block text-xs truncate ${k.peran ? "text-gray-500" : "text-gray-400"}`}
+                  >
+                    {labelJabatan(k)}
+                  </span>
+                </button>
+              ))}
             </div>
           )}
 
-          {!manualOpen && (
-            <button
-              type="button"
-              onClick={bukaManual}
-              className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Email tidak ditemukan? Input manual
-            </button>
+          {/* Formatnya benar tapi email tidak ada di database: satu-satunya jalan
+              adalah mendaftarkannya lewat input manual. */}
+          {emailTidakTersedia && !manualOpen && (
+            <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div className="min-w-0">
+                  <p className="text-xs font-medium text-amber-900">
+                    Email {emailQuery} tidak tersedia di database
+                  </p>
+                  <p className="text-xs text-amber-800 mt-0.5">
+                    Daftarkan email ini secara manual beserta peran dan wilayah kewenangannya.
+                  </p>
+                  {/* Sejajar dengan teks banner, bukan dengan ikonnya. */}
+                  <button
+                    type="button"
+                    onClick={bukaManual}
+                    className="mt-2.5 inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 text-xs font-medium hover:border-gray-400 hover:bg-gray-50 transition"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Input Manual
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
 
           {error && <p className="text-xs text-red-600 mt-2">{error}</p>}
@@ -560,8 +616,7 @@ export default function BeriAksesPage() {
           </button>
           <button
             onClick={simpan}
-            disabled={terpilih.length === 0}
-            className="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
           >
             Beri Akses{terpilih.length > 0 ? ` (${terpilih.length})` : ""}
           </button>

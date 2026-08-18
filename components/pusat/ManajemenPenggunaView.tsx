@@ -1,12 +1,13 @@
 "use client"
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Search, Plus, ShieldOff, AlertTriangle, ArrowUp } from "lucide-react"
+import { Search, Plus, ShieldOff, AlertTriangle, ArrowUp, CheckCircle2 } from "lucide-react"
 import {
   PERAN_LABEL,
   PERAN_LABEL_SINGKAT,
   PERAN_LIST,
   TINGKAT_LABEL,
+  ambilNotifAkses,
   namaWilayahPenugasan,
   readPenggunaAkses,
   savePenggunaAkses,
@@ -93,6 +94,9 @@ export function ManajemenPenggunaView() {
   const [deleting, setDeleting] = useState<PenggunaAkses | null>(null)
   const [halaman, setHalaman] = useState(1)
 
+  /** Snackbar: hijau untuk pemberian akses, netral untuk pencabutan. */
+  const [notif, setNotif] = useState<{ pesan: string; nada: "sukses" | "netral" } | null>(null)
+
   const [urutKolom, setUrutKolom] = useState<KolomUrut>("email")
   const [urutArah, setUrutArah] = useState<"asc" | "desc">("asc")
 
@@ -112,7 +116,17 @@ export function ManajemenPenggunaView() {
   useEffect(() => {
     setList(readPenggunaAkses())
     setMounted(true)
+    // Effect bisa jalan dua kali (StrictMode); pesan yang sudah terbaca jangan
+    // menimpa state dengan string kosong.
+    const pesan = ambilNotifAkses()
+    if (pesan) setNotif({ pesan, nada: "sukses" })
   }, [])
+
+  useEffect(() => {
+    if (!notif) return
+    const t = setTimeout(() => setNotif(null), 4000)
+    return () => clearTimeout(t)
+  }, [notif])
 
   const persist = (next: PenggunaAkses[]) => {
     setList(next)
@@ -153,6 +167,24 @@ export function ManajemenPenggunaView() {
 
   return (
     <div className="space-y-5">
+      {/* Snackbar konfirmasi: pemberian akses hijau, pencabutan bernada netral */}
+      {notif && (
+        <div className="fixed bottom-6 inset-x-0 z-50 px-4 flex justify-center pointer-events-none">
+          <div
+            className={`flex items-center gap-2 px-4 py-3 rounded-lg text-white shadow-lg ${
+              notif.nada === "sukses" ? "bg-green-600" : "bg-gray-900"
+            }`}
+          >
+            {notif.nada === "sukses" ? (
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+            ) : (
+              <ShieldOff className="w-4 h-4 flex-shrink-0" />
+            )}
+            <span className="text-sm font-medium">{notif.pesan}</span>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
@@ -347,6 +379,7 @@ export function ManajemenPenggunaView() {
           onClose={() => setDeleting(null)}
           onConfirm={() => {
             persist(list.filter((p) => p.id !== deleting.id))
+            setNotif({ pesan: `Akses ${deleting.email} berhasil dicabut`, nada: "netral" })
             setDeleting(null)
           }}
         />
