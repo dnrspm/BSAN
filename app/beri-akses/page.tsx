@@ -70,9 +70,8 @@ export default function BeriAksesPage() {
   const [daftar, setDaftar] = useState<PenggunaAkses[]>([])
   const [terpilih, setTerpilih] = useState<PenggunaTerpilih[]>([])
   const [query, setQuery] = useState("")
-  const [error, setError] = useState("")
-  /** Validasi format email baru ditampilkan setelah tombol Beri Akses ditekan. */
-  const [validasiTampil, setValidasiTampil] = useState(false)
+  /** Format email di kolom pencarian baru dinilai setelah kolomnya ditinggalkan. */
+  const [emailDisentuh, setEmailDisentuh] = useState(false)
 
   // Input manual: dipakai saat email belum terdaftar di direktori, sehingga
   // peran dan wilayah kewenangannya harus ditentukan sendiri oleh admin.
@@ -110,8 +109,8 @@ export default function BeriAksesPage() {
   const sudahDipakai =
     formatEmailValid && emailDikecualikan.some((e) => e.trim().toLowerCase() === emailQuery)
 
-  /** Isian search bukan email dan sudah dicoba disimpan — tandai sebagai salah. */
-  const formatSalah = validasiTampil && !!emailQuery && !formatEmailValid
+  /** Isian search bukan email dan kolomnya sudah ditinggalkan — tandai sebagai salah. */
+  const formatSalah = emailDisentuh && !!emailQuery && !formatEmailValid
 
   /** Formatnya sudah benar tapi emailnya tidak ada di direktori — tawarkan input manual. */
   const emailTidakTersedia = formatEmailValid && !sudahDipakai && saran.length === 0
@@ -119,7 +118,7 @@ export default function BeriAksesPage() {
   const tambah = (p: PenggunaTerpilih) => {
     setTerpilih((t) => [...t, p])
     setQuery("")
-    setError("")
+    setEmailDisentuh(false)
   }
 
   const hapusTerpilih = (email: string) => setTerpilih((t) => t.filter((x) => x.email !== email))
@@ -133,13 +132,27 @@ export default function BeriAksesPage() {
     setManualKabKota("")
     setManualError("")
     setManualOpen(true)
-    setError("")
   }
 
   const tutupManual = () => {
     setManualOpen(false)
     setManualError("")
   }
+
+  // Selama modal terbuka: Esc menutupnya dan halaman di belakangnya tidak ikut menggulir.
+  useEffect(() => {
+    if (!manualOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") tutupManual()
+    }
+    document.addEventListener("keydown", onKey)
+    const overflowAsli = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.removeEventListener("keydown", onKey)
+      document.body.style.overflow = overflowAsli
+    }
+  }, [manualOpen])
 
   /**
    * Ganti peran: opsi wilayah mengikuti peran, jadi pilihan wilayah sebelumnya
@@ -235,18 +248,14 @@ export default function BeriAksesPage() {
       })),
     ])
     setQuery("")
-    setError("")
+    setEmailDisentuh(false)
     setManualOpen(false)
     setManualError("")
   }
 
   const simpan = () => {
-    if (terpilih.length === 0) {
-      // Kolom pencarian ikut divalidasi supaya jelas kenapa belum ada yang terpilih.
-      setValidasiTampil(true)
-      setError("Pilih minimal satu pengguna")
-      return
-    }
+    // Tombolnya dinonaktifkan saat daftar kosong; ini cuma jaring pengaman.
+    if (terpilih.length === 0) return
     const jejak = { diperbaruiPada: nowISO(), diperbaruiOleh: getAktorSaatIni() }
     const baru: PenggunaAkses[] = terpilih.map((t, i) => ({
       id: `u_${Date.now()}_${i}`,
@@ -300,7 +309,8 @@ export default function BeriAksesPage() {
               inputMode="email"
               autoComplete="off"
               value={query}
-              onChange={(e) => { setQuery(e.target.value); setError(""); setValidasiTampil(false) }}
+              onChange={(e) => { setQuery(e.target.value); setEmailDisentuh(false) }}
+              onBlur={() => setEmailDisentuh(true)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault()
@@ -392,16 +402,87 @@ export default function BeriAksesPage() {
               </div>
             </div>
           )}
-
-          {error && <p className="text-xs text-red-600 mt-2">{error}</p>}
         </SectionCard>
 
-        {/* Input manual: email di luar direktori, peran dan wilayah ditentukan admin */}
-        {manualOpen && (
-          <section className="rounded-xl border border-gray-200 bg-white p-5">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="text-sm font-bold text-gray-900">Input Pengguna Manual</h2>
+        <SectionCard title={`Pengguna Dipilih (${terpilih.length})`}>
+          {terpilih.length > 0 ? (
+            <div className="border border-gray-200 rounded-lg">
+              {terpilih.map((t) => (
+                <div
+                  key={t.email}
+                  className="flex items-center gap-2 px-3 py-3 border-b border-gray-100 last:border-b-0"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-gray-900 truncate">{t.email}</p>
+                    <p className="text-xs text-gray-500 truncate">{labelJabatan(t)}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => hapusTerpilih(t.email)}
+                    className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 flex-shrink-0"
+                    aria-label={`Hapus ${t.email}`}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center text-center py-10 px-6">
+              <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                <UserPlus className="w-6 h-6 text-gray-400" />
+              </div>
+              <p className="text-sm font-medium text-gray-700 mt-3">Belum ada pengguna dipilih</p>
+              <p className="text-xs text-gray-500 mt-1 max-w-sm">
+                Pengguna yang dipilih dari pencarian atau input manual akan tampil di sini sebelum
+                akses diberikan.
+              </p>
+            </div>
+          )}
+        </SectionCard>
+      </div>
+
+      {/* Aksi utama dipatok di bawah layar agar selalu terjangkau, baik saat
+          halamannya pendek maupun panjang. */}
+      <div className="fixed bottom-0 inset-x-0 z-10 bg-white border-t border-gray-200">
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-end gap-2">
+          <button
+            onClick={() => router.push(URL_KEMBALI)}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+          >
+            Batal
+          </button>
+          <button
+            onClick={simpan}
+            disabled={terpilih.length === 0}
+            title={terpilih.length === 0 ? "Belum ada pengguna dipilih" : undefined}
+            className="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
+          >
+            Beri Akses{terpilih.length > 0 ? ` (${terpilih.length})` : ""}
+          </button>
+        </div>
+      </div>
+
+      {/* Input manual dibuat modal: selama form terbuka, tombol Beri Akses tidak
+          bisa diklik sehingga urutannya jelas — Tambahkan dulu, baru beri akses. */}
+      {manualOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+          <div
+            className="absolute inset-0 bg-gray-900/40"
+            onClick={tutupManual}
+            aria-hidden="true"
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="judul-input-manual"
+            className="relative w-full sm:max-w-lg max-h-[90vh] flex flex-col bg-white rounded-t-2xl sm:rounded-2xl shadow-xl"
+          >
+            <div className="flex items-start justify-between gap-3 px-5 py-4 border-b border-gray-200">
+              <div className="min-w-0">
+                <h2 id="judul-input-manual" className="text-sm font-bold text-gray-900">
+                  Input Pengguna Manual
+                </h2>
                 <p className="text-xs text-gray-500 mt-0.5">
                   Pilih peran dan wilayah kewenangan dulu, lalu masukkan email-nya
                 </p>
@@ -409,14 +490,16 @@ export default function BeriAksesPage() {
               <button
                 type="button"
                 onClick={tutupManual}
-                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 flex-shrink-0"
                 aria-label="Tutup input manual"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="mt-4 space-y-4">
+            {/* Isian bisa panjang (provinsi + banyak email), jadi yang menggulir
+                hanya badan dialog — header dan tombolnya tetap terlihat. */}
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
               <div>
                 <label className="text-xs font-medium text-gray-700">Peran</label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
@@ -543,9 +626,10 @@ export default function BeriAksesPage() {
                   </button>
                 </div>
               )}
+            </div>
 
+            <div className="px-5 py-3 border-t border-gray-200 space-y-2">
               {manualError && <p className="text-xs text-red-600">{manualError}</p>}
-
               <div className="flex items-center justify-end gap-2">
                 <button
                   type="button"
@@ -557,71 +641,16 @@ export default function BeriAksesPage() {
                 <button
                   type="button"
                   onClick={tambahManual}
-                  className="px-3 h-9 text-xs font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition"
+                  className="inline-flex items-center gap-1.5 px-3 h-9 text-xs font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition"
                 >
+                  <Plus className="w-3.5 h-3.5" />
                   Tambahkan{jumlahEmailTerisi > 1 ? ` ${jumlahEmailTerisi} Email` : ""}
                 </button>
               </div>
             </div>
-          </section>
-        )}
-
-        <SectionCard title={`Pengguna Dipilih (${terpilih.length})`}>
-          {terpilih.length > 0 ? (
-            <div className="border border-gray-200 rounded-lg">
-              {terpilih.map((t) => (
-                <div
-                  key={t.email}
-                  className="flex items-center gap-2 px-3 py-3 border-b border-gray-100 last:border-b-0"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-gray-900 truncate">{t.email}</p>
-                    <p className="text-xs text-gray-500 truncate">{labelJabatan(t)}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => hapusTerpilih(t.email)}
-                    className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 flex-shrink-0"
-                    aria-label={`Hapus ${t.email}`}
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center text-center py-10 px-6">
-              <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-                <UserPlus className="w-6 h-6 text-gray-400" />
-              </div>
-              <p className="text-sm font-medium text-gray-700 mt-3">Belum ada pengguna dipilih</p>
-              <p className="text-xs text-gray-500 mt-1 max-w-sm">
-                Pengguna yang dipilih dari pencarian atau input manual akan tampil di sini sebelum
-                akses diberikan.
-              </p>
-            </div>
-          )}
-        </SectionCard>
-      </div>
-
-      {/* Aksi utama dipatok di bawah layar agar selalu terjangkau, baik saat
-          halamannya pendek maupun panjang. */}
-      <div className="fixed bottom-0 inset-x-0 z-10 bg-white border-t border-gray-200">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-end gap-2">
-          <button
-            onClick={() => router.push(URL_KEMBALI)}
-            className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
-          >
-            Batal
-          </button>
-          <button
-            onClick={simpan}
-            className="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
-          >
-            Beri Akses{terpilih.length > 0 ? ` (${terpilih.length})` : ""}
-          </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
