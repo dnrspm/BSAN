@@ -267,7 +267,7 @@ export default function BeriAksesPage() {
     }))
     savePenggunaAkses([...daftar, ...baru])
     // Snackbar-nya ditampilkan tabel Akses Pengguna setelah halaman ini ditutup.
-    simpanNotifAkses(`Akses berhasil diberikan ke ${baru.length} pengguna`)
+    simpanNotifAkses(`Berhasil memberikan akses ke ${baru.length} pengguna!`)
     router.push(URL_KEMBALI)
   }
 
@@ -296,12 +296,12 @@ export default function BeriAksesPage() {
         <div className="flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2.5">
           <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-blue-800">
-            Akses bisa diberikan ke Admin Pusat, BPMP, dan Admin Dinas Pendidikan yang terdaftar. Bila
-            emailnya belum terdaftar, input manual beserta peran dan wilayah kewenangannya.
+            Akses berlaku untuk Admin Pusat, BPMP, dan Admin Dinas Pendidikan yang terdaftar. Jika
+            belum terdaftar, silakan daftarkan secara mandiri melalui form yang tersedia di halaman ini.
           </p>
         </div>
 
-        <SectionCard title="Cari Pengguna" deskripsi="Ketik alamat email pengguna">
+        <SectionCard title="Cari dan Pilih Pengguna" deskripsi="Ketik email pengguna yang telah terdaftar.">
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
             <input
@@ -384,10 +384,10 @@ export default function BeriAksesPage() {
                 <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                 <div className="min-w-0">
                   <p className="text-xs font-medium text-amber-900">
-                    Email {emailQuery} tidak tersedia di database
+                    {emailQuery} Belum Terdaftar
                   </p>
                   <p className="text-xs text-amber-800 mt-0.5">
-                    Daftarkan email ini secara manual beserta peran dan wilayah kewenangannya.
+                    Daftarkan email secara mandiri untuk memberikan akses pengguna.
                   </p>
                   {/* Sejajar dengan teks banner, bukan dengan ikonnya. */}
                   <button
@@ -396,7 +396,7 @@ export default function BeriAksesPage() {
                     className="mt-2.5 inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 text-xs font-medium hover:border-gray-400 hover:bg-gray-50 transition"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    Input Manual
+                    Daftarkan Pengguna
                   </button>
                 </div>
               </div>
@@ -433,10 +433,6 @@ export default function BeriAksesPage() {
                 <UserPlus className="w-6 h-6 text-gray-400" />
               </div>
               <p className="text-sm font-medium text-gray-700 mt-3">Belum ada pengguna dipilih</p>
-              <p className="text-xs text-gray-500 mt-1 max-w-sm">
-                Pengguna yang dipilih dari pencarian atau input manual akan tampil di sini sebelum
-                akses diberikan.
-              </p>
             </div>
           )}
         </SectionCard>
@@ -481,10 +477,10 @@ export default function BeriAksesPage() {
             <div className="flex items-start justify-between gap-3 px-5 py-4 border-b border-gray-200">
               <div className="min-w-0">
                 <h2 id="judul-input-manual" className="text-sm font-bold text-gray-900">
-                  Input Pengguna Manual
+                  Daftarkan Pengguna
                 </h2>
                 <p className="text-xs text-gray-500 mt-0.5">
-                  Pilih peran dan wilayah kewenangan dulu, lalu masukkan email-nya
+                  Anda dapat mendaftarkan lebih dari 1 email pengguna untuk peran dan wilayah kewenangan yang sama
                 </p>
               </div>
               <button
@@ -592,7 +588,7 @@ export default function BeriAksesPage() {
                 <div>
                   <label className="text-xs font-medium text-gray-700">Email</label>
                   <p className="text-xs text-gray-500 mt-0.5">
-                    Semua email di bawah ini memakai peran dan wilayah yang sama.
+                    Semua email di bawah ini akan mendapatkan akses peran dengan wilayah kewenangan yang sama.
                   </p>
                   <div className="mt-1.5 space-y-2">
                     {manualEmails.map((email, i) => (
@@ -644,7 +640,7 @@ export default function BeriAksesPage() {
                   className="inline-flex items-center gap-1.5 px-3 h-9 text-xs font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  Tambahkan{jumlahEmailTerisi > 1 ? ` ${jumlahEmailTerisi} Email` : ""}
+                  Simpan{jumlahEmailTerisi > 1 ? ` ${jumlahEmailTerisi} Email` : ""}
                 </button>
               </div>
             </div>

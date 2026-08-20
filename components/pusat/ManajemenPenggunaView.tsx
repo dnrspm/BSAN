@@ -379,7 +379,7 @@ export function ManajemenPenggunaView() {
           onClose={() => setDeleting(null)}
           onConfirm={() => {
             persist(list.filter((p) => p.id !== deleting.id))
-            setNotif({ pesan: `Akses ${deleting.email} berhasil dicabut`, nada: "netral" })
+            setNotif({ pesan: `Berhasil mencabut akses untuk ${deleting.email}.`, nada: "netral" })
             setDeleting(null)
           }}
         />

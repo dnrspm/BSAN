@@ -1204,7 +1204,7 @@ function TambahPelanggaranInner() {
             <div className="grid grid-cols-1 gap-4">
               {(item as any).rencanaProgram && (
                 <div className="flex flex-col gap-1.5">
-                  <FieldLabel>Rencana Program untuk Mencegah/Mengatasi Pelanggaran di Masa Depan</FieldLabel>
+                  <FieldLabel>Rencana Pencegahan Pelanggaran di Masa Depan</FieldLabel>
                   <div className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-default whitespace-pre-wrap">
                     {(item as any).rencanaProgram}
                   </div>
@@ -2200,8 +2200,8 @@ function TambahPelanggaranInner() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <FieldLabel>Rencana Program untuk Mencegah/Mengatasi Pelanggaran di Masa Depan <span className="text-gray-400">(opsional)</span></FieldLabel>
-              <p className="text-xs text-gray-400">Isi program atau kegiatan yang akan dilakukan selama/pasca penanganan kasus untuk mencegah permasalahan serupa terulang.</p>
+              <FieldLabel>Rencana Pencegahan Pelanggaran di Masa Depan <span className="text-gray-400">(opsional)</span></FieldLabel>
+              <p className="text-xs text-gray-400">Isi dengan ide atau rencana kegiatan yang dapat dilakukan selama/pasca penanganan kasus agar pelanggaran tidak terulang.</p>
               <textarea
                 value={form.rencanaProgram}
                 onChange={(e) => setForm((prev) => ({ ...prev, rencanaProgram: e.target.value }))}
