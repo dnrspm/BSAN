@@ -527,6 +527,59 @@ function StatusBadge({ status }: { status: StatusPelanggaran }) {
   }
 }
 
+function StatusLogList({ entries }: { entries?: { status: StatusPelanggaran; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }[] }) {
+  if (!Array.isArray(entries) || entries.length === 0) {
+    return <span className="text-sm text-gray-400">Belum ada riwayat status.</span>
+  }
+  return (
+    <div className="flex flex-col gap-3">
+      {entries.slice().reverse().map((entry, i) => {
+        const dibuatOleh = entry.dibuatOleh || entry.keterangan.match(/oleh (.+)$/)?.[1] || ""
+        const labelAksi = entry.aksi === "perbaharui_status" ? "Diperbaharui" : entry.aksi === "edit" ? "Diedit" : "Dibuat"
+        const keterangan = entry.keterangan.replace(/ — oleh .+$/, "").replace(/^Laporan awal (dibuat )?/, "").trim()
+        return (
+          <div key={i} className="p-3 bg-gray-50 rounded-lg space-y-1">
+            <div className="flex items-center gap-2">
+              <StatusBadge status={entry.status} />
+              <span className="text-xs text-gray-500">{labelAksi} oleh {dibuatOleh}</span>
+            </div>
+            {keterangan && <p className="text-xs text-gray-700"><span className="font-medium">Keterangan:</span> {keterangan}</p>}
+            {entry.dokumentasi ? <p className="text-xs text-gray-700"><span className="font-medium">Dokumentasi:</span> <DocumentasiValue value={entry.dokumentasi} /></p> : null}
+            {Array.isArray((entry as any).perubahan) && (entry as any).perubahan.length > 0 && (
+              <div className="text-xs text-gray-700">
+                <span className="font-medium">Perubahan:</span>
+                <div className="mt-1 border border-gray-200 rounded-lg overflow-hidden">
+                  <table className="w-full text-xs border-collapse">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="text-left font-medium text-gray-500 px-2 py-1 w-1/4">Field</th>
+                        <th className="text-left font-medium text-gray-500 px-2 py-1 w-[37.5%]">Sebelum</th>
+                        <th className="text-left font-medium text-gray-500 px-2 py-1 w-[37.5%]">Sesudah</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(entry as any).perubahan.map((p: { field: string; from: string; to: string }, pi: number) => (
+                        <tr key={pi} className="border-t border-gray-200 align-top">
+                          <td className="px-2 py-1 font-medium text-gray-700">{p.field}</td>
+                          <td className="px-2 py-1 text-gray-600">{p.from}</td>
+                          <td className="px-2 py-1 text-gray-900">{p.to}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+            <p className="text-xs text-gray-400">
+              {new Date(entry.waktu).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+            </p>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 function emptyForm() {
   return {
     namaSekolah: [] as string[],
@@ -1203,57 +1256,18 @@ function TambahPelanggaranInner() {
           <SectionCard icon={<CheckCircle className="w-4 h-4" />} title="Riwayat Status Pelanggaran">
             <div className="grid grid-cols-1 gap-4">
               {(item as any).rencanaProgram && (
+                <>
                 <div className="flex flex-col gap-1.5">
                   <FieldLabel>Rencana Pencegahan Pelanggaran di Masa Depan</FieldLabel>
                   <div className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-default whitespace-pre-wrap">
                     {(item as any).rencanaProgram}
                   </div>
                 </div>
+                <hr className="border-gray-300 -mx-5 my-2" />
+                </>
               )}
               <div className="flex flex-col gap-3">
-                {Array.isArray((item as any).logStatus) && (item as any).logStatus.length > 0 ? (item as any).logStatus.slice().reverse().map((entry: { status: StatusPelanggaran; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }, i: number) => {
-                  const dibuatOleh = entry.dibuatOleh || entry.keterangan.match(/oleh (.+)$/)?.[1] || ""
-                  const labelAksi = entry.aksi === "perbaharui_status" ? "Diperbaharui" : entry.aksi === "edit" ? "Diedit" : "Dibuat"
-                  const keterangan = entry.keterangan.replace(/ — oleh .+$/, "").replace(/^Laporan awal (dibuat )?/, "").trim()
-                  return (
-                    <div key={i} className="p-3 bg-gray-50 rounded-lg space-y-1">
-                      <div className="flex items-center gap-2">
-                        <StatusBadge status={entry.status} />
-                        <span className="text-xs text-gray-500">{labelAksi} oleh {dibuatOleh}</span>
-                      </div>
-                      {keterangan && <p className="text-xs text-gray-700"><span className="font-medium">Keterangan:</span> {keterangan}</p>}
-                      {(entry as any).dokumentasi ? <p className="text-xs text-gray-700"><span className="font-medium">Dokumentasi:</span> <DocumentasiValue value={(entry as any).dokumentasi} /></p> : null}
-                      {Array.isArray((entry as any).perubahan) && (entry as any).perubahan.length > 0 && (
-                        <div className="text-xs text-gray-700">
-                          <span className="font-medium">Perubahan:</span>
-                          <div className="mt-1 border border-gray-200 rounded-lg overflow-hidden">
-                            <table className="w-full text-xs border-collapse">
-                              <thead>
-                                <tr className="bg-gray-100">
-                                  <th className="text-left font-medium text-gray-500 px-2 py-1 w-1/4">Field</th>
-                                  <th className="text-left font-medium text-gray-500 px-2 py-1 w-[37.5%]">Sebelum</th>
-                                  <th className="text-left font-medium text-gray-500 px-2 py-1 w-[37.5%]">Sesudah</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {(entry as any).perubahan.map((p: { field: string; from: string; to: string }, pi: number) => (
-                                  <tr key={pi} className="border-t border-gray-200 align-top">
-                                    <td className="px-2 py-1 font-medium text-gray-700">{p.field}</td>
-                                    <td className="px-2 py-1 text-gray-600">{p.from}</td>
-                                    <td className="px-2 py-1 text-gray-900">{p.to}</td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      )}
-                      <p className="text-xs text-gray-400">
-                        {new Date(entry.waktu).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
-                      </p>
-                    </div>
-                  )
-                }) : <span className="text-sm text-gray-400">Belum ada riwayat status.</span>}
+                <StatusLogList entries={(item as any).logStatus} />
               </div>
             </div>
           </SectionCard>
@@ -2166,26 +2180,39 @@ function TambahPelanggaranInner() {
           </div>
         </SectionCard>
 
-        {!editId && (
-        <SectionCard icon={<CheckCircle className="w-4 h-4" />} title="Status Pelanggaran">
+        <SectionCard icon={<CheckCircle className="w-4 h-4" />} title="Riwayat Status Pelanggaran">
+          {editId ? (
+            <div className="grid grid-cols-1 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <FieldLabel>Rencana Pencegahan Pelanggaran di Masa Depan <span className="text-gray-400">(opsional)</span></FieldLabel>
+                <textarea
+                  value={form.rencanaProgram}
+                  onChange={(e) => setForm((prev) => ({ ...prev, rencanaProgram: e.target.value }))}
+                  placeholder="Contoh: sosialisasi pencegahan perundungan tiap semester, pembentukan tim satgas sekolah, pelatihan guru BK, atau penyusunan SOP penanganan kasus."
+                  rows={3}
+                  className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
+                />
+              </div>
+              <hr className="border-gray-300 -mx-5 my-2" />
+              <div className="flex flex-col gap-3">
+                <StatusLogList entries={item?.logStatus} />
+              </div>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 gap-4">
             <div className="flex flex-col gap-1.5">
               <FieldLabel required>Status Pelanggaran</FieldLabel>
-              {editId ? (
-                <div className="mt-1"><StatusBadge status={form.status as StatusPelanggaran || "baru"} /></div>
-              ) : (
-                <Select
-                  value={form.status}
-                  onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.value as StatusPelanggaran }))}
-                  className={`${SELECT_BASE} ${!form.status ? "text-gray-400" : ""}`}
-                >
-                  <option value="" disabled>Pilih status</option>
-                  <option value="baru">Belum Diproses</option>
-                  <option value="proses">Diproses</option>
-                  <option value="selesai">Selesai</option>
-                  <option value="ditutup">Ditutup</option>
-                </Select>
-              )}
+              <Select
+                value={form.status}
+                onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.value as StatusPelanggaran }))}
+                className={`${SELECT_BASE} ${!form.status ? "text-gray-400" : ""}`}
+              >
+                <option value="" disabled>Pilih status</option>
+                <option value="baru">Belum Diproses</option>
+                <option value="proses">Diproses</option>
+                <option value="selesai">Selesai</option>
+                <option value="ditutup">Ditutup</option>
+              </Select>
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -2212,19 +2239,19 @@ function TambahPelanggaranInner() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-        <FieldLabel>Tautan Dokumentasi <span className="text-gray-400">(opsional)</span></FieldLabel>
+              <FieldLabel>Tautan Dokumentasi <span className="text-gray-400">(opsional)</span></FieldLabel>
               <p className="text-xs text-gray-400">Gunakan cloud storage seperti Google Drive, OneDrive, dll. dengan akses terbatas (dapat dibuka jika melakukan pengajuan akses) untuk mengunggah foto, video, dokumen, tangkapan layar, atau audio. Salin dan masukkan tautannya di kolom ini</p>
-            <input
-              type="url"
-              value={form.dokumentasi ?? ""}
-              onChange={(e) => setForm((prev) => ({ ...prev, dokumentasi: e.target.value }))}
-              placeholder="https://drive.google.com/..."
+              <input
+                type="url"
+                value={form.dokumentasi ?? ""}
+                onChange={(e) => setForm((prev) => ({ ...prev, dokumentasi: e.target.value }))}
+                placeholder="https://drive.google.com/..."
                 className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
           </div>
+          )}
         </SectionCard>
-        )}
       </div>
 
       <div className="max-w-2xl mx-auto px-4 pb-8 flex gap-3">
