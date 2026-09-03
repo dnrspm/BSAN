@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select"
 import { DEFAULT_DINAS_NAMA, getDinasNamaForLogs, readAuthSession } from "@/lib/auth-session"
 import { RUJUKAN_LOG, dinasLog, formatLogTerakhirDisplay, getStatusAfterRestore } from "@/lib/rujukan-logs"
+import { KAB_KOTA_BY_PROVINSI } from "@/data/kabKotaData"
 
 const D_SEED = DEFAULT_DINAS_NAMA
 const actorDinasSeed = `Admin ${D_SEED}`
@@ -1732,83 +1733,111 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
       {showWilayahModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowWilayahModal(false)} />
-          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+          <div className={`relative bg-white rounded-xl shadow-2xl w-full max-h-[80vh] flex flex-col ${isBpmp ? "max-w-sm" : "max-w-2xl"}`}>
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
               <h3 className="text-base font-bold text-gray-900">Filter Wilayah</h3>
               <button onClick={() => setShowWilayahModal(false)} className="p-1 hover:bg-gray-100 rounded-lg">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
-            {/* 2 Column Layout: Province | Kabupaten */}
             <div className="flex-1 overflow-hidden">
-              <div className="flex h-full max-h-[400px]">
-                {/* Left: Province List */}
-                <div className="w-1/2 border-r border-gray-100 overflow-y-auto">
+              {isBpmp ? (
+                /* BPMP: langsung tampilkan daftar kab/kota tanpa pilih provinsi */
+                <div className="h-full max-h-[400px] overflow-y-auto">
                   <div className="p-2">
-                    {/* All Provinces Option */}
                     <button
                       onClick={() => { setFilterWilayah(null); setShowWilayahModal(false) }}
                       className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium ${!filterWilayah ? "bg-blue-50 text-blue-700" : "hover:bg-gray-50"}`}
                     >
-                      {isBpmp ? bpmpProvinsi : "Semua Provinsi"}
+                      Semua Kabupaten/Kota di {bpmpProvinsi}
                     </button>
-                    {(isBpmp ? [bpmpProvinsi!] : PROVINSI_LIST).map((province) => {
-                      const kabupatens = Array.from(new Set(list.filter((i) => i.provinsi === province).map((i) => i.kabupatenKota))).filter(Boolean).sort()
-                      const isSelected = filterWilayah?.province === province
-                      return (
+                    {(() => {
+                      const kabupatens = KAB_KOTA_BY_PROVINSI[bpmpProvinsi!] ?? []
+                      return kabupatens.map((kab) => (
                         <button
-                          key={province}
-                          onClick={() => setFilterWilayah({ province, kabupaten: "" })}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between ${
-                            isSelected ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-50"
+                          key={kab}
+                          onClick={() => { setFilterWilayah({ province: bpmpProvinsi!, kabupaten: kab }); setShowWilayahModal(false) }}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
+                            filterWilayah?.kabupaten === kab ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-50"
                           }`}
                         >
-                          <span className="truncate">{province}</span>
-                          {kabupatens.length > 0 && <span className="text-xs text-gray-400">{kabupatens.length}</span>}
+                          {kab}
                         </button>
-                      )
-                    })}
+                      ))
+                    })()}
                   </div>
                 </div>
-                {/* Right: Kabupaten List */}
-                <div className="w-1/2 overflow-y-auto bg-white">
-                  <div className="p-2">
-                    {filterWilayah ? (
-                      (() => {
-                        const kabupatens = Array.from(new Set(list.filter((i) => i.provinsi === filterWilayah.province).map((i) => i.kabupatenKota))).filter(Boolean).sort()
-                        if (kabupatens.length === 0) {
-                          return <p className="text-sm text-gray-400 p-3">Tidak ada kabupaten/kota</p>
-                        }
+              ) : (
+                /* Non-BPMP: 2 Column Layout: Province | Kabupaten */
+                <div className="flex h-full max-h-[400px]">
+                  {/* Left: Province List */}
+                  <div className="w-1/2 border-r border-gray-100 overflow-y-auto">
+                    <div className="p-2">
+                      {/* All Provinces Option */}
+                      <button
+                        onClick={() => { setFilterWilayah(null); setShowWilayahModal(false) }}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium ${!filterWilayah ? "bg-blue-50 text-blue-700" : "hover:bg-gray-50"}`}
+                      >
+                        Semua Provinsi
+                      </button>
+                      {PROVINSI_LIST.map((province) => {
+                        const kabupatens = Array.from(new Set(list.filter((i) => i.provinsi === province).map((i) => i.kabupatenKota))).filter(Boolean).sort()
+                        const isSelected = filterWilayah?.province === province
                         return (
-                          <>
-                            <button
-                              onClick={() => { setFilterWilayah({ province: filterWilayah.province, kabupaten: "" }); setShowWilayahModal(false) }}
-                              className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
-                                !filterWilayah.kabupaten ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-100"
-                              }`}
-                            >
-                              Semua Kabupaten/Kota
-                            </button>
-                            {kabupatens.map((kab) => (
+                          <button
+                            key={province}
+                            onClick={() => setFilterWilayah({ province, kabupaten: "" })}
+                            className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between ${
+                              isSelected ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-50"
+                            }`}
+                          >
+                            <span className="truncate">{province}</span>
+                            {kabupatens.length > 0 && <span className="text-xs text-gray-400">{kabupatens.length}</span>}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                  {/* Right: Kabupaten List */}
+                  <div className="w-1/2 overflow-y-auto bg-white">
+                    <div className="p-2">
+                      {filterWilayah ? (
+                        (() => {
+                          const kabupatens = Array.from(new Set(list.filter((i) => i.provinsi === filterWilayah.province).map((i) => i.kabupatenKota))).filter(Boolean).sort()
+                          if (kabupatens.length === 0) {
+                            return <p className="text-sm text-gray-400 p-3">Tidak ada kabupaten/kota</p>
+                          }
+                          return (
+                            <>
                               <button
-                                key={kab}
-                                onClick={() => { setFilterWilayah({ province: filterWilayah.province, kabupaten: kab }); setShowWilayahModal(false) }}
+                                onClick={() => { setFilterWilayah({ province: filterWilayah.province, kabupaten: "" }); setShowWilayahModal(false) }}
                                 className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
-                                  filterWilayah?.kabupaten === kab ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-100"
+                                  !filterWilayah.kabupaten ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-100"
                                 }`}
                               >
-                                {kab}
+                                Semua Kabupaten/Kota
                               </button>
-                            ))}
-                          </>
-                        )
-                      })()
-                    ) : (
-                      <p className="text-sm text-gray-400 p-3">Pilih province di kiri</p>
-                    )}
+                              {kabupatens.map((kab) => (
+                                <button
+                                  key={kab}
+                                  onClick={() => { setFilterWilayah({ province: filterWilayah.province, kabupaten: kab }); setShowWilayahModal(false) }}
+                                  className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
+                                    filterWilayah?.kabupaten === kab ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-100"
+                                  }`}
+                                >
+                                  {kab}
+                                </button>
+                              ))}
+                            </>
+                          )
+                        })()
+                      ) : (
+                        <p className="text-sm text-gray-400 p-3">Pilih province di kiri</p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button

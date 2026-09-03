@@ -14,7 +14,7 @@ interface SidebarBpmpProps {
 }
 
 const navItems = [
-  { id: "pokja" as BpmpMenu, label: "Pendaftaran Pokja", icon: Users },
+  { id: "pokja" as BpmpMenu, label: "Kelompok Kerja", icon: Users },
   { id: "sumber-dukungan" as BpmpMenu, label: "Sumber Dukungan", icon: BookOpenCheck },
   { id: "input-kasus" as BpmpMenu, label: "Pelanggaran", icon: AlertTriangle },
 ]

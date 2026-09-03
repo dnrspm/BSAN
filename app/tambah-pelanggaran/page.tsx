@@ -680,6 +680,17 @@ function TambahPelanggaranInner() {
     } catch {}
   }, [])
 
+  // BPMP: set wilayah ke provinsi scope-nya secara otomatis (field provinsi disembunyikan)
+  useEffect(() => {
+    if (role !== "bpmp") return
+    try {
+      const auth = JSON.parse(localStorage.getItem("auth") ?? "{}") as { provinsiBPMP?: string }
+      if (auth.provinsiBPMP) {
+        setForm((prev) => ({ ...prev, wilayah: prev.wilayah || auth.provinsiBPMP! }))
+      }
+    } catch {}
+  }, [role])
+
   // Load data for view/edit
   useEffect(() => {
     const loadId = viewId || editId
@@ -2074,22 +2085,24 @@ function TambahPelanggaranInner() {
 
             {(role === "pusat" || role === "bpmp") && !!form.tingkatKelompokKerja && (
               <div className={`grid gap-3 ${form.tingkatKelompokKerja === "kabkota" ? "grid-cols-2" : "grid-cols-1"}`}>
-                <div className="flex flex-col gap-1.5">
-                  <FieldLabel required>Provinsi</FieldLabel>
-                  <Select
-                    value={form.wilayah ?? ""}
-                    onChange={(e) => setForm((prev) => ({ ...prev, wilayah: e.target.value, kabupatenKota: "" }))}
-                    data-error-wajib={err("wilayah") ? "1" : undefined}
-                    className={`${err("wilayah") ? SELECT_BASE_ERROR : SELECT_BASE} ${!form.wilayah ? "text-gray-400" : ""}`}
-                    disabled={isBpmp}
-                  >
-                    <option value="" disabled>Pilih provinsi</option>
-                    {assignProvinsiOptions.map((p) => (
-                      <option key={p} value={p}>{p}</option>
-                    ))}
-                  </Select>
-                  <HelperWajib show={err("wilayah")} />
-                </div>
+                {!isBpmp && (
+                  <div className="flex flex-col gap-1.5">
+                    <FieldLabel required>Provinsi</FieldLabel>
+                    <Select
+                      value={form.wilayah ?? ""}
+                      onChange={(e) => setForm((prev) => ({ ...prev, wilayah: e.target.value, kabupatenKota: "" }))}
+                      data-error-wajib={err("wilayah") ? "1" : undefined}
+                      className={`${err("wilayah") ? SELECT_BASE_ERROR : SELECT_BASE} ${!form.wilayah ? "text-gray-400" : ""}`}
+                      disabled={isBpmp}
+                    >
+                      <option value="" disabled>Pilih provinsi</option>
+                      {assignProvinsiOptions.map((p) => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </Select>
+                    <HelperWajib show={err("wilayah")} />
+                  </div>
+                )}
                 {form.tingkatKelompokKerja === "kabkota" && (
                   <div className="flex flex-col gap-1.5">
                     <FieldLabel required>Kabupaten/Kota</FieldLabel>

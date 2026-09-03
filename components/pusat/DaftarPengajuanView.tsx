@@ -101,7 +101,7 @@ export function DaftarPengajuanView({ pokjaList, onSelect }: DaftarPengajuanView
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Cari wilayah"
-            className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-slate-600 transition"
+            className="w-full h-9 pl-9 pr-3 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-slate-600 transition"
           />
         </div>
         <div className="relative">
