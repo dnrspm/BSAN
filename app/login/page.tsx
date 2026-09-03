@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Lock, User } from "lucide-react"
 
 const VALID_USERS = [
-  { username: "admin.dinas",    password: "dinas123",   role: "dinas" },
+  { username: "admin.dinas",    password: "dinas123",   role: "dinas",  provinsi: "Aceh" },
   { username: "admin.pusat",    password: "pusat123",   role: "pusat" },
   { username: "admin.sekolah",  password: "sekolah123", role: "sekolah" },
+  { username: "bpmp.aceh",      password: "bpmp123",    role: "bpmp",   provinsi: "Aceh" },
+  { username: "bpmp.jabar",     password: "bpmp123",    role: "bpmp",   provinsi: "Jawa Barat" },
 ]
 
 export default function LoginPage() {
@@ -45,7 +47,13 @@ export default function LoginPage() {
                   wilayah: "Aceh - Banda Aceh",
                   namaDinas: "Dinas Pendidikan Provinsi Aceh",
                 }
-              : base
+              : user.role === "bpmp"
+                ? {
+                    ...base,
+                    namaBPMP: `BPMP Provinsi ${user.provinsi}`,
+                    provinsiBPMP: user.provinsi,
+                  }
+                : base
         localStorage.setItem("auth", JSON.stringify(payload))
       } catch {}
       console.log("[login] stored auth:", localStorage.getItem("auth"))

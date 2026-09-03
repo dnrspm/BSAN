@@ -67,6 +67,9 @@ interface PelanggaranItem {
   pelaporLainnya?: string
   tindakLanjut: string
   pic: string
+  tingkatKelompokKerja?: "" | "provinsi" | "kabkota"
+  wilayah?: string
+  kabupatenKota?: string
   dokumentasi: string
   rekomendasi: string
   motif?: string
@@ -1375,7 +1378,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
   )
 }
 
-export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; editId?: string }) {
+export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?: boolean; editId?: string; wilayahScope?: { provinsi: string; kabKotaList: string[] } }) {
   const [list, setList] = useState<PelanggaranItem[]>([])
   const [search, setSearch] = useState("")
   const [filterStatus, setFilterStatus] = useState<StatusPelanggaran | "semua">("semua")
@@ -1439,8 +1442,18 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
   }, [list])
 
   const filtered = useMemo(() => {
+    const inScope = (item: PelanggaranItem) => {
+      if (!wilayahScope) return true
+      const prov = item.wilayah ?? ""
+      if (!prov) return true
+      if (prov !== wilayahScope.provinsi) return false
+      const kab = item.kabupatenKota ?? ""
+      if (!kab) return true
+      return wilayahScope.kabKotaList.includes(kab)
+    }
     return list
       .filter((item) => {
+        if (!inScope(item)) return false
         const sekolahList = Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah]
         const npsnList = sekolahList.map((_, i) => getNpsn({ namaSekolah: sekolahList, npsnSekolah: item.npsnSekolah }, i))
         const matchSearch =
@@ -1455,7 +1468,7 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
         return matchSearch && matchStatus && matchKategori && matchTingkat && matchPIC
       })
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-  }, [list, search, filterStatus, filterKategori, filterTingkatUrgensi, filterPIC])
+  }, [list, search, filterStatus, filterKategori, filterTingkatUrgensi, filterPIC, wilayahScope])
 
   const totalRows = filtered.length
   const totalPages = Math.ceil(totalRows / rowsPerPage)
@@ -1484,9 +1497,11 @@ export function PelanggaranView({ readOnly, editId }: { readOnly?: boolean; edit
       ? `Admin Dinas ${session.namaDinas ?? ""}`
       : session?.role === "pusat"
         ? "Admin Pusat"
-        : session?.namaSekolah
-          ? `Admin Sekolah ${session.namaSekolah}`
-          : "Admin Sekolah"
+        : session?.role === "bpmp"
+          ? `Admin ${session.namaBPMP ?? "BPMP"}`
+          : session?.namaSekolah
+            ? `Admin Sekolah ${session.namaSekolah}`
+            : "Admin Sekolah"
   }
 
   const handleCreate = (data: Omit<PelanggaranItem, "id" | "createdAt" | "updatedAt" | "dibuatOleh" | "diperbaruiOleh">) => {

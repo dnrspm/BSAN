@@ -19,6 +19,11 @@ import { ValidatePokjaDrawer } from "@/components/pusat/ValidatePokjaDrawer"
 import { LaporanAkhirTahunPusatView } from "@/components/pusat/LaporanAkhirTahunPusatView"
 import { ManajemenPenggunaView } from "@/components/pusat/ManajemenPenggunaView"
 
+import { SidebarBpmp, BpmpMenu } from "@/components/bpmp/SidebarBpmp"
+import { HeaderBpmp } from "@/components/bpmp/HeaderBpmp"
+import { BpmpPokjaView } from "@/components/bpmp/BpmpPokjaView"
+import { getWilayahScope } from "@/lib/region-scope"
+
 import { SekolahDashboard } from "@/components/sekolah/SekolahDashboard"
 import { PelanggaranView } from "@/components/sekolah/PelanggaranView"
 
@@ -26,7 +31,7 @@ import { MOCK_PENGAJUAN, PengajuanPokja } from "@/data/mockPokja"
 import type { PokjaItem, PokjaData } from "@/types/pokja"
 import { getDrafts, clearDraft } from "@/lib/draft-storage"
 
-type AdminRole = "dinas" | "pusat" | "sekolah"
+type AdminRole = "dinas" | "pusat" | "sekolah" | "bpmp"
 type DinaMenu = "dashboard" | "data-pokja" | "sumber-rujukan" | "kegiatan" | "pelanggaran"
 
 const REGION = "Provinsi Aceh"
@@ -168,6 +173,7 @@ function DashboardPageInner() {
   const [role, setRole] = useState<AdminRole>("dinas")
   const [dinasMenu, setDinasMenu] = useState<DinaMenu>("dashboard")
   const [pusatMenu, setPusatMenu] = useState<PusatMenu>("dashboard")
+  const [bpmpMenu, setBpmpMenu] = useState<BpmpMenu>("pokja")
   const [pengajuan, setPengajuan] = useState<PengajuanPokja[]>(MOCK_PENGAJUAN)
   const [pokjaList, setPokjaList] = useState<PokjaItem[]>(MOCK_POKJA_LIST)
   const [selectedPengajuan, setSelectedPengajuan] = useState<PengajuanPokja | null>(null)
@@ -185,6 +191,7 @@ function DashboardPageInner() {
       if (parsed.role === "pusat") setRole("pusat")
       else if (parsed.role === "dinas") setRole("dinas")
       else if (parsed.role === "sekolah") setRole("sekolah")
+      else if (parsed.role === "bpmp") setRole("bpmp")
       else {
         router.replace("/")
         return
@@ -207,6 +214,15 @@ function DashboardPageInner() {
     const menuParam = searchParams.get("menu") as PusatMenu | null
     if (menuParam === "pelanggaran" || menuParam === "pengguna") {
       setPusatMenu(menuParam)
+    }
+  }, [searchParams])
+
+  // Handle ?menu= URL param for bpmp
+  useEffect(() => {
+    const menuParam = searchParams.get("menu") as BpmpMenu | null
+    if (menuParam && ["pokja", "sumber-dukungan", "input-kasus"].includes(menuParam)) {
+      setBpmpMenu(menuParam)
+      // Redirect BPMP which comes from form to the right menu (no redirect needed, just menu)
     }
   }, [searchParams])
 
@@ -500,6 +516,9 @@ function DashboardPageInner() {
     setValidatingPokja(null)
   }
 
+  const bpmpScope = getWilayahScope()
+  const bpmpProvinsi = bpmpScope.provinsi ?? ""
+
   return (
     <>
       {role === "dinas" && (
@@ -586,6 +605,31 @@ function DashboardPageInner() {
               onSave={handleSavePokjaValidation}
             />
           )}
+        </div>
+      )}
+
+      {role === "bpmp" && (
+        <div className="min-h-screen bg-gray-50 flex">
+          <SidebarBpmp activeMenu={bpmpMenu} onMenuChange={setBpmpMenu} />
+          <div className="flex-1 flex flex-col min-w-0">
+            <div className="md:hidden h-14" aria-hidden="true" />
+            <HeaderBpmp />
+            <main className="flex-1 px-4 md:px-6 py-6">
+              {bpmpMenu === "pokja" && (
+                <BpmpPokjaView
+                  pokjaList={pokjaList}
+                  provinsi={bpmpProvinsi}
+                  kabKotaList={bpmpScope.kabKotaList}
+                />
+              )}
+              {bpmpMenu === "sumber-dukungan" && (
+                <SumberRujukanView forBpmp={{ provinsi: bpmpProvinsi }} />
+              )}
+              {bpmpMenu === "input-kasus" && (
+                <PelanggaranView wilayahScope={{ provinsi: bpmpProvinsi, kabKotaList: bpmpScope.kabKotaList }} />
+              )}
+            </main>
+          </div>
         </div>
       )}
 

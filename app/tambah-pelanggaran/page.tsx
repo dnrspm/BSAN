@@ -79,6 +79,12 @@ function generateNomorKasus(existing: PelanggaranItem[]): string {
   return String(maxNomor + 1).padStart(3, "0")
 }
 
+/** Halaman kembali dari form input kasus; BPMP diarahkan ke menu input-kasus-nya. */
+function pelanggaranBackHref(role: string): string {
+  if (role === "bpmp") return "/dashboard?menu=input-kasus"
+  return "/dashboard?menu=pelanggaran"
+}
+
 const SEKOLAH_OPTIONS = [
   { npsn: "10101001", nama: "SDN 1 Banda Aceh" },
   { npsn: "10101002", nama: "SDN 2 Banda Aceh" },
@@ -795,7 +801,13 @@ function TambahPelanggaranInner() {
     }))
   }
 
-  const isAdminWilayah = role === "pusat" || role === "dinas"
+  const isBpmp = role === "bpmp"
+  const bpmpProvinsi = (() => {
+    try { return (JSON.parse(localStorage.getItem("auth") ?? "{}") as { provinsiBPMP?: string }).provinsiBPMP ?? "" } catch { return "" }
+  })()
+  const isAdminWilayah = role === "pusat" || role === "bpmp" || role === "dinas"
+  /** Provinsi yang boleh dipilih untuk kewenangan: BPMP dibatasi pada provinsinya. */
+  const assignProvinsiOptions = isBpmp && bpmpProvinsi ? [bpmpProvinsi] : PROVINSI_OPTIONS
 
   /** Field wajib yang masih kosong; dipakai untuk menandai input saat submit. */
   const wajibKosong = {
@@ -805,10 +817,10 @@ function TambahPelanggaranInner() {
     kategori: !form.kategori || (kategoriLainnya && kategoriSel.length === 0 && !kategoriMemo.trim()),
     tingkatKeparahan: !form.tingkatKeparahan,
     pelapor: !form.pelapor,
-    tingkatKelompokKerja: role === "pusat" && !form.tingkatKelompokKerja,
-    wilayah: role === "pusat" && !form.wilayah,
+    tingkatKelompokKerja: (role === "pusat" || role === "bpmp") && !form.tingkatKelompokKerja,
+    wilayah: (role === "pusat" || role === "bpmp") && !form.wilayah,
     kabupatenKota:
-      role === "pusat" && !!form.tingkatKelompokKerja && form.tingkatKelompokKerja !== "provinsi" && !form.kabupatenKota?.trim(),
+      (role === "pusat" || role === "bpmp") && !!form.tingkatKelompokKerja && form.tingkatKelompokKerja !== "provinsi" && !form.kabupatenKota?.trim(),
     pic: isAdminWilayah && !form.pic,
   }
 
@@ -844,9 +856,11 @@ function TambahPelanggaranInner() {
       ? `Admin Dinas ${session.namaDinas ?? ""}`
       : session?.role === "pusat"
         ? "Admin Pusat"
-        : session?.namaSekolah
-          ? `Admin Sekolah ${session.namaSekolah}`
-          : "Admin Sekolah"
+        : session?.role === "bpmp"
+          ? `Admin ${(session as any).namaBPMP ?? "BPMP"}`
+          : session?.namaSekolah
+            ? `Admin Sekolah ${session.namaSekolah}`
+            : "Admin Sekolah"
 
     try {
       const stored = JSON.parse(localStorage.getItem("pelanggaranList") ?? "[]") as PelanggaranItem[]
@@ -900,7 +914,7 @@ function TambahPelanggaranInner() {
   useEffect(() => {
     if (!submitted) return
     const t = setTimeout(() => {
-      window.location.href = "/dashboard?menu=pelanggaran"
+      window.location.href = pelanggaranBackHref(role)
     }, 1500)
     return () => clearTimeout(t)
   }, [submitted])
@@ -912,7 +926,7 @@ function TambahPelanggaranInner() {
       const stored = JSON.parse(localStorage.getItem("pelanggaranList") ?? "[]") as PelanggaranItem[]
       localStorage.setItem("pelanggaranList", JSON.stringify(stored.filter((i) => i.id !== viewId)))
     } catch {}
-    window.location.href = "/dashboard?menu=pelanggaran"
+    window.location.href = pelanggaranBackHref(role)
   }
 
   // View mode: update status
@@ -925,9 +939,11 @@ function TambahPelanggaranInner() {
       ? `Admin Dinas ${session.namaDinas ?? ""}`
       : session?.role === "pusat"
         ? "Admin Pusat"
-        : session?.namaSekolah
-          ? `Admin Sekolah ${session.namaSekolah}`
-          : "Admin Sekolah"
+        : session?.role === "bpmp"
+          ? `Admin ${(session as any).namaBPMP ?? "BPMP"}`
+          : session?.namaSekolah
+            ? `Admin Sekolah ${session.namaSekolah}`
+            : "Admin Sekolah"
     try {
       const stored = JSON.parse(localStorage.getItem("pelanggaranList") ?? "[]") as PelanggaranItem[]
       const updated = stored.map((i) =>
@@ -1000,7 +1016,7 @@ function TambahPelanggaranInner() {
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
             <button
-              onClick={() => { window.location.href = "/dashboard?menu=pelanggaran" }}
+              onClick={() => { window.location.href = pelanggaranBackHref(role) }}
               className="p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition"
               aria-label="Kembali"
             >
@@ -1358,7 +1374,7 @@ function TambahPelanggaranInner() {
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
           <button
-            onClick={() => { window.location.href = "/dashboard?menu=pelanggaran" }}
+            onClick={() => { window.location.href = pelanggaranBackHref(role) }}
             className="p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition"
             aria-label="Kembali"
           >
@@ -2016,13 +2032,13 @@ function TambahPelanggaranInner() {
               </div>
             </div>
 
-            {role === "pusat" && <hr className="border-gray-300 -mx-5 my-2" />}
+            {role === "pusat" || role === "bpmp" ? <hr className="border-gray-300 -mx-5 my-2" /> : null}
 
-            {role === "pusat" && (
+            {(role === "pusat" || role === "bpmp") && (
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Kelompok Kerja Penanggung Jawab</p>
             )}
 
-            {role === "pusat" && (
+            {(role === "pusat" || role === "bpmp") && (
               <div className="flex flex-col gap-1.5">
                 <FieldLabel required>Kewenangan</FieldLabel>
                 <div className="flex flex-wrap gap-1.5 mt-1" data-error-wajib={err("tingkatKelompokKerja") ? "1" : undefined}>
@@ -2056,7 +2072,7 @@ function TambahPelanggaranInner() {
               </div>
             )}
 
-            {role === "pusat" && !!form.tingkatKelompokKerja && (
+            {(role === "pusat" || role === "bpmp") && !!form.tingkatKelompokKerja && (
               <div className={`grid gap-3 ${form.tingkatKelompokKerja === "kabkota" ? "grid-cols-2" : "grid-cols-1"}`}>
                 <div className="flex flex-col gap-1.5">
                   <FieldLabel required>Provinsi</FieldLabel>
@@ -2065,9 +2081,10 @@ function TambahPelanggaranInner() {
                     onChange={(e) => setForm((prev) => ({ ...prev, wilayah: e.target.value, kabupatenKota: "" }))}
                     data-error-wajib={err("wilayah") ? "1" : undefined}
                     className={`${err("wilayah") ? SELECT_BASE_ERROR : SELECT_BASE} ${!form.wilayah ? "text-gray-400" : ""}`}
+                    disabled={isBpmp}
                   >
                     <option value="" disabled>Pilih provinsi</option>
-                    {PROVINSI_OPTIONS.map((p) => (
+                    {assignProvinsiOptions.map((p) => (
                       <option key={p} value={p}>{p}</option>
                     ))}
                   </Select>
@@ -2256,7 +2273,7 @@ function TambahPelanggaranInner() {
 
       <div className="max-w-2xl mx-auto px-4 pb-8 flex gap-3">
         <a
-          href="/dashboard?menu=pelanggaran"
+          href={pelanggaranBackHref(role)}
           className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition text-center"
         >
           Batal

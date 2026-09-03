@@ -868,19 +868,23 @@ type SortMode = "relevansi" | "terbaru" | "nama_az"
 // ---------------------------------------------------------------------------
 // Main view
 // ---------------------------------------------------------------------------
-export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi: string; kabupatenKota: string } }) {
+export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { provinsi: string; kabupatenKota: string }; forBpmp?: { provinsi: string } }) {
   const router = useRouter()
   const dinasNamaLog = getDinasNamaForLogs()
 
+  // BPMP: cakupan provinsi + seluruh kab/kota di bawahnya
+  const bpmpProvinsi = forBpmp?.provinsi
+
   // Wilayah dinas dari prop atau fallback ke Aceh / Banda Aceh
-  const myProvinsi = wilayahDinas?.provinsi ?? "Aceh"
+  const myProvinsi = bpmpProvinsi ?? wilayahDinas?.provinsi ?? "Aceh"
   const myKabupatenKota = wilayahDinas?.kabupatenKota ?? "Banda Aceh"
   const auth = readAuthSession()
   const isPusat = auth?.role === "pusat"
+  const isBpmp = !!bpmpProvinsi
 
   const [list, setList] = useState<SumberRujukan[]>(SEED)
   const [search, setSearch] = useState("")
-  const [filterWilayah, setFilterWilayah] = useState<{ province: string; kabupaten: string } | null>(isPusat ? null : { province: myProvinsi, kabupaten: myKabupatenKota })
+  const [filterWilayah, setFilterWilayah] = useState<{ province: string; kabupaten: string } | null>(isPusat || isBpmp ? null : { province: myProvinsi, kabupaten: myKabupatenKota })
   const [filterKategori, setFilterKategori] = useState<KategoriDukungan | "semua">("semua")
   const [filterStatus, setFilterStatus] = useState<StatusRujukan | "semua">("semua")
   const [filterPenyedia, setFilterPenyedia] = useState<KategoriPenyedia | "semua">("semua")
@@ -935,8 +939,9 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
         item.kabupatenKota.toLowerCase().includes(search.toLowerCase()) ||
         item.provinsi.toLowerCase().includes(search.toLowerCase())
       const isNasionalItem = item.isNasional || item.provinsi === "Seluruh Indonesia" || (!item.provinsi && !item.kabupatenKota)
-      const matchWilayah = !filterWilayah || isNasionalItem ||
-        (filterWilayah.province === item.provinsi && (!filterWilayah.kabupaten || !item.kabupatenKota || item.kabupatenKota === filterWilayah.kabupaten))
+      const inBpmpScope = !isBpmp || isNasionalItem || item.provinsi === bpmpProvinsi
+      const matchWilayah = (!filterWilayah || isNasionalItem ||
+        (filterWilayah.province === item.provinsi && (!filterWilayah.kabupaten || !item.kabupatenKota || item.kabupatenKota === filterWilayah.kabupaten))) && inBpmpScope
       const matchKategori = filterKategori === "semua" || item.kategoriBentukDukungan === filterKategori
       const matchStatus = filterStatus === "semua" ? item.status !== "menunggu_review" : item.status === filterStatus
       const matchPenyedia = filterPenyedia === "semua" || item.kategoriPenyedia === filterPenyedia
@@ -979,7 +984,9 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
 
   const handleVerify = (id: string) => {
     const isPusat = readAuthSession()?.role === "pusat"
-    const log = isPusat ? RUJUKAN_LOG.diverifikasiPusat : dinasLog.diverifikasi(dinasNamaLog)
+    const isBpmp = readAuthSession()?.role === "bpmp"
+    const namaBpmp = readAuthSession()?.namaBPMP
+    const log = isPusat ? RUJUKAN_LOG.diverifikasiPusat : isBpmp ? `Diverifikasi oleh ${namaBpmp ?? "BPMP"}` : dinasLog.diverifikasi(dinasNamaLog)
     persistRujukanPatch(id, { status: "terverifikasi", logTerakhir: log, jenisMenunggu: undefined })
     setList((prev) => prev.map((i) =>
       i.id === id ? { ...i, status: "terverifikasi" as StatusRujukan, logTerakhir: log, jenisMenunggu: undefined } : i
@@ -988,7 +995,9 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
 
   const handleUnverify = (id: string) => {
     const isPusat = readAuthSession()?.role === "pusat"
-    const log = isPusat ? RUJUKAN_LOG.batalkanVerifikasiPusat : dinasLog.batalkanVerifikasi(dinasNamaLog)
+    const isBpmp = readAuthSession()?.role === "bpmp"
+    const namaBpmp = readAuthSession()?.namaBPMP
+    const log = isPusat ? RUJUKAN_LOG.batalkanVerifikasiPusat : isBpmp ? `Verifikasi dibatalkan oleh ${namaBpmp ?? "BPMP"}` : dinasLog.batalkanVerifikasi(dinasNamaLog)
     persistRujukanPatch(id, { status: "menunggu", logTerakhir: log })
     setList((prev) => prev.map((i) =>
       i.id === id ? { ...i, status: "menunggu" as StatusRujukan, logTerakhir: log } : i
@@ -997,7 +1006,9 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
 
   const handleDelete = (id: string, catatan: string) => {
     const isPusat = readAuthSession()?.role === "pusat"
-    const log = isPusat ? RUJUKAN_LOG.dinonaktifkanPusat : dinasLog.dinonaktifkan(dinasNamaLog)
+    const isBpmp = readAuthSession()?.role === "bpmp"
+    const namaBpmp = readAuthSession()?.namaBPMP
+    const log = isPusat ? RUJUKAN_LOG.dinonaktifkanPusat : isBpmp ? `Dinonaktifkan oleh ${namaBpmp ?? "BPMP"}` : dinasLog.dinonaktifkan(dinasNamaLog)
     persistRujukanPatch(id, { status: "nonaktif", logTerakhir: log, catatanPerbaikan: catatan })
     setList((prev) => prev.map((i) =>
       i.id === id ? { ...i, status: "nonaktif" as StatusRujukan, logTerakhir: log, catatanPerbaikan: catatan } : i
@@ -1009,7 +1020,9 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
     if (!item) return
     const nextStatus = getStatusAfterRestore(item.usulanDari)
     const isPusat = readAuthSession()?.role === "pusat"
-    const logTerakhir = isPusat ? RUJUKAN_LOG.dipulihkanPusat : dinasLog.dipulihkan(dinasNamaLog)
+    const isBpmp = readAuthSession()?.role === "bpmp"
+    const namaBpmp = readAuthSession()?.namaBPMP
+    const logTerakhir = isPusat ? RUJUKAN_LOG.dipulihkanPusat : isBpmp ? `Dipulihkan oleh ${namaBpmp ?? "BPMP"}` : dinasLog.dipulihkan(dinasNamaLog)
     persistRujukanPatch(id, { status: nextStatus, logTerakhir })
     setList((prev) => prev.map((i) =>
       i.id === id ? { ...i, status: nextStatus, logTerakhir } : i
@@ -1018,9 +1031,11 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
 
   const handleNeedRevision = (id: string, catatan: string, jenis: "ditolak" | "perbaikan" = "ditolak") => {
     const isPusat = readAuthSession()?.role === "pusat"
+    const isBpmp = readAuthSession()?.role === "bpmp"
+    const namaBpmp = readAuthSession()?.namaBPMP
     const log = jenis === "perbaikan"
-      ? (isPusat ? "Butuh perbaikan oleh Admin Pusat" : `Butuh perbaikan oleh Admin ${dinasNamaLog}`)
-      : (isPusat ? "Ditolak oleh Admin Pusat" : dinasLog.butuhPerbaikan(dinasNamaLog))
+      ? (isPusat ? "Butuh perbaikan oleh Admin Pusat" : isBpmp ? `Butuh perbaikan oleh ${namaBpmp ?? "BPMP"}` : `Butuh perbaikan oleh Admin ${dinasNamaLog}`)
+      : (isPusat ? "Ditolak oleh Admin Pusat" : isBpmp ? `Ditolak oleh ${namaBpmp ?? "BPMP"}` : dinasLog.butuhPerbaikan(dinasNamaLog))
     persistRujukanPatch(id, {
       status: "butuh_perbaikan" as StatusRujukan,
       logTerakhir: log,
@@ -1035,7 +1050,9 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
 
   const handleTolakPenonaktifan = (id: string, catatan: string) => {
     const isPusat = readAuthSession()?.role === "pusat"
-    const log = `Usulan penonaktifan ditolak oleh Admin ${isPusat ? "Pusat" : dinasNamaLog}`
+    const isBpmp = readAuthSession()?.role === "bpmp"
+    const namaBpmp = readAuthSession()?.namaBPMP
+    const log = `Usulan penonaktifan ditolak oleh Admin ${isPusat ? "Pusat" : isBpmp ? (namaBpmp ?? "BPMP") : dinasNamaLog}`
     persistRujukanPatch(id, { status: "terverifikasi", logTerakhir: log, catatanPerbaikan: catatan, jenisMenunggu: undefined })
     setList((prev) => prev.map((i) =>
       i.id === id ? { ...i, status: "terverifikasi" as StatusRujukan, logTerakhir: log, catatanPerbaikan: catatan, jenisMenunggu: undefined } : i
@@ -1044,7 +1061,9 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
 
   const handleTolakLaporan = (id: string, catatan: string) => {
     const isPusat = readAuthSession()?.role === "pusat"
-    const log = `Laporan perbaikan ditolak oleh Admin ${isPusat ? "Pusat" : dinasNamaLog}`
+    const isBpmp = readAuthSession()?.role === "bpmp"
+    const namaBpmp = readAuthSession()?.namaBPMP
+    const log = `Laporan perbaikan ditolak oleh Admin ${isPusat ? "Pusat" : isBpmp ? (namaBpmp ?? "BPMP") : dinasNamaLog}`
     persistRujukanPatch(id, { status: "terverifikasi", logTerakhir: log, catatanPerbaikan: catatan, jenisMenunggu: undefined })
     setList((prev) => prev.map((i) =>
       i.id === id ? { ...i, status: "terverifikasi" as StatusRujukan, logTerakhir: log, catatanPerbaikan: catatan, jenisMenunggu: undefined } : i
@@ -1053,7 +1072,9 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
 
   const handleTolakPemulihan = (id: string, catatan: string) => {
     const isPusat = readAuthSession()?.role === "pusat"
-    const log = `Usulan pemulihan ditolak oleh Admin ${isPusat ? "Pusat" : dinasNamaLog}`
+    const isBpmp = readAuthSession()?.role === "bpmp"
+    const namaBpmp = readAuthSession()?.namaBPMP
+    const log = `Usulan pemulihan ditolak oleh Admin ${isPusat ? "Pusat" : isBpmp ? (namaBpmp ?? "BPMP") : dinasNamaLog}`
     persistRujukanPatch(id, { status: "nonaktif", logTerakhir: log, catatanPerbaikan: catatan, jenisMenunggu: undefined })
     setList((prev) => prev.map((i) =>
       i.id === id ? { ...i, status: "nonaktif" as StatusRujukan, logTerakhir: log, catatanPerbaikan: catatan, jenisMenunggu: undefined } : i
@@ -1323,7 +1344,9 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
   ]
   const statList = isPusat 
     ? list 
-    : list.filter((i) => i.provinsi === myProvinsi && i.kabupatenKota === myKabupatenKota)
+    : isBpmp
+      ? list.filter((i) => i.provinsi === bpmpProvinsi || i.isNasional || (!i.provinsi && !i.kabupatenKota))
+      : list.filter((i) => i.provinsi === myProvinsi && i.kabupatenKota === myKabupatenKota)
 
   return (
     <div className="space-y-5">
@@ -1375,6 +1398,10 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
               {filterWilayah.kabupaten 
                 ? `${filterWilayah.province} - ${filterWilayah.kabupaten}` 
                 : filterWilayah.province}
+            </span>
+          ) : isBpmp ? (
+            <span className="font-bold text-gray-900 text-lg">
+              {bpmpProvinsi}
             </span>
           ) : (
             <span className="font-bold text-gray-500 text-lg">
@@ -1723,9 +1750,9 @@ export function SumberRujukanView({ wilayahDinas }: { wilayahDinas?: { provinsi:
                       onClick={() => { setFilterWilayah(null); setShowWilayahModal(false) }}
                       className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium ${!filterWilayah ? "bg-blue-50 text-blue-700" : "hover:bg-gray-50"}`}
                     >
-                      Semua Provinsi
+                      {isBpmp ? bpmpProvinsi : "Semua Provinsi"}
                     </button>
-                    {PROVINSI_LIST.map((province) => {
+                    {(isBpmp ? [bpmpProvinsi!] : PROVINSI_LIST).map((province) => {
                       const kabupatens = Array.from(new Set(list.filter((i) => i.provinsi === province).map((i) => i.kabupatenKota))).filter(Boolean).sort()
                       const isSelected = filterWilayah?.province === province
                       return (

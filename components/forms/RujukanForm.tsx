@@ -10,12 +10,14 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip
 import { SEED, type SumberRujukan } from "@/components/dashboard/SumberRujukanView"
 import { RUJUKAN_LOG, dinasLog, getStatusAfterRestore } from "@/lib/rujukan-logs"
 import { getDinasNamaForLogs, readAuthSession } from "@/lib/auth-session"
+import { kabKotaDiBawah } from "@/lib/region-scope"
 import { KAB_KOTA_ACEH, getKecamatanList, getKelurahanList } from "@/lib/wilayah-aceh"
 
 function getRujukanFormExitHref(): string {
   const auth = readAuthSession()
   if (auth?.role === "sekolah") return "/dashboard"
   if (auth?.role === "pusat") return "/dashboard"
+  if (auth?.role === "bpmp") return "/dashboard?menu=sumber-dukungan"
   return "/dashboard?menu=sumber-rujukan"
 }
 
@@ -260,6 +262,8 @@ function RujukanFormInner() {
   const isPusat = readAuthSession()?.role === "pusat"
   const isSekolah = readAuthSession()?.role === "sekolah"
   const isDinas = readAuthSession()?.role === "dinas"
+  const isBpmp = readAuthSession()?.role === "bpmp"
+  const bpmpProvinsi = readAuthSession()?.provinsiBPMP
 
   const [form, setForm] = useState<FormState>(emptyForm)
   const [submitted, setSubmitted] = useState(false)
@@ -306,6 +310,13 @@ function RujukanFormInner() {
     if (editId || viewId) return
     const auth = readAuthSession()
     if (auth?.role === "pusat") return
+
+    // BPMP: province ditetapkan dari wewenangnya
+    if (auth?.role === "bpmp" && auth.provinsiBPMP) {
+      defaultWilayah.current = { provinsi: auth.provinsiBPMP, kabupatenKota: "" }
+      setForm((prev) => ({ ...prev, provinsi: auth.provinsiBPMP! }))
+      return
+    }
 
     // URL params (passed explicitly from SekolahSumberRujukanView) take priority
     if (provParam || kabParam) {
@@ -706,10 +717,10 @@ function RujukanFormInner() {
           aksesInfo: form.aksesInfo,
           status: isSekolah ? "menunggu" : "terverifikasi",
           jenisMenunggu: isSekolah ? "pengajuan" : undefined,
-          dibuatOleh: isSekolah ? `Admin Sekolah ${auth.namaSekolah ?? ""}`.trim() : isPusat ? "Admin Pusat" : `Admin ${d}`,
+          dibuatOleh: isSekolah ? `Admin Sekolah ${auth.namaSekolah ?? ""}`.trim() : isBpmp ? `Admin ${auth.namaBPMP ?? "BPMP"}` : isPusat ? "Admin Pusat" : `Admin ${d}`,
           namaSekolah: isSekolah ? (auth.namaSekolah ?? "") : undefined,
-          logTerakhir: isSekolah ? RUJUKAN_LOG.dibuatSekolah(auth.namaSekolah ?? "") : isPusat ? RUJUKAN_LOG.dibuatTerverifikasiPusat : dinasLog.dibuatTerverifikasi(d),
-          usulanDari: isSekolah ? "sekolah" : isPusat ? "pusat" : "dinas",
+          logTerakhir: isSekolah ? RUJUKAN_LOG.dibuatSekolah(auth.namaSekolah ?? "") : isBpmp ? `${RUJUKAN_LOG.dibuatTerverifikasiPusat} oleh ${auth.namaBPMP ?? "BPMP"}` : isPusat ? RUJUKAN_LOG.dibuatTerverifikasiPusat : dinasLog.dibuatTerverifikasi(d),
+          usulanDari: isSekolah ? "sekolah" : (isPusat || isBpmp) ? "pusat" : "dinas",
           createdAt: new Date().toISOString(),
           isNasional: form.tingkatWilayah === "Nasional",
           tingkatWilayah: form.tingkatWilayah,
@@ -911,15 +922,19 @@ function RujukanFormInner() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <FieldLabel required={!isReadOnly}>Provinsi</FieldLabel>
-              <SelectInput value={form.provinsi} onChange={(v) => set("provinsi", v)} options={PROVINSI_OPTIONS} placeholder="Pilih Provinsi" disabled={isReadOnly} />
+              {isBpmp ? (
+                <SelectInput value={form.provinsi} onChange={(v) => set("provinsi", v)} options={[bpmpProvinsi ?? ""]} placeholder={bpmpProvinsi ?? "Pilih Provinsi"} disabled />
+              ) : (
+                <SelectInput value={form.provinsi} onChange={(v) => set("provinsi", v)} options={PROVINSI_OPTIONS} placeholder="Pilih Provinsi" disabled={isReadOnly} />
+              )}
             </div>
             <div className="flex flex-col gap-1.5">
               <FieldLabel required={!isReadOnly}>Kabupaten / Kota</FieldLabel>
-              {mounted && !isReadOnly && isDinas ? (
+              {mounted && !isReadOnly && (isDinas || isBpmp) ? (
                 <SelectInput
                   value={form.kabupatenKota}
                   onChange={(v) => set("kabupatenKota", v)}
-                  options={KAB_KOTA_ACEH}
+                  options={(isBpmp && bpmpProvinsi ? kabKotaDiBawah(bpmpProvinsi) : KAB_KOTA_ACEH)}
                   placeholder="Pilih Kabupaten / Kota"
                   disabled={!form.provinsi || form.provinsi === "Nasional"}
                 />
