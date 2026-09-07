@@ -930,7 +930,7 @@ function RujukanFormInner() {
             </div>
             <div className="flex flex-col gap-1.5">
               <FieldLabel required={!isReadOnly}>Kabupaten / Kota</FieldLabel>
-              {mounted && !isReadOnly && (isDinas || isSekolah) ? (
+              {mounted && !isReadOnly ? (
                 <SelectInput
                   value={form.kabupatenKota}
                   onChange={(v) => set("kabupatenKota", v)}
