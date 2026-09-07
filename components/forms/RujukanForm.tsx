@@ -915,53 +915,33 @@ function RujukanFormInner() {
                 disabled={isReadOnly}
               />
             </div>
-            {isBpmp && form.tingkatWilayah === "Kabupaten/Kota" && (
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel required={!isReadOnly}>Kabupaten / Kota</FieldLabel>
-                {mounted && !isReadOnly && isBpmp ? (
-                  <SelectInput
-                    value={form.kabupatenKota}
-                    onChange={(v) => set("kabupatenKota", v)}
-                    options={bpmpProvinsi ? kabKotaDiBawah(bpmpProvinsi) : KAB_KOTA_ACEH}
-                    placeholder="Pilih Kabupaten / Kota"
-                    disabled={!form.provinsi || form.provinsi === "Nasional"}
-                  />
-                ) : (
-                  <TextInput value={form.kabupatenKota} onChange={(v) => set("kabupatenKota", v)} placeholder={form.kabupatenKota || "Kabupaten / Kota"} disabled={isReadOnly} />
-                )}
-              </div>
-            )}
           </div>
         </SectionCard>
 
         <SectionCard icon={<MapPin className="w-4 h-4" />} title="Alamat Lengkap">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {(!isBpmp || form.tingkatWilayah === "Provinsi") && (
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel required={!isReadOnly}>Provinsi</FieldLabel>
-                {mounted && isBpmp ? (
-                  <SelectInput value={form.provinsi} onChange={(v) => set("provinsi", v)} options={[bpmpProvinsi ?? ""]} placeholder={bpmpProvinsi ?? "Pilih Provinsi"} disabled />
-                ) : (
-                  <SelectInput value={form.provinsi} onChange={(v) => set("provinsi", v)} options={PROVINSI_OPTIONS} placeholder="Pilih Provinsi" disabled={isReadOnly} />
-                )}
-              </div>
-            )}
-            {(!isBpmp || form.tingkatWilayah === "Provinsi") && (
-              <div className="flex flex-col gap-1.5">
-                <FieldLabel required={!isReadOnly}>Kabupaten / Kota</FieldLabel>
-                {mounted && !isReadOnly && (isDinas || isSekolah) ? (
-                  <SelectInput
-                    value={form.kabupatenKota}
-                    onChange={(v) => set("kabupatenKota", v)}
-                    options={isBpmp && bpmpProvinsi ? kabKotaDiBawah(bpmpProvinsi) : KAB_KOTA_ACEH}
-                    placeholder="Pilih Kabupaten / Kota"
-                    disabled={!form.provinsi || form.provinsi === "Nasional"}
-                  />
-                ) : (
-                  <TextInput value={form.kabupatenKota} onChange={(v) => set("kabupatenKota", v)} placeholder={form.kabupatenKota || "Kabupaten / Kota"} disabled={isReadOnly || (mounted && isSekolah)} />
-                )}
-              </div>
-            )}
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel required={!isReadOnly}>Provinsi</FieldLabel>
+              {mounted && isBpmp ? (
+                <SelectInput value={form.provinsi} onChange={(v) => set("provinsi", v)} options={[bpmpProvinsi ?? ""]} placeholder={bpmpProvinsi ?? "Pilih Provinsi"} disabled />
+              ) : (
+                <SelectInput value={form.provinsi} onChange={(v) => set("provinsi", v)} options={PROVINSI_OPTIONS} placeholder="Pilih Provinsi" disabled={isReadOnly} />
+              )}
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel required={!isReadOnly}>Kabupaten / Kota</FieldLabel>
+              {mounted && !isReadOnly && (isDinas || isSekolah) ? (
+                <SelectInput
+                  value={form.kabupatenKota}
+                  onChange={(v) => set("kabupatenKota", v)}
+                  options={isBpmp && bpmpProvinsi ? kabKotaDiBawah(bpmpProvinsi) : KAB_KOTA_ACEH}
+                  placeholder="Pilih Kabupaten / Kota"
+                  disabled={!form.provinsi || form.provinsi === "Nasional"}
+                />
+              ) : (
+                <TextInput value={form.kabupatenKota} onChange={(v) => set("kabupatenKota", v)} placeholder={form.kabupatenKota || "Kabupaten / Kota"} disabled={isReadOnly || (mounted && isSekolah)} />
+              )}
+            </div>
             <div className="flex flex-col gap-1.5">
               <FieldLabel>Kecamatan</FieldLabel>
               {mounted && !isReadOnly && (isDinas || isSekolah) ? (
@@ -1350,8 +1330,8 @@ function RujukanFormInner() {
                     </button>
                   </>
                 )}
-                {/* Pusat: terverifikasi → Edit + Nonaktif */}
-                {mounted && form.status === "terverifikasi" && isPusat && (
+                {/* Pusat/BPMP: terverifikasi → Edit + Nonaktif */}
+                {mounted && form.status === "terverifikasi" && (isPusat || isBpmp) && (
                   <>
                     <button
                       type="button"
@@ -1375,7 +1355,7 @@ function RujukanFormInner() {
                   </>
                 )}
                 {/* Dinas: terverifikasi → Nonaktif */}
-                {mounted && form.status === "terverifikasi" && !isSekolah && !isPusat && (
+                {mounted && form.status === "terverifikasi" && !isSekolah && !isPusat && !isBpmp && (
                   <button
                     type="button"
                     onClick={() => setConfirmModal({

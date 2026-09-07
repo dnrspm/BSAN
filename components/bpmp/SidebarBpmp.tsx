@@ -28,14 +28,14 @@ export function SidebarBpmp({ activeMenu, onMenuChange }: SidebarBpmpProps) {
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-violet-900">
+      <div className="flex items-center gap-3 px-5 py-5 border-b border-[#4D090B]">
         <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
           <GraduationCap className="w-5 h-5 text-white" />
         </div>
         <div className="min-w-0">
           <p className="text-white font-semibold text-sm leading-tight truncate">BPMP</p>
           {namaBPMP && (
-            <p className="text-violet-200 text-xs leading-tight truncate">{namaBPMP}</p>
+            <p className="text-[#F5C6C3] text-xs leading-tight truncate">{namaBPMP}</p>
           )}
         </div>
       </div>
@@ -55,7 +55,7 @@ export function SidebarBpmp({ activeMenu, onMenuChange }: SidebarBpmpProps) {
                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                 isActive
                   ? "bg-white/15 text-white"
-                  : "text-violet-100 hover:bg-white/10 hover:text-white"
+                  : "text-[#F5C6C3] hover:bg-white/10 hover:text-white"
               )}
             >
               <Icon className="w-4 h-4 flex-shrink-0" />
@@ -65,11 +65,11 @@ export function SidebarBpmp({ activeMenu, onMenuChange }: SidebarBpmpProps) {
         })}
       </nav>
 
-      <div className="px-3 py-4 border-t border-violet-900">
+      <div className="px-3 py-4 border-t border-[#4D090B]">
         <button
           type="button"
           onClick={logout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-violet-100 hover:bg-white/10 hover:text-white transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#F5C6C3] hover:bg-white/10 hover:text-white transition-colors"
         >
           <LogOut className="w-4 h-4 flex-shrink-0" />
           Keluar
@@ -80,11 +80,11 @@ export function SidebarBpmp({ activeMenu, onMenuChange }: SidebarBpmpProps) {
 
   return (
     <>
-      <aside className="hidden md:flex flex-col w-60 flex-shrink-0 bg-violet-950 sticky top-0 h-screen overflow-y-auto">
+      <aside className="hidden md:flex flex-col w-60 flex-shrink-0 bg-[#470909] sticky top-0 h-screen overflow-y-auto">
         <SidebarContent />
       </aside>
 
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-violet-950 flex items-center justify-between px-4 py-3 shadow">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#470909] flex items-center justify-between px-4 py-3 shadow">
         <div className="flex items-center gap-2">
           <GraduationCap className="w-5 h-5 text-white" />
           <p className="text-white font-semibold text-sm">BPMP</p>
@@ -100,7 +100,7 @@ export function SidebarBpmp({ activeMenu, onMenuChange }: SidebarBpmpProps) {
 
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-30 flex">
-          <div className="w-64 bg-violet-950 flex flex-col pt-16">
+          <div className="w-64 bg-[#470909] flex flex-col pt-16">
             <SidebarContent />
           </div>
           <div className="flex-1 bg-black/40" onClick={() => setMobileOpen(false)} />
