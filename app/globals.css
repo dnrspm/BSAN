@@ -123,3 +123,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Sembunyikan scrollbar native (diganti scrollbar custom yang selalu tampil) */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

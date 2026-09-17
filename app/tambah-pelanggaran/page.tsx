@@ -69,6 +69,7 @@ interface PelanggaranItem {
   updatedAt: string
   dibuatOleh: string
   diperbaruiOleh: string
+  dihapus?: boolean
 }
 
 function generateNomorKasus(existing: PelanggaranItem[]): string {
@@ -534,12 +535,31 @@ function StatusBadge({ status }: { status: StatusPelanggaran }) {
 }
 
 function StatusLogList({ entries }: { entries?: { status: StatusPelanggaran; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }[] }) {
+  const [showAll, setShowAll] = useState(false)
   if (!Array.isArray(entries) || entries.length === 0) {
-    return <span className="text-sm text-gray-400">Belum ada riwayat status.</span>
+    return (
+      <div className="flex flex-col gap-3">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Riwayat</p>
+        <span className="text-sm text-gray-400">Belum ada riwayat status.</span>
+      </div>
+    )
   }
+  const list = entries.slice().reverse()
+  const shown = showAll ? list : list.slice(0, 1)
   return (
     <div className="flex flex-col gap-3">
-      {entries.slice().reverse().map((entry, i) => {
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Riwayat</p>
+        {entries.length > 1 && (
+          <button
+            onClick={() => setShowAll((s) => !s)}
+            className="text-xs font-medium text-blue-600 hover:underline flex items-center gap-1"
+          >
+            {showAll ? "Sembunyikan Riwayat" : `Lihat Riwayat Lengkap (${entries.length})`}
+          </button>
+        )}
+      </div>
+      {shown.map((entry, i) => {
         const dibuatOleh = entry.dibuatOleh || entry.keterangan.match(/oleh (.+)$/)?.[1] || ""
         const labelAksi = entry.aksi === "perbaharui_status" ? "Diperbaharui" : entry.aksi === "edit" ? "Diedit" : "Dibuat"
         const keterangan = entry.keterangan.replace(/ — oleh .+$/, "").replace(/^Laporan awal (dibuat )?/, "").trim()
@@ -628,6 +648,7 @@ function TambahPelanggaranInner() {
   // View mode state
   const [item, setItem] = useState<(PelanggaranItem & { logStatus?: { status: StatusPelanggaran; keterangan: string; waktu: string }[] }) | null>(null)
   const [showStatusModal, setShowStatusModal] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [newStatus, setNewStatus] = useState<StatusPelanggaran>("baru")
   const [keteranganStatus, setKeteranganStatus] = useState("")
   const [dokumentasiStatus, setDokumentasiStatus] = useState("")
@@ -930,14 +951,35 @@ function TambahPelanggaranInner() {
     return () => clearTimeout(t)
   }, [submitted])
 
-  // View mode: delete
+  // View mode: soft delete (nonaktifkan, tidak dihapus dari daftar)
   const handleDelete = () => {
     if (!viewId || !item) return
     try {
       const stored = JSON.parse(localStorage.getItem("pelanggaranList") ?? "[]") as PelanggaranItem[]
-      localStorage.setItem("pelanggaranList", JSON.stringify(stored.filter((i) => i.id !== viewId)))
+      const updated = stored.map((i) =>
+        i.id === viewId
+          ? { ...i, dihapus: true, updatedAt: new Date().toISOString() }
+          : i
+      )
+      localStorage.setItem("pelanggaranList", JSON.stringify(updated))
+      setItem({ ...item, dihapus: true })
     } catch {}
-    window.location.href = pelanggaranBackHref(role)
+    setShowDeleteConfirm(false)
+  }
+
+  // View mode: restore (pulihkan kasus yang dinonaktifkan)
+  const handleRestore = () => {
+    if (!viewId || !item) return
+    try {
+      const stored = JSON.parse(localStorage.getItem("pelanggaranList") ?? "[]") as PelanggaranItem[]
+      const updated = stored.map((i) =>
+        i.id === viewId
+          ? { ...i, dihapus: false, updatedAt: new Date().toISOString() }
+          : i
+      )
+      localStorage.setItem("pelanggaranList", JSON.stringify(updated))
+      setItem({ ...item, dihapus: false })
+    } catch {}
   }
 
   // View mode: update status
@@ -1036,11 +1078,32 @@ function TambahPelanggaranInner() {
             <div className="flex-1 min-w-0">
               <h1 className="text-base font-bold text-gray-900">Detail Pelanggaran</h1>
               <div className="mt-1">
-                <StatusBadge status={item.status} />
+                {item.dihapus ? (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-600">
+                    <XCircle className="w-3 h-3" /> Dinonaktifkan
+                  </span>
+                ) : (
+                  <StatusBadge status={item.status} />
+                )}
               </div>
             </div>
           </div>
         </div>
+
+        {item.dihapus && (
+          <div className="max-w-2xl mx-auto px-4 pt-4">
+            <div className="bg-red-50 border border-red-200 rounded-xl p-5">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-semibold text-red-700">Kasus ini dinonaktifkan</p>
+                  <p className="text-sm text-red-600 mt-0.5">Kasus tidak dihapus, hanya dinonaktifkan dari daftar pelanggaran. Anda dapat memulihkannya kapan saja.</p>
+                  <button onClick={handleRestore} className="mt-4 py-2.5 px-5 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Pulihkan</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
           <SectionCard icon={<AlertTriangle className="w-4 h-4" />} title="Informasi Pelanggaran" right={(item as any).nomorKasus ? <NomorKasusBadge nomorKasus={(item as any).nomorKasus} /> : null}>
@@ -1280,7 +1343,7 @@ function TambahPelanggaranInner() {
             </div>
           </SectionCard>
 
-          <SectionCard icon={<CheckCircle className="w-4 h-4" />} title="Riwayat Status Pelanggaran">
+<SectionCard icon={<CheckCircle className="w-4 h-4" />} title="Rencana Pencegahan dan Riwayat Status Pelanggaran">
             <div className="grid grid-cols-1 gap-4">
               {(item as any).rencanaProgram && (
                 <>
@@ -1293,9 +1356,7 @@ function TambahPelanggaranInner() {
                 <hr className="border-gray-300 -mx-5 my-2" />
                 </>
               )}
-              <div className="flex flex-col gap-3">
-                <StatusLogList entries={(item as any).logStatus} />
-              </div>
+              <StatusLogList entries={(item as any).logStatus} />
             </div>
           </SectionCard>
         </div>
@@ -1357,11 +1418,32 @@ function TambahPelanggaranInner() {
           </div>
         )}
 
-        {(role === "dinas" || role === "pusat") && (
-          <div className="max-w-2xl mx-auto px-4 pb-8 flex gap-3">
-            <a href={`/tambah-pelanggaran?edit=${item.id}`} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition text-center">Edit</a>
-            <button onClick={handleDelete} className="flex-1 py-2.5 rounded-lg border border-red-300 text-red-600 font-medium text-sm hover:bg-red-50 transition">Hapus</button>
-            <button onClick={() => { setNewStatus(item.status); setKeteranganStatus(""); setDokumentasiStatus(""); setShowStatusModal(true) }} className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition">Perbarui Status</button>
+        {!item.dihapus && (role === "dinas" || role === "pusat" || role === "bpmp") && (
+          <div className="max-w-2xl mx-auto px-4 pb-8 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              {(role === "pusat" || role === "bpmp") && (
+                <button onClick={() => setShowDeleteConfirm(true)} className="py-2 px-1 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 font-medium text-sm transition">Hapus</button>
+              )}
+            </div>
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <a href={`/tambah-pelanggaran?edit=${item.id}`} className="py-2.5 px-5 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium text-sm hover:bg-gray-50 transition text-center">Edit</a>
+              <button onClick={() => { setNewStatus(item.status); setKeteranganStatus(""); setDokumentasiStatus(""); setShowStatusModal(true) }} className="py-2.5 px-5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition text-center">Perbarui Status</button>
+            </div>
+          </div>
+        )}
+
+        {/* Delete confirmation modal */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="fixed inset-0 bg-black/50" onClick={() => setShowDeleteConfirm(false)} />
+            <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
+              <h3 className="text-base font-bold text-gray-900 mb-2">Hapus Kasus?</h3>
+              <p className="text-sm text-gray-500">Kasus tidak akan dihapus permanen, melainkan dinonaktifkan dari daftar pelanggaran. Kasus dapat dipulihkan kembali kapan saja.</p>
+              <div className="flex gap-3 mt-5">
+                <button onClick={() => setShowDeleteConfirm(false)} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Batal</button>
+                <button onClick={handleDelete} className="flex-1 py-2.5 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition">Hapus</button>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -2210,7 +2292,7 @@ function TambahPelanggaranInner() {
           </div>
         </SectionCard>
 
-        <SectionCard icon={<CheckCircle className="w-4 h-4" />} title="Riwayat Status Pelanggaran">
+        <SectionCard icon={<CheckCircle className="w-4 h-4" />} title="Rencana Pencegahan dan Riwayat Status Pelanggaran">
           {editId ? (
             <div className="grid grid-cols-1 gap-4">
               <div className="flex flex-col gap-1.5">
@@ -2224,12 +2306,26 @@ function TambahPelanggaranInner() {
                 />
               </div>
               <hr className="border-gray-300 -mx-5 my-2" />
-              <div className="flex flex-col gap-3">
-                <StatusLogList entries={item?.logStatus} />
-              </div>
+              <StatusLogList entries={item?.logStatus} />
             </div>
           ) : (
           <div className="grid grid-cols-1 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel>Rencana Pencegahan Pelanggaran di Masa Depan <span className="text-gray-400">(opsional)</span></FieldLabel>
+              <p className="text-xs text-gray-400">Isi dengan ide atau rencana kegiatan yang dapat dilakukan selama/pasca penanganan kasus agar pelanggaran tidak terulang.</p>
+              <textarea
+                value={form.rencanaProgram}
+                onChange={(e) => setForm((prev) => ({ ...prev, rencanaProgram: e.target.value }))}
+                placeholder="Contoh: sosialisasi pencegahan perundungan tiap semester, pembentukan tim satgas sekolah, pelatihan guru BK, atau penyusunan SOP penanganan kasus."
+                rows={3}
+                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
+              />
+            </div>
+
+            <hr className="border-gray-300 -mx-5 my-2" />
+
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Riwayat</p>
+
             <div className="flex flex-col gap-1.5">
               <FieldLabel required>Status Pelanggaran</FieldLabel>
               <Select
@@ -2251,18 +2347,6 @@ function TambahPelanggaranInner() {
                 value={form.tindakLanjut}
                 onChange={(e) => setForm((prev) => ({ ...prev, tindakLanjut: e.target.value }))}
                 placeholder="Jelaskan tindakan penanganan awal yang sudah dilakukan. Contoh: korban telah diamankan, orang tua telah dihubungi, kepala sekolah telah diinformasikan, atau telah dilakukan mediasi."
-                rows={3}
-                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <FieldLabel>Rencana Pencegahan Pelanggaran di Masa Depan <span className="text-gray-400">(opsional)</span></FieldLabel>
-              <p className="text-xs text-gray-400">Isi dengan ide atau rencana kegiatan yang dapat dilakukan selama/pasca penanganan kasus agar pelanggaran tidak terulang.</p>
-              <textarea
-                value={form.rencanaProgram}
-                onChange={(e) => setForm((prev) => ({ ...prev, rencanaProgram: e.target.value }))}
-                placeholder="Contoh: sosialisasi pencegahan perundungan tiap semester, pembentukan tim satgas sekolah, pelatihan guru BK, atau penyusunan SOP penanganan kasus."
                 rows={3}
                 className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
               />

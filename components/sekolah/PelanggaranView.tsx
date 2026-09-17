@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useRef, useState, useMemo } from "react"
 import {
   AlertTriangle,
   CheckCircle,
@@ -78,6 +78,7 @@ interface PelanggaranItem {
   updatedAt: string
   dibuatOleh: string
   diperbaruiOleh: string
+  dihapus?: boolean
 }
 
 const SEKOLAH_OPTIONS = [
@@ -125,6 +126,348 @@ function getSekolahColors(name: string) {
   if (lower.startsWith("sman") || lower.startsWith("smkn") || lower.startsWith("sma ") || lower.startsWith("smk ")) return { bg: "bg-emerald-500/10", text: "text-emerald-700" }
   return { bg: "bg-gray-500/10", text: "text-gray-700" }
 }
+
+type DummyLogStatus = { status: StatusPelanggaran; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }
+
+const DUMMY_PELANGGARAN: (PelanggaranItem & { logStatus?: DummyLogStatus[] })[] = [
+  {
+    id: "pg-dummy-001",
+    nomorKasus: "PG-2026-001",
+    namaSekolah: ["SMKN 1 Banda Aceh"],
+    npsnSekolah: ["10101005"],
+    unsurTerlibat: [
+      { peran: "pelaku", kategori: "Siswa Laki-laki", asalSekolah: "SMKN 1 Banda Aceh", jumlah: "3", individu: [{ nama: "Rizky Pratama", umur: "17" }, { nama: "Andi Saputra", umur: "16" }, { nama: "Dimas Nugroho", umur: "17" }] },
+      { peran: "korban", kategori: "Siswa Laki-laki", asalSekolah: "SMKN 1 Banda Aceh", jumlah: "1", individu: [{ nama: "Farhan Maulana", umur: "16" }] },
+      { peran: "saksi", kategori: "Guru", asalSekolah: "SMKN 1 Banda Aceh", jumlah: "1", individu: [{ nama: "Ibu Rahmawati", umur: "34" }] },
+    ],
+    tanggalTerjadi: "2026-08-18",
+    kronologi: [
+      { tanggal: "2026-08-18", jam: "09:40", lokasi: "Koridor kelas X TKJ", keterangan: "Korban diejek dan didorong berulang kali saat jam istirahat" },
+    ],
+    kategori: "Perundungan",
+    tingkatKeparahan: "sangat_urgen",
+    pelapor: "laporan_sekolah",
+    tindakLanjut: "Mediasi antar siswa dan pemanggilan orang tua dijadwalkan",
+    pic: "Budi Santoso",
+    tingkatKelompokKerja: "kabkota",
+    wilayah: "Aceh",
+    kabupatenKota: "Banda Aceh",
+    dokumentasi: "https://drive.google.com/dummy/pg-001",
+    rekomendasi: "Perlu pembinaan intensif terhadap pelaku dan pendampingan psikologis untuk korban.",
+    motif: "Candaan berulang yang melampaui batas karena perbedaan latar belakang.",
+    status: "proses",
+    createdAt: "2026-08-20T09:15:00.000Z",
+    updatedAt: "2026-08-25T10:00:00.000Z",
+    dibuatOleh: "Admin Sekolah SMKN 1 Banda Aceh",
+    diperbaruiOleh: "Admin Dinas Kota Banda Aceh",
+    logStatus: [
+      { status: "baru", keterangan: "Laporan awal dibuat oleh Admin Sekolah SMKN 1 Banda Aceh", dibuatOleh: "Admin Sekolah SMKN 1 Banda Aceh", aksi: "buat", waktu: "2026-08-20T09:15:00.000Z" },
+      { status: "proses", keterangan: "Pembinaan dan mediasi sedang dilaksanakan", dibuatOleh: "Admin Dinas Kota Banda Aceh", aksi: "perbaharui_status", waktu: "2026-08-25T10:00:00.000Z" },
+    ],
+  },
+  {
+    id: "pg-dummy-002",
+    nomorKasus: "PG-2026-002",
+    namaSekolah: ["SMPN 2 Jakarta Pusat"],
+    npsnSekolah: ["10301002"],
+    unsurTerlibat: [
+      { peran: "pelaku", kategori: "Siswa Laki-laki", asalSekolah: "SMPN 2 Jakarta Pusat", jumlah: "2", individu: [{ nama: "Galih Ramadhan", umur: "14" }, { nama: "Irfan Hakim", umur: "15" }] },
+      { peran: "korban", kategori: "Siswa Laki-laki", asalSekolah: "SMPN 2 Jakarta Pusat", jumlah: "1", individu: [{ nama: "Yoga Ardiansyah", umur: "14" }] },
+    ],
+    tanggalTerjadi: "2026-09-01",
+    kronologi: [
+      { tanggal: "2026-09-01", jam: "12:15", lokasi: "Depan kantin", keterangan: "Terjadi pemukulan akibat salah paham antarsiswa" },
+    ],
+    kategori: "Kekerasan fisik atau penganiayaan",
+    tingkatKeparahan: "sangat_urgen",
+    pelapor: "laporan_masyarakat",
+    tindakLanjut: "",
+    pic: "Siti Rahmawati",
+    tingkatKelompokKerja: "kabkota",
+    wilayah: "DKI Jakarta",
+    kabupatenKota: "Jakarta Pusat",
+    dokumentasi: "",
+    rekomendasi: "Segera lakukan investigasi bersama orang tua dan petugas karena melibatkan laporan warga.",
+    motif: "Belum diketahui",
+    status: "baru",
+    createdAt: "2026-09-02T08:30:00.000Z",
+    updatedAt: "2026-09-02T08:30:00.000Z",
+    dibuatOleh: "Admin Sekolah SMPN 2 Jakarta Pusat",
+    diperbaruiOleh: "Admin Sekolah SMPN 2 Jakarta Pusat",
+    logStatus: [
+      { status: "baru", keterangan: "Laporan awal dibuat oleh Admin Sekolah SMPN 2 Jakarta Pusat", dibuatOleh: "Admin Sekolah SMPN 2 Jakarta Pusat", aksi: "buat", waktu: "2026-09-02T08:30:00.000Z" },
+    ],
+  },
+  {
+    id: "pg-dummy-003",
+    nomorKasus: "PG-2026-003",
+    namaSekolah: ["SMAN 3 Surabaya"],
+    npsnSekolah: ["10401003"],
+    unsurTerlibat: [
+      { peran: "pelaku", kategori: "Siswa Laki-laki", asalSekolah: "SMAN 3 Surabaya", jumlah: "1", individu: [{ nama: "Hendra Wijaya", umur: "17" }] },
+      { peran: "korban", kategori: "Siswa Perempuan", asalSekolah: "SMAN 3 Surabaya", jumlah: "1", individu: [{ nama: "Nadia Putri", umur: "16" }] },
+    ],
+    tanggalTerjadi: "2026-08-28",
+    kronologi: [
+      { tanggal: "2026-08-28", jam: "20:10", lokasi: "Media sosial", keterangan: "Foto korban disebar tanpa izin di grup kelas" },
+    ],
+    kategori: "Kejahatan siber/digital",
+    tingkatKeparahan: "urgen",
+    pelapor: "temuan_pengawas",
+    tindakLanjut: "Sekolah meminta pelaku menghapus konten dan meminta maaf secara tertulis",
+    pic: "Ratna Wulandari",
+    tingkatKelompokKerja: "kabkota",
+    wilayah: "Jawa Timur",
+    kabupatenKota: "Surabaya",
+    dokumentasi: "https://drive.google.com/dummy/pg-003",
+    rekomendasi: "Berikan edukasi literasi digital kepada seluruh siswa.",
+    motif: "Balas dendam atas konflik sebelumnya.",
+    status: "proses",
+    createdAt: "2026-08-29T11:20:00.000Z",
+    updatedAt: "2026-09-05T09:00:00.000Z",
+    dibuatOleh: "Admin Sekolah SMAN 3 Surabaya",
+    diperbaruiOleh: "Admin Dinas Kota Surabaya",
+    logStatus: [
+      { status: "baru", keterangan: "Laporan awal dibuat oleh Admin Sekolah SMAN 3 Surabaya", dibuatOleh: "Admin Sekolah SMAN 3 Surabaya", aksi: "buat", waktu: "2026-08-29T11:20:00.000Z" },
+      { status: "proses", keterangan: "Pelaku dipanggil dan diminta menghapus konten", dibuatOleh: "Admin Dinas Kota Surabaya", aksi: "perbaharui_status", waktu: "2026-09-05T09:00:00.000Z" },
+    ],
+  },
+  {
+    id: "pg-dummy-004",
+    nomorKasus: "PG-2026-004",
+    namaSekolah: ["SDN 4 Bandung"],
+    npsnSekolah: ["10501004"],
+    unsurTerlibat: [
+      { peran: "pelaku", kategori: "Guru", asalSekolah: "SDN 4 Bandung", jumlah: "1", individu: [{ nama: "Bpk. Adi Susilo", umur: "41" }] },
+      { peran: "korban", kategori: "Siswa Perempuan", asalSekolah: "SDN 4 Bandung", jumlah: "1", individu: [{ nama: "Alya Zahra", umur: "10" }] },
+    ],
+    tanggalTerjadi: "2026-08-10",
+    kronologi: [
+      { tanggal: "2026-08-10", jam: "10:05", lokasi: "Ruang kelas V-A", keterangan: "Siswa mendapat teguran keras bernada menghina di depan kelas" },
+    ],
+    kategori: "Kekerasan verbal atau psikis",
+    tingkatKeparahan: "urgen",
+    pelapor: "laporan_sekolah",
+    tindakLanjut: "Guru yang bersangkutan telah diberikan pembinaan oleh kepala sekolah",
+    pic: "Ahmad Fauzi",
+    tingkatKelompokKerja: "kabkota",
+    wilayah: "Jawa Barat",
+    kabupatenKota: "Bandung",
+    dokumentasi: "",
+    rekomendasi: "Perkuat budaya positif kelas dan pelatihan pengelolaan emosi untuk pendidik.",
+    motif: "Frustrasi karena siswa dianggap sulit diatur.",
+    status: "selesai",
+    createdAt: "2026-08-11T09:45:00.000Z",
+    updatedAt: "2026-08-22T14:00:00.000Z",
+    dibuatOleh: "Admin Sekolah SDN 4 Bandung",
+    diperbaruiOleh: "Admin Dinas Kota Bandung",
+    logStatus: [
+      { status: "baru", keterangan: "Laporan awal dibuat oleh Admin Sekolah SDN 4 Bandung", dibuatOleh: "Admin Sekolah SDN 4 Bandung", aksi: "buat", waktu: "2026-08-11T09:45:00.000Z" },
+      { status: "selesai", keterangan: "Pembinaan selesai dan tidak ada pengulangan", dibuatOleh: "Admin Dinas Kota Bandung", aksi: "perbaharui_status", waktu: "2026-08-22T14:00:00.000Z" },
+    ],
+  },
+  {
+    id: "pg-dummy-005",
+    nomorKasus: "PG-2026-005",
+    namaSekolah: ["SMPN 5 Yogyakarta"],
+    npsnSekolah: ["10601005"],
+    unsurTerlibat: [
+      { peran: "pelaku", kategori: "Siswa Laki-laki", asalSekolah: "SMPN 5 Yogyakarta", jumlah: "4", individu: [{ nama: "Taufik Hidayat", umur: "14" }, { nama: "Rendra Kurnia", umur: "15" }, { nama: "Bayu Prasetyo", umur: "14" }, { nama: "Dimas Anggara", umur: "15" }] },
+      { peran: "korban", kategori: "Siswa Laki-laki", asalSekolah: "SMPN 5 Yogyakarta", jumlah: "1", individu: [{ nama: "Kevin Aditya", umur: "14" }] },
+      { peran: "saksi", kategori: "Siswa Perempuan", asalSekolah: "SMPN 5 Yogyakarta", jumlah: "2", individu: [{ nama: "Salsa Nabila", umur: "14" }, { nama: "Intan Permata", umur: "14" }] },
+    ],
+    tanggalTerjadi: "2026-07-22",
+    kronologi: [
+      { tanggal: "2026-07-22", jam: "11:30", lokasi: "Lapangan upacara", keterangan: "Terjadi ejekan berulang dan intimidasi saat kegiatan Jamkes" },
+    ],
+    kategori: "Perundungan",
+    tingkatKeparahan: "urgen",
+    pelapor: "laporan_sekolah",
+    tindakLanjut: "Sudah dilakukan mediasi dan komitmen antarbullying",
+    pic: "Dian Puspita",
+    tingkatKelompokKerja: "kabkota",
+    wilayah: "DI Yogyakarta",
+    kabupatenKota: "Yogyakarta",
+    dokumentasi: "https://drive.google.com/dummy/pg-005",
+    rekomendasi: "Buat program pencegahan perundungan rutin setiap bulan.",
+    motif: "Senioritas dan kesalahpahaman antar teman sekelas.",
+    status: "selesai",
+    createdAt: "2026-07-24T09:00:00.000Z",
+    updatedAt: "2026-08-10T13:30:00.000Z",
+    dibuatOleh: "Admin Sekolah SMPN 5 Yogyakarta",
+    diperbaruiOleh: "Admin Dinas Kota Yogyakarta",
+    logStatus: [
+      { status: "baru", keterangan: "Laporan awal dibuat oleh Admin Sekolah SMPN 5 Yogyakarta", dibuatOleh: "Admin Sekolah SMPN 5 Yogyakarta", aksi: "buat", waktu: "2026-07-24T09:00:00.000Z" },
+      { status: "selesai", keterangan: "Mediasi selesai, semua pihak menandatangani komitmen", dibuatOleh: "Admin Dinas Kota Yogyakarta", aksi: "perbaharui_status", waktu: "2026-08-10T13:30:00.000Z" },
+    ],
+  },
+  {
+    id: "pg-dummy-006",
+    nomorKasus: "PG-2026-006",
+    namaSekolah: ["SMKN 2 Semarang"],
+    npsnSekolah: ["10701002"],
+    unsurTerlibat: [
+      { peran: "pelaku", kategori: "Siswa Laki-laki", asalSekolah: "SMKN 2 Semarang", jumlah: "2", individu: [{ nama: "Fajar Nugraha", umur: "17" }, { nama: "Yusuf Arifin", umur: "18" }] },
+    ],
+    tanggalTerjadi: "2026-07-15",
+    kronologi: [
+      { tanggal: "2026-07-15", jam: "14:20", lokasi: "Bengkel otomotif", keterangan: "Perkakas dan alat praktik sekolah dicuri usai jam pelajaran" },
+    ],
+    kategori: "Pencurian",
+    tingkatKeparahan: "urgen",
+    pelapor: "media",
+    tindakLanjut: "Kasus dilimpahkan ke sekolah dan orang tua, barang telah dikembalikan",
+    pic: "Eko Prasetyo",
+    tingkatKelompokKerja: "kabkota",
+    wilayah: "Jawa Tengah",
+    kabupatenKota: "Semarang",
+    dokumentasi: "",
+    rekomendasi: "Perketat pengawasan ruang penyimpanan alat praktik.",
+    motif: "Keinginan memiliki alat praktik tanpa membeli.",
+    status: "ditutup",
+    createdAt: "2026-07-16T10:10:00.000Z",
+    updatedAt: "2026-07-30T15:45:00.000Z",
+    dibuatOleh: "Admin Sekolah SMKN 2 Semarang",
+    diperbaruiOleh: "Admin Dinas Kota Semarang",
+    logStatus: [
+      { status: "baru", keterangan: "Laporan awal dibuat oleh Admin Sekolah SMKN 2 Semarang", dibuatOleh: "Admin Sekolah SMKN 2 Semarang", aksi: "buat", waktu: "2026-07-16T10:10:00.000Z" },
+      { status: "ditutup", keterangan: "Barang dikembalikan, diselesaikan secara kekeluargaan", dibuatOleh: "Admin Dinas Kota Semarang", aksi: "perbaharui_status", waktu: "2026-07-30T15:45:00.000Z" },
+    ],
+  },
+  {
+    id: "pg-dummy-007",
+    nomorKasus: "PG-2026-007",
+    namaSekolah: ["SDN 1 Denpasar"],
+    npsnSekolah: ["10801001"],
+    unsurTerlibat: [
+      { peran: "pelaku", kategori: "Siswa Laki-laki", asalSekolah: "SDN 1 Denpasar", jumlah: "3", individu: [{ nama: "Komang Adi", umur: "11" }, { nama: "Made Bayu", umur: "12" }, { nama: "Wayan Dika", umur: "11" }] },
+      { peran: "korban", kategori: "Siswa Laki-laki", asalSekolah: "SDN 1 Denpasar", jumlah: "1", individu: [{ nama: "Putu Gede", umur: "11" }] },
+    ],
+    tanggalTerjadi: "2026-06-30",
+    kronologi: [
+      { tanggal: "2026-06-30", jam: "08:15", lokasi: "Halaman sekolah", keterangan: "Korban terdorong hingga terjatuh dan mengalami luka ringan saat antre masuk" },
+    ],
+    kategori: "Kekerasan fisik atau penganiayaan",
+    tingkatKeparahan: "sangat_urgen",
+    pelapor: "laporan_masyarakat",
+    tindakLanjut: "Investigasi selesai, tidak terbukti unsur kesengajaan penuh",
+    pic: "Ketut Suryana",
+    tingkatKelompokKerja: "kabkota",
+    wilayah: "Bali",
+    kabupatenKota: "Denpasar",
+    dokumentasi: "",
+    rekomendasi: "Perlu penguatan pengawasan saat jam masuk sekolah.",
+    motif: "Tidak terbukti",
+    status: "ditutup",
+    createdAt: "2026-07-01T08:00:00.000Z",
+    updatedAt: "2026-07-20T11:15:00.000Z",
+    dibuatOleh: "Admin Sekolah SDN 1 Denpasar",
+    diperbaruiOleh: "Admin Dinas Kota Denpasar",
+    logStatus: [
+      { status: "baru", keterangan: "Laporan awal dibuat oleh Admin Sekolah SDN 1 Denpasar", dibuatOleh: "Admin Sekolah SDN 1 Denpasar", aksi: "buat", waktu: "2026-07-01T08:00:00.000Z" },
+      { status: "ditutup", keterangan: "Tidak terbukti, kasus ditutup", dibuatOleh: "Admin Dinas Kota Denpasar", aksi: "perbaharui_status", waktu: "2026-07-20T11:15:00.000Z" },
+    ],
+  },
+  {
+    id: "pg-dummy-008",
+    nomorKasus: "PG-2026-008",
+    namaSekolah: ["SMPN 3 Makassar"],
+    npsnSekolah: ["10901003"],
+    unsurTerlibat: [
+      { peran: "pelaku", kategori: "Siswa Perempuan", asalSekolah: "SMPN 3 Makassar", jumlah: "3", individu: [{ nama: "Nur Aisyah", umur: "15" }, { nama: "Rezki Amelia", umur: "15" }, { nama: "Fira Rahmadani", umur: "14" }] },
+      { peran: "korban", kategori: "Siswa Perempuan", asalSekolah: "SMPN 3 Makassar", jumlah: "1", individu: [{ nama: "Ainun Mardiah", umur: "15" }] },
+    ],
+    tanggalTerjadi: "2026-09-08",
+    kronologi: [
+      { tanggal: "2026-09-08", jam: "13:00", lokasi: "Ruang kelas VII-B", keterangan: "Korban dikucilkan dan diejek karena postingan pribadi di media sosial" },
+    ],
+    kategori: "Perundungan",
+    tingkatKeparahan: "sangat_urgen",
+    pelapor: "laporan_sekolah",
+    tindakLanjut: "Menunggu jadwal konseling bersama guru BK",
+    pic: "Hasan Basri",
+    tingkatKelompokKerja: "kabkota",
+    wilayah: "Sulawesi Selatan",
+    kabupatenKota: "Makassar",
+    dokumentasi: "https://drive.google.com/dummy/pg-008",
+    rekomendasi: "Libatkan dinas dan psikolog untuk penanganan berkelanjutan.",
+    motif: "Kecemburuan sosial dan persaingan popularitas.",
+    status: "baru",
+    createdAt: "2026-09-09T09:30:00.000Z",
+    updatedAt: "2026-09-09T09:30:00.000Z",
+    dibuatOleh: "Admin Sekolah SMPN 3 Makassar",
+    diperbaruiOleh: "Admin Sekolah SMPN 3 Makassar",
+    logStatus: [
+      { status: "baru", keterangan: "Laporan awal dibuat oleh Admin Sekolah SMPN 3 Makassar", dibuatOleh: "Admin Sekolah SMPN 3 Makassar", aksi: "buat", waktu: "2026-09-09T09:30:00.000Z" },
+    ],
+  },
+  {
+    id: "pg-dummy-009",
+    nomorKasus: "PG-2026-009",
+    namaSekolah: ["SMAN 2 Palembang"],
+    npsnSekolah: ["11001002"],
+    unsurTerlibat: [
+      { peran: "pelaku", kategori: "Siswa Laki-laki", asalSekolah: "SMAN 2 Palembang", jumlah: "1", individu: [{ nama: "Rizky Fadillah", umur: "17" }] },
+      { peran: "korban", kategori: "Siswa Perempuan", asalSekolah: "SMAN 2 Palembang", jumlah: "1", individu: [{ nama: "Mega Kartika", umur: "16" }] },
+    ],
+    tanggalTerjadi: "2026-09-06",
+    kronologi: [
+      { tanggal: "2026-09-06", jam: "22:15", lokasi: "Chat pribadi", keterangan: "Pengiriman konten tidak senonoh melalui pesan singkat kepada siswa lain" },
+    ],
+    kategori: "Pornografi atau konten seksual",
+    tingkatKeparahan: "sangat_urgen",
+    pelapor: "temuan_pengawas",
+    tindakLanjut: "Proses pemeriksaan bersama BK dan wali kelas",
+    pic: "Lestari Handayani",
+    tingkatKelompokKerja: "kabkota",
+    wilayah: "Sumatera Selatan",
+    kabupatenKota: "Palembang",
+    dokumentasi: "",
+    rekomendasi: "Segera tindak lanjut berkoordinasi dengan pihak berwajib bila diperlukan.",
+    motif: "Belum diketahui",
+    status: "proses",
+    createdAt: "2026-09-07T10:00:00.000Z",
+    updatedAt: "2026-09-12T08:45:00.000Z",
+    dibuatOleh: "Admin Sekolah SMAN 2 Palembang",
+    diperbaruiOleh: "Admin Dinas Kota Palembang",
+    logStatus: [
+      { status: "baru", keterangan: "Laporan awal dibuat oleh Admin Sekolah SMAN 2 Palembang", dibuatOleh: "Admin Sekolah SMAN 2 Palembang", aksi: "buat", waktu: "2026-09-07T10:00:00.000Z" },
+      { status: "proses", keterangan: "Sedang pemeriksaan menggunakan data digital", dibuatOleh: "Admin Dinas Kota Palembang", aksi: "perbaharui_status", waktu: "2026-09-12T08:45:00.000Z" },
+    ],
+  },
+  {
+    id: "pg-dummy-010",
+    nomorKasus: "PG-2026-010",
+    namaSekolah: ["SMAN 1 Banda Aceh"],
+    npsnSekolah: ["10101004"],
+    unsurTerlibat: [
+      { peran: "pelaku", kategori: "Siswa Laki-laki", asalSekolah: "SMAN 1 Banda Aceh", jumlah: "2", individu: [{ nama: "Teuku Zaki", umur: "16" }, { nama: "M. Iqbal", umur: "17" }] },
+    ],
+    tanggalTerjadi: "2026-09-10",
+    kronologi: [
+      { tanggal: "2026-09-10", jam: "16:40", lokasi: "Area parkir sekolah", keterangan: "Ditemukan penggunaan barang terlarang di area sekitar sekolah" },
+    ],
+    kategori: "Penyalahgunaan narkotika psikotropika dan zat adiktif lainnya (NAPZA)",
+    tingkatKeparahan: "sangat_urgen",
+    pelapor: "media",
+    tindakLanjut: "Sedang berkoordinasi dengan orang tua dan instansi terkait",
+    pic: "Budi Santoso",
+    tingkatKelompokKerja: "kabkota",
+    wilayah: "Aceh",
+    kabupatenKota: "Banda Aceh",
+    dokumentasi: "",
+    rekomendasi: "Rehabilitasi dan pendampingan khusus untuk siswa yang terlibat.",
+    motif: "Pengaruh lingkungan pergaulan di luar sekolah.",
+    status: "baru",
+    createdAt: "2026-09-12T13:20:00.000Z",
+    updatedAt: "2026-09-12T13:20:00.000Z",
+    dibuatOleh: "Admin Sekolah SMAN 1 Banda Aceh",
+    diperbaruiOleh: "Admin Sekolah SMAN 1 Banda Aceh",
+    logStatus: [
+      { status: "baru", keterangan: "Laporan awal dibuat oleh Admin Sekolah SMAN 1 Banda Aceh", dibuatOleh: "Admin Sekolah SMAN 1 Banda Aceh", aksi: "buat", waktu: "2026-09-12T13:20:00.000Z" },
+    ],
+  },
+]
 
 interface DisplayIndividu {
   nama: string
@@ -1378,10 +1721,81 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
   )
 }
 
+function ScrollableTable({ children }: { children: React.ReactNode }) {
+  const viewportRef = useRef<HTMLDivElement>(null)
+  const vThumbRef = useRef<HTMLDivElement>(null)
+  const hThumbRef = useRef<HTMLDivElement>(null)
+  const hBarRef = useRef<HTMLDivElement>(null)
+  const [canV, setCanV] = useState(false)
+
+  const updateBars = () => {
+    const el = viewportRef.current
+    if (!el) return
+    const overflowV = el.scrollHeight > el.clientHeight
+    const overflowH = el.scrollWidth > el.clientWidth
+    setCanV(overflowV)
+
+    const vTrackH = el.clientHeight
+    const vThumbH = overflowV ? Math.max(28, (el.clientHeight / el.scrollHeight) * el.clientHeight) : 0
+    const vMax = vTrackH - vThumbH
+    const vTop = overflowV ? (el.scrollTop / (el.scrollHeight - el.clientHeight)) * vMax : 0
+    if (vThumbRef.current) {
+      vThumbRef.current.style.height = `${vThumbH}px`
+      vThumbRef.current.style.top = `${vTop}px`
+    }
+
+    const hBar = hBarRef.current
+    const hBarW = hBar?.clientWidth ?? el.clientWidth
+    const hThumbW = overflowH ? Math.max(48, (el.clientWidth / el.scrollWidth) * hBarW) : hBarW
+    const hMax = hBarW - hThumbW
+    const hLeft = overflowH ? (el.scrollLeft / (el.scrollWidth - el.clientWidth)) * hMax : 0
+    if (hThumbRef.current) {
+      hThumbRef.current.style.width = `${hThumbW}px`
+      hThumbRef.current.style.left = `${hLeft}px`
+    }
+  }
+
+  useEffect(() => {
+    const el = viewportRef.current
+    if (!el) return
+    updateBars()
+    const ro = new ResizeObserver(() => updateBars())
+    ro.observe(el)
+    if (el.firstElementChild) ro.observe(el.firstElementChild)
+    window.addEventListener("resize", updateBars)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener("resize", updateBars)
+    }
+  }, [])
+
+  return (
+    <div>
+      <div className="flex">
+        <div
+          ref={viewportRef}
+          onScroll={updateBars}
+          className="flex-1 min-w-0 max-h-[480px] overflow-scroll scrollbar-hide"
+        >
+          {children}
+        </div>
+        {canV && (
+          <div className="w-2.5 flex-shrink-0 bg-gray-100 border-l border-gray-200 relative" aria-hidden="true">
+            <div ref={vThumbRef} className="absolute left-0.5 w-1.5 rounded-full bg-gray-400/80 hover:bg-gray-500" />
+          </div>
+        )}
+      </div>
+      <div ref={hBarRef} className="h-2.5 bg-gray-100 border-t border-gray-200 relative overflow-hidden" aria-hidden="true">
+        <div ref={hThumbRef} className="absolute top-0.5 h-1.5 rounded-full bg-gray-400/80 hover:bg-gray-500" />
+      </div>
+    </div>
+  )
+}
+
 export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?: boolean; editId?: string; wilayahScope?: { provinsi: string; kabKotaList: string[] } }) {
   const [list, setList] = useState<PelanggaranItem[]>([])
   const [search, setSearch] = useState("")
-  const [filterStatus, setFilterStatus] = useState<StatusPelanggaran | "semua">("semua")
+  const [filterStatus, setFilterStatus] = useState<StatusPelanggaran | "dinonaktifkan" | "semua">("semua")
   const [filterKategori, setFilterKategori] = useState<string>("semua")
   const [filterTingkatUrgensi, setFilterTingkatUrgensi] = useState<TingkatKeparahan | "semua">("semua")
   const [filterPIC, setFilterPIC] = useState<string>("semua")
@@ -1398,27 +1812,35 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
 
   useEffect(() => {
     const stored = localStorage.getItem("pelanggaranList")
+    let existing: PelanggaranItem[] = []
     if (stored) {
       try {
         const parsed: PelanggaranItem[] = JSON.parse(stored)
-        const normalized = parsed.map((item) => {
-          const unsur = Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []
-          return {
-            ...item,
-            namaSekolah: Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah as any],
-            unsurTerlibat: unsur,
-            dokumentasi: Array.isArray(item.dokumentasi) ? item.dokumentasi[0] ?? "" : item.dokumentasi,
-            tingkatKeparahan: (item as any).tingkatKeparahan ?? "urgen",
-            pelapor: (item as any).pelapor ?? "laporan_sekolah",
-            pelaporLainnya: (item as any).pelaporLainnya ?? "",
-            tindakLanjut: (item as any).tindakLanjut ?? "",
-            pic: (item as any).pic ?? "",
-            diperbaruiOleh: (item as any).diperbaruiOleh ?? "",
-          }
-        })
-        setList(normalized)
+        if (Array.isArray(parsed)) existing = parsed
       } catch { /* ignore */ }
     }
+    const storedById = new Map(existing.map((item) => [item.id, item]))
+    const merged: PelanggaranItem[] = [...existing]
+    for (const dummy of DUMMY_PELANGGARAN) {
+      if (!storedById.has(dummy.id)) merged.unshift(dummy)
+    }
+    const normalized = merged.map((item) => {
+      const unsur = Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []
+      return {
+        ...item,
+        namaSekolah: Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah as any],
+        unsurTerlibat: unsur,
+        dokumentasi: Array.isArray(item.dokumentasi) ? item.dokumentasi[0] ?? "" : item.dokumentasi,
+        tingkatKeparahan: (item as any).tingkatKeparahan ?? "urgen",
+        pelapor: (item as any).pelapor ?? "laporan_sekolah",
+        pelaporLainnya: (item as any).pelaporLainnya ?? "",
+        tindakLanjut: (item as any).tindakLanjut ?? "",
+        pic: (item as any).pic ?? "",
+        diperbaruiOleh: (item as any).diperbaruiOleh ?? "",
+      }
+    })
+    localStorage.setItem("pelanggaranList", JSON.stringify(merged))
+    setList(normalized)
   }, [])
 
   useEffect(() => {
@@ -1444,6 +1866,8 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
   const filtered = useMemo(() => {
     const inScope = (item: PelanggaranItem) => {
       if (!wilayahScope) return true
+      const isDummy = typeof item.id === "string" && item.id.startsWith("pg-dummy-")
+      if (isDummy) return true
       const prov = item.wilayah ?? ""
       if (!prov) return true
       if (prov !== wilayahScope.provinsi) return false
@@ -1461,7 +1885,9 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
           sekolahList.some((s) => s.toLowerCase().includes(search.toLowerCase())) ||
           npsnList.some((n) => n.includes(search.trim())) ||
           item.kategori.toLowerCase().includes(search.toLowerCase())
-        const matchStatus = filterStatus === "semua" || item.status === filterStatus
+        const matchStatus =
+          filterStatus === "semua" ||
+          (filterStatus === "dinonaktifkan" ? !!item.dihapus : item.status === filterStatus && !item.dihapus)
         const matchKategori = filterKategori === "semua" || splitKategori(item.kategori).includes(filterKategori)
         const matchTingkat = filterTingkatUrgensi === "semua" || item.tingkatKeparahan === filterTingkatUrgensi
         const matchPIC = filterPIC === "semua" || item.pic === filterPIC
@@ -1528,7 +1954,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
       ...(Array.isArray((editingItem as any).logStatus) ? (editingItem as any).logStatus : []),
       { status: editingItem.status, keterangan: "", dokumentasi: "", dibuatOleh: updaterName, aksi: "edit", waktu: now },
     ]
-    const updated: PelanggaranItem = {
+    const updated: PelanggaranItem & { logStatus?: { status: StatusPelanggaran; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }[] } = {
       ...editingItem,
       ...data,
       updatedAt: now,
@@ -1693,7 +2119,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
         <div className="flex-shrink-0 w-[120px] sm:w-[150px]">
           <Select
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as StatusPelanggaran | "semua")}
+            onChange={(e) => setFilterStatus(e.target.value as StatusPelanggaran | "dinonaktifkan" | "semua")}
             className={SELECT_FILTER}
           >
             <option value="semua">Semua Status</option>
@@ -1701,6 +2127,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
             <option value="proses">Diproses</option>
             <option value="selesai">Selesai</option>
             <option value="ditutup">Ditutup</option>
+            <option value="dinonaktifkan">Dinonaktifkan</option>
           </Select>
         </div>
         <div className="flex-shrink-0 w-[120px] sm:w-[150px]">
@@ -1737,24 +2164,24 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
       ) : (
         <>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm min-w-[640px]">
+            <ScrollableTable>
+              <table className="w-full text-sm min-w-[1280px]">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200 text-left">
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">No. Kasus</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Nama Sekolah</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Unsur Terlibat</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Tanggal</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Kategori</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Urgensi</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">PIC</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">Aksi</th>
+                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">No. Kasus</th>
+                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Nama Sekolah</th>
+                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Unsur Terlibat</th>
+                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Tanggal</th>
+                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Kategori</th>
+                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Urgensi</th>
+                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">PIC</th>
+                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {paginatedData.map((item) => (
-                    <tr key={item.id} className={`hover:bg-gray-50 transition-colors ${item.tingkatKeparahan === "sangat_urgen" ? "border-l-4 border-l-red-500" : ""}`}>
+                    <tr key={item.id} className={`transition-colors ${item.dihapus ? "opacity-50 bg-gray-100" : "hover:bg-gray-50"} ${item.tingkatKeparahan === "sangat_urgen" ? "border-l-4 border-l-red-500" : ""}`}>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
                         {item.nomorKasus || <span className="text-gray-400">-</span>}
                       </td>
@@ -1809,7 +2236,11 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
                         {item.pic || <span className="text-gray-400">-</span>}
                       </td>
                       <td className="px-4 py-3.5">
-                        <StatusBadge status={item.status} />
+                        {item.dihapus ? (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-600">Dinonaktifkan</span>
+                        ) : (
+                          <StatusBadge status={item.status} />
+                        )}
                       </td>
                       <td className="px-4 py-3.5 text-right">
                         <a
@@ -1823,7 +2254,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
                   ))}
                 </tbody>
               </table>
-            </div>
+            </ScrollableTable>
           </div>
 
           {totalPages > 1 && (
