@@ -1863,6 +1863,8 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
     return Array.from(names).sort()
   }, [list])
 
+  const hideDinonaktifkan = readAuthSession()?.role === "dinas"
+
   const filtered = useMemo(() => {
     const inScope = (item: PelanggaranItem) => {
       if (!wilayahScope) return true
@@ -1878,6 +1880,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
     return list
       .filter((item) => {
         if (!inScope(item)) return false
+        if (hideDinonaktifkan && item.dihapus) return false
         const sekolahList = Array.isArray(item.namaSekolah) ? item.namaSekolah : [item.namaSekolah]
         const npsnList = sekolahList.map((_, i) => getNpsn({ namaSekolah: sekolahList, npsnSekolah: item.npsnSekolah }, i))
         const matchSearch =
@@ -1894,7 +1897,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
         return matchSearch && matchStatus && matchKategori && matchTingkat && matchPIC
       })
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-  }, [list, search, filterStatus, filterKategori, filterTingkatUrgensi, filterPIC, wilayahScope])
+  }, [list, search, filterStatus, filterKategori, filterTingkatUrgensi, filterPIC, wilayahScope, hideDinonaktifkan])
 
   const totalRows = filtered.length
   const totalPages = Math.ceil(totalRows / rowsPerPage)
@@ -2116,20 +2119,20 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
             ))}
           </Select>
         </div>
-        <div className="flex-shrink-0 w-[120px] sm:w-[150px]">
-          <Select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as StatusPelanggaran | "dinonaktifkan" | "semua")}
-            className={SELECT_FILTER}
-          >
-            <option value="semua">Semua Status</option>
-            <option value="baru">Belum Diproses</option>
-            <option value="proses">Diproses</option>
-            <option value="selesai">Selesai</option>
-            <option value="ditutup">Ditutup</option>
-            <option value="dinonaktifkan">Dinonaktifkan</option>
-          </Select>
-        </div>
+<div className="flex-shrink-0 w-[120px] sm:w-[150px]">
+            <Select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value as StatusPelanggaran | "dinonaktifkan" | "semua")}
+              className={SELECT_FILTER}
+            >
+              <option value="semua">Semua Status</option>
+              <option value="baru">Belum Diproses</option>
+              <option value="proses">Diproses</option>
+              <option value="selesai">Selesai</option>
+              <option value="ditutup">Ditutup</option>
+              {!hideDinonaktifkan && <option value="dinonaktifkan">Dinonaktifkan</option>}
+            </Select>
+          </div>
         <div className="flex-shrink-0 w-[120px] sm:w-[150px]">
           <Select
             value={filterTingkatUrgensi}
