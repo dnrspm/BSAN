@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import {
   ArrowLeft, AlertTriangle, Users, Calendar, FileText,
-  CheckCircle, Clock, Plus, X, XCircle, ChevronDown, Trash2, MoreVertical, Copy, Check,
+  CheckCircle, Clock, Plus, X, XCircle, ChevronDown, Trash2, MoreVertical, Copy, Check, RotateCcw,
 } from "lucide-react"
 import { KAB_KOTA_BY_PROVINSI } from "@/data/kabKotaData"
 
@@ -649,6 +649,7 @@ function TambahPelanggaranInner() {
   const [item, setItem] = useState<(PelanggaranItem & { logStatus?: { status: StatusPelanggaran; keterangan: string; waktu: string }[] }) | null>(null)
   const [showStatusModal, setShowStatusModal] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showRestoreConfirm, setShowRestoreConfirm] = useState(false)
   const [newStatus, setNewStatus] = useState<StatusPelanggaran>("baru")
   const [keteranganStatus, setKeteranganStatus] = useState("")
   const [dokumentasiStatus, setDokumentasiStatus] = useState("")
@@ -1098,7 +1099,7 @@ function TambahPelanggaranInner() {
                 <div>
                   <p className="text-sm font-semibold text-red-700">Kasus ini dinonaktifkan</p>
                   <p className="text-sm text-red-600 mt-0.5">Kasus tidak dihapus, hanya dinonaktifkan dari daftar pelanggaran. Anda dapat memulihkannya kapan saja.</p>
-                  <button onClick={handleRestore} className="mt-4 py-2.5 px-5 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Pulihkan</button>
+                  <button onClick={() => setShowRestoreConfirm(true)} className="mt-4 py-2.5 px-5 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Pulihkan</button>
                 </div>
               </div>
             </div>
@@ -1442,6 +1443,24 @@ function TambahPelanggaranInner() {
               <div className="flex gap-3 mt-5">
                 <button onClick={() => setShowDeleteConfirm(false)} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Batal</button>
                 <button onClick={handleDelete} className="flex-1 py-2.5 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition">Hapus</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Restore confirmation modal */}
+        {showRestoreConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="fixed inset-0 bg-black/50" onClick={() => setShowRestoreConfirm(false)} />
+            <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
+              <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <RotateCcw className="w-6 h-6 text-green-600" />
+              </div>
+              <h3 className="text-base font-bold text-gray-900 mb-2 text-center">Pulihkan Kasus?</h3>
+              <p className="text-sm text-gray-500 text-center">Kasus ini akan dikembalikan ke daftar pelanggaran dan dapat dilihat kembali oleh semua pengguna.</p>
+              <div className="flex gap-3 mt-5">
+                <button onClick={() => setShowRestoreConfirm(false)} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Batal</button>
+                <button onClick={() => { handleRestore(); setShowRestoreConfirm(false) }} className="flex-1 py-2.5 rounded-lg bg-green-600 text-white font-medium text-sm hover:bg-green-700 transition">Pulihkan</button>
               </div>
             </div>
           </div>
