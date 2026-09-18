@@ -505,7 +505,7 @@ function NomorKasusBadge({ nomorKasus }: { nomorKasus: string }) {
   )
 }
 
-function StatusBadge({ status }: { status: StatusPelanggaran }) {
+function StatusBadge({ status }: { status: StatusPelanggaran | "dinonaktifkan" | "dipulihkan" }) {
   switch (status) {
     case "baru":
       return (
@@ -531,10 +531,22 @@ function StatusBadge({ status }: { status: StatusPelanggaran }) {
           <XCircle className="w-3 h-3" /> Ditutup
         </span>
       )
+    case "dinonaktifkan":
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-600">
+          <Trash2 className="w-3 h-3" /> Nonaktif
+        </span>
+      )
+    case "dipulihkan":
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-700">
+          <RotateCcw className="w-3 h-3" /> Dipulihkan
+        </span>
+      )
   }
 }
 
-function StatusLogList({ entries }: { entries?: { status: StatusPelanggaran; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }[] }) {
+function StatusLogList({ entries }: { entries?: { status: StatusPelanggaran | "dinonaktifkan" | "dipulihkan"; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }[] }) {
   const [showAll, setShowAll] = useState(false)
   if (!Array.isArray(entries) || entries.length === 0) {
     return (
@@ -561,7 +573,7 @@ function StatusLogList({ entries }: { entries?: { status: StatusPelanggaran; ket
       </div>
       {shown.map((entry, i) => {
         const dibuatOleh = entry.dibuatOleh || entry.keterangan.match(/oleh (.+)$/)?.[1] || ""
-        const labelAksi = entry.aksi === "perbaharui_status" ? "Diperbaharui" : entry.aksi === "edit" ? "Diedit" : "Dibuat"
+        const labelAksi = entry.aksi === "perbaharui_status" ? "Diperbaharui" : entry.aksi === "edit" ? "Diedit" : entry.aksi === "nonaktifkan" ? "Dinonaktifkan" : entry.aksi === "pulihkan" ? "Diaktifkan kembali" : "Dibuat"
         const keterangan = entry.keterangan.replace(/ — oleh .+$/, "").replace(/^Laporan awal (dibuat )?/, "").trim()
         return (
           <div key={i} className="p-3 bg-gray-50 rounded-lg space-y-1">
@@ -653,6 +665,8 @@ function TambahPelanggaranInner() {
   const [newStatus, setNewStatus] = useState<StatusPelanggaran>("baru")
   const [keteranganStatus, setKeteranganStatus] = useState("")
   const [dokumentasiStatus, setDokumentasiStatus] = useState("")
+  const [alasanNonaktif, setAlasanNonaktif] = useState("")
+  const [alasanRestore, setAlasanRestore] = useState("")
 
   // Form mode state
   const [form, setForm] = useState<FormData>(emptyForm)
@@ -956,14 +970,39 @@ function TambahPelanggaranInner() {
   const handleDelete = () => {
     if (!viewId || !item) return
     try {
+      const session = (() => {
+        try { return JSON.parse(localStorage.getItem("auth") ?? "{}") } catch { return {} }
+      })() as { role?: string; namaSekolah?: string; namaDinas?: string; namaBPMP?: string }
+      const updaterName = session?.role === "dinas"
+        ? `Admin Dinas ${session.namaDinas ?? ""}`
+        : session?.role === "pusat"
+          ? "Admin Pusat"
+          : session?.role === "bpmp"
+            ? `Admin ${session.namaBPMP ?? "BPMP"}`
+            : session?.namaSekolah
+              ? `Admin Sekolah ${session.namaSekolah}`
+              : "Admin Sekolah"
+      const now = new Date().toISOString() as string
       const stored = JSON.parse(localStorage.getItem("pelanggaranList") ?? "[]") as PelanggaranItem[]
       const updated = stored.map((i) =>
         i.id === viewId
-          ? { ...i, dihapus: true, updatedAt: new Date().toISOString() }
+          ? {
+              ...i,
+              dihapus: true,
+              updatedAt: now,
+              diperbaruiOleh: updaterName,
+              logStatus: [
+                ...(Array.isArray((i as any).logStatus) ? (i as any).logStatus : []),
+                { status: "dinonaktifkan", keterangan: alasanNonaktif.trim(), dibuatOleh: updaterName, aksi: "nonaktifkan", waktu: now },
+              ],
+            }
           : i
       )
       localStorage.setItem("pelanggaranList", JSON.stringify(updated))
-      setItem({ ...item, dihapus: true })
+      const savedLog = Array.isArray((updated.find((i) => i.id === viewId) as any)?.logStatus)
+        ? (updated.find((i) => i.id === viewId) as any).logStatus
+        : []
+      setItem({ ...item, dihapus: true, diperbaruiOleh: updaterName, logStatus: savedLog })
     } catch {}
     setShowDeleteConfirm(false)
   }
@@ -972,14 +1011,39 @@ function TambahPelanggaranInner() {
   const handleRestore = () => {
     if (!viewId || !item) return
     try {
+      const session = (() => {
+        try { return JSON.parse(localStorage.getItem("auth") ?? "{}") } catch { return {} }
+      })() as { role?: string; namaSekolah?: string; namaDinas?: string; namaBPMP?: string }
+      const updaterName = session?.role === "dinas"
+        ? `Admin Dinas ${session.namaDinas ?? ""}`
+        : session?.role === "pusat"
+          ? "Admin Pusat"
+          : session?.role === "bpmp"
+            ? `Admin ${session.namaBPMP ?? "BPMP"}`
+            : session?.namaSekolah
+              ? `Admin Sekolah ${session.namaSekolah}`
+              : "Admin Sekolah"
+      const now = new Date().toISOString() as string
       const stored = JSON.parse(localStorage.getItem("pelanggaranList") ?? "[]") as PelanggaranItem[]
       const updated = stored.map((i) =>
         i.id === viewId
-          ? { ...i, dihapus: false, updatedAt: new Date().toISOString() }
+          ? {
+              ...i,
+              dihapus: false,
+              updatedAt: now,
+              diperbaruiOleh: updaterName,
+              logStatus: [
+                ...(Array.isArray((i as any).logStatus) ? (i as any).logStatus : []),
+                { status: i.status, keterangan: alasanRestore.trim(), dibuatOleh: updaterName, aksi: "pulihkan", waktu: now },
+              ],
+            }
           : i
       )
       localStorage.setItem("pelanggaranList", JSON.stringify(updated))
-      setItem({ ...item, dihapus: false })
+      const savedLog = Array.isArray((updated.find((i) => i.id === viewId) as any)?.logStatus)
+        ? (updated.find((i) => i.id === viewId) as any).logStatus
+        : []
+      setItem({ ...item, dihapus: false, diperbaruiOleh: updaterName, logStatus: savedLog })
     } catch {}
   }
 
@@ -1081,7 +1145,7 @@ function TambahPelanggaranInner() {
               <div className="mt-1">
                 {item.dihapus ? (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-600">
-                    <XCircle className="w-3 h-3" /> Nonaktif
+                    <Trash2 className="w-3 h-3" /> Nonaktif
                   </span>
                 ) : (
                   <StatusBadge status={item.status} />
@@ -1091,7 +1155,7 @@ function TambahPelanggaranInner() {
           </div>
         </div>
 
-        {item.dihapus && (
+        {item.dihapus && (role === "pusat" || role === "bpmp") && (
           <div className="max-w-2xl mx-auto px-4 pt-4">
             <div className="bg-red-50 border border-red-200 rounded-xl p-5">
               <div className="flex items-start gap-3">
@@ -1099,7 +1163,7 @@ function TambahPelanggaranInner() {
                 <div>
                   <p className="text-sm font-semibold text-red-700">Laporan Nonaktif</p>
                   <p className="text-sm text-red-600 mt-0.5">Anda dapat mengaktifkan laporan kembali untuk lanjut memproses kasus pelanggaran.</p>
-                  <button onClick={() => setShowRestoreConfirm(true)} className="mt-4 py-2.5 px-5 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Aktifkan Laporan</button>
+                  <button onClick={() => { setAlasanRestore(""); setShowRestoreConfirm(true) }} className="mt-4 py-2.5 px-5 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Aktifkan Laporan</button>
                 </div>
               </div>
             </div>
@@ -1423,7 +1487,7 @@ function TambahPelanggaranInner() {
           <div className="max-w-2xl mx-auto px-4 pb-8 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               {(role === "pusat" || role === "bpmp") && (
-                <button onClick={() => setShowDeleteConfirm(true)} className="py-2 px-1 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 font-medium text-sm transition">Nonaktifkan</button>
+                <button onClick={() => { setAlasanNonaktif(""); setShowDeleteConfirm(true) }} className="py-2 px-1 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 font-medium text-sm transition">Nonaktifkan</button>
               )}
             </div>
             <div className="flex items-center gap-3 flex-shrink-0">
@@ -1438,8 +1502,23 @@ function TambahPelanggaranInner() {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="fixed inset-0 bg-black/50" onClick={() => setShowDeleteConfirm(false)} />
             <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
-              <h3 className="text-base font-bold text-gray-900 mb-2">Nonaktifkan Laporan?</h3>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                  <Trash2 className="w-6 h-6 text-red-600" />
+                </div>
+                <h3 className="text-base font-bold text-gray-900">Nonaktifkan Laporan?</h3>
+              </div>
               <p className="text-sm text-gray-500">Laporan yang dinonaktifkan dapat diaktifkan kembali kapan saja.</p>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Alasan Nonaktifkan</label>
+                <textarea
+                  value={alasanNonaktif}
+                  onChange={(e) => setAlasanNonaktif(e.target.value)}
+                  rows={2}
+                  placeholder="Tulis alasan menonaktifkan laporan..."
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                />
+              </div>
               <div className="flex gap-3 mt-5">
                 <button onClick={() => setShowDeleteConfirm(false)} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Batal</button>
                 <button onClick={handleDelete} className="flex-1 py-2.5 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition">Ya, Nonaktifkan</button>
@@ -1453,11 +1532,23 @@ function TambahPelanggaranInner() {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="fixed inset-0 bg-black/50" onClick={() => setShowRestoreConfirm(false)} />
             <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
-              <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                <RotateCcw className="w-6 h-6 text-green-600" />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <RotateCcw className="w-6 h-6 text-green-600" />
+                </div>
+                <h3 className="text-base font-bold text-gray-900">Aktifkan Laporan?</h3>
               </div>
-              <h3 className="text-base font-bold text-gray-900 mb-2 text-center">Aktifkan Laporan?</h3>
-              <p className="text-sm text-gray-500 text-center">Anda dapat lanjut memproses kasus pelanggaran.</p>
+              <p className="text-sm text-gray-500">Anda dapat lanjut memproses kasus pelanggaran.</p>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Alasan Aktifkan Kembali</label>
+                <textarea
+                  value={alasanRestore}
+                  onChange={(e) => setAlasanRestore(e.target.value)}
+                  rows={2}
+                  placeholder="Tulis alasan mengaktifkan kembali laporan..."
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                />
+              </div>
               <div className="flex gap-3 mt-5">
                 <button onClick={() => setShowRestoreConfirm(false)} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Batal</button>
                 <button onClick={() => { handleRestore(); setShowRestoreConfirm(false) }} className="flex-1 py-2.5 rounded-lg bg-green-600 text-white font-medium text-sm hover:bg-green-700 transition">Ya, Aktifkan</button>

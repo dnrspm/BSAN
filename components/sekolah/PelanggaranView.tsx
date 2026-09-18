@@ -23,6 +23,8 @@ import {
   Calendar,
   Image,
   Check,
+  RotateCcw,
+  Trash2,
 } from "lucide-react"
 import { readAuthSession } from "@/lib/auth-session"
 import { FormModeToggle, getIdealMode } from "@/components/FormModeToggle"
@@ -570,7 +572,7 @@ const PELAPOR_OPTIONS: { value: Pelapor; label: string }[] = [
   { value: "lainnya", label: "Lainnya" },
 ]
 
-function StatusBadge({ status }: { status: StatusPelanggaran }) {
+function StatusBadge({ status }: { status: StatusPelanggaran | "dinonaktifkan" | "dipulihkan" }) {
   switch (status) {
     case "baru":
       return (
@@ -594,6 +596,18 @@ function StatusBadge({ status }: { status: StatusPelanggaran }) {
       return (
         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
           <XCircle className="w-3 h-3" /> Ditutup
+        </span>
+      )
+    case "dinonaktifkan":
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-600">
+          <Trash2 className="w-3 h-3" /> Nonaktif
+        </span>
+      )
+    case "dipulihkan":
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-700">
+          <RotateCcw className="w-3 h-3" /> Dipulihkan
         </span>
       )
   }
@@ -818,9 +832,9 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
           )}
 
           <div className="flex flex-col gap-2">
-            {showRiwayat && Array.isArray((item as any).logStatus) && (item as any).logStatus.map((entry: { status: StatusPelanggaran; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }, i: number) => {
+            {showRiwayat && Array.isArray((item as any).logStatus) && (item as any).logStatus.map((entry: { status: StatusPelanggaran | "dinonaktifkan" | "dipulihkan"; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }, i: number) => {
                 const dibuatOleh = entry.dibuatOleh || entry.keterangan.match(/oleh (.+)$/)?.[1] || ""
-                const labelAksi = entry.aksi === "perbaharui_status" ? "Diperbaharui" : entry.aksi === "edit" ? "Diedit" : "Dibuat"
+                const labelAksi = entry.aksi === "perbaharui_status" ? "Diperbaharui" : entry.aksi === "edit" ? "Diedit" : entry.aksi === "nonaktifkan" ? "Dinonaktifkan" : entry.aksi === "pulihkan" ? "Diaktifkan kembali" : "Dibuat"
                 const keterangan = entry.keterangan.replace(/ — oleh .+$/, "").replace(/^Laporan awal (dibuat )?/, "").trim()
                 return (
                   <div key={i} className="p-3 bg-gray-50 rounded-lg space-y-1">
@@ -1875,7 +1889,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
     return Array.from(names).sort()
   }, [list])
 
-  const hideDinonaktifkan = readAuthSession()?.role === "dinas"
+  const hideDinonaktifkan = readAuthSession()?.role !== "pusat" && readAuthSession()?.role !== "bpmp"
 
   const filtered = useMemo(() => {
     const inScope = (item: PelanggaranItem) => {
@@ -1924,6 +1938,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
       proses: list.filter((i) => i.status === "proses").length,
       selesai: list.filter((i) => i.status === "selesai").length,
       ditutup: list.filter((i) => i.status === "ditutup").length,
+      nonaktif: list.filter((i) => i.dihapus).length,
     }
   }, [list])
 
@@ -2061,7 +2076,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
 
       <div className="border-t border-gray-200" />
 
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <div className={"grid grid-cols-2 gap-3 " + (hideDinonaktifkan ? "sm:grid-cols-5" : "sm:grid-cols-6")}>
         <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
             <FileText className="w-5 h-5" />
@@ -2107,6 +2122,17 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
             <p className="text-xs text-gray-500">Ditutup</p>
           </div>
         </div>
+        {!hideDinonaktifkan && (
+          <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+              <Trash2 className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-xl font-bold text-gray-900">{stats.nonaktif}</p>
+              <p className="text-xs text-gray-500">Nonaktif</p>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-row gap-2 items-center">
@@ -2252,7 +2278,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
                       </td>
                       <td className="px-4 py-3.5">
                         {item.dihapus ? (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-600">Nonaktif</span>
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-600"><Trash2 className="w-3 h-3" /> Nonaktif</span>
                         ) : (
                           <StatusBadge status={item.status} />
                         )}
