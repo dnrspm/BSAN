@@ -1081,7 +1081,7 @@ function TambahPelanggaranInner() {
               <div className="mt-1">
                 {item.dihapus ? (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-600">
-                    <XCircle className="w-3 h-3" /> Dinonaktifkan
+                    <XCircle className="w-3 h-3" /> Nonaktif
                   </span>
                 ) : (
                   <StatusBadge status={item.status} />
@@ -1097,9 +1097,9 @@ function TambahPelanggaranInner() {
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-semibold text-red-700">Kasus ini dinonaktifkan</p>
-                  <p className="text-sm text-red-600 mt-0.5">Kasus tidak dihapus, hanya dinonaktifkan dari daftar pelanggaran. Anda dapat memulihkannya kapan saja.</p>
-                  <button onClick={() => setShowRestoreConfirm(true)} className="mt-4 py-2.5 px-5 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Pulihkan</button>
+                  <p className="text-sm font-semibold text-red-700">Laporan Nonaktif</p>
+                  <p className="text-sm text-red-600 mt-0.5">Anda dapat mengaktifkan laporan kembali untuk lanjut memproses kasus pelanggaran.</p>
+                  <button onClick={() => setShowRestoreConfirm(true)} className="mt-4 py-2.5 px-5 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Aktifkan Laporan</button>
                 </div>
               </div>
             </div>
@@ -1423,7 +1423,7 @@ function TambahPelanggaranInner() {
           <div className="max-w-2xl mx-auto px-4 pb-8 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               {(role === "pusat" || role === "bpmp") && (
-                <button onClick={() => setShowDeleteConfirm(true)} className="py-2 px-1 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 font-medium text-sm transition">Hapus</button>
+                <button onClick={() => setShowDeleteConfirm(true)} className="py-2 px-1 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 font-medium text-sm transition">Nonaktifkan</button>
               )}
             </div>
             <div className="flex items-center gap-3 flex-shrink-0">
@@ -1438,11 +1438,11 @@ function TambahPelanggaranInner() {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="fixed inset-0 bg-black/50" onClick={() => setShowDeleteConfirm(false)} />
             <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
-              <h3 className="text-base font-bold text-gray-900 mb-2">Hapus Kasus?</h3>
-              <p className="text-sm text-gray-500">Kasus tidak akan dihapus permanen, melainkan dinonaktifkan dari daftar pelanggaran. Kasus dapat dipulihkan kembali kapan saja.</p>
+              <h3 className="text-base font-bold text-gray-900 mb-2">Nonaktifkan Laporan?</h3>
+              <p className="text-sm text-gray-500">Laporan yang dinonaktifkan dapat diaktifkan kembali kapan saja.</p>
               <div className="flex gap-3 mt-5">
                 <button onClick={() => setShowDeleteConfirm(false)} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Batal</button>
-                <button onClick={handleDelete} className="flex-1 py-2.5 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition">Hapus</button>
+                <button onClick={handleDelete} className="flex-1 py-2.5 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition">Ya, Nonaktifkan</button>
               </div>
             </div>
           </div>
@@ -1456,11 +1456,11 @@ function TambahPelanggaranInner() {
               <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                 <RotateCcw className="w-6 h-6 text-green-600" />
               </div>
-              <h3 className="text-base font-bold text-gray-900 mb-2 text-center">Pulihkan Kasus?</h3>
-              <p className="text-sm text-gray-500 text-center">Kasus ini akan dikembalikan ke daftar pelanggaran dan dapat dilihat kembali oleh semua pengguna.</p>
+              <h3 className="text-base font-bold text-gray-900 mb-2 text-center">Aktifkan Laporan?</h3>
+              <p className="text-sm text-gray-500 text-center">Anda dapat lanjut memproses kasus pelanggaran.</p>
               <div className="flex gap-3 mt-5">
                 <button onClick={() => setShowRestoreConfirm(false)} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Batal</button>
-                <button onClick={() => { handleRestore(); setShowRestoreConfirm(false) }} className="flex-1 py-2.5 rounded-lg bg-green-600 text-white font-medium text-sm hover:bg-green-700 transition">Pulihkan</button>
+                <button onClick={() => { handleRestore(); setShowRestoreConfirm(false) }} className="flex-1 py-2.5 rounded-lg bg-green-600 text-white font-medium text-sm hover:bg-green-700 transition">Ya, Aktifkan</button>
               </div>
             </div>
           </div>

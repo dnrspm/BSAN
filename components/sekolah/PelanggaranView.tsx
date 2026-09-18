@@ -2130,7 +2130,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
               <option value="proses">Diproses</option>
               <option value="selesai">Selesai</option>
               <option value="ditutup">Ditutup</option>
-              {!hideDinonaktifkan && <option value="dinonaktifkan">Dinonaktifkan</option>}
+              {!hideDinonaktifkan && <option value="dinonaktifkan">Nonaktif</option>}
             </Select>
           </div>
         <div className="flex-shrink-0 w-[120px] sm:w-[150px]">
@@ -2240,7 +2240,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
                       </td>
                       <td className="px-4 py-3.5">
                         {item.dihapus ? (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-600">Dinonaktifkan</span>
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-600">Nonaktif</span>
                         ) : (
                           <StatusBadge status={item.status} />
                         )}
