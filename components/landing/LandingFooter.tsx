@@ -21,7 +21,7 @@ export function LandingFooter() {
         <div className="grid md:grid-cols-3 gap-10">
           <div>
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-9 h-9 rounded-lg bg-red-600 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
                 <GraduationCap className="w-5 h-5 text-white" />
               </div>
               <span className="font-bold text-lg">Portal BSAN</span>
