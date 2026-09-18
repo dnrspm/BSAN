@@ -545,17 +545,17 @@ function StatusLogList({ entries }: { entries?: { status: StatusPelanggaran; ket
     )
   }
   const list = entries.slice().reverse()
-  const shown = showAll ? list : list.slice(0, 1)
+  const shown = showAll ? list : []
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
         <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Riwayat</p>
-        {entries.length > 1 && (
+        {entries.length > 0 && (
           <button
             onClick={() => setShowAll((s) => !s)}
             className="text-xs font-medium text-blue-600 hover:underline flex items-center gap-1"
           >
-            {showAll ? "Sembunyikan Riwayat" : `Lihat Riwayat Lengkap (${entries.length})`}
+            {showAll ? "Sembunyikan Riwayat" : `Tampilkan Riwayat (${entries.length})`}
           </button>
         )}
       </div>

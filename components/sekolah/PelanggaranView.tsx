@@ -604,6 +604,7 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
   const [selectedStatus, setSelectedStatus] = useState<StatusPelanggaran>(item.status)
   const [keteranganStatus, setKeteranganStatus] = useState("")
   const [dokumentasiStatus, setDokumentasiStatus] = useState("")
+  const [showRiwayat, setShowRiwayat] = useState(false)
 
   function SectionDivider({ icon, title }: { icon: React.ReactNode; title: string }) {
     return (
@@ -805,8 +806,19 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
 
           <SectionDivider icon={<CheckCircle className="w-4 h-4" />} title="Riwayat Status Pelanggaran" />
 
+          {Array.isArray((item as any).logStatus) && (item as any).logStatus.length > 0 && (
+            <div className="flex items-center justify-end">
+              <button
+                onClick={() => setShowRiwayat((s) => !s)}
+                className="text-xs font-medium text-blue-600 hover:underline flex items-center gap-1"
+              >
+                {showRiwayat ? "Sembunyikan Riwayat" : `Tampilkan Riwayat (${(item as any).logStatus.length})`}
+              </button>
+            </div>
+          )}
+
           <div className="flex flex-col gap-2">
-            {Array.isArray((item as any).logStatus) && (item as any).logStatus.map((entry: { status: StatusPelanggaran; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }, i: number) => {
+            {showRiwayat && Array.isArray((item as any).logStatus) && (item as any).logStatus.map((entry: { status: StatusPelanggaran; keterangan: string; dokumentasi?: string; dibuatOleh?: string; aksi?: string; waktu: string }, i: number) => {
                 const dibuatOleh = entry.dibuatOleh || entry.keterangan.match(/oleh (.+)$/)?.[1] || ""
                 const labelAksi = entry.aksi === "perbaharui_status" ? "Diperbaharui" : entry.aksi === "edit" ? "Diedit" : "Dibuat"
                 const keterangan = entry.keterangan.replace(/ — oleh .+$/, "").replace(/^Laporan awal (dibuat )?/, "").trim()
