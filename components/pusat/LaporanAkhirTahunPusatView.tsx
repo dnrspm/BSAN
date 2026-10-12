@@ -33,6 +33,7 @@ interface LaporanItem {
   tahun: string
   periodeAwal: string
   periodeAkhir: string
+  jumlahKegiatan: number | null
   jumlahKasus: number | null
   skorAkhir: number | null
   tanggalSubmit: string | null
@@ -40,7 +41,8 @@ interface LaporanItem {
   createdAt: string
   updatedAt: string
   dibuatOleh: string
-  googleFormUrl: string
+  googleFormUrls: GoogleFormUrls
+  googleFormUrl?: string
   catatan: string
   sekolahYangMengisi: number
   daftarSekolah: SekolahIsian[]
@@ -68,35 +70,62 @@ const DUMMY_SEKOLAH_2025: SekolahIsian[] = [
   { id: "sek-18", namaSekolah: "SMA Negeri 1 Gayo Lues", jumlahKasus: 1, skor: 94, googleFormResponseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfEXAMPLE/viewform", tanggalSubmit: "2025-06-14" },
   { id: "sek-19", namaSekolah: "SMA Negeri 1 Aceh Tenggara", jumlahKasus: 2, skor: 83, googleFormResponseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfEXAMPLE/viewform", tanggalSubmit: "2025-06-17" },
   { id: "sek-20", namaSekolah: "SMA Negeri 1 Langsa", jumlahKasus: 5, skor: 74, googleFormResponseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfEXAMPLE/viewform", tanggalSubmit: "2025-06-24" },
+  { id: "sek-21", namaSekolah: "SDN 1 Banda Aceh", jumlahKasus: 2, skor: 88, googleFormResponseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfEXAMPLE/viewform", tanggalSubmit: "2025-06-20" },
 ]
 
 const DEFAULT_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfEXAMPLE/viewform"
 
-function getStatusFromPeriod(periodeAkhir: string): StatusLaporan {
-  const now = new Date()
-  let end: Date
+const JENJANG_FIELDS = [
+  { key: "paud", label: "Link untuk jenjang PAUD", short: "PAUD" },
+  { key: "sd", label: "Link untuk jenjang SD", short: "SD" },
+  { key: "smp", label: "Link untuk jenjang SMP", short: "SMP" },
+  { key: "sma", label: "Link untuk jenjang SMA", short: "SMA" },
+  { key: "smk", label: "Link untuk jenjang SMK", short: "SMK" },
+  { key: "pkbm", label: "Link untuk jenjang PKBM", short: "PKBM" },
+  { key: "slb", label: "Link untuk jenjang SLB", short: "SLB" },
+  { key: "snt", label: "Link untuk jenjang Sekolah Nasional Terintegrasi", short: "Sekolah Nasional Terintegrasi" },
+  { key: "dinas", label: "Link untuk Dinas Pendidikan", short: "Dinas Pendidikan" },
+] as const
 
-  if (/^\d{4}-\d{2}-\d{2}$/.test(periodeAkhir)) {
-    end = new Date(periodeAkhir + "T00:00:00")
-  } else {
-    const parts = periodeAkhir.match(/(\d+)\s+(\w+)\s+(\d+)/)
-    if (parts) {
-      const [, day, monthName, year] = parts
-      const months: Record<string, string> = {
-        Januari: "01", Februari: "02", Maret: "03", April: "04", Mei: "05", Juni: "06",
-        Juli: "07", Agustus: "08", September: "09", Oktober: "10", November: "11", Desember: "12"
-      }
-      const month = months[monthName] || "01"
-      end = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
-    } else {
-      end = new Date(periodeAkhir)
-    }
+type JenjangKey = (typeof JENJANG_FIELDS)[number]["key"]
+type GoogleFormUrls = Record<JenjangKey, string>
+
+function emptyFormUrls(defaultUrl = ""): GoogleFormUrls {
+  return JENJANG_FIELDS.reduce(
+    (acc, field) => ({ ...acc, [field.key]: defaultUrl }),
+    {} as GoogleFormUrls
+  )
+}
+
+function parseDate(dateStr: string): Date | null {
+  if (!dateStr) return null
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    return new Date(dateStr + "T00:00:00")
   }
+  const parts = dateStr.match(/(\d+)\s+(\w+)\s+(\d+)/)
+  if (parts) {
+    const [, day, monthName, year] = parts
+    const months: Record<string, string> = {
+      Januari: "01", Februari: "02", Maret: "03", April: "04", Mei: "05", Juni: "06",
+      Juli: "07", Agustus: "08", September: "09", Oktober: "10", November: "11", Desember: "12"
+    }
+    const month = months[monthName] || "01"
+    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+  }
+  return new Date(dateStr)
+}
+
+function getStatusFromPeriod(periodeAwal: string, periodeAkhir: string): StatusLaporan {
+  const now = new Date()
+  const start = parseDate(periodeAwal)
+  const end = parseDate(periodeAkhir)
+  if (!start || !end) return "terjadwal"
 
   const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const startDate = new Date(start.getFullYear(), start.getMonth(), start.getDate())
   const endDate = new Date(end.getFullYear(), end.getMonth(), end.getDate())
 
-  if (nowDate < endDate) return "terjadwal"
+  if (nowDate < startDate) return "terjadwal"
   if (nowDate > endDate) return "selesai"
   return "berlangsung"
 }
@@ -144,10 +173,16 @@ function FormModal({
   const [tahun, setTahun] = useState(initialData?.tahun ?? new Date().getFullYear().toString())
   const [periodeAwal, setPeriodeAwal] = useState(initialData?.periodeAwal ?? "2024-07-01")
   const [periodeAkhir, setPeriodeAkhir] = useState(initialData?.periodeAkhir ?? "2025-06-30")
-  const [googleFormUrl, setGoogleFormUrl] = useState(initialData?.googleFormUrl ?? DEFAULT_FORM_URL)
+  const [googleFormUrls, setGoogleFormUrls] = useState<GoogleFormUrls>(
+    initialData?.googleFormUrls ?? emptyFormUrls()
+  )
   const [catatan, setCatatan] = useState(initialData?.catatan ?? "")
 
-  const canSubmit = tahun && periodeAwal && periodeAkhir && googleFormUrl.trim()
+  const canSubmit =
+    tahun &&
+    periodeAwal &&
+    periodeAkhir &&
+    JENJANG_FIELDS.every((field) => googleFormUrls[field.key]?.trim())
 
   const handleSubmit = () => {
     if (!canSubmit) return
@@ -155,13 +190,19 @@ function FormModal({
       tahun,
       periodeAwal,
       periodeAkhir,
+      jumlahKegiatan: null,
       jumlahKasus: null,
       skorAkhir: null,
       tanggalSubmit: null,
       status: "terjadwal",
-      googleFormUrl: googleFormUrl.trim(),
+      googleFormUrls: JENJANG_FIELDS.reduce(
+        (acc, field) => ({ ...acc, [field.key]: googleFormUrls[field.key].trim() }),
+        {} as GoogleFormUrls
+      ),
       catatan,
       sekolahYangMengisi: 0,
+      daftarSekolah: [],
+      isOpened: true,
     })
   }
 
@@ -223,18 +264,27 @@ function FormModal({
 
           <div>
             <label className="text-xs font-semibold text-gray-700">
-              Google Form URL <span className="text-red-500">*</span>
+              Link Google Form per Jenjang <span className="text-red-500">*</span>
             </label>
-            <input
-              type="url"
-              value={googleFormUrl}
-              onChange={(e) => setGoogleFormUrl(e.target.value)}
-              placeholder="https://docs.google.com/forms/d/..."
-              className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Buat Google Form untuk pengumpulan data, lalu masukkan URL form di sini.
+            <p className="text-xs text-gray-500 mt-1 mb-3">
+              Buat Google Form untuk setiap jenjang, lalu masukkan URL form di masing-masing field berikut.
             </p>
+            <div className="space-y-3">
+              {JENJANG_FIELDS.map((field) => (
+                <div key={field.key}>
+                  <label className="text-xs font-medium text-gray-600">{field.label}</label>
+                  <input
+                    type="url"
+                    value={googleFormUrls[field.key]}
+                    onChange={(e) =>
+                      setGoogleFormUrls((prev) => ({ ...prev, [field.key]: e.target.value }))
+                    }
+                    placeholder="https://docs.google.com/forms/d/..."
+                    className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
           <div>
@@ -271,7 +321,7 @@ function FormModal({
             type="button"
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {initialData ? "Simpan" : "Buat Periode"}
           </button>
@@ -304,7 +354,7 @@ function DetailModal({ item, onClose, onEdit, onDelete, onViewSekolah }: { item:
         </div>
 
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          <StatusBadge status={getStatusFromPeriod(item.periodeAkhir)} />
+                      <StatusBadge status={getStatusFromPeriod(item.periodeAwal, item.periodeAkhir)} />
 
           <div className="bg-gray-50 rounded-lg p-4 space-y-3">
             <div className="grid grid-cols-2 gap-4">
@@ -326,15 +376,29 @@ function DetailModal({ item, onClose, onEdit, onDelete, onViewSekolah }: { item:
             </div>
 
             <div>
-              <p className="text-xs text-gray-500">Google Form</p>
-              <a
-                href={item.googleFormUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1"
-              >
-                <ExternalLink className="w-3.5 h-3.5" /> Buka Form
-              </a>
+              <p className="text-xs text-gray-500 mb-2">Google Form per Jenjang</p>
+              <div className="space-y-2">
+                {JENJANG_FIELDS.map((field) => {
+                  const url = item.googleFormUrls?.[field.key]
+                  return (
+                    <div key={field.key} className="flex items-center justify-between gap-2">
+                      <span className="text-xs text-gray-600 min-w-0 truncate">{field.short}</span>
+                      {url ? (
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs font-medium text-blue-600 hover:underline flex items-center gap-1 flex-shrink-0"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" /> Buka
+                        </a>
+                      ) : (
+                        <span className="text-xs text-gray-400 flex-shrink-0">-</span>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
             </div>
 
             <div>
@@ -439,12 +503,63 @@ function DetailModal({ item, onClose, onEdit, onDelete, onViewSekolah }: { item:
   )
 }
 
+function FormLinksModal({ item, onClose }: { item: LaporanItem; onClose: () => void }) {
+  return (
+    <>
+      <div className="fixed inset-0 z-[60] bg-black/40" onClick={onClose} />
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 flex-shrink-0">
+            <div>
+              <h3 className="text-base font-bold text-gray-900">Link Google Form</h3>
+              <p className="text-xs text-gray-500">Tahun {item.tahun}</p>
+            </div>
+            <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-lg">
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-5 space-y-3">
+            {JENJANG_FIELDS.map((field) => {
+              const url = item.googleFormUrls?.[field.key]
+              return (
+                <div key={field.key} className="flex items-center justify-between gap-3 border-b border-gray-100 pb-2 last:border-0">
+                  <span className="text-sm text-gray-700">{field.short}</span>
+                  {url ? (
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1 flex-shrink-0"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" /> Buka
+                    </a>
+                  ) : (
+                    <span className="text-xs text-gray-400 flex-shrink-0">Belum diisi</span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
 export function LaporanAkhirTahunPusatView() {
   const router = useRouter()
   const [list, setList] = useState<LaporanItem[]>([])
   const [selected, setSelected] = useState<LaporanItem | null>(null)
+  const [linksItem, setLinksItem] = useState<LaporanItem | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [editingItem, setEditingItem] = useState<LaporanItem | undefined>(undefined)
+
+  const normalizeList = (parsed: LaporanItem[]): LaporanItem[] =>
+    parsed.map((item) => ({
+      ...item,
+      googleFormUrls:
+        item.googleFormUrls ?? emptyFormUrls(item.googleFormUrl ?? DEFAULT_FORM_URL),
+    }))
 
   useEffect(() => {
     const stored = localStorage.getItem("laporanAkhirTahunList")
@@ -454,11 +569,13 @@ export function LaporanAkhirTahunPusatView() {
         if (!Array.isArray(parsed) || parsed.length === 0) {
           createDummyData()
         } else {
-          const has2025 = parsed.some((item) => item.id === "laporan-2025")
+          const normalized = normalizeList(parsed)
+          const has2025 = normalized.some((item) => item.id === "laporan-2025")
           if (!has2025) {
-            createDummyData(parsed)
+            createDummyData(normalized)
           } else {
-            setList(parsed)
+            setList(normalized)
+            localStorage.setItem("laporanAkhirTahunList", JSON.stringify(normalized))
           }
         }
       } catch {
@@ -475,6 +592,7 @@ export function LaporanAkhirTahunPusatView() {
       tahun: "2025",
       periodeAwal: "2024-07-01",
       periodeAkhir: "2025-06-30",
+      jumlahKegiatan: 84,
       jumlahKasus: 56,
       skorAkhir: 81,
       tanggalSubmit: "2025-06-30",
@@ -482,33 +600,15 @@ export function LaporanAkhirTahunPusatView() {
       createdAt: "2024-07-01T00:00:00.000Z",
       updatedAt: "2025-06-30T00:00:00.000Z",
       dibuatOleh: "Admin Pusat",
-      googleFormUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfEXAMPLE/viewform",
+      googleFormUrls: emptyFormUrls(DEFAULT_FORM_URL),
       catatan: "Periode pelaporan tahun 2025 telah selesai.",
-      sekolahYangMengisi: 20,
+      sekolahYangMengisi: 21,
       daftarSekolah: DUMMY_SEKOLAH_2025,
       isOpened: true,
     }
-    const dummy2026: LaporanItem = {
-      id: "laporan-2026",
-      tahun: "2026",
-      periodeAwal: "2025-07-01",
-      periodeAkhir: "2026-06-30",
-      jumlahKasus: null,
-      skorAkhir: null,
-      tanggalSubmit: null,
-      status: "berlangsung",
-      createdAt: "2025-07-01T00:00:00.000Z",
-      updatedAt: "2025-07-01T00:00:00.000Z",
-      dibuatOleh: "Admin Pusat",
-      googleFormUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfEXAMPLE/viewform",
-      catatan: "Periode pelaporan tahun 2026 sedang berlangsung.",
-      sekolahYangMengisi: 0,
-      daftarSekolah: [],
-      isOpened: true,
-    }
-    const newList = existingList 
-      ? [...existingList.filter(item => item.tahun !== "2025" && item.tahun !== "2026"), dummy2025, dummy2026]
-      : [dummy2025, dummy2026]
+    const newList = existingList
+      ? [...existingList.filter((item) => item.tahun !== "2025" && item.id !== "laporan-2025"), dummy2025]
+      : [dummy2025]
     setList(newList)
     localStorage.setItem("laporanAkhirTahunList", JSON.stringify(newList))
   }
@@ -570,7 +670,7 @@ export function LaporanAkhirTahunPusatView() {
               setEditingItem(undefined)
               setShowForm(true)
             }}
-            className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition"
+            className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
           >
             <Plus className="w-4 h-4" /> Buat Periode
           </button>
@@ -609,7 +709,7 @@ export function LaporanAkhirTahunPusatView() {
                       {formatDateDisplay(item.periodeAwal)} - {formatDateDisplay(item.periodeAkhir)}
                     </td>
                     <td className="px-4 py-3.5">
-                      <StatusBadge status={getStatusFromPeriod(item.periodeAkhir)} />
+          <StatusBadge status={getStatusFromPeriod(item.periodeAwal, item.periodeAkhir)} />
                     </td>
                     <td className="px-4 py-3.5 text-center">
                       <span className={`inline-flex items-center justify-center min-w-[40px] px-2.5 py-1 rounded-full text-xs font-semibold ${
@@ -619,14 +719,13 @@ export function LaporanAkhirTahunPusatView() {
                       </span>
                     </td>
                     <td className="px-4 py-3.5">
-                      <a
-                        href={item.googleFormUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        onClick={() => setLinksItem(item)}
                         className="text-blue-600 hover:underline text-sm flex items-center gap-1"
                       >
-                        <ExternalLink className="w-3.5 h-3.5" /> Lihat
-                      </a>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        Lihat ({JENJANG_FIELDS.filter((f) => item.googleFormUrls?.[f.key]).length})
+                      </button>
                     </td>
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
@@ -691,6 +790,10 @@ export function LaporanAkhirTahunPusatView() {
           onSubmit={editingItem ? handleUpdate : handleCreate}
           initialData={editingItem}
         />
+      )}
+
+      {linksItem && (
+        <FormLinksModal item={linksItem} onClose={() => setLinksItem(null)} />
       )}
     </div>
   )

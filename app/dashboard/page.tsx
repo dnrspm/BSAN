@@ -9,6 +9,7 @@ import { DashboardView } from "@/components/views/DinasHome"
 import { DataPokjaView } from "@/components/dashboard/DataPokjaView"
 import { SumberRujukanView } from "@/components/dashboard/SumberRujukanView"
 import { KegiatanView } from "@/components/dashboard/KegiatanView"
+import { LaporanAkhirTahunView } from "@/components/laporan/LaporanAkhirTahunView"
 
 import { SidebarPusat, PusatMenu } from "@/components/pusat/SidebarPusat"
 import { HeaderPusat } from "@/components/pusat/HeaderPusat"
@@ -32,7 +33,7 @@ import type { PokjaItem, PokjaData } from "@/types/pokja"
 import { getDrafts, clearDraft } from "@/lib/draft-storage"
 
 type AdminRole = "dinas" | "pusat" | "sekolah" | "bpmp"
-type DinaMenu = "dashboard" | "data-pokja" | "sumber-rujukan" | "kegiatan" | "pelanggaran"
+type DinaMenu = "dashboard" | "data-pokja" | "sumber-rujukan" | "kegiatan" | "pelanggaran" | "laporan-akhir-tahun"
 
 const REGION = "Provinsi Aceh"
 
@@ -204,7 +205,7 @@ function DashboardPageInner() {
   // Handle ?menu= URL param for dinas
   useEffect(() => {
     const menuParam = searchParams.get("menu") as DinaMenu | null
-    if (menuParam && ["dashboard", "data-pokja", "sumber-rujukan", "kegiatan", "pelanggaran"].includes(menuParam)) {
+    if (menuParam && ["dashboard", "data-pokja", "sumber-rujukan", "kegiatan", "pelanggaran", "laporan-akhir-tahun"].includes(menuParam)) {
       setDinasMenu(menuParam)
     }
   }, [searchParams])
@@ -551,6 +552,7 @@ function DashboardPageInner() {
               {dinasMenu === "sumber-rujukan" && <SumberRujukanView />}
               {dinasMenu === "kegiatan" && <KegiatanView />}
               {dinasMenu === "pelanggaran" && <PelanggaranView editId={searchParams.get("edit") ?? undefined} />}
+              {dinasMenu === "laporan-akhir-tahun" && <LaporanAkhirTahunView role="dinas" />}
             </main>
           </div>
         </div>

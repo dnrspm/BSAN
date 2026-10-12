@@ -7,7 +7,7 @@ import { SekolahHeader } from "@/components/sekolah/SekolahHeader"
 import { SekolahSumberRujukanView } from "@/components/sekolah/SekolahSumberRujukanView"
 import { KegiatanView } from "@/components/dashboard/KegiatanView"
 import { PelanggaranView } from "@/components/sekolah/PelanggaranView"
-import { LaporanAkhirTahunView } from "@/components/sekolah/LaporanAkhirTahunView"
+import { LaporanAkhirTahunView } from "@/components/laporan/LaporanAkhirTahunView"
 import { clearAuthAndRedirectToLogin } from "@/lib/logout"
 
 type AuthPayload = {
@@ -59,7 +59,7 @@ export function SekolahDashboard({ searchParams }: SekolahDashboardProps) {
           {menu === "sumber-rujukan" && <SekolahSumberRujukanView wilayah={wilayah} />}
           {menu === "kegiatan" && <KegiatanView />}
           {menu === "pelanggaran" && <PelanggaranView readOnly />}
-          {menu === "laporan-akhir-tahun" && <LaporanAkhirTahunView />}
+          {menu === "laporan-akhir-tahun" && <LaporanAkhirTahunView role="sekolah" />}
         </main>
       </div>
     </div>

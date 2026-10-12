@@ -1,12 +1,12 @@
 "use client"
-import { LayoutDashboard, Users, LogOut, GraduationCap, Menu, X, BookOpenCheck, CalendarDays, AlertTriangle } from "lucide-react"
+import { LayoutDashboard, Users, LogOut, GraduationCap, Menu, X, BookOpenCheck, CalendarDays, AlertTriangle, FileText } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { clearAuthAndRedirectToLogin } from "@/lib/logout"
 import { readAuthSession } from "@/lib/auth-session"
 
-type ActiveMenu = "dashboard" | "data-pokja" | "sumber-rujukan" | "kegiatan" | "pelanggaran"
+type ActiveMenu = "dashboard" | "data-pokja" | "sumber-rujukan" | "kegiatan" | "pelanggaran" | "laporan-akhir-tahun"
 
 interface SidebarProps {
   activeMenu: ActiveMenu
@@ -38,6 +38,11 @@ const navItems = [
     id: "pelanggaran" as ActiveMenu,
     label: "Pelanggaran",
     icon: AlertTriangle,
+  },
+  {
+    id: "laporan-akhir-tahun" as ActiveMenu,
+    label: "Laporan Akhir Tahun",
+    icon: FileText,
   },
 ]
 
