@@ -7,6 +7,36 @@
 export const LAPORAN_STORAGE_KEY = "laporanAkhirTahunList"
 
 /**
+ * Menghapus entri laporan dummy tahun 2026 yang tersisa dari seed versi lama,
+ * sehingga tidak lagi muncul di dashboard pusat, sekolah, dinas, maupun BPMP.
+ * Hanya menyasar entri dummy (id/createdAt seed lama), bukan periode resmi
+ * yang dibuat kemudian.
+ */
+export function purgeLegacyLaporan2026(): void {
+  if (typeof window === "undefined") return
+  try {
+    const raw = localStorage.getItem(LAPORAN_STORAGE_KEY)
+    if (!raw) return
+    const parsed = JSON.parse(raw) as Array<{ id?: string; tahun?: string; createdAt?: string }>
+    if (!Array.isArray(parsed)) return
+    const filtered = parsed.filter(
+      (item) =>
+        item?.id !== "laporan-2026" &&
+        !(
+          item?.tahun === "2026" &&
+          typeof item.createdAt === "string" &&
+          item.createdAt.startsWith("2025-07-01")
+        )
+    )
+    if (filtered.length !== parsed.length) {
+      localStorage.setItem(LAPORAN_STORAGE_KEY, JSON.stringify(filtered))
+    }
+  } catch {
+    /* abaikan */
+  }
+}
+
+/**
  * Menormalkan nama instansi untuk pencocokan, sehingga variasi penulisan
  * seperti "SDN 1 Banda Aceh" dan "SD Negeri 1 Banda Aceh" dianggap sama.
  */

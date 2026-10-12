@@ -19,7 +19,7 @@ import {
   X,
 } from "lucide-react"
 import { DIREKTORI_ENTITAS } from "@/data/direktoriInstansi"
-import { SekolahIsian, DinasIsian, normalizeNamaInstansi } from "@/lib/laporan-instansi"
+import { SekolahIsian, DinasIsian, normalizeNamaInstansi, purgeLegacyLaporan2026 } from "@/lib/laporan-instansi"
 
 interface LaporanItem {
   id: string
@@ -157,6 +157,7 @@ export default function LaporanDetailPage() {
 
   useEffect(() => {
     setMounted(true)
+    purgeLegacyLaporan2026()
     const params = new URLSearchParams(window.location.search)
     const id = params.get("id")
     const provinsiParam = params.get("provinsi")

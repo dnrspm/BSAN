@@ -17,7 +17,7 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { DIREKTORI_ENTITAS } from "@/data/direktoriInstansi"
-import { normalizeNamaInstansi } from "@/lib/laporan-instansi"
+import { normalizeNamaInstansi, purgeLegacyLaporan2026 } from "@/lib/laporan-instansi"
 
 type StatusLaporan = "terjadwal" | "berlangsung" | "selesai"
 
@@ -567,6 +567,7 @@ export function LaporanAkhirTahunPusatView({
     }))
 
   useEffect(() => {
+    purgeLegacyLaporan2026()
     const stored = localStorage.getItem("laporanAkhirTahunList")
     if (stored) {
       try {

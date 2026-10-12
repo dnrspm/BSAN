@@ -10,7 +10,7 @@ import {
   AlertTriangle,
 } from "lucide-react"
 import { readAuthSession } from "@/lib/auth-session"
-import { LAPORAN_STORAGE_KEY, SekolahIsian, DinasIsian, syncSubmission, normalizeNamaInstansi } from "@/lib/laporan-instansi"
+import { LAPORAN_STORAGE_KEY, SekolahIsian, DinasIsian, syncSubmission, normalizeNamaInstansi, purgeLegacyLaporan2026 } from "@/lib/laporan-instansi"
 
 type StatusLaporan = "terjadwal" | "berlangsung" | "selesai"
 
@@ -134,6 +134,7 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
   const [confirmItem, setConfirmItem] = useState<LaporanItem | null>(null)
 
   useEffect(() => {
+    purgeLegacyLaporan2026()
     const stored = localStorage.getItem("laporanAkhirTahunList")
     if (stored) {
       try {
