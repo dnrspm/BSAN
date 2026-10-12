@@ -140,6 +140,7 @@ export default function LaporanDetailPage() {
   const [showWilayahModal, setShowWilayahModal] = useState(false)
   const [modalPending, setModalPending] = useState("all")
   const [page, setPage] = useState(1)
+  const [scopedProvinsi, setScopedProvinsi] = useState<string | null>(null)
   const [filledNames, setFilledNames] = useState<{ sekolah: Set<string>; dinas: Set<string> }>({
     sekolah: new Set(),
     dinas: new Set(),
@@ -158,6 +159,8 @@ export default function LaporanDetailPage() {
     setMounted(true)
     const params = new URLSearchParams(window.location.search)
     const id = params.get("id")
+    const provinsiParam = params.get("provinsi")
+    setScopedProvinsi(provinsiParam || null)
 
     if (!id) {
       router.push("/dashboard")
@@ -199,6 +202,11 @@ export default function LaporanDetailPage() {
 
         // Lengkapi entri pengisian yang belum punya data submit (mis. ditandai
         // pada versi sebelumnya) agar tanggal submit & link formulir tampil.
+        if (provinsiParam) {
+          setItem(found)
+          setLoading(false)
+          return
+        }
         const tanggal = new Date().toISOString().slice(0, 10)
         const daftarSekolah = [...(found.daftarSekolah ?? [])]
         const daftarDinas = [...(found.daftarDinas ?? [])]
@@ -290,19 +298,26 @@ export default function LaporanDetailPage() {
 
   const dynamicStatus = getStatusFromPeriod(item.periodeAwal, item.periodeAkhir)
 
-  const totalInstansi = rows.length
-  const totalFilled = rows.filter((r) => r.filled).length
+  const isReadOnly = !!scopedProvinsi
+  const baseRows = scopedProvinsi
+    ? rows.filter((r) => r.entitas.provinsi === scopedProvinsi)
+    : rows
+
+  const totalInstansi = baseRows.length
+  const totalFilled = baseRows.filter((r) => r.filled).length
   const persen = totalInstansi > 0 ? Math.round((totalFilled / totalInstansi) * 100) : 0
 
-  const skorList = rows
+  const skorList = baseRows
     .map((r) => r.submission?.skor)
     .filter((s): s is number => typeof s === "number")
   const rataRata =
     skorList.length > 0
       ? Math.round(skorList.reduce((a, b) => a + b, 0) / skorList.length)
-      : item.skorAkhir
+      : isReadOnly
+        ? null
+        : item.skorAkhir
 
-  const filteredRows = rows.filter((r) => {
+  const filteredRows = baseRows.filter((r) => {
     if (filter !== "semua" && r.entitas.jenis !== filter) return false
     if (statusFilter === "sudah" && !r.filled) return false
     if (statusFilter === "belum" && r.filled) return false
@@ -318,7 +333,11 @@ export default function LaporanDetailPage() {
     return true
   })
 
-  const wilayahLabel = wilayahFilter === "all" ? "Seluruh Indonesia" : `Provinsi ${wilayahFilter}`
+  const wilayahLabel = scopedProvinsi
+    ? `Provinsi ${scopedProvinsi}`
+    : wilayahFilter === "all"
+      ? "Seluruh Indonesia"
+      : `Provinsi ${wilayahFilter}`
 
   const PAGE_SIZE = 10
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE))
@@ -461,18 +480,25 @@ export default function LaporanDetailPage() {
               <h2 className="text-base font-bold text-gray-900">Daftar Dinas &amp; Sekolah</h2>
             </div>
             <div className="flex items-center gap-2 flex-wrap w-full lg:w-auto">
-              <button
-                onClick={() => {
-                  setModalPending(wilayahFilter)
-                  setShowWilayahModal(true)
-                }}
-                className="h-9 px-3 text-sm border border-gray-300 rounded-lg bg-white text-gray-800 font-medium hover:bg-gray-50 hover:border-gray-400 transition flex items-center gap-2 shrink-0"
-              >
-                <MapPin className="w-4 h-4 text-gray-500 shrink-0" />
-                <span className="max-w-[180px] truncate">{wilayahLabel}</span>
-                <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
-              </button>
-              {wilayahFilter !== "all" && (
+              {isReadOnly ? (
+                <span className="h-9 px-3 text-sm border border-gray-200 rounded-lg bg-gray-50 text-gray-700 font-medium flex items-center gap-2 shrink-0">
+                  <MapPin className="w-4 h-4 text-gray-500 shrink-0" />
+                  <span className="max-w-[180px] truncate">{wilayahLabel}</span>
+                </span>
+              ) : (
+                <button
+                  onClick={() => {
+                    setModalPending(wilayahFilter)
+                    setShowWilayahModal(true)
+                  }}
+                  className="h-9 px-3 text-sm border border-gray-300 rounded-lg bg-white text-gray-800 font-medium hover:bg-gray-50 hover:border-gray-400 transition flex items-center gap-2 shrink-0"
+                >
+                  <MapPin className="w-4 h-4 text-gray-500 shrink-0" />
+                  <span className="max-w-[180px] truncate">{wilayahLabel}</span>
+                  <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
+                </button>
+              )}
+              {!isReadOnly && wilayahFilter !== "all" && (
                 <button
                   onClick={() => setWilayahFilter("all")}
                   className="h-9 px-3 text-sm text-gray-500 hover:text-gray-800 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition shrink-0"
@@ -571,15 +597,21 @@ export default function LaporanDetailPage() {
                           {submission.skor}
                         </span>
                       ) : filled ? (
-                        <button
-                          onClick={() => {
-                            setIndexTarget({ nama: entitas.nama, jenis: entitas.jenis })
-                            setIndexValue("")
-                          }}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition whitespace-nowrap"
-                        >
-                          Isi Indeks BSAN
-                        </button>
+                        isReadOnly ? (
+                          <span className="text-xs text-gray-500 whitespace-nowrap">
+                            Dalam Proses Penilaian
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setIndexTarget({ nama: entitas.nama, jenis: entitas.jenis })
+                              setIndexValue("")
+                            }}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition whitespace-nowrap"
+                          >
+                            Isi Indeks BSAN
+                          </button>
+                        )
                       ) : (
                         <span className="text-gray-400 text-xs">-</span>
                       )}

@@ -1,12 +1,12 @@
 "use client"
-import { LayoutDashboard, Users, LogOut, GraduationCap, BookOpenCheck, AlertTriangle, Menu, X } from "lucide-react"
+import { LayoutDashboard, Users, LogOut, GraduationCap, BookOpenCheck, AlertTriangle, FileText, Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { clearAuthAndRedirectToLogin } from "@/lib/logout"
 import { readAuthSession } from "@/lib/auth-session"
 
-export type BpmpMenu = "pokja" | "sumber-dukungan" | "input-kasus"
+export type BpmpMenu = "pokja" | "sumber-dukungan" | "input-kasus" | "laporan-akhir-tahun"
 
 interface SidebarBpmpProps {
   activeMenu: BpmpMenu
@@ -17,6 +17,7 @@ const navItems = [
   { id: "pokja" as BpmpMenu, label: "Kelompok Kerja", icon: Users },
   { id: "sumber-dukungan" as BpmpMenu, label: "Sumber Dukungan", icon: BookOpenCheck },
   { id: "input-kasus" as BpmpMenu, label: "Pelanggaran", icon: AlertTriangle },
+  { id: "laporan-akhir-tahun" as BpmpMenu, label: "Laporan Akhir Tahun", icon: FileText },
 ]
 
 export function SidebarBpmp({ activeMenu, onMenuChange }: SidebarBpmpProps) {

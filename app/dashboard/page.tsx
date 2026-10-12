@@ -221,7 +221,7 @@ function DashboardPageInner() {
   // Handle ?menu= URL param for bpmp
   useEffect(() => {
     const menuParam = searchParams.get("menu") as BpmpMenu | null
-    if (menuParam && ["pokja", "sumber-dukungan", "input-kasus"].includes(menuParam)) {
+    if (menuParam && ["pokja", "sumber-dukungan", "input-kasus", "laporan-akhir-tahun"].includes(menuParam)) {
       setBpmpMenu(menuParam)
       // Redirect BPMP which comes from form to the right menu (no redirect needed, just menu)
     }
@@ -629,6 +629,9 @@ function DashboardPageInner() {
               )}
               {bpmpMenu === "input-kasus" && (
                 <PelanggaranView wilayahScope={{ provinsi: bpmpProvinsi, kabKotaList: bpmpScope.kabKotaList }} />
+              )}
+              {bpmpMenu === "laporan-akhir-tahun" && (
+                <LaporanAkhirTahunPusatView wilayahProvinsi={bpmpProvinsi} />
               )}
             </main>
           </div>

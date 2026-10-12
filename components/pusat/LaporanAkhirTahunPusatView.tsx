@@ -16,6 +16,8 @@ import {
   ArrowLeft,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { DIREKTORI_ENTITAS } from "@/data/direktoriInstansi"
+import { normalizeNamaInstansi } from "@/lib/laporan-instansi"
 
 type StatusLaporan = "terjadwal" | "berlangsung" | "selesai"
 
@@ -546,8 +548,11 @@ function FormLinksModal({ item, onClose }: { item: LaporanItem; onClose: () => v
   )
 }
 
-export function LaporanAkhirTahunPusatView() {
+export function LaporanAkhirTahunPusatView({
+  wilayahProvinsi,
+}: { wilayahProvinsi?: string } = {}) {
   const router = useRouter()
+  const isReadOnly = wilayahProvinsi !== undefined
   const [list, setList] = useState<LaporanItem[]>([])
   const [selected, setSelected] = useState<LaporanItem | null>(null)
   const [linksItem, setLinksItem] = useState<LaporanItem | null>(null)
@@ -617,6 +622,26 @@ export function LaporanAkhirTahunPusatView() {
     return [...list].sort((a, b) => b.tahun.localeCompare(a.tahun))
   }, [list])
 
+  const provinsiSekolah = useMemo(() => {
+    const map = new Map<string, string>()
+    DIREKTORI_ENTITAS.filter((e) => e.jenis === "sekolah").forEach((e) => {
+      map.set(normalizeNamaInstansi(e.nama), e.provinsi)
+    })
+    return map
+  }, [])
+
+  const scopedJumlahMengisi = (item: LaporanItem): number => {
+    if (!wilayahProvinsi) return item.sekolahYangMengisi
+    return (item.daftarSekolah ?? []).filter(
+      (s) => provinsiSekolah.get(normalizeNamaInstansi(s.namaSekolah)) === wilayahProvinsi
+    ).length
+  }
+
+  const detailUrl = (id: string) =>
+    wilayahProvinsi !== undefined
+      ? `/laporan-akhir-tahun/detail?id=${id}&provinsi=${encodeURIComponent(wilayahProvinsi)}`
+      : `/laporan-akhir-tahun/detail?id=${id}`
+
   const saveList = (newList: LaporanItem[]) => {
     setList(newList)
     localStorage.setItem("laporanAkhirTahunList", JSON.stringify(newList))
@@ -661,20 +686,24 @@ export function LaporanAkhirTahunPusatView() {
             <h2 className="text-xl font-bold text-gray-900">Laporan Akhir Tahun</h2>
           </div>
           <p className="text-xs text-gray-500 mt-0.5">
-            Kelola periode pengisian dan pantau pengumpulan dari sekolah
+            {isReadOnly
+              ? `Pantau pengumpulan laporan dari sekolah di wilayah kewenangan Anda (${wilayahProvinsi})`
+              : "Kelola periode pengisian dan pantau pengumpulan dari sekolah"}
           </p>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <button
-            onClick={() => {
-              setEditingItem(undefined)
-              setShowForm(true)
-            }}
-            className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
-          >
-            <Plus className="w-4 h-4" /> Buat Periode
-          </button>
-        </div>
+        {!isReadOnly && (
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => {
+                setEditingItem(undefined)
+                setShowForm(true)
+              }}
+              className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
+            >
+              <Plus className="w-4 h-4" /> Buat Periode
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="border-t border-gray-200" />
@@ -685,7 +714,11 @@ export function LaporanAkhirTahunPusatView() {
             <FileText className="w-6 h-6 text-gray-400" />
           </div>
           <p className="font-semibold text-gray-700 text-sm">Belum ada periode laporan</p>
-          <p className="text-gray-500 text-xs mt-1">Klik "Buat Periode" untuk membuat periode laporan baru.</p>
+          <p className="text-gray-500 text-xs mt-1">
+            {isReadOnly
+              ? "Belum ada periode laporan yang dibuat Admin Pusat."
+              : 'Klik "Buat Periode" untuk membuat periode laporan baru.'}
+          </p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -713,9 +746,9 @@ export function LaporanAkhirTahunPusatView() {
                     </td>
                     <td className="px-4 py-3.5 text-center">
                       <span className={`inline-flex items-center justify-center min-w-[40px] px-2.5 py-1 rounded-full text-xs font-semibold ${
-                        item.sekolahYangMengisi > 0 ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
+                        scopedJumlahMengisi(item) > 0 ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
                       }`}>
-                        {item.sekolahYangMengisi}
+                        {scopedJumlahMengisi(item)}
                       </span>
                     </td>
                     <td className="px-4 py-3.5">
@@ -729,17 +762,19 @@ export function LaporanAkhirTahunPusatView() {
                     </td>
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
+                        {!isReadOnly && (
+                          <button
+                            onClick={() => {
+                              setEditingItem(item)
+                              setShowForm(true)
+                            }}
+                            className="text-emerald-600 hover:underline text-sm flex items-center gap-1"
+                          >
+                            <Pencil className="w-3.5 h-3.5" /> Edit
+                          </button>
+                        )}
                         <button
-                          onClick={() => {
-                            setEditingItem(item)
-                            setShowForm(true)
-                          }}
-                          className="text-emerald-600 hover:underline text-sm flex items-center gap-1"
-                        >
-                          <Pencil className="w-3.5 h-3.5" /> Edit
-                        </button>
-                        <button
-                          onClick={() => router.push(`/laporan-akhir-tahun/detail?id=${item.id}`)}
+                          onClick={() => router.push(detailUrl(item.id))}
                           className="text-blue-600 hover:underline text-sm flex items-center gap-1"
                         >
                           <Eye className="w-3.5 h-3.5" /> Cek Detail
@@ -760,9 +795,19 @@ export function LaporanAkhirTahunPusatView() {
           <div>
             <p className="text-sm font-medium text-blue-800">Petunjuk</p>
             <ul className="text-xs text-blue-700 mt-1 space-y-1 ml-4 list-disc">
-              <li>Klik "Buat Periode" untuk menambahkan periode pengisian baru yang harus diisi oleh sekolah.</li>
-              <li>Status otomatis berubah berdasarkan tanggal periode: Terjadwal → Berlangsung → Selesai.</li>
-              <li>Admin Sekolah bisa mengisi laporan hanya saat periode sedang Berlangsung.</li>
+              {isReadOnly ? (
+                <>
+                  <li>Anda dapat melihat laporan sesuai wilayah kewenangan Anda ({wilayahProvinsi}).</li>
+                  <li>Klik "Cek Detail" untuk melihat daftar sekolah dan dinas beserta status pengisiannya.</li>
+                  <li>Status otomatis berubah berdasarkan tanggal periode: Terjadwal → Berlangsung → Selesai.</li>
+                </>
+              ) : (
+                <>
+                  <li>Klik "Buat Periode" untuk menambahkan periode pengisian baru yang harus diisi oleh sekolah.</li>
+                  <li>Status otomatis berubah berdasarkan tanggal periode: Terjadwal → Berlangsung → Selesai.</li>
+                  <li>Admin Sekolah bisa mengisi laporan hanya saat periode sedang Berlangsung.</li>
+                </>
+              )}
             </ul>
           </div>
         </div>
@@ -777,7 +822,7 @@ export function LaporanAkhirTahunPusatView() {
             setShowForm(true)
           }}
           onDelete={handleDelete}
-          onViewSekolah={(item) => router.push(`/laporan-akhir-tahun/detail?id=${item.id}`)}
+          onViewSekolah={(item) => router.push(detailUrl(item.id))}
         />
       )}
 
