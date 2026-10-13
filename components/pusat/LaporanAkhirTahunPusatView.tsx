@@ -180,11 +180,7 @@ function FormModal({
   )
   const [catatan, setCatatan] = useState(initialData?.catatan ?? "")
 
-  const canSubmit =
-    tahun &&
-    periodeAwal &&
-    periodeAkhir &&
-    JENJANG_FIELDS.every((field) => googleFormUrls[field.key]?.trim())
+  const canSubmit = Boolean(tahun && periodeAwal && periodeAkhir)
 
   const handleSubmit = () => {
     if (!canSubmit) return
@@ -198,7 +194,7 @@ function FormModal({
       tanggalSubmit: null,
       status: "terjadwal",
       googleFormUrls: JENJANG_FIELDS.reduce(
-        (acc, field) => ({ ...acc, [field.key]: googleFormUrls[field.key].trim() }),
+        (acc, field) => ({ ...acc, [field.key]: (googleFormUrls[field.key] ?? "").trim() }),
         {} as GoogleFormUrls
       ),
       catatan,
@@ -266,10 +262,10 @@ function FormModal({
 
           <div>
             <label className="text-xs font-semibold text-gray-700">
-              Link Google Form per Jenjang <span className="text-red-500">*</span>
+              Link Google Form per Jenjang <span className="text-gray-400 font-normal">(opsional)</span>
             </label>
             <p className="text-xs text-gray-500 mt-1 mb-3">
-              Buat Google Form untuk setiap jenjang, lalu masukkan URL form di masing-masing field berikut.
+              Isi URL Google Form untuk jenjang yang diperlukan saja. Field yang dikosongkan boleh diisi menyusul.
             </p>
             <div className="space-y-3">
               {JENJANG_FIELDS.map((field) => (
