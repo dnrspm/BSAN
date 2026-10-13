@@ -234,7 +234,6 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
             const dynamicStatus = getStatusFromPeriod(item.periodeAwal, item.periodeAkhir)
             const formUrl = resolveFormUrl(item, isDinas, session?.namaSekolah)
             const isPast = dynamicStatus === "selesai"
-            const isFilled = isPast || !!filledMap[item.tahun]
 
             const identityKey = normalizeNamaInstansi(identity)
             const myEntry = isDinas
@@ -244,6 +243,7 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
               : (item.daftarSekolah ?? []).find(
                   (s) => normalizeNamaInstansi(s.namaSekolah) === identityKey
                 )
+            const isFilled = !!filledMap[item.tahun] || (isPast && !!myEntry)
             const mySkor = typeof myEntry?.skor === "number" ? myEntry.skor : null
             const report = mySkor ?? (isPast ? item.skorAkhir : null)
 
