@@ -297,9 +297,11 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <div className="hidden sm:flex items-center gap-2">
-                      <div className="bg-gray-100 rounded-lg px-3 py-3 text-center">
-                        <p className="text-sm font-semibold text-gray-700 whitespace-nowrap">
-                          Indeks BSAN: {report ?? "Dalam Proses Penilaian"}
+                      <div className="bg-gray-100 rounded-lg px-3 py-3 text-center max-w-[240px]">
+                        <p className="text-sm font-semibold text-gray-700 leading-snug">
+                          {isFilled
+                            ? `Indeks BSAN: ${report ?? "Dalam Proses Penilaian"}`
+                            : "Indeks BSAN: Belum ada penilaian, silakan isi formulir terlebih dahulu"}
                         </p>
                       </div>
                     </div>
