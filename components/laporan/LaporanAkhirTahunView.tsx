@@ -154,7 +154,14 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
     const storedFilled = localStorage.getItem(filledStorageKey)
     if (storedFilled) {
       try {
-        setFilledMap(JSON.parse(storedFilled))
+        const parsed = JSON.parse(storedFilled) as Record<string, boolean>
+        const cleaned = Object.fromEntries(
+          Object.entries(parsed).filter(([key]) => !/^\d{4}$/.test(key))
+        )
+        setFilledMap(cleaned)
+        if (Object.keys(cleaned).length !== Object.keys(parsed).length) {
+          localStorage.setItem(filledStorageKey, JSON.stringify(cleaned))
+        }
       } catch {
         setFilledMap({})
       }
@@ -170,10 +177,10 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
     window.open(url, "_blank", "noopener,noreferrer")
   }
 
-  const toggleFilled = (tahun: string) => {
-    const next = !filledMap[tahun]
+  const toggleFilled = (target: LaporanItem) => {
+    const next = !filledMap[target.id]
     setFilledMap((prev) => {
-      const map = { ...prev, [tahun]: next }
+      const map = { ...prev, [target.id]: next }
       localStorage.setItem(filledStorageKey, JSON.stringify(map))
       return map
     })
@@ -183,9 +190,9 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
       if (!raw) return
       const stored = JSON.parse(raw) as LaporanItem[]
       const updated = stored.map((it) => {
-        if (it.tahun !== tahun) return it
+        if (it.id !== target.id) return it
         const result = syncSubmission(
-          tahun,
+          it.tahun,
           identity,
           isDinas ? "dinas" : "sekolah",
           next,
@@ -243,7 +250,7 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
               : (item.daftarSekolah ?? []).find(
                   (s) => normalizeNamaInstansi(s.namaSekolah) === identityKey
                 )
-            const isFilled = !!filledMap[item.tahun] || (isPast && !!myEntry)
+            const isFilled = !!filledMap[item.id] || (isPast && !!myEntry)
             const mySkor = typeof myEntry?.skor === "number" ? myEntry.skor : null
             const report = mySkor ?? (isPast ? item.skorAkhir : null)
 
@@ -367,7 +374,7 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
               <button
                 type="button"
                 onClick={() => {
-                  toggleFilled(confirmItem.tahun)
+                  toggleFilled(confirmItem)
                   setConfirmItem(null)
                 }}
                 className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"

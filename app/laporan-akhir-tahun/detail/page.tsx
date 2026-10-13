@@ -192,7 +192,7 @@ export default function LaporanDetailPage() {
           if (!target) continue
           try {
             const flags = JSON.parse(localStorage.getItem(key) || "{}") as Record<string, boolean>
-            if (flags[found.tahun] === true) {
+            if (flags[found.id] === true) {
               target.add(normalizeNamaInstansi(key.slice(prefix.length)))
             }
           } catch {
