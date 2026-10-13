@@ -1,5 +1,5 @@
 /**
- * Direktori master instansi untuk fitur Laporan Akhir Tahun.
+ * Direktori master instansi untuk fitur Formulir Evaluasi.
  * Berisi seluruh dinas pendidikan dan sekolah yang terdaftar, sehingga
  * Admin Pusat dapat melihat status pengisian (sudah/belum) tiap instansi
  * pada halaman detail laporan.

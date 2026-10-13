@@ -627,17 +627,10 @@ export function LaporanAkhirTahunPusatView({
     return map
   }, [])
 
-  const scopedJumlahMengisi = (item: LaporanItem): number => {
-    if (!wilayahProvinsi) return item.sekolahYangMengisi
-    return (item.daftarSekolah ?? []).filter(
-      (s) => provinsiSekolah.get(normalizeNamaInstansi(s.namaSekolah)) === wilayahProvinsi
-    ).length
-  }
-
   const detailUrl = (id: string) =>
     wilayahProvinsi !== undefined
       ? `/laporan-akhir-tahun/detail?id=${id}&provinsi=${encodeURIComponent(wilayahProvinsi)}`
-      : `/laporan-akhir-tahun/detail?id=${id}`
+      : `/laporan-akhir-tahun/detail?id=${id}` // detail dihapus
 
   const saveList = (newList: LaporanItem[]) => {
     setList(newList)
@@ -680,12 +673,12 @@ export function LaporanAkhirTahunPusatView({
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-gray-900">Laporan Akhir Tahun</h2>
+            <h2 className="text-xl font-bold text-gray-900">Formulir Evaluasi</h2>
           </div>
           <p className="text-xs text-gray-500 mt-0.5">
             {isReadOnly
-              ? `Pantau pengumpulan laporan dari sekolah di wilayah kewenangan Anda (${wilayahProvinsi})`
-              : "Kelola periode pengisian dan pantau pengumpulan dari sekolah"}
+              ? `Pantau pengumpulan formulir di wilayah kewenangan Anda (${wilayahProvinsi})`
+              : "Kelola periode pengisian dan pantau pengumpulan formulir"}
           </p>
         </div>
         {!isReadOnly && (
@@ -710,11 +703,11 @@ export function LaporanAkhirTahunPusatView({
           <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
             <FileText className="w-6 h-6 text-gray-400" />
           </div>
-          <p className="font-semibold text-gray-700 text-sm">Belum ada periode laporan</p>
+            <p className="font-semibold text-gray-700 text-sm">Belum ada periode</p>
           <p className="text-gray-500 text-xs mt-1">
             {isReadOnly
-              ? "Belum ada periode laporan yang dibuat Admin Pusat."
-              : 'Klik "Buat Periode" untuk membuat periode laporan baru.'}
+              ? "Belum ada periode yang dibuat Admin Pusat."
+              : 'Klik "Buat Periode" untuk membuat periode baru.'}
           </p>
         </div>
       ) : (
@@ -725,10 +718,8 @@ export function LaporanAkhirTahunPusatView({
                 <tr className="bg-gray-50 border-b border-gray-200 text-left">
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Periode</th>
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Jadwal Pengisian Laporan</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide text-center">Sekolah Mengisi</th>
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Formulir</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Aksi</th>
+
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -739,16 +730,6 @@ export function LaporanAkhirTahunPusatView({
                       {formatDateDisplay(item.periodeAwal)} - {formatDateDisplay(item.periodeAkhir)}
                     </td>
                     <td className="px-4 py-3.5">
-          <StatusBadge status={getStatusFromPeriod(item.periodeAwal, item.periodeAkhir)} />
-                    </td>
-                    <td className="px-4 py-3.5 text-center">
-                      <span className={`inline-flex items-center justify-center min-w-[40px] px-2.5 py-1 rounded-full text-xs font-semibold ${
-                        scopedJumlahMengisi(item) > 0 ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
-                      }`}>
-                        {scopedJumlahMengisi(item)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3.5">
                       <button
                         onClick={() => setLinksItem(item)}
                         className="text-blue-600 hover:underline text-sm flex items-center gap-1"
@@ -757,27 +738,7 @@ export function LaporanAkhirTahunPusatView({
                         Lihat ({JENJANG_FIELDS.filter((f) => item.googleFormUrls?.[f.key]).length})
                       </button>
                     </td>
-                    <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-3">
-                        {!isReadOnly && (
-                          <button
-                            onClick={() => {
-                              setEditingItem(item)
-                              setShowForm(true)
-                            }}
-                            className="text-emerald-600 hover:underline text-sm flex items-center gap-1"
-                          >
-                            <Pencil className="w-3.5 h-3.5" /> Edit
-                          </button>
-                        )}
-                        <button
-                          onClick={() => router.push(detailUrl(item.id))}
-                          className="text-blue-600 hover:underline text-sm flex items-center gap-1"
-                        >
-                          <Eye className="w-3.5 h-3.5" /> Cek Detail
-                        </button>
-                      </div>
-                    </td>
+
                   </tr>
                 ))}
               </tbody>
@@ -785,30 +746,6 @@ export function LaporanAkhirTahunPusatView({
           </div>
         </div>
       )}
-
-      <div className="rounded-lg bg-blue-50 border border-blue-100 p-4">
-        <div className="flex items-start gap-2">
-          <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-          <div>
-            <p className="text-sm font-medium text-blue-800">Petunjuk</p>
-            <ul className="text-xs text-blue-700 mt-1 space-y-1 ml-4 list-disc">
-              {isReadOnly ? (
-                <>
-                  <li>Anda dapat melihat laporan sesuai wilayah kewenangan Anda ({wilayahProvinsi}).</li>
-                  <li>Klik "Cek Detail" untuk melihat daftar sekolah dan dinas beserta status pengisiannya.</li>
-                  <li>Status otomatis berubah berdasarkan tanggal periode: Terjadwal → Berlangsung → Selesai.</li>
-                </>
-              ) : (
-                <>
-                  <li>Klik "Buat Periode" untuk menambahkan periode pengisian baru yang harus diisi oleh sekolah.</li>
-                  <li>Status otomatis berubah berdasarkan tanggal periode: Terjadwal → Berlangsung → Selesai.</li>
-                  <li>Admin Sekolah bisa mengisi laporan hanya saat periode sedang Berlangsung.</li>
-                </>
-              )}
-            </ul>
-          </div>
-        </div>
-      </div>
 
       {selected && (
         <DetailModal

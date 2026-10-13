@@ -17,7 +17,7 @@ const navItems = [
   { id: "pokja" as BpmpMenu, label: "Kelompok Kerja", icon: Users },
   { id: "sumber-dukungan" as BpmpMenu, label: "Sumber Dukungan", icon: BookOpenCheck },
   { id: "input-kasus" as BpmpMenu, label: "Pelanggaran", icon: AlertTriangle },
-  { id: "laporan-akhir-tahun" as BpmpMenu, label: "Laporan Akhir Tahun", icon: FileText },
+  { id: "laporan-akhir-tahun" as BpmpMenu, label: "Formulir Evaluasi", icon: FileText },
 ]
 
 export function SidebarBpmp({ activeMenu, onMenuChange }: SidebarBpmpProps) {

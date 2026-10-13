@@ -1,5 +1,5 @@
 /**
- * Utilitas bersama untuk fitur Laporan Akhir Tahun.
+ * Utilitas bersama untuk fitur Formulir Evaluasi.
  * Dipakai saat menyinkronkan status "sudah mengisi" dari dashboard sekolah/dinas
  * ke daftar laporan yang dibaca Admin Pusat.
  */

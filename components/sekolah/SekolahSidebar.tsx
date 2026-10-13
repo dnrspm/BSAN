@@ -17,7 +17,7 @@ const navItems: { id: SekolahMenu; label: string; icon: typeof AlertTriangle }[]
   { id: "sumber-rujukan", label: "Sumber Dukungan", icon: BookOpenCheck },
   { id: "kegiatan", label: "Kegiatan", icon: CalendarCheck },
   { id: "pelanggaran", label: "Pelanggaran", icon: AlertTriangle },
-  { id: "laporan-akhir-tahun", label: "Laporan Akhir Tahun", icon: FileText },
+  { id: "laporan-akhir-tahun", label: "Formulir Evaluasi", icon: FileText },
 ]
 
 export function SekolahSidebar({ activeMenu, onMenuChange, onLogout }: SekolahSidebarProps) {

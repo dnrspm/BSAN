@@ -18,7 +18,7 @@ const navItems = [
   { id: "sumber-rujukan" as PusatMenu, label: "Sumber Dukungan", icon: BookOpenCheck },
   { id: "k" as PusatMenu, label: " Kegiatan", icon: CalendarDays },
   { id: "pelanggaran" as PusatMenu, label: "Pelanggaran", icon: AlertTriangle },
-  { id: "laporan-akhir-tahun" as PusatMenu, label: "Laporan Akhir Tahun", icon: FileText },
+  { id: "laporan-akhir-tahun" as PusatMenu, label: "Formulir Evaluasi", icon: FileText },
   { id: "pengguna" as PusatMenu, label: "Akses Pengguna", icon: UserCog },
 ]
 

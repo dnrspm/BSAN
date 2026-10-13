@@ -213,7 +213,7 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-gray-900">Laporan Akhir Tahun</h2>
+            <h2 className="text-xl font-bold text-gray-900">Formulir Evaluasi</h2>
           </div>
           <p className="text-xs text-gray-500 mt-0.5">
             {isDinas
@@ -257,38 +257,15 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
             return (
               <div
                 key={item.id}
-                className={`bg-white rounded-xl border p-4 shadow-sm hover:shadow-md transition ${
-                  dynamicStatus === "terjadwal" ? "border-blue-300" : "border-gray-200"
-                }`}
+                className="bg-white rounded-xl border p-4 shadow-sm hover:shadow-md transition border-gray-200"
               >
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3 flex-shrink-0">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      dynamicStatus === "terjadwal" ? "bg-blue-100" : "bg-gray-100"
-                    }`}>
-                      <FileText className={`w-5 h-5 ${
-                        dynamicStatus === "terjadwal" ? "text-blue-600" : "text-gray-600"
-                      }`} />
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100">
+                      <FileText className="w-5 h-5 text-gray-600" />
                     </div>
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <StatusBadge status={dynamicStatus} />
-                        {dynamicStatus !== "terjadwal" && (
-                          isFilled ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
-                              <CheckCircle className="w-3 h-3" /> Sudah diisi
-                            </span>
-                          ) : (
-                            <button
-                              onClick={() => setConfirmItem(item)}
-                              title="Tandai formulir sudah diisi"
-                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 hover:bg-amber-200 transition"
-                            >
-                              <Clock className="w-3 h-3" /> Belum diisi
-                            </button>
-                          )
-                        )}
-                      </div>
+
                       <p className="text-base font-bold text-gray-900 mt-1">Laporan Tahun {item.tahun}</p>
                       <p className="text-xs text-gray-500 mt-1">
                         Periode Pengisian: {formatDateDisplay(item.periodeAwal)} - {formatDateDisplay(item.periodeAkhir)}
@@ -296,48 +273,23 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
                     </div>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="hidden sm:flex items-center gap-2">
-                      <div className="bg-gray-100 rounded-lg px-3 py-3 text-center max-w-[240px]">
-                        <p className="text-sm font-semibold text-gray-700 leading-snug">
-                          {isFilled
-                            ? `Indeks BSAN: ${report ?? "Dalam Proses Penilaian"}`
-                            : "Indeks BSAN: Belum ada penilaian, silakan isi formulir terlebih dahulu"}
-                        </p>
-                      </div>
+
+                    <div className="flex flex-col items-center gap-1">
+                      <button
+                        onClick={() => openForm(formUrl)}
+                        onClick={() => {
+                          if (!formUrl) {
+                            alert("Link formulir belum diatur oleh Admin Pusat")
+                            return
+                          }
+                          openForm(formUrl)
+                        }}
+                        className="flex items-center justify-center gap-1.5 w-[128px] px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 transition"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        Lihat Formulir
+                      </button>
                     </div>
-                    <div className="h-8 w-px bg-gray-200 mx-1" />
-                    {dynamicStatus === "terjadwal" ? (
-                      <span className="text-xs text-gray-400 italic">Belum dimulai</span>
-                    ) : isFilled ? (
-                      <div className="flex flex-col items-center gap-1">
-                        <button
-                          onClick={() => openForm(formUrl)}
-                          disabled={!formUrl}
-                          className="flex items-center justify-center gap-1.5 w-[128px] px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <ExternalLink className="w-3.5 h-3.5" />
-                          Lihat Formulir
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-1">
-                        <button
-                          onClick={() => openForm(formUrl)}
-                          disabled={!formUrl}
-                          className="flex items-center justify-center gap-1.5 w-[128px] px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <ExternalLink className="w-3.5 h-3.5" />
-                          Isi Formulir
-                        </button>
-                        <button
-                          onClick={() => setConfirmItem(item)}
-                          title="Tandai formulir sudah diisi"
-                          className="text-xs text-gray-500 hover:text-gray-700 underline transition whitespace-nowrap"
-                        >
-                          Tandai sudah diisi
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>

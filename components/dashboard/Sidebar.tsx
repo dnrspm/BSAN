@@ -41,7 +41,7 @@ const navItems = [
   },
   {
     id: "laporan-akhir-tahun" as ActiveMenu,
-    label: "Laporan Akhir Tahun",
+    label: "Formulir Evaluasi",
     icon: FileText,
   },
 ]
