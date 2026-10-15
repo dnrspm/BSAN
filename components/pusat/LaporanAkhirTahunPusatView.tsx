@@ -8,6 +8,7 @@ import {
   Plus,
   Pencil,
   Trash2,
+  AlertTriangle,
   X,
   ExternalLink,
   Info,
@@ -553,6 +554,7 @@ export function LaporanAkhirTahunPusatView({
   const [linksItem, setLinksItem] = useState<LaporanItem | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [editingItem, setEditingItem] = useState<LaporanItem | undefined>(undefined)
+  const [deleteTarget, setDeleteTarget] = useState<LaporanItem | null>(null)
 
   const normalizeList = (parsed: LaporanItem[]): LaporanItem[] =>
     parsed.map((item) => ({
@@ -741,15 +743,23 @@ export function LaporanAkhirTahunPusatView({
                     </td>
                     {!isReadOnly && (
                       <td className="px-4 py-3.5">
-                        <button
-                          onClick={() => {
-                            setEditingItem(item)
-                            setShowForm(true)
-                          }}
-                          className="text-emerald-600 hover:underline text-sm flex items-center gap-1"
-                        >
-                          <Pencil className="w-3.5 h-3.5" /> Edit
-                        </button>
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => {
+                              setEditingItem(item)
+                              setShowForm(true)
+                            }}
+                            className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                          >
+                            <Pencil className="w-3.5 h-3.5" /> Edit
+                          </button>
+                          <button
+                            onClick={() => setDeleteTarget(item)}
+                            className="text-red-600 hover:underline text-sm flex items-center gap-1"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" /> Hapus
+                          </button>
+                        </div>
                       </td>
                     )}
                   </tr>
@@ -786,6 +796,44 @@ export function LaporanAkhirTahunPusatView({
 
       {linksItem && (
         <FormLinksModal item={linksItem} onClose={() => setLinksItem(null)} />
+      )}
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/50" onClick={() => setDeleteTarget(null)} />
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-gray-900">Hapus Periode?</h3>
+              </div>
+            </div>
+            <p className="text-sm text-gray-600 mt-4">
+              Apakah Anda yakin ingin menghapus periode <span className="font-medium text-gray-900">{deleteTarget.tahun}</span>? Tindakan ini tidak dapat dibatalkan.
+            </p>
+            <div className="flex items-center justify-end gap-2 mt-5">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleDelete(deleteTarget.id)
+                  setDeleteTarget(null)
+                }}
+                className="px-4 py-2 text-sm font-medium rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
+              >
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
