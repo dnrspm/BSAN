@@ -5,7 +5,6 @@ import {
   FileText,
   CheckCircle,
   Clock,
-  Eye,
   Plus,
   Pencil,
   Trash2,
@@ -78,14 +77,14 @@ const DUMMY_SEKOLAH_2025: SekolahIsian[] = [
 const DEFAULT_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfEXAMPLE/viewform"
 
 const JENJANG_FIELDS = [
-  { key: "paud", label: "Link untuk jenjang PAUD", short: "PAUD" },
-  { key: "sd", label: "Link untuk jenjang SD", short: "SD" },
-  { key: "smp", label: "Link untuk jenjang SMP", short: "SMP" },
-  { key: "sma", label: "Link untuk jenjang SMA", short: "SMA" },
-  { key: "smk", label: "Link untuk jenjang SMK", short: "SMK" },
-  { key: "pkbm", label: "Link untuk jenjang PKBM", short: "PKBM" },
-  { key: "slb", label: "Link untuk jenjang SLB", short: "SLB" },
-  { key: "snt", label: "Link untuk jenjang Sekolah Nasional Terintegrasi", short: "Sekolah Nasional Terintegrasi" },
+  { key: "paud", label: "PAUD", short: "PAUD" },
+  { key: "sd", label: "SD", short: "SD" },
+  { key: "smp", label: "SMP", short: "SMP" },
+  { key: "sma", label: "SMA", short: "SMA" },
+  { key: "smk", label: "SMK", short: "SMK" },
+  { key: "pkbm", label: "PKBM", short: "PKBM" },
+  { key: "slb", label: "SLB", short: "SLB" },
+  { key: "snt", label: "Sekolah Nasional Terintegrasi", short: "Sekolah Nasional Terintegrasi" },
   { key: "dinas", label: "Link untuk Dinas Pendidikan", short: "Dinas Pendidikan" },
 ] as const
 
@@ -215,9 +214,9 @@ function FormModal({
             </div>
             <div>
               <h3 className="text-base font-bold text-gray-900">
-                {initialData ? "Edit Periode" : "Buat Periode Pengisian Baru"}
+                {initialData ? "Edit Periode" : "Buat Periode Pengisian"}
               </h3>
-              <p className="text-xs text-gray-500">Tetapkan periode pengumpulan laporan akhir tahun</p>
+              <p className="text-xs text-gray-500">Tetapkan periode pengumpulan formulir evaluasi.</p>
             </div>
           </div>
           <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-lg">
@@ -265,7 +264,7 @@ function FormModal({
               Link Google Form per Jenjang <span className="text-gray-400 font-normal">(opsional)</span>
             </label>
             <p className="text-xs text-gray-500 mt-1 mb-3">
-              Isi URL Google Form untuk jenjang yang diperlukan saja. Field yang dikosongkan boleh diisi menyusul.
+              Isi dengan link Google Form untuk jenjang yang diperlukan saja. Dapat diisi menyusul jika diperlukan.
             </p>
             <div className="space-y-3">
               {JENJANG_FIELDS.map((field) => (
@@ -367,7 +366,7 @@ function DetailModal({ item, onClose, onEdit, onDelete, onViewSekolah }: { item:
             </div>
 
             <div>
-              <p className="text-xs text-gray-500">Jadwal Pengisian Laporan</p>
+              <p className="text-xs text-gray-500">Jadwal Pengisian Formulir</p>
               <p className="text-sm font-medium text-gray-900">
                 {formatDateDisplay(item.periodeAwal)} - {formatDateDisplay(item.periodeAkhir)}
               </p>
@@ -436,7 +435,7 @@ function DetailModal({ item, onClose, onEdit, onDelete, onViewSekolah }: { item:
             onClick={() => onViewSekolah(item)}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
           >
-            <ExternalLink className="w-4 h-4" /> Lihat Daftar Sekolah
+            <ExternalLink className="w-4 h-4" /> Buka Daftar Sekolah
           </button>
           <button
             type="button"
@@ -717,9 +716,11 @@ export function LaporanAkhirTahunPusatView({
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200 text-left">
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Periode</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Jadwal Pengisian Laporan</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Jadwal Pengisian Formulir</th>
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Formulir</th>
-
+                  {!isReadOnly && (
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Aksi</th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -735,10 +736,22 @@ export function LaporanAkhirTahunPusatView({
                         className="text-blue-600 hover:underline text-sm flex items-center gap-1"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
-                        Lihat ({JENJANG_FIELDS.filter((f) => item.googleFormUrls?.[f.key]).length})
+                        Buka ({JENJANG_FIELDS.filter((f) => item.googleFormUrls?.[f.key]).length})
                       </button>
                     </td>
-
+                    {!isReadOnly && (
+                      <td className="px-4 py-3.5">
+                        <button
+                          onClick={() => {
+                            setEditingItem(item)
+                            setShowForm(true)
+                          }}
+                          className="text-emerald-600 hover:underline text-sm flex items-center gap-1"
+                        >
+                          <Pencil className="w-3.5 h-3.5" /> Edit
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

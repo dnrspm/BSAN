@@ -276,7 +276,6 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
 
                     <div className="flex flex-col items-center gap-1">
                       <button
-                        onClick={() => openForm(formUrl)}
                         onClick={() => {
                           if (!formUrl) {
                             alert("Link formulir belum diatur oleh Admin Pusat")
@@ -287,7 +286,7 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
                         className="flex items-center justify-center gap-1.5 w-[128px] px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 transition"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
-                        Lihat Formulir
+                        Buka Formulir
                       </button>
                     </div>
                   </div>
