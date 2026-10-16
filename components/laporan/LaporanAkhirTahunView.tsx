@@ -7,16 +7,17 @@ import {
   CheckCircle,
   Clock,
   ExternalLink,
-  AlertTriangle,
 } from "lucide-react"
 import { readAuthSession } from "@/lib/auth-session"
-import { LAPORAN_STORAGE_KEY, SekolahIsian, DinasIsian, syncSubmission, normalizeNamaInstansi, purgeLegacyLaporan2026 } from "@/lib/laporan-instansi"
+import { SekolahIsian, DinasIsian, purgeLegacyLaporan2026 } from "@/lib/laporan-instansi"
 
 type StatusLaporan = "terjadwal" | "berlangsung" | "selesai"
 
 interface LaporanItem {
   id: string
   tahun: string
+  judul?: string
+  deskripsi?: string
   periodeAwal: string
   periodeAkhir: string
   jumlahKegiatan: number | null
@@ -74,13 +75,13 @@ function StatusBadge({ status }: { status: StatusLaporan }) {
     case "terjadwal":
       return (
         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-          <Calendar className="w-3 h-3" /> Terjadwal
+          <Calendar className="w-3 h-3" /> Belum Dimulai
         </span>
       )
     case "berlangsung":
       return (
         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-          <Clock className="w-3 h-3" /> Berlangsung
+          <Clock className="w-3 h-3" /> Sedang Berlangsung
         </span>
       )
     case "selesai":
@@ -100,38 +101,152 @@ function formatDateDisplay(dateStr: string): string {
   return dateStr
 }
 
-function resolveFormUrl(item: LaporanItem, isDinas: boolean, namaSekolah?: string): string {
+// Hanya mengembalikan link yang memang ditujukan untuk instansi ini (kosong = tidak ditujukan).
+function resolveForm(
+  item: LaporanItem,
+  isDinas: boolean,
+  namaSekolah?: string
+): { url: string; jenjang: string } {
   const urls = item.googleFormUrls
-  if (isDinas) return urls?.dinas ?? item.googleFormUrl ?? ""
+  if (!urls) return { url: item.googleFormUrl ?? "", jenjang: "" }
+  if (isDinas) return { url: urls.dinas?.trim() ?? "", jenjang: "Dinas Pendidikan" }
 
   const name = (namaSekolah ?? "").toUpperCase()
-  const matchers: Array<[RegExp, string]> = [
-    [/PAUD|TK/, "paud"],
-    [/SMK/, "smk"],
-    [/SMA|SMAN/, "sma"],
-    [/SMP|SMPN/, "smp"],
-    [/SLB/, "slb"],
-    [/PKBM/, "pkbm"],
-    [/TERINTEGRASI|SNT/, "snt"],
-    [/SD|SDN/, "sd"],
+  const matchers: Array<[RegExp, string, string]> = [
+    [/PAUD|TK/, "paud", "PAUD"],
+    [/SMK/, "smk", "SMK"],
+    [/SMA|SMAN/, "sma", "SMA"],
+    [/SMP|SMPN/, "smp", "SMP"],
+    [/SLB/, "slb", "SLB"],
+    [/PKBM/, "pkbm", "PKBM"],
+    [/TERINTEGRASI|SNT/, "snt", "Sekolah Nasional Terintegrasi"],
+    [/SD|SDN/, "sd", "SD"],
   ]
-  for (const [re, key] of matchers) {
-    if (re.test(name) && urls?.[key]) return urls[key]
+  const match = matchers.find(([re]) => re.test(name))
+  return match
+    ? { url: urls[match[1]]?.trim() ?? "", jenjang: match[2] }
+    : { url: "", jenjang: "" }
+}
+
+function startOfToday(): Date {
+  const n = new Date()
+  return new Date(n.getFullYear(), n.getMonth(), n.getDate())
+}
+
+function diffDays(target: string, from: Date): number | null {
+  const d = parseDate(target)
+  if (!d) return null
+  const t = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  return Math.round((t.getTime() - from.getTime()) / 86400000)
+}
+
+type FilterKey = "semua" | StatusLaporan
+
+const FILTERS: Array<{ key: FilterKey; label: string }> = [
+  { key: "semua", label: "Semua" },
+  { key: "berlangsung", label: "Berlangsung" },
+  { key: "terjadwal", label: "Akan Datang" },
+  { key: "selesai", label: "Selesai" },
+]
+
+function FormCard({
+  item,
+  isDinas,
+  namaSekolah,
+}: {
+  item: LaporanItem
+  isDinas: boolean
+  namaSekolah?: string
+}) {
+  const status = getStatusFromPeriod(item.periodeAwal, item.periodeAkhir)
+  const { url } = resolveForm(item, isDinas, namaSekolah)
+  const today = startOfToday()
+  const aktif = status === "berlangsung"
+
+  let countdown: { text: string; tone: string } | null = null
+  if (status === "berlangsung") {
+    const sisa = diffDays(item.periodeAkhir, today)
+    if (sisa !== null) {
+      countdown = {
+        text: sisa <= 0 ? "Berakhir hari ini" : `Sisa ${sisa} hari`,
+        tone: sisa <= 7 ? "text-orange-600 font-semibold" : "text-green-700 font-semibold",
+      }
+    }
+  } else if (status === "terjadwal") {
+    const mulai = diffDays(item.periodeAwal, today)
+    if (mulai !== null) {
+      countdown = {
+        text: mulai <= 1 ? "Dibuka besok" : `Dibuka dalam ${mulai} hari`,
+        tone: "text-blue-700 font-semibold",
+      }
+    }
   }
-  return item.googleFormUrl ?? urls?.sd ?? (urls ? Object.values(urls)[0] : "") ?? ""
+
+  return (
+    <div
+      className={`bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition ${
+        aktif ? "p-5" : "p-4"
+      }`}
+    >
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
+          <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100">
+            <FileText className="w-5 h-5 text-gray-600" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <p className={`${aktif ? "text-lg" : "text-base"} font-bold text-gray-900 leading-snug`}>
+                {item.judul || `Laporan Tahun ${item.tahun}`}
+              </p>
+              <StatusBadge status={status} />
+            </div>
+            {item.deskripsi && (
+              <p className="text-sm text-gray-600 mt-1 leading-relaxed line-clamp-3">{item.deskripsi}</p>
+            )}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-600 mt-2">
+              <span className="flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 flex-shrink-0" />
+                {formatDateDisplay(item.periodeAwal)} - {formatDateDisplay(item.periodeAkhir)}
+              </span>
+              {countdown && (
+                <span className={`flex items-center gap-1.5 ${countdown.tone}`}>
+                  <Clock className="w-4 h-4 flex-shrink-0" />
+                  {countdown.text}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="flex-shrink-0 sm:self-center">
+          {aktif ? (
+            <button
+              onClick={() => window.open(url, "_blank", "noopener,noreferrer")}
+              className="flex items-center justify-center gap-1.5 w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
+            >
+              <ExternalLink className="w-4 h-4" />
+              Buka Formulir
+            </button>
+          ) : (
+            <button
+              disabled
+              className="flex items-center justify-center gap-1.5 w-full sm:w-auto px-4 py-2 rounded-lg text-sm font-medium text-gray-400 bg-gray-100 cursor-not-allowed"
+            >
+              {status === "terjadwal"
+                ? `Dibuka ${formatDateDisplay(item.periodeAwal)}`
+                : "Pengisian telah ditutup"}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) {
   const session = readAuthSession()
   const activeRole = role ?? (session?.role === "dinas" ? "dinas" : "sekolah")
   const isDinas = activeRole === "dinas"
-  const identity = isDinas
-    ? (session?.namaDinas ?? "Admin Dinas")
-    : (session?.namaSekolah ?? "Admin Sekolah")
-  const filledStorageKey = `formFilled-${isDinas ? "dinas" : "sekolah"}-${identity}`
   const [list, setList] = useState<LaporanItem[]>([])
-  const [filledMap, setFilledMap] = useState<Record<string, boolean>>({})
-  const [confirmItem, setConfirmItem] = useState<LaporanItem | null>(null)
 
   useEffect(() => {
     purgeLegacyLaporan2026()
@@ -150,63 +265,26 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
     } else {
       setList([])
     }
+  }, [])
 
-    const storedFilled = localStorage.getItem(filledStorageKey)
-    if (storedFilled) {
-      try {
-        const parsed = JSON.parse(storedFilled) as Record<string, boolean>
-        const cleaned = Object.fromEntries(
-          Object.entries(parsed).filter(([key]) => !/^\d{4}$/.test(key))
-        )
-        setFilledMap(cleaned)
-        if (Object.keys(cleaned).length !== Object.keys(parsed).length) {
-          localStorage.setItem(filledStorageKey, JSON.stringify(cleaned))
-        }
-      } catch {
-        setFilledMap({})
-      }
-    }
-  }, [filledStorageKey])
+  const [filter, setFilter] = useState<FilterKey>("semua")
 
-  const sortedList = useMemo(() => {
-    return [...list].sort((a, b) => b.tahun.localeCompare(a.tahun))
-  }, [list])
+  const items = useMemo(() => {
+    return list
+      .filter((item) => resolveForm(item, isDinas, session?.namaSekolah).url !== "")
+      .map((item) => ({ item, status: getStatusFromPeriod(item.periodeAwal, item.periodeAkhir) }))
+      .sort((a, b) => b.item.periodeAwal.localeCompare(a.item.periodeAwal))
+  }, [list, isDinas, session?.namaSekolah])
 
-  const openForm = (url: string) => {
-    if (!url) return
-    window.open(url, "_blank", "noopener,noreferrer")
-  }
-
-  const toggleFilled = (target: LaporanItem) => {
-    const next = !filledMap[target.id]
-    setFilledMap((prev) => {
-      const map = { ...prev, [target.id]: next }
-      localStorage.setItem(filledStorageKey, JSON.stringify(map))
-      return map
-    })
-
-    try {
-      const raw = localStorage.getItem(LAPORAN_STORAGE_KEY)
-      if (!raw) return
-      const stored = JSON.parse(raw) as LaporanItem[]
-      const updated = stored.map((it) => {
-        if (it.id !== target.id) return it
-        const result = syncSubmission(
-          it.tahun,
-          identity,
-          isDinas ? "dinas" : "sekolah",
-          next,
-          it.daftarSekolah ?? [],
-          it.daftarDinas ?? []
-        )
-        return { ...it, ...result, sekolahYangMengisi: result.daftarSekolah.length }
-      })
-      localStorage.setItem(LAPORAN_STORAGE_KEY, JSON.stringify(updated))
-      setList(updated)
-    } catch {
-      /* abaikan */
-    }
-  }
+  const sections: Array<{ key: StatusLaporan; title: string }> = [
+    { key: "berlangsung", title: "Sedang Berlangsung" },
+    { key: "terjadwal", title: "Akan Datang" },
+    { key: "selesai", title: "Riwayat" },
+  ]
+  const visibleSections = sections
+    .filter((sec) => filter === "semua" || filter === sec.key)
+    .map((sec) => ({ ...sec, rows: items.filter((r) => r.status === sec.key) }))
+    .filter((sec) => sec.rows.length > 0)
 
   return (
     <div className="space-y-5">
@@ -225,117 +303,48 @@ export function LaporanAkhirTahunView({ role }: { role?: "sekolah" | "dinas" }) 
 
       <div className="border-t border-gray-200" />
 
-      {list.length === 0 ? (
+      {items.length === 0 ? (
         <div className="bg-white rounded-xl border border-dashed border-gray-300 p-10 text-center">
           <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
             <FileText className="w-6 h-6 text-gray-400" />
           </div>
-          <p className="font-semibold text-gray-700 text-sm">Belum ada laporan akhir tahun</p>
+          <p className="font-semibold text-gray-700 text-sm">Belum ada formulir evaluasi</p>
           <p className="text-gray-500 text-xs mt-1">
-            Laporan akan muncul setelah Admin Pusat membuatnya.
+            Formulir akan muncul setelah Admin Pusat membuat formulir yang ditujukan untuk Anda.
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {sortedList.map((item) => {
-            const dynamicStatus = getStatusFromPeriod(item.periodeAwal, item.periodeAkhir)
-            const formUrl = resolveFormUrl(item, isDinas, session?.namaSekolah)
-            const isPast = dynamicStatus === "selesai"
-
-            const identityKey = normalizeNamaInstansi(identity)
-            const myEntry = isDinas
-              ? (item.daftarDinas ?? []).find(
-                  (d) => normalizeNamaInstansi(d.namaDinas) === identityKey
-                )
-              : (item.daftarSekolah ?? []).find(
-                  (s) => normalizeNamaInstansi(s.namaSekolah) === identityKey
-                )
-            const isFilled = !!filledMap[item.id] || (isPast && !!myEntry)
-            const mySkor = typeof myEntry?.skor === "number" ? myEntry.skor : null
-            const report = mySkor ?? (isPast ? item.skorAkhir : null)
-
-            return (
-              <div
-                key={item.id}
-                className="bg-white rounded-xl border p-4 shadow-sm hover:shadow-md transition border-gray-200"
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3 flex-shrink-0">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100">
-                      <FileText className="w-5 h-5 text-gray-600" />
-                    </div>
-                    <div className="min-w-0">
-
-                      <p className="text-base font-bold text-gray-900 mt-1">Laporan Tahun {item.tahun}</p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Periode Pengisian: {formatDateDisplay(item.periodeAwal)} - {formatDateDisplay(item.periodeAkhir)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-
-                    <div className="flex flex-col items-center gap-1">
-                      <button
-                        onClick={() => {
-                          if (!formUrl) {
-                            alert("Link formulir belum diatur oleh Admin Pusat")
-                            return
-                          }
-                          openForm(formUrl)
-                        }}
-                        className="flex items-center justify-center gap-1.5 w-[128px] px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 transition"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        Buka Formulir
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      )}
-
-      {confirmItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setConfirmItem(null)} />
-          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
-            <div className="p-5">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
-                  <AlertTriangle className="w-5 h-5 text-amber-600" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-gray-900">Konfirmasi Isian Formulir</h3>
-                  <p className="text-sm text-gray-600 mt-2 leading-relaxed">
-                    Isian formulir sudah benar dan dapat dipertanggungjawabkan. Admin pusat akan
-                    segera meninjau isian formulir Anda. Apabila ingin membatalkan isian, Anda harus
-                    menghubungi Admin pusat.
-                  </p>
-                </div>
-              </div>
+        <div className="space-y-6">
+          {items.length > 3 && (
+            <div className="flex flex-wrap gap-2">
+              {FILTERS.map((f) => (
+                <button
+                  key={f.key}
+                  onClick={() => setFilter(f.key)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
+                    filter === f.key
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
             </div>
-            <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setConfirmItem(null)}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  toggleFilled(confirmItem)
-                  setConfirmItem(null)
-                }}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
-              >
-                Ya, Tandai Sudah Diisi
-              </button>
-            </div>
-          </div>
+          )}
+          {visibleSections.length === 0 && (
+            <p className="text-sm text-gray-500 text-center py-6">Tidak ada formulir pada filter ini.</p>
+          )}
+          {visibleSections.map((sec) => (
+            <section key={sec.key} className="space-y-3">
+              <h3 className="text-sm font-bold text-gray-700">
+                {sec.title} <span className="text-gray-400 font-medium">({sec.rows.length})</span>
+              </h3>
+              {sec.rows.map(({ item }) => (
+                <FormCard key={item.id} item={item} isDinas={isDinas} namaSekolah={session?.namaSekolah} />
+              ))}
+            </section>
+          ))}
         </div>
       )}
     </div>

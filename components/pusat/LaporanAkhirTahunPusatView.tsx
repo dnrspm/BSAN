@@ -33,6 +33,8 @@ interface SekolahIsian {
 interface LaporanItem {
   id: string
   tahun: string
+  judul?: string
+  deskripsi?: string
   periodeAwal: string
   periodeAkhir: string
   jumlahKegiatan: number | null
@@ -137,13 +139,13 @@ function StatusBadge({ status }: { status: StatusLaporan }) {
     case "terjadwal":
       return (
         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-          <Calendar className="w-3 h-3" /> Terjadwal
+          <Calendar className="w-3 h-3" /> Belum Dimulai
         </span>
       )
     case "berlangsung":
       return (
         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-          <Clock className="w-3 h-3" /> Berlangsung
+          <Clock className="w-3 h-3" /> Sedang Berlangsung
         </span>
       )
     case "selesai":
@@ -172,20 +174,22 @@ function FormModal({
   onSubmit: (data: Omit<LaporanItem, "id" | "createdAt" | "updatedAt" | "dibuatOleh">) => void
   initialData?: LaporanItem
 }) {
-  const [tahun, setTahun] = useState(initialData?.tahun ?? new Date().getFullYear().toString())
+  const [judul, setJudul] = useState(initialData?.judul ?? "")
+  const [deskripsi, setDeskripsi] = useState(initialData?.deskripsi ?? "")
   const [periodeAwal, setPeriodeAwal] = useState(initialData?.periodeAwal ?? "2024-07-01")
   const [periodeAkhir, setPeriodeAkhir] = useState(initialData?.periodeAkhir ?? "2025-06-30")
   const [googleFormUrls, setGoogleFormUrls] = useState<GoogleFormUrls>(
     initialData?.googleFormUrls ?? emptyFormUrls()
   )
-  const [catatan, setCatatan] = useState(initialData?.catatan ?? "")
 
-  const canSubmit = Boolean(tahun && periodeAwal && periodeAkhir)
+  const canSubmit = Boolean(judul.trim() && periodeAwal && periodeAkhir)
 
   const handleSubmit = () => {
     if (!canSubmit) return
     onSubmit({
-      tahun,
+      tahun: periodeAkhir.slice(0, 4) || new Date().getFullYear().toString(),
+      judul: judul.trim(),
+      deskripsi: deskripsi.trim(),
       periodeAwal,
       periodeAkhir,
       jumlahKegiatan: null,
@@ -197,7 +201,7 @@ function FormModal({
         (acc, field) => ({ ...acc, [field.key]: (googleFormUrls[field.key] ?? "").trim() }),
         {} as GoogleFormUrls
       ),
-      catatan,
+      catatan: initialData?.catatan ?? "",
       sekolahYangMengisi: 0,
       daftarSekolah: [],
       isOpened: true,
@@ -215,9 +219,9 @@ function FormModal({
             </div>
             <div>
               <h3 className="text-base font-bold text-gray-900">
-                {initialData ? "Edit Periode" : "Buat Periode Pengisian"}
+                {initialData ? "Edit Formulir Evaluasi" : "Buat Formulir Evaluasi"}
               </h3>
-              <p className="text-xs text-gray-500">Tetapkan periode pengumpulan formulir evaluasi.</p>
+              <p className="text-xs text-gray-500">Tentukan judul, deskripsi, dan jadwal pengisian formulir evaluasi.</p>
             </div>
           </div>
           <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-lg">
@@ -227,16 +231,25 @@ function FormModal({
 
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           <div>
-            <label className="text-xs font-semibold text-gray-700">Tahun <span className="text-red-500">*</span></label>
-            <select
-              value={tahun}
-              onChange={(e) => setTahun(e.target.value)}
+            <label className="text-xs font-semibold text-gray-700">Judul <span className="text-red-500">*</span></label>
+            <input
+              type="text"
+              value={judul}
+              onChange={(e) => setJudul(e.target.value)}
+              placeholder="Contoh: Formulir Evaluasi Tahun 2025"
               className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            >
-              {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((y) => (
-                <option key={y} value={y.toString()}>{y}</option>
-              ))}
-            </select>
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-gray-700">Deskripsi</label>
+            <textarea
+              value={deskripsi}
+              onChange={(e) => setDeskripsi(e.target.value)}
+              placeholder="Deskripsi periode (opsional)"
+              rows={3}
+              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -285,22 +298,11 @@ function FormModal({
             </div>
           </div>
 
-          <div>
-            <label className="text-xs font-semibold text-gray-700">Catatan</label>
-            <textarea
-              value={catatan}
-              onChange={(e) => setCatatan(e.target.value)}
-              placeholder="Catatan untuk admin sekolah (opsional)"
-              rows={3}
-              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
-            />
-          </div>
-
           <div className="rounded-lg bg-blue-50 border border-blue-100 px-4 py-3">
             <div className="flex items-start gap-2">
               <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
               <p className="text-xs text-blue-700">
-                Periode yang dibuat akan tersedia untuk diisi oleh Admin Sekolah.
+                Formulir yang dibuat akan tersedia untuk diisi oleh Admin Sekolah.
                 Pastikan URL Google Form sudah benar sebelum disimpan.
               </p>
             </div>
@@ -321,7 +323,7 @@ function FormModal({
             disabled={!canSubmit}
             className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {initialData ? "Simpan" : "Buat Periode"}
+            {initialData ? "Simpan" : "Buat Formulir"}
           </button>
         </div>
       </div>
@@ -342,8 +344,8 @@ function DetailModal({ item, onClose, onEdit, onDelete, onViewSekolah }: { item:
               <FileText className="w-5 h-5 text-blue-600" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-sm font-bold text-gray-900 leading-tight">Detail Periode</h2>
-              <p className="text-xs text-gray-500">Tahun {item.tahun}</p>
+              <h2 className="text-sm font-bold text-gray-900 leading-tight">Detail Formulir Evaluasi</h2>
+              <p className="text-xs text-gray-500">{item.judul || `Tahun ${item.tahun}`}</p>
             </div>
           </div>
           <button type="button" onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-500 transition flex-shrink-0">
@@ -357,8 +359,8 @@ function DetailModal({ item, onClose, onEdit, onDelete, onViewSekolah }: { item:
           <div className="bg-gray-50 rounded-lg p-4 space-y-3">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs text-gray-500">Tahun</p>
-                <p className="text-sm font-semibold text-gray-900">{item.tahun}</p>
+                <p className="text-xs text-gray-500">Judul</p>
+                <p className="text-sm font-semibold text-gray-900">{item.judul || item.tahun}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Sekolah yang Mengisi</p>
@@ -418,10 +420,10 @@ function DetailModal({ item, onClose, onEdit, onDelete, onViewSekolah }: { item:
             </div>
           )}
 
-          {item.catatan && (
+          {(item.deskripsi || item.catatan) && (
             <div className="bg-yellow-50 rounded-lg p-4">
-              <p className="text-xs text-yellow-700 font-semibold mb-1">Catatan</p>
-              <p className="text-sm text-yellow-900">{item.catatan}</p>
+              <p className="text-xs text-yellow-700 font-semibold mb-1">Deskripsi</p>
+              <p className="text-sm text-yellow-900">{item.deskripsi || item.catatan}</p>
             </div>
           )}
 
@@ -469,9 +471,9 @@ function DetailModal({ item, onClose, onEdit, onDelete, onViewSekolah }: { item:
                 <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
                   <Trash2 className="w-6 h-6 text-red-600" />
                 </div>
-                <h3 className="text-base font-bold text-gray-900 mb-2">Hapus Periode?</h3>
+                <h3 className="text-base font-bold text-gray-900 mb-2">Hapus Formulir Evaluasi?</h3>
                 <p className="text-sm text-gray-600 mb-6">
-                  Apakah Anda yakin ingin menghapus periode laporan "{item.tahun}"? Tindakan ini tidak dapat dibatalkan.
+                  Apakah Anda yakin ingin menghapus formulir evaluasi "{item.judul || item.tahun}"? Tindakan ini tidak dapat dibatalkan.
                 </p>
                 <div className="flex gap-2">
                   <button
@@ -510,14 +512,14 @@ function FormLinksModal({ item, onClose }: { item: LaporanItem; onClose: () => v
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 flex-shrink-0">
             <div>
               <h3 className="text-base font-bold text-gray-900">Link Google Form</h3>
-              <p className="text-xs text-gray-500">Tahun {item.tahun}</p>
+              <p className="text-xs text-gray-500">{item.judul || `Tahun ${item.tahun}`}</p>
             </div>
             <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-lg">
               <X className="w-5 h-5 text-gray-500" />
             </button>
           </div>
           <div className="flex-1 overflow-y-auto p-5 space-y-3">
-            {JENJANG_FIELDS.map((field) => {
+            {JENJANG_FIELDS.filter((field) => item.googleFormUrls?.[field.key]?.trim()).map((field) => {
               const url = item.googleFormUrls?.[field.key]
               return (
                 <div key={field.key} className="flex items-center justify-between gap-3 border-b border-gray-100 pb-2 last:border-0">
@@ -559,6 +561,8 @@ export function LaporanAkhirTahunPusatView({
   const normalizeList = (parsed: LaporanItem[]): LaporanItem[] =>
     parsed.map((item) => ({
       ...item,
+      judul: item.judul ?? (item.id === "laporan-2025" ? "Formulir Evaluasi BSAN Tahun 2025" : undefined),
+      deskripsi: item.deskripsi ?? (item.id === "laporan-2025" ? "Formulir evaluasi tahunan pelaksanaan program Bersama Sekolah Aman Nusantara (BSAN) periode Juli 2024 - Juni 2025. Sekolah dan dinas diharapkan mengisi formulir sesuai jenjang masing-masing sebelum batas akhir pengisian." : undefined),
       googleFormUrls:
         item.googleFormUrls ?? emptyFormUrls(item.googleFormUrl ?? DEFAULT_FORM_URL),
     }))
@@ -593,6 +597,9 @@ export function LaporanAkhirTahunPusatView({
     const dummy2025: LaporanItem = {
       id: "laporan-2025",
       tahun: "2025",
+      judul: "Formulir Evaluasi BSAN Tahun 2025",
+      deskripsi:
+        "Formulir evaluasi tahunan pelaksanaan program Bersama Sekolah Aman Nusantara (BSAN) periode Juli 2024 - Juni 2025. Sekolah dan dinas diharapkan mengisi formulir sesuai jenjang masing-masing sebelum batas akhir pengisian.",
       periodeAwal: "2024-07-01",
       periodeAkhir: "2025-06-30",
       jumlahKegiatan: 84,
@@ -679,7 +686,7 @@ export function LaporanAkhirTahunPusatView({
           <p className="text-xs text-gray-500 mt-0.5">
             {isReadOnly
               ? `Pantau pengumpulan formulir di wilayah kewenangan Anda (${wilayahProvinsi})`
-              : "Kelola periode pengisian dan pantau pengumpulan formulir"}
+              : "Kelola formulir evaluasi dan pantau pengumpulan isian sekolah"}
           </p>
         </div>
         {!isReadOnly && (
@@ -691,7 +698,7 @@ export function LaporanAkhirTahunPusatView({
               }}
               className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
             >
-              <Plus className="w-4 h-4" /> Buat Periode
+              <Plus className="w-4 h-4" /> Buat Formulir
             </button>
           </div>
         )}
@@ -704,11 +711,11 @@ export function LaporanAkhirTahunPusatView({
           <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
             <FileText className="w-6 h-6 text-gray-400" />
           </div>
-            <p className="font-semibold text-gray-700 text-sm">Belum ada periode</p>
+            <p className="font-semibold text-gray-700 text-sm">Belum ada formulir evaluasi</p>
           <p className="text-gray-500 text-xs mt-1">
             {isReadOnly
-              ? "Belum ada periode yang dibuat Admin Pusat."
-              : 'Klik "Buat Periode" untuk membuat periode baru.'}
+              ? "Belum ada formulir evaluasi yang dibuat Admin Pusat."
+              : 'Klik "Buat Formulir" untuk membuat formulir evaluasi baru.'}
           </p>
         </div>
       ) : (
@@ -717,8 +724,10 @@ export function LaporanAkhirTahunPusatView({
             <table className="w-full text-sm min-w-[800px]">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200 text-left">
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Periode</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Judul</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Deskripsi</th>
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Jadwal Pengisian Formulir</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Formulir</th>
                   {!isReadOnly && (
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Aksi</th>
@@ -728,18 +737,42 @@ export function LaporanAkhirTahunPusatView({
               <tbody className="divide-y divide-gray-100">
                 {list.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3.5 font-semibold text-gray-900">{item.tahun}</td>
+                    <td className="px-4 py-3.5 font-semibold text-gray-900">{item.judul || `Tahun ${item.tahun}`}</td>
+                    <td className="px-4 py-3.5 text-sm text-gray-600 max-w-xs">
+                      <span className="line-clamp-2">{item.deskripsi || "-"}</span>
+                    </td>
                     <td className="px-4 py-3.5 text-sm text-gray-800">
                       {formatDateDisplay(item.periodeAwal)} - {formatDateDisplay(item.periodeAkhir)}
                     </td>
                     <td className="px-4 py-3.5">
-                      <button
-                        onClick={() => setLinksItem(item)}
-                        className="text-blue-600 hover:underline text-sm flex items-center gap-1"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        Buka ({JENJANG_FIELDS.filter((f) => item.googleFormUrls?.[f.key]).length})
-                      </button>
+                      <StatusBadge status={getStatusFromPeriod(item.periodeAwal, item.periodeAkhir)} />
+                    </td>
+                    <td className="px-4 py-3.5">
+                      {(() => {
+                        const tujuan = JENJANG_FIELDS.filter((f) => item.googleFormUrls?.[f.key]?.trim())
+                        const belum = JENJANG_FIELDS.filter((f) => !item.googleFormUrls?.[f.key]?.trim())
+                        const abbr = (f: (typeof JENJANG_FIELDS)[number]) =>
+                          f.key === "snt" ? "SNT" : f.key === "dinas" ? "Dinas" : f.short
+                        if (tujuan.length === 0) {
+                          return <span className="text-xs text-gray-400">Belum terisi di semua jenjang</span>
+                        }
+                        return (
+                          <div className="max-w-[260px] space-y-1">
+                            <button
+                              onClick={() => setLinksItem(item)}
+                              className="text-blue-600 hover:underline text-sm font-medium flex items-center gap-1"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                              Buka ({tujuan.length}/{belum.length})
+                            </button>
+                            <p className="text-xs text-gray-600">
+                              {belum.length === 0
+                                ? "Diisi di semua jenjang"
+                                : `Diisi: ${tujuan.map(abbr).join(", ")}`}
+                            </p>
+                          </div>
+                        )
+                      })()}
                     </td>
                     {!isReadOnly && (
                       <td className="px-4 py-3.5">
@@ -807,11 +840,11 @@ export function LaporanAkhirTahunPusatView({
                 <AlertTriangle className="w-5 h-5 text-red-600" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-gray-900">Hapus Periode?</h3>
+                <h3 className="text-base font-bold text-gray-900">Hapus Formulir Evaluasi?</h3>
               </div>
             </div>
             <p className="text-sm text-gray-600 mt-4">
-              Apakah Anda yakin ingin menghapus periode <span className="font-medium text-gray-900">{deleteTarget.tahun}</span>? Tindakan ini tidak dapat dibatalkan.
+              Apakah Anda yakin ingin menghapus formulir evaluasi <span className="font-medium text-gray-900">{deleteTarget.judul || deleteTarget.tahun}</span>? Tindakan ini tidak dapat dibatalkan.
             </p>
             <div className="flex items-center justify-end gap-2 mt-5">
               <button
