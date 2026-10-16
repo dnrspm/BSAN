@@ -11,7 +11,6 @@ import {
   AlertTriangle,
   X,
   ExternalLink,
-  Info,
   Calendar,
   ArrowLeft,
 } from "lucide-react"
@@ -295,16 +294,6 @@ function FormModal({
                   />
                 </div>
               ))}
-            </div>
-          </div>
-
-          <div className="rounded-lg bg-blue-50 border border-blue-100 px-4 py-3">
-            <div className="flex items-start gap-2">
-              <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-blue-700">
-                Formulir yang dibuat akan tersedia untuk diisi oleh Admin Sekolah.
-                Pastikan URL Google Form sudah benar sebelum disimpan.
-              </p>
             </div>
           </div>
         </div>
