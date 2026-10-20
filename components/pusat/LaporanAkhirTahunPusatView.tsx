@@ -13,8 +13,8 @@ import {
   ExternalLink,
   Calendar,
   ArrowLeft,
+  Link2,
 } from "lucide-react"
-import { useRouter } from "next/navigation"
 import { DIREKTORI_ENTITAS } from "@/data/direktoriInstansi"
 import { normalizeNamaInstansi, purgeLegacyLaporan2026 } from "@/lib/laporan-instansi"
 
@@ -84,10 +84,10 @@ const JENJANG_FIELDS = [
   { key: "smp", label: "SMP", short: "SMP" },
   { key: "sma", label: "SMA", short: "SMA" },
   { key: "smk", label: "SMK", short: "SMK" },
-  { key: "pkbm", label: "PKBM", short: "PKBM" },
   { key: "slb", label: "SLB", short: "SLB" },
-  { key: "snt", label: "Sekolah Nasional Terintegrasi", short: "Sekolah Nasional Terintegrasi" },
-  { key: "dinas", label: "Link untuk Dinas Pendidikan", short: "Dinas Pendidikan" },
+  { key: "snt", label: "SNT", short: "SNT" },
+  { key: "nonformal", label: "Non Formal", short: "Non Formal" },
+  { key: "dinas", label: "Dinas", short: "Dinas" },
 ] as const
 
 type JenjangKey = (typeof JENJANG_FIELDS)[number]["key"]
@@ -320,137 +320,105 @@ function FormModal({
   )
 }
 
-function DetailModal({ item, onClose, onEdit, onDelete, onViewSekolah }: { item: LaporanItem; onClose: () => void; onEdit: (item: LaporanItem) => void; onDelete: (id: string) => void; onViewSekolah: (item: LaporanItem) => void }) {
+function DetailModal({ item, onClose, onEdit, onDelete, isReadOnly }: { item: LaporanItem; onClose: () => void; onEdit: (item: LaporanItem) => void; onDelete: (id: string) => void; isReadOnly?: boolean }) {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
 
   return (
     <>
       <div className="fixed inset-0 z-50 bg-black/40" onClick={onClose} />
-      <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white shadow-2xl flex flex-col">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="relative w-full max-w-lg max-h-[85vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <div className="flex items-start justify-between gap-3 px-6 py-5 border-b border-gray-100 flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+            <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
               <FileText className="w-5 h-5 text-blue-600" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-sm font-bold text-gray-900 leading-tight">Detail Formulir Evaluasi</h2>
-              <p className="text-xs text-gray-500">{item.judul || `Tahun ${item.tahun}`}</p>
+              <h2 className="text-base font-bold text-gray-900 leading-tight truncate">
+                {item.judul || `Tahun ${item.tahun}`}
+              </h2>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-500 transition flex-shrink-0">
+          <button type="button" onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition flex-shrink-0">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
-                      <StatusBadge status={getStatusFromPeriod(item.periodeAwal, item.periodeAkhir)} />
-
-          <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-xs text-gray-500">Judul</p>
-                <p className="text-sm font-semibold text-gray-900">{item.judul || item.tahun}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">Sekolah yang Mengisi</p>
-                <p className="text-sm font-semibold text-gray-900">{item.sekolahYangMengisi}</p>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs text-gray-500">Jadwal Pengisian Formulir</p>
-              <p className="text-sm font-medium text-gray-900">
-                {formatDateDisplay(item.periodeAwal)} - {formatDateDisplay(item.periodeAkhir)}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-xs text-gray-500 mb-2">Google Form per Jenjang</p>
-              <div className="space-y-2">
-                {JENJANG_FIELDS.map((field) => {
-                  const url = item.googleFormUrls?.[field.key]
-                  return (
-                    <div key={field.key} className="flex items-center justify-between gap-2">
-                      <span className="text-xs text-gray-600 min-w-0 truncate">{field.short}</span>
-                      {url ? (
-                        <a
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs font-medium text-blue-600 hover:underline flex items-center gap-1 flex-shrink-0"
-                        >
-                          <ExternalLink className="w-3.5 h-3.5" /> Buka
-                        </a>
-                      ) : (
-                        <span className="text-xs text-gray-400 flex-shrink-0">-</span>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-
-            <div>
-              <p className="text-xs text-gray-500">Dibuat oleh</p>
-              <p className="text-sm font-medium text-gray-900">{item.dibuatOleh}</p>
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">Jadwal</p>
+            <div className="flex items-center gap-2 mt-1 overflow-x-auto">
+              <span className="flex items-center gap-1 text-sm text-gray-700 whitespace-nowrap flex-shrink-0">
+                <Calendar className="w-3.5 h-3.5" />
+                {formatDateDisplay(item.periodeAwal)} – {formatDateDisplay(item.periodeAkhir)}
+              </span>
+              <span className="flex-shrink-0 whitespace-nowrap">
+                <StatusBadge status={getStatusFromPeriod(item.periodeAwal, item.periodeAkhir)} />
+              </span>
             </div>
           </div>
-
-          {item.sekolahYangMengisi > 0 && (
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-blue-50 rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold text-blue-700">{item.jumlahKasus ?? "-"}</p>
-                <p className="text-xs text-blue-600 mt-1">Total Kegiatan</p>
-              </div>
-              <div className="bg-red-50 rounded-lg p-4 text-center">
-                <p className="text-2xl font-bold text-red-700">{item.jumlahKasus ?? "-"}</p>
-                <p className="text-xs text-red-600 mt-1">Total Kasus</p>
-              </div>
-            </div>
-          )}
 
           {(item.deskripsi || item.catatan) && (
-            <div className="bg-yellow-50 rounded-lg p-4">
-              <p className="text-xs text-yellow-700 font-semibold mb-1">Deskripsi</p>
-              <p className="text-sm text-yellow-900">{item.deskripsi || item.catatan}</p>
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">Deskripsi</p>
+              <p className="text-sm text-gray-700 mt-1 leading-relaxed">{item.deskripsi || item.catatan}</p>
             </div>
           )}
 
-          <div className="text-xs text-gray-400">
-            Dibuat pada {new Date(item.createdAt).toLocaleDateString("id-ID")}
+          <div>
+            <div className="flex items-center gap-1.5 text-gray-400 mb-2">
+              <Link2 className="w-3.5 h-3.5" />
+              <p className="text-[11px] font-medium uppercase tracking-wide">Google Form per Jenjang</p>
+            </div>
+            <div className="rounded-xl border border-gray-100 divide-y divide-gray-100">
+              {JENJANG_FIELDS.map((field) => {
+                const url = item.googleFormUrls?.[field.key]
+                return (
+                  <div key={field.key} className="flex items-center justify-between gap-3 px-3.5 py-2.5">
+                    <span className="text-sm text-gray-700 min-w-0 truncate">{field.short}</span>
+                    {url ? (
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-semibold text-blue-600 hover:underline flex items-center gap-1 flex-shrink-0"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" /> Buka
+                      </a>
+                    ) : (
+                      <span className="text-[11px] font-medium text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full flex-shrink-0">
+                        Belum diisi
+                      </span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           </div>
+
+          <p className="text-xs text-gray-400">
+            Dibuat pada {new Date(item.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+          </p>
         </div>
 
-        <div className="border-t border-gray-200 p-5 space-y-2">
-          <button
-            type="button"
-            onClick={() => onViewSekolah(item)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
-          >
-            <ExternalLink className="w-4 h-4" /> Buka Daftar Sekolah
-          </button>
-          <button
-            type="button"
-            onClick={() => onEdit(item)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition"
-          >
-            <Pencil className="w-4 h-4" /> Edit
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowConfirmDelete(true)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
-          >
-            <Trash2 className="w-4 h-4" /> Hapus
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
-          >
-            Tutup
-          </button>
-        </div>
+        {!isReadOnly && (
+          <div className="flex items-center gap-2 border-t border-gray-100 px-6 py-4 flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => onEdit(item)}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+            >
+              <Pencil className="w-4 h-4" /> Edit
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowConfirmDelete(true)}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 transition"
+            >
+              <Trash2 className="w-4 h-4" /> Hapus
+            </button>
+          </div>
+        )}
 
         {showConfirmDelete && (
           <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
@@ -487,6 +455,7 @@ function DetailModal({ item, onClose, onEdit, onDelete, onViewSekolah }: { item:
             </div>
           </div>
         )}
+      </div>
       </div>
     </>
   )
@@ -538,7 +507,6 @@ function FormLinksModal({ item, onClose }: { item: LaporanItem; onClose: () => v
 export function LaporanAkhirTahunPusatView({
   wilayahProvinsi,
 }: { wilayahProvinsi?: string } = {}) {
-  const router = useRouter()
   const isReadOnly = wilayahProvinsi !== undefined
   const [list, setList] = useState<LaporanItem[]>([])
   const [selected, setSelected] = useState<LaporanItem | null>(null)
@@ -624,10 +592,6 @@ export function LaporanAkhirTahunPusatView({
     return map
   }, [])
 
-  const detailUrl = (id: string) =>
-    wilayahProvinsi !== undefined
-      ? `/laporan-akhir-tahun/detail?id=${id}&provinsi=${encodeURIComponent(wilayahProvinsi)}`
-      : `/laporan-akhir-tahun/detail?id=${id}` // detail dihapus
 
   const saveList = (newList: LaporanItem[]) => {
     setList(newList)
@@ -726,7 +690,14 @@ export function LaporanAkhirTahunPusatView({
               <tbody className="divide-y divide-gray-100">
                 {list.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3.5 font-semibold text-gray-900">{item.judul || `Tahun ${item.tahun}`}</td>
+                    <td className="px-4 py-3.5 font-semibold text-gray-900">
+                      <button
+                        onClick={() => setSelected(item)}
+                        className="hover:underline text-left"
+                      >
+                        {item.judul || `Tahun ${item.tahun}`}
+                      </button>
+                    </td>
                     <td className="px-4 py-3.5 text-sm text-gray-600 max-w-xs">
                       <span className="line-clamp-2">{item.deskripsi || "-"}</span>
                     </td>
@@ -739,9 +710,6 @@ export function LaporanAkhirTahunPusatView({
                     <td className="px-4 py-3.5">
                       {(() => {
                         const tujuan = JENJANG_FIELDS.filter((f) => item.googleFormUrls?.[f.key]?.trim())
-                        const belum = JENJANG_FIELDS.filter((f) => !item.googleFormUrls?.[f.key]?.trim())
-                        const abbr = (f: (typeof JENJANG_FIELDS)[number]) =>
-                          f.key === "snt" ? "SNT" : f.key === "dinas" ? "Dinas" : f.short
                         if (tujuan.length === 0) {
                           return <span className="text-xs text-gray-400">Belum terisi di semua jenjang</span>
                         }
@@ -749,16 +717,11 @@ export function LaporanAkhirTahunPusatView({
                           <div className="max-w-[260px] space-y-1">
                             <button
                               onClick={() => setLinksItem(item)}
-                              className="text-blue-600 hover:underline text-sm font-medium flex items-center gap-1"
+                              className="text-blue-600 hover:underline text-sm font-medium flex items-center gap-1 whitespace-nowrap"
                             >
-                              <ExternalLink className="w-3.5 h-3.5" />
-                              Buka ({tujuan.length}/{belum.length})
+                              <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                              Buka ({tujuan.length}/{JENJANG_FIELDS.length})
                             </button>
-                            <p className="text-xs text-gray-600">
-                              {belum.length === 0
-                                ? "Diisi di semua jenjang"
-                                : `Diisi: ${tujuan.map(abbr).join(", ")}`}
-                            </p>
                           </div>
                         )
                       })()}
@@ -801,7 +764,7 @@ export function LaporanAkhirTahunPusatView({
             setShowForm(true)
           }}
           onDelete={handleDelete}
-          onViewSekolah={(item) => router.push(detailUrl(item.id))}
+          isReadOnly={isReadOnly}
         />
       )}
 

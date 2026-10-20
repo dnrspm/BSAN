@@ -109,7 +109,7 @@ function resolveForm(
 ): { url: string; jenjang: string } {
   const urls = item.googleFormUrls
   if (!urls) return { url: item.googleFormUrl ?? "", jenjang: "" }
-  if (isDinas) return { url: urls.dinas?.trim() ?? "", jenjang: "Dinas Pendidikan" }
+  if (isDinas) return { url: urls.dinas?.trim() ?? "", jenjang: "Dinas" }
 
   const name = (namaSekolah ?? "").toUpperCase()
   const matchers: Array<[RegExp, string, string]> = [
@@ -118,8 +118,8 @@ function resolveForm(
     [/SMA|SMAN/, "sma", "SMA"],
     [/SMP|SMPN/, "smp", "SMP"],
     [/SLB/, "slb", "SLB"],
-    [/PKBM/, "pkbm", "PKBM"],
-    [/TERINTEGRASI|SNT/, "snt", "Sekolah Nasional Terintegrasi"],
+    [/PKBM/, "nonformal", "Non Formal"],
+    [/TERINTEGRASI|SNT/, "snt", "SNT"],
     [/SD|SDN/, "sd", "SD"],
   ]
   const match = matchers.find(([re]) => re.test(name))
