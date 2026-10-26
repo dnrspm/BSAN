@@ -1,11 +1,11 @@
 "use client"
 
-import { AlertTriangle, BookOpenCheck, CalendarCheck, FileText, GraduationCap, LogOut, Menu, X } from "lucide-react"
+import { AlertTriangle, BarChart3, BookOpenCheck, CalendarCheck, FileText, GraduationCap, LogOut, Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
 import { readAuthSession } from "@/lib/auth-session"
 
-export type SekolahMenu = "sumber-rujukan" | "kegiatan" | "pelanggaran" | "laporan-akhir-tahun"
+export type SekolahMenu = "sumber-rujukan" | "kegiatan" | "pelanggaran" | "laporan-akhir-tahun" | "indeks-bsan"
 
 interface SekolahSidebarProps {
   activeMenu: SekolahMenu
@@ -18,6 +18,7 @@ const navItems: { id: SekolahMenu; label: string; icon: typeof AlertTriangle }[]
   { id: "kegiatan", label: "Kegiatan", icon: CalendarCheck },
   { id: "pelanggaran", label: "Pelanggaran", icon: AlertTriangle },
   { id: "laporan-akhir-tahun", label: "Formulir Evaluasi", icon: FileText },
+  { id: "indeks-bsan", label: "Indeks BSAN", icon: BarChart3 },
 ]
 
 export function SekolahSidebar({ activeMenu, onMenuChange, onLogout }: SekolahSidebarProps) {
