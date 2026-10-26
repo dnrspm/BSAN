@@ -5,7 +5,9 @@ import { cn } from "@/lib/utils"
 
 export interface Subindikator {
   nama: string
+  /** Skor 0–10, atau persentase 0–100 bila `satuan` bernilai "persen". */
   skor: number
+  satuan?: "persen"
 }
 
 export interface Indikator {
@@ -26,7 +28,7 @@ export const INDIKATOR: Indikator[] = [
     skor: 8.2,
     subindikator: [
       { nama: "Ketersediaan sarana ibadah yang layak", skor: 8.5 },
-      { nama: "Persentase murid mengikuti kegiatan keagamaan", skor: 8.0 },
+      { nama: "Persentase murid mengikuti kegiatan keagamaan", skor: 80, satuan: "persen" },
       { nama: "Ketersediaan pendidik agama sesuai keyakinan murid", skor: 8.1 },
     ],
     rekomendasi: [
@@ -40,7 +42,7 @@ export const INDIKATOR: Indikator[] = [
     icon: ShieldCheck,
     skor: 6.4,
     subindikator: [
-      { nama: "Persentase Murid Melaksanakan CKG", skor: 5.8 },
+      { nama: "Persentase Murid Melaksanakan CKG", skor: 58, satuan: "persen" },
       { nama: "Kelayakan sarana dan prasarana sekolah", skor: 7.0 },
       { nama: "Ketersediaan protokol keselamatan dan tanggap darurat", skor: 6.4 },
     ],
@@ -106,7 +108,7 @@ export function indikatorTahun(tahun: number): Indikator[] {
   return INDIKATOR.map((i, idx) => ({
     ...i,
     skor: data[idx].skor,
-    subindikator: i.subindikator.map((sub, j) => ({ ...sub, skor: data[idx].sub[j] })),
+    subindikator: i.subindikator.map((sub, j) => ({ ...sub, skor: sub.satuan === "persen" ? Math.round(data[idx].sub[j] * 10) : data[idx].sub[j] })),
   }))
 }
 
@@ -114,8 +116,8 @@ export type Tingkat = { label: string; text: string; marker: string; chip: strin
 
 export function tingkat(skor: number): Tingkat {
   if (skor >= 8) return { label: "Tinggi", text: "text-emerald-700", marker: "border-emerald-600", dot: "bg-emerald-500", chip: "bg-emerald-50 text-emerald-700 ring-emerald-200" }
-  if (skor >= 6) return { label: "Sedang", text: "text-amber-700", marker: "border-amber-500", dot: "bg-amber-500", chip: "bg-amber-50 text-amber-700 ring-amber-200" }
-  return { label: "Rendah", text: "text-red-700", marker: "border-red-500", dot: "bg-red-500", chip: "bg-red-50 text-red-700 ring-red-200" }
+  if (skor >= 6) return { label: "Sedang", text: "text-yellow-700", marker: "border-yellow-500", dot: "bg-yellow-400", chip: "bg-yellow-50 text-yellow-800 ring-yellow-300" }
+  return { label: "Rendah", text: "text-red-600", marker: "border-red-500", dot: "bg-red-500", chip: "bg-red-50 text-red-600 ring-red-200" }
 }
 
 export const fmt = (n: number) => n.toLocaleString("id-ID", { minimumFractionDigits: 1, maximumFractionDigits: 1 })
@@ -181,4 +183,11 @@ export function useDataTahun(tahun: number) {
     dataSebelumnya,
     totalSebelumnya: dataSebelumnya ? rata2(dataSebelumnya) : undefined,
   }
+}
+
+/** Teks nilai subindikator dan skor 0–10 yang dipakai untuk menentukan tingkat/warna. */
+export function nilaiSubindikator(s: Subindikator) {
+  return s.satuan === "persen"
+    ? { teks: `${Math.round(s.skor)}%`, skor10: s.skor / 10 }
+    : { teks: fmt(s.skor), skor10: s.skor }
 }
