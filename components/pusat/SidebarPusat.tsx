@@ -1,11 +1,11 @@
 "use client"
-import { LayoutDashboard, Users, LogOut, GraduationCap, BookOpenCheck, CalendarDays, Menu, X, FileText, AlertTriangle, UserCog } from "lucide-react"
+import { LayoutDashboard, Users, LogOut, GraduationCap, BookOpenCheck, CalendarDays, Menu, X, FileText, AlertTriangle, UserCog, BarChart3 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { clearAuthAndRedirectToLogin } from "@/lib/logout"
 
-export type PusatMenu = "dashboard" | "pokja" | "sumber-rujukan" | "kegiatan" | "laporan-akhir-tahun" | "pelanggaran" | "pengguna"
+export type PusatMenu = "dashboard" | "pokja" | "sumber-rujukan" | "kegiatan" | "laporan-akhir-tahun" | "indeks-bsan" | "pelanggaran" | "pengguna"
 
 interface SidebarPusatProps {
   activeMenu: PusatMenu
@@ -19,6 +19,7 @@ const navItems = [
   { id: "k" as PusatMenu, label: " Kegiatan", icon: CalendarDays },
   { id: "pelanggaran" as PusatMenu, label: "Pelanggaran", icon: AlertTriangle },
   { id: "laporan-akhir-tahun" as PusatMenu, label: "Formulir Evaluasi", icon: FileText },
+  { id: "indeks-bsan" as PusatMenu, label: "Indeks BSAN", icon: BarChart3 },
   { id: "pengguna" as PusatMenu, label: "Akses Pengguna", icon: UserCog },
 ]
 

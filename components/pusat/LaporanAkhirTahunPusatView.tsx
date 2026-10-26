@@ -78,7 +78,7 @@ const DUMMY_SEKOLAH_2025: SekolahIsian[] = [
 
 const DEFAULT_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfEXAMPLE/viewform"
 
-const JENJANG_FIELDS = [
+export const JENJANG_FIELDS = [
   { key: "paud", label: "PAUD", short: "PAUD" },
   { key: "sd", label: "SD", short: "SD" },
   { key: "smp", label: "SMP", short: "SMP" },
