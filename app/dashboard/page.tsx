@@ -13,6 +13,7 @@ import { LaporanAkhirTahunView } from "@/components/laporan/LaporanAkhirTahunVie
 
 import { SidebarPusat, PusatMenu } from "@/components/pusat/SidebarPusat"
 import { IndeksBsanPusatView } from "@/components/pusat/IndeksBsanPusatView"
+import { IndeksBsanDinasView } from "@/components/dashboard/IndeksBsanDinasView"
 import { HeaderPusat } from "@/components/pusat/HeaderPusat"
 import { DashboardPusatView } from "@/components/pusat/DashboardPusatView"
 import { DaftarPengajuanView } from "@/components/pusat/DaftarPengajuanView"
@@ -34,7 +35,7 @@ import type { PokjaItem, PokjaData } from "@/types/pokja"
 import { getDrafts, clearDraft } from "@/lib/draft-storage"
 
 type AdminRole = "dinas" | "pusat" | "sekolah" | "bpmp"
-type DinaMenu = "dashboard" | "data-pokja" | "sumber-rujukan" | "kegiatan" | "pelanggaran" | "laporan-akhir-tahun"
+type DinaMenu = "dashboard" | "data-pokja" | "sumber-rujukan" | "kegiatan" | "pelanggaran" | "laporan-akhir-tahun" | "indeks-bsan"
 
 const REGION = "Provinsi Aceh"
 
@@ -206,7 +207,7 @@ function DashboardPageInner() {
   // Handle ?menu= URL param for dinas
   useEffect(() => {
     const menuParam = searchParams.get("menu") as DinaMenu | null
-    if (menuParam && ["dashboard", "data-pokja", "sumber-rujukan", "kegiatan", "pelanggaran", "laporan-akhir-tahun"].includes(menuParam)) {
+    if (menuParam && ["dashboard", "data-pokja", "sumber-rujukan", "kegiatan", "pelanggaran", "laporan-akhir-tahun", "indeks-bsan"].includes(menuParam)) {
       setDinasMenu(menuParam)
     }
   }, [searchParams])
@@ -222,7 +223,7 @@ function DashboardPageInner() {
   // Handle ?menu= URL param for bpmp
   useEffect(() => {
     const menuParam = searchParams.get("menu") as BpmpMenu | null
-    if (menuParam && ["pokja", "sumber-dukungan", "input-kasus", "laporan-akhir-tahun"].includes(menuParam)) {
+    if (menuParam && ["pokja", "sumber-dukungan", "input-kasus", "laporan-akhir-tahun", "indeks-bsan"].includes(menuParam)) {
       setBpmpMenu(menuParam)
       // Redirect BPMP which comes from form to the right menu (no redirect needed, just menu)
     }
@@ -554,6 +555,7 @@ function DashboardPageInner() {
               {dinasMenu === "kegiatan" && <KegiatanView />}
               {dinasMenu === "pelanggaran" && <PelanggaranView editId={searchParams.get("edit") ?? undefined} />}
               {dinasMenu === "laporan-akhir-tahun" && <LaporanAkhirTahunView role="dinas" />}
+              {dinasMenu === "indeks-bsan" && <IndeksBsanDinasView />}
             </main>
           </div>
         </div>
@@ -635,6 +637,7 @@ function DashboardPageInner() {
               {bpmpMenu === "laporan-akhir-tahun" && (
                 <LaporanAkhirTahunPusatView wilayahProvinsi={bpmpProvinsi} />
               )}
+              {bpmpMenu === "indeks-bsan" && <IndeksBsanPusatView wilayahProvinsi={bpmpProvinsi} />}
             </main>
           </div>
         </div>

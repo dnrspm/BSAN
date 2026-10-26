@@ -25,7 +25,16 @@ const BARIS = "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors"
 const AKTIF = "bg-blue-50 text-blue-700 font-medium"
 
 /** Filter wilayah bertingkat: seluruh Indonesia, semua kab/kota di satu provinsi, atau satu kab/kota. */
-export function WilayahFilter({ nilai, onChange }: { nilai: WilayahPilihan; onChange: (w: WilayahPilihan) => void }) {
+export function WilayahFilter({
+  nilai,
+  onChange,
+  provinsiTetap,
+}: {
+  nilai: WilayahPilihan
+  onChange: (w: WilayahPilihan) => void
+  /** Bila diisi (mis. untuk BPMP), pilihan dibatasi pada kab/kota di provinsi ini saja. */
+  provinsiTetap?: string
+}) {
   const [buka, setBuka] = useState(false)
   const [draf, setDraf] = useState<WilayahPilihan>(nilai)
 
@@ -38,6 +47,8 @@ export function WilayahFilter({ nilai, onChange }: { nilai: WilayahPilihan; onCh
     setBuka(false)
   }
   const daftarKab = draf.provinsi ? KAB_KOTA_BY_PROVINSI[draf.provinsi] ?? [] : []
+  const terbatas = provinsiTetap !== undefined
+  const daftarKabTetap = terbatas ? KAB_KOTA_BY_PROVINSI[provinsiTetap] ?? [] : []
 
   return (
     <>
@@ -47,14 +58,14 @@ export function WilayahFilter({ nilai, onChange }: { nilai: WilayahPilihan; onCh
         className="w-full h-10 px-3 flex items-center gap-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
       >
         <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
-        <span className="flex-1 truncate text-left">{labelWilayah(nilai)}</span>
+        <span className="flex-1 truncate text-left">{terbatas ? nilai.kabKota ?? "Semua kab/kota" : labelWilayah(nilai)}</span>
         <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
       </button>
 
       {buka && (
         <div role="dialog" aria-modal="true" aria-label="Filter Wilayah" className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50" onClick={() => setBuka(false)} />
-          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+          <div className={cn("relative bg-white rounded-xl shadow-2xl w-full max-h-[80vh] flex flex-col", terbatas ? "max-w-md" : "max-w-2xl")}>
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
               <h3 className="text-base font-bold text-gray-900">Filter Wilayah</h3>
               <button type="button" onClick={() => setBuka(false)} className="p-1 hover:bg-gray-100 rounded-lg" aria-label="Tutup">
@@ -62,6 +73,29 @@ export function WilayahFilter({ nilai, onChange }: { nilai: WilayahPilihan; onCh
               </button>
             </div>
 
+            {terbatas ? (
+              <div className="h-[420px] min-h-0 overflow-y-auto p-2 space-y-0.5">
+                <p className="px-3 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wide">{provinsiTetap}</p>
+                <button
+                  type="button"
+                  onClick={() => setDraf({ provinsi: provinsiTetap, kabKota: null })}
+                  className={cn(BARIS, "font-medium", draf.kabKota === null ? AKTIF : "hover:bg-gray-50 text-gray-700")}
+                >
+                  Semua Kabupaten/Kota
+                </button>
+                <div className="border-t border-gray-100 my-1" />
+                {daftarKabTetap.map((k) => (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => setDraf({ provinsi: provinsiTetap, kabKota: k })}
+                    className={cn(BARIS, draf.kabKota === k ? AKTIF : "hover:bg-gray-50 text-gray-700")}
+                  >
+                    {k}
+                  </button>
+                ))}
+              </div>
+            ) : (
             <div className="flex h-[420px] min-h-0">
               <div className="w-1/2 border-r border-gray-100 overflow-y-auto p-2 space-y-0.5">
                 <button
@@ -113,6 +147,7 @@ export function WilayahFilter({ nilai, onChange }: { nilai: WilayahPilihan; onCh
                 )}
               </div>
             </div>
+            )}
 
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button type="button" onClick={() => setBuka(false)} className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition">

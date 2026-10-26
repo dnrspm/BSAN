@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import { ArrowUp, ChevronDown, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { KAB_KOTA_BY_PROVINSI } from "@/data/kabKotaData"
 import { SELURUH_INDONESIA, WilayahFilter, type WilayahPilihan } from "@/components/filters/WilayahFilter"
 import { JENJANG_FIELDS } from "@/components/pusat/LaporanAkhirTahunPusatView"
 import { TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, tingkat } from "@/components/sekolah/indeks-bsan/shared"
@@ -47,16 +48,28 @@ const SUDAH_MENGIKUTI: Record<number, number> = { 2026: 235, 2025: 180, 2024: 12
 const PER_HALAMAN = 10
 
 // Data contoh deterministik: skor sekolah berasal dari Admin Pusat (0–10, satu desimal).
-function buatData(tahun: number): SekolahIndeks[] {
-  const batas = SUDAH_MENGIKUTI[tahun] ?? 0
+// `provinsiTerbatas` (BPMP) membatasi data ke satu provinsi; `kabKotaTerbatas` (Dinas) ke satu kab/kota.
+// `hanyaSekolah` menyingkirkan baris dinas dari daftar.
+function buatData(tahun: number, provinsiTerbatas?: string, kabKotaTerbatas?: string, hanyaSekolah = false): SekolahIndeks[] {
+  const daftarWilayah =
+    provinsiTerbatas === undefined
+      ? WILAYAH_CONTOH
+      : kabKotaTerbatas
+        ? [{ provinsi: provinsiTerbatas, kabKota: kabKotaTerbatas }]
+        : (KAB_KOTA_BY_PROVINSI[provinsiTerbatas] ?? []).map((kabKota) => ({ provinsi: provinsiTerbatas, kabKota }))
+  if (daftarWilayah.length === 0) return []
+
+  const total = provinsiTerbatas === undefined ? TOTAL_SEKOLAH : kabKotaTerbatas ? 80 : daftarWilayah.length * 12
+  const batas = Math.round(((SUDAH_MENGIKUTI[tahun] ?? 0) / TOTAL_SEKOLAH) * total)
   const geser = 0.4 * (TAHUN_AKTIF - tahun)
-  return Array.from({ length: TOTAL_SEKOLAH }, (_, i) => {
+  const jumlahDinas = hanyaSekolah ? 0 : daftarWilayah.length
+  return Array.from({ length: total }, (_, i) => {
     // Satu dinas per kabupaten/kota ditaruh di akhir daftar; sisanya satuan pendidikan.
-    const indeksDinas = i - (TOTAL_SEKOLAH - WILAYAH_CONTOH.length)
+    const indeksDinas = i - (total - jumlahDinas)
     const dinas = indeksDinas >= 0
     const jenjang = dinas ? "Dinas" : JENJANG_SEKOLAH[(i * 5 + Math.floor(i / 3)) % JENJANG_SEKOLAH.length]
-    const { provinsi, kabKota } = dinas ? WILAYAH_CONTOH[indeksDinas] : WILAYAH_CONTOH[(i * 7 + Math.floor(i / 5)) % WILAYAH_CONTOH.length]
-    const mengikuti = (i * 7919) % TOTAL_SEKOLAH < batas
+    const { provinsi, kabKota } = dinas ? daftarWilayah[indeksDinas] : daftarWilayah[(i * 7 + Math.floor(i / 5)) % daftarWilayah.length]
+    const mengikuti = (i * 7919) % total < batas
     const dasar = 4 + ((i * 37 + 11) % 59) / 10
     return {
       id: i + 1,
@@ -91,31 +104,49 @@ function FilterSelect(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   )
 }
 
-export function IndeksBsanPusatView() {
+interface IndeksBsanPusatViewProps {
+  /** BPMP: batasi data dan pilihan wilayah pada kab/kota di provinsi ini. */
+  wilayahProvinsi?: string
+  /** Dinas: batasi data pada satu kab/kota (dipakai bersama `wilayahProvinsi`). */
+  wilayahKabKota?: string
+  /** Hanya tampilkan satuan pendidikan, tanpa baris dinas. */
+  hanyaSekolah?: boolean
+  judul?: string
+}
+
+/**
+ * Tampilan Indeks BSAN seluruh instansi. Untuk Admin Pusat tanpa pembatasan; untuk BPMP dan Dinas
+ * data dan pilihan wilayah dibatasi pada wilayah kewenangannya.
+ */
+export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSekolah = false, judul = "Indeks BSAN" }: IndeksBsanPusatViewProps = {}) {
+  const terbatas = wilayahProvinsi !== undefined
+  const kabKotaTetap = terbatas && !!wilayahKabKota
+  const jenjangList = hanyaSekolah ? JENJANG_SEKOLAH : JENJANG_LIST
+  const sebutan = hanyaSekolah ? "sekolah" : "instansi"
   const [tahun, setTahun] = useState(TAHUN_AKTIF)
   const [cari, setCari] = useState("")
   const [jenjang, setJenjang] = useState<Jenjang | "semua">("semua")
-  const [wilayah, setWilayah] = useState<WilayahPilihan>(SELURUH_INDONESIA)
+  const [wilayah, setWilayah] = useState<WilayahPilihan>(terbatas ? { provinsi: wilayahProvinsi, kabKota: wilayahKabKota ?? null } : SELURUH_INDONESIA)
   const [kategori, setKategori] = useState<Kategori | "semua">("semua")
   const [status, setStatus] = useState<Status | "semua">("semua")
   const [urut, setUrut] = useState<"asc" | "desc" | null>(null)
   const [halaman, setHalaman] = useState(1)
 
-  const data = useMemo(() => buatData(tahun), [tahun])
+  const data = useMemo(() => buatData(tahun, wilayahProvinsi, wilayahKabKota, hanyaSekolah), [tahun, wilayahProvinsi, wilayahKabKota, hanyaSekolah])
 
   const ringkasan = useMemo(() => {
     const sudah = data.filter((s) => s.skor !== null)
     return {
       rerata: rata2(sudah.map((s) => s.skor as number)),
       sudah: sudah.length,
-      perJenjang: JENJANG_LIST.map((j) => {
+      perJenjang: jenjangList.map((j) => {
         const sekolah = data.filter((s) => s.jenjang === j)
         const ikut = sekolah.filter((s) => s.skor !== null)
         const r = rata2(ikut.map((s) => s.skor as number))
         return { jenjang: j, rerata: r, sudah: ikut.length, belum: sekolah.length - ikut.length }
       }),
     }
-  }, [data])
+  }, [data, jenjangList])
 
   const terfilter = useMemo(() => {
     const q = cari.trim().toLowerCase()
@@ -151,8 +182,14 @@ export function IndeksBsanPusatView() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Indeks BSAN</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Skor Indeks BSAN seluruh satuan pendidikan dan dinas.</p>
+          <h1 className="text-xl font-bold text-gray-900">{judul}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">
+            {kabKotaTetap
+              ? `Skor Indeks BSAN ${hanyaSekolah ? "satuan pendidikan" : "satuan pendidikan dan dinas"} di ${wilayahKabKota}, ${wilayahProvinsi}.`
+              : terbatas
+                ? `Skor Indeks BSAN satuan pendidikan dan dinas di wilayah kewenangan Anda (${wilayahProvinsi}).`
+                : "Skor Indeks BSAN seluruh satuan pendidikan dan dinas."}
+          </p>
         </div>
         <TahunSelect tahun={tahun} onChange={ubah(setTahun)} />
       </div>
@@ -233,31 +270,31 @@ export function IndeksBsanPusatView() {
       <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
         <div className="px-5 pt-5 pb-4 space-y-4">
           <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-base font-semibold text-gray-900">Daftar Skor Instansi</h2>
+            <h2 className="text-base font-semibold text-gray-900">Daftar Skor {hanyaSekolah ? "Sekolah" : "Instansi"}</h2>
             <p className="text-sm text-gray-500 tabular-nums">
               {terfilter.length.toLocaleString("id-ID")}
-              {terfilter.length !== data.length ? ` dari ${data.length.toLocaleString("id-ID")}` : ""} instansi
+              {terfilter.length !== data.length ? ` dari ${data.length.toLocaleString("id-ID")}` : ""} {sebutan}
             </p>
           </div>
 
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_repeat(4,minmax(0,1fr))]">
+          <div className={cn("grid gap-2 sm:grid-cols-2", kabKotaTetap ? "lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]" : "lg:grid-cols-[minmax(0,1.6fr)_repeat(4,minmax(0,1fr))]")}>
             <div className="relative sm:col-span-2 lg:col-span-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               <input
                 type="search"
                 value={cari}
                 onChange={(e) => ubah(setCari)(e.target.value)}
-                placeholder="Cari nama instansi atau NPSN"
+                placeholder={`Cari nama ${sebutan} atau NPSN`}
                 className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               />
             </div>
             <FilterSelect value={jenjang} onChange={(e) => ubah(setJenjang)(e.target.value as Jenjang | "semua")} aria-label="Filter jenjang">
               <option value="semua">Semua Jenjang</option>
-              {JENJANG_LIST.map((j) => (
+              {jenjangList.map((j) => (
                 <option key={j} value={j}>{j}</option>
               ))}
             </FilterSelect>
-            <WilayahFilter nilai={wilayah} onChange={ubah(setWilayah)} />
+            {!kabKotaTetap && <WilayahFilter nilai={wilayah} onChange={ubah(setWilayah)} provinsiTetap={wilayahProvinsi} />}
             <FilterSelect value={kategori} onChange={(e) => ubah(setKategori)(e.target.value as Kategori | "semua")} aria-label="Filter kategori">
               <option value="semua">Semua Kategori</option>
               <option value="Tinggi">Tinggi</option>
@@ -293,7 +330,7 @@ export function IndeksBsanPusatView() {
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
                   <th className="pl-5 pr-2 py-3 text-center">No</th>
-                  <th className="px-3 py-3">Nama Instansi</th>
+                  <th className="px-3 py-3">Nama {hanyaSekolah ? "Sekolah" : "Instansi"}</th>
                   <th className="px-3 py-3">NPSN</th>
                   <th className="px-3 py-3">Jenjang</th>
                   <th className="px-3 py-3">Kabupaten/Kota</th>
@@ -341,7 +378,7 @@ export function IndeksBsanPusatView() {
         {terfilter.length > 0 && (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-3 border-t border-gray-200 bg-gray-50">
             <p className="text-xs text-gray-500 tabular-nums">
-              Menampilkan {mulai + 1}-{Math.min(mulai + PER_HALAMAN, terfilter.length)} dari {terfilter.length.toLocaleString("id-ID")} instansi
+              Menampilkan {mulai + 1}-{Math.min(mulai + PER_HALAMAN, terfilter.length)} dari {terfilter.length.toLocaleString("id-ID")} {sebutan}
             </p>
             {totalHalaman > 1 && (
               <div className="flex items-center gap-2">

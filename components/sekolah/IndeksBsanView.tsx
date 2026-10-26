@@ -78,7 +78,7 @@ function IndikatorCard({ indikator, selaras, terendah, rekomendasiBuka, onToggle
   )
 }
 
-export function IndeksBsanView() {
+export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {}) {
   const [tahun, setTahun] = useState(TAHUN_AKTIF)
   const { data, total, tahunSebelumnya, dataSebelumnya, totalSebelumnya } = useDataTahun(tahun)
   const [kategori, setKategori] = useState(false)
@@ -93,7 +93,7 @@ export function IndeksBsanView() {
     <div className="max-w-5xl mx-auto space-y-8">
       <div>
         <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-xl font-semibold text-gray-900">Indeks BSAN</h1>
+          <h1 className="text-xl font-semibold text-gray-900">{judul}</h1>
           <TahunSelect tahun={tahun} onChange={setTahun} />
         </div>
 
