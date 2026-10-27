@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import { readAuthSession } from "@/lib/auth-session"
-import { IndeksBsanView } from "@/components/sekolah/IndeksBsanView"
+import { IndeksBsanSwitch } from "@/components/sekolah/IndeksBsanSwitch"
 import { IndeksBsanPusatView } from "@/components/pusat/IndeksBsanPusatView"
 
 type Tab = "dinas" | "sekolah"
@@ -53,7 +53,7 @@ export function IndeksBsanDinasView() {
       </div>
 
       {tab === "dinas" ? (
-        <IndeksBsanView judul="Indeks BSAN Dinas" />
+        <IndeksBsanSwitch judul="Indeks BSAN Dinas" />
       ) : (
         <IndeksBsanPusatView
           wilayahProvinsi={wilayah.provinsi}

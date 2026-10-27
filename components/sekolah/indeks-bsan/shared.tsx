@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowDown, ArrowUp, ChevronDown, Lightbulb, Minus, ShieldCheck, Heart, Smartphone, HandHeart } from "lucide-react"
+import { ArrowDown, ArrowUp, ChevronDown, Download, Lightbulb, Minus, ShieldCheck, Heart, Smartphone, HandHeart } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export interface Subindikator {
@@ -145,13 +145,15 @@ export function Selisih({ skor, sebelumnya, tahunSebelumnya, className }: { skor
   if (sebelumnya === undefined) return null
   const d = Math.round((skor - sebelumnya) * 10) / 10
   const Icon = d > 0 ? ArrowUp : d < 0 ? ArrowDown : Minus
-  const warna = d > 0 ? "text-emerald-700" : d < 0 ? "text-red-700" : "text-gray-500"
+  const warna = d > 0 ? "text-emerald-700" : d < 0 ? "text-red-700" : "text-gray-600"
   return (
-    <span className={cn("inline-flex items-center gap-1 text-xs", warna, className)}>
-      <Icon className={cn("w-3 h-3", className && "w-4 h-4")} />
-      {d === 0 ? "Sama" : fmt(Math.abs(d))}
-      <span className="text-gray-400">dari {tahunSebelumnya}</span>
-    </span>
+    <p className={cn("text-sm leading-snug text-gray-500", className)}>
+      <Icon className={cn("mr-1 inline-block w-4 h-4 align-text-bottom", warna)} />
+      <span className={cn("font-medium", warna)}>{d === 0 ? "Sama dengan" : `${d > 0 ? "Naik" : "Turun"} ${fmt(Math.abs(d))} dari`}</span>{" "}
+      <span>
+        {tahunSebelumnya} ({fmt(sebelumnya)})
+      </span>
+    </p>
   )
 }
 
@@ -199,4 +201,34 @@ export function nilaiSubindikator(s: Subindikator) {
   return s.satuan === "persen"
     ? { teks: `${Math.round(s.skor)}%`, skor10: s.skor / 10 }
     : { teks: fmt(s.skor), skor10: s.skor }
+}
+
+const sel = (v: string) => `"${v.replace(/"/g, '""')}"`
+
+/** Tombol ekspor: CSV bertitik koma (sep=;) agar langsung terbuka rapi di Excel dengan pengaturan regional Indonesia. */
+export function EksporExcelButton({ tahun, data }: { tahun: number; data: Indikator[] }) {
+  const ekspor = () => {
+    const baris = [
+      ["Tahun", "Indikator", "Skor Indikator", "Kategori", "Subindikator", "Nilai Subindikator", "Rekomendasi Perbaikan"],
+      ...[...data]
+        .sort((a, b) => a.skor - b.skor)
+        .flatMap((i) => i.subindikator.map((sub, idx) => [String(tahun), i.nama, fmt(i.skor), tingkat(i.skor).label, sub.nama, nilaiSubindikator(sub).teks, idx === 0 ? i.rekomendasi.join(" | ") : ""])),
+    ]
+    const isi = ["sep=;", ...baris.map((b) => b.map(sel).join(";"))].join("\r\n")
+    const url = URL.createObjectURL(new Blob(["\uFEFF" + isi], { type: "text/csv;charset=utf-8" }))
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `indeks-bsan-${tahun}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+  return (
+    <button
+      type="button"
+      onClick={ekspor}
+      className="flex h-9 items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+    >
+      <Download className="h-4 w-4" /> Ekspor Excel
+    </button>
+  )
 }

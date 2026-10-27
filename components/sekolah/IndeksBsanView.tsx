@@ -5,7 +5,7 @@ import { Check, ChevronDown, CircleAlert, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { type Indikator, Selisih, TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, nilaiSubindikator, tingkat, useDataTahun } from "./indeks-bsan/shared"
+import { EksporExcelButton, type Indikator, Selisih, TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, nilaiSubindikator, tingkat, useDataTahun } from "./indeks-bsan/shared"
 
 const KATEGORI = [
   { label: "Tinggi", rentang: "≥ 8,0", contoh: 8 },
@@ -121,30 +121,40 @@ export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {
             <h1 className="text-xl font-semibold text-gray-900">{judul}</h1>
             <p className="mt-1 text-sm text-gray-500">Gambaran penerapan Budaya Sekolah Aman dan Nyaman, dinilai dari 4 indikator dengan skala 0–10.</p>
           </div>
-          <TahunSelect tahun={tahun} onChange={setTahun} />
+          <div className="flex items-center gap-3">
+            <TahunSelect tahun={tahun} onChange={setTahun} />
+            <EksporExcelButton tahun={tahun} data={data} />
+          </div>
         </div>
 
         <section>
           <div className="grid gap-4 lg:grid-cols-[18rem_1fr]">
-            <div className={"flex flex-col gap-5 rounded-xl border border-gray-200 bg-white p-6"}>
+            <div className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-5">
               <p className="text-lg font-semibold text-gray-900 leading-snug">Skor Indeks BSAN {tahun}</p>
 
-              <div className="flex flex-1 flex-col justify-center">
+              <div className="flex flex-1 flex-col justify-center rounded-xl border border-gray-100 bg-gray-50 p-4">
                 <p className="flex items-baseline gap-2">
                   <span className="text-6xl font-bold tabular-nums leading-none text-gray-900">{fmt(total)}</span>
                   <span className="text-lg text-gray-500">/ 10</span>
                 </p>
-                <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <div className="mt-3">
                   <TingkatChip skor={total} solid className="px-3 py-1 text-sm" />
-                  <Selisih skor={total} sebelumnya={totalSebelumnya} tahunSebelumnya={tahunSebelumnya} className="text-sm" />
+                  <Selisih skor={total} sebelumnya={totalSebelumnya} tahunSebelumnya={tahunSebelumnya} className="mt-2 text-base" />
                 </div>
               </div>
 
-              <div className="border-t border-gray-200 pt-5">
+              <p className="text-sm leading-relaxed text-gray-600">
+                Capaian berada pada kategori {tingkat(total).label}.{" "}
+                {tingkat(total).label === "Tinggi" && "Pertahankan, terutama indikator terendah."}
+                {tingkat(total).label === "Sedang" && "Perkuat indikator terendah untuk naik ke Tinggi."}
+                {tingkat(total).label === "Rendah" && "Prioritaskan perbaikan indikator terendah."}
+              </p>
+
+              <div className="border-t border-gray-200 pt-3">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Kategori skor</p>
                 <ul className="overflow-hidden rounded-lg bg-gray-50 divide-y divide-gray-200">
                   {KATEGORI.map((k) => (
-                    <li key={k.label} className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-600">
+                    <li key={k.label} className="flex items-center gap-2.5 px-3 py-1 text-sm text-gray-600">
                       <span className={cn("h-2 w-2 shrink-0 rounded-full", tingkat(k.contoh).dot)} />
                       <span className="flex-1">{k.label}</span>
                       <span className="w-16 text-right tabular-nums text-xs">{k.rentang}</span>
@@ -175,19 +185,20 @@ export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {
                 {data.map((i) => (
                   <div key={i.id} className="rounded-xl border border-gray-100 bg-gray-50 p-4">
                     <p className="text-base font-semibold text-gray-900 leading-snug min-h-[2.75rem]">{i.nama}</p>
-                    <p className="mt-2 text-2xl font-bold tabular-nums text-gray-900">
+                    <p className="mt-2 text-3xl font-bold tabular-nums text-gray-900">
                       {fmt(i.skor)}
-                      <span className="text-sm font-normal text-gray-400"> / 10</span>
+                      <span className="text-base font-normal text-gray-400"> / 10</span>
                     </p>
-                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <div className="mt-2">
                       <TingkatChip skor={i.skor} solid />
-                      <Selisih skor={i.skor} sebelumnya={sebelumnya(i.id)} tahunSebelumnya={tahunSebelumnya} />
+                      <Selisih skor={i.skor} sebelumnya={sebelumnya(i.id)} tahunSebelumnya={tahunSebelumnya} className="mt-1.5" />
                     </div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
+
         </section>
       </div>
 
