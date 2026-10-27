@@ -112,18 +112,21 @@ export function indikatorTahun(tahun: number): Indikator[] {
   }))
 }
 
-export type Tingkat = { label: string; text: string; marker: string; chip: string; dot: string }
+export type Tingkat = { label: string; text: string; marker: string; chip: string; solid: string; dot: string }
 
 export function tingkat(skor: number): Tingkat {
-  if (skor >= 8) return { label: "Tinggi", text: "text-emerald-700", marker: "border-emerald-600", dot: "bg-emerald-500", chip: "bg-emerald-50 text-emerald-700 ring-emerald-200" }
-  if (skor >= 6) return { label: "Sedang", text: "text-yellow-700", marker: "border-yellow-500", dot: "bg-yellow-400", chip: "bg-yellow-50 text-yellow-800 ring-yellow-300" }
-  return { label: "Rendah", text: "text-red-600", marker: "border-red-500", dot: "bg-red-500", chip: "bg-red-50 text-red-600 ring-red-200" }
+  if (skor >= 8) return { label: "Tinggi", text: "text-emerald-700", marker: "border-emerald-600", dot: "bg-emerald-500", chip: "bg-emerald-50 text-emerald-700 ring-emerald-200", solid: "bg-emerald-300 text-emerald-950" }
+  if (skor >= 6) return { label: "Sedang", text: "text-yellow-700", marker: "border-yellow-500", dot: "bg-yellow-400", chip: "bg-yellow-50 text-yellow-800 ring-yellow-300", solid: "bg-amber-200 text-amber-950" }
+  return { label: "Rendah", text: "text-red-600", marker: "border-red-500", dot: "bg-red-500", chip: "bg-red-50 text-red-600 ring-red-200", solid: "bg-rose-100 text-rose-950" }
 }
 
 export const fmt = (n: number) => n.toLocaleString("id-ID", { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 
-export function TingkatChip({ skor }: { skor: number }) {
+export function TingkatChip({ skor, solid, className }: { skor: number; solid?: boolean; className?: string }) {
   const t = tingkat(skor)
+  if (solid) {
+    return <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold", t.solid, className)}>{t.label}</span>
+  }
   return (
     <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset", t.chip)}>
       <span className={cn("w-1.5 h-1.5 rounded-full", t.dot)} />
@@ -132,14 +135,14 @@ export function TingkatChip({ skor }: { skor: number }) {
   )
 }
 
-export function Selisih({ skor, sebelumnya, tahunSebelumnya }: { skor: number; sebelumnya?: number; tahunSebelumnya: number }) {
+export function Selisih({ skor, sebelumnya, tahunSebelumnya, className }: { skor: number; sebelumnya?: number; tahunSebelumnya: number; className?: string }) {
   if (sebelumnya === undefined) return null
   const d = Math.round((skor - sebelumnya) * 10) / 10
   const Icon = d > 0 ? ArrowUp : d < 0 ? ArrowDown : Minus
   const warna = d > 0 ? "text-emerald-700" : d < 0 ? "text-red-700" : "text-gray-500"
   return (
-    <span className={cn("inline-flex items-center gap-1 text-xs", warna)}>
-      <Icon className="w-3 h-3" />
+    <span className={cn("inline-flex items-center gap-1 text-xs", warna, className)}>
+      <Icon className={cn("w-3 h-3", className && "w-4 h-4")} />
       {d === 0 ? "Sama" : fmt(Math.abs(d))}
       <span className="text-gray-400">dari {tahunSebelumnya}</span>
     </span>

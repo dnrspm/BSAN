@@ -225,10 +225,10 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
               </th>
               <td className="sticky left-48 z-10 bg-gray-50 border-b border-r border-gray-300 px-3 py-4 text-center">
                 <div className="flex flex-col items-center gap-1.5">
-                  <span className={cn("text-3xl font-bold tabular-nums leading-none", ringkasan.rerata !== null ? tingkat(ringkasan.rerata).text : "text-gray-400")}>
+                  <span className={cn("text-3xl font-bold tabular-nums leading-none", ringkasan.rerata !== null ? "text-gray-900" : "text-gray-400")}>
                     {ringkasan.rerata !== null ? fmt(ringkasan.rerata) : "-"}
                   </span>
-                  {ringkasan.rerata !== null && <TingkatChip skor={ringkasan.rerata} />}
+                  {ringkasan.rerata !== null && <TingkatChip skor={ringkasan.rerata} solid />}
                 </div>
               </td>
               {ringkasan.perJenjang.map((j, n, arr) => (
@@ -237,7 +237,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                   className={cn(
                     "border-b border-gray-300 px-3 py-4 text-center text-base font-semibold tabular-nums",
                     n < arr.length - 1 && "border-r",
-                    j.rerata !== null ? tingkat(j.rerata).text : "text-gray-300"
+                    j.rerata !== null ? "text-gray-900" : "text-gray-300"
                   )}
                 >
                   {j.rerata !== null ? fmt(j.rerata) : "-"}
@@ -364,8 +364,8 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                         {s.skor !== null ? "Sudah" : "Belum"}
                       </span>
                     </td>
-                    <td className="px-3 py-3.5">{s.skor !== null ? <TingkatChip skor={s.skor} /> : <span className="text-gray-300">-</span>}</td>
-                    <td className={cn("px-3 py-3.5 text-center font-semibold tabular-nums", s.skor !== null ? tingkat(s.skor).text : "text-gray-300")}>
+                    <td className="px-3 py-3.5">{s.skor !== null ? <TingkatChip skor={s.skor} solid /> : <span className="text-gray-300">-</span>}</td>
+                    <td className={cn("px-3 py-3.5 text-center font-semibold tabular-nums", s.skor !== null ? "text-gray-900" : "text-gray-300")}>
                       {s.skor !== null ? fmt(s.skor) : "-"}
                     </td>
                   </tr>

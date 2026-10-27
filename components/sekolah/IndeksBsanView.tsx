@@ -1,16 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { Check, ChevronDown } from "lucide-react"
+import { Check, ChevronDown, CircleAlert } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { type Indikator, Selisih, TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, nilaiSubindikator, tingkat, useDataTahun } from "./indeks-bsan/shared"
 
-// Warna kartu Skor Indeks BSAN mengikuti tingkat (sama dengan warna chip statusnya).
-const TEMA_TOTAL: Record<string, { kartu: string; redup: string; chip: string }> = {
-  Tinggi: { kartu: "bg-emerald-700 text-white", redup: "text-emerald-100", chip: "bg-emerald-900 text-white" },
-  Sedang: { kartu: "bg-yellow-400 text-yellow-950", redup: "text-yellow-900", chip: "bg-yellow-950 text-yellow-50" },
-  Rendah: { kartu: "bg-red-700 text-white", redup: "text-red-100", chip: "bg-red-900 text-white" },
-}
+const KATEGORI = [
+  { label: "Tinggi", rentang: "≥ 8,0", contoh: 8 },
+  { label: "Sedang", rentang: "6,0 – 7,9", contoh: 6 },
+  { label: "Rendah", rentang: "< 6,0", contoh: 0 },
+]
 
 const LABEL = "text-xs font-semibold uppercase tracking-wide text-gray-500"
 
@@ -21,12 +20,28 @@ function SubindikatorRows({ indikator }: { indikator: Indikator }) {
       {urut.map((s) => {
         const nilai = nilaiSubindikator(s)
         return (
-          <li key={s.nama} className="py-2.5 flex items-baseline justify-between gap-4 text-sm">
-            <span className="text-gray-700">{s.nama}</span>
-            <span className={cn("font-semibold tabular-nums whitespace-nowrap", tingkat(nilai.skor10).text)}>{nilai.teks}</span>
+          <li key={s.nama} className="py-2.5 text-sm">
+            <p className="text-gray-700">{s.nama}</p>
+            <p className="mt-0.5 font-semibold tabular-nums text-gray-900">
+              {nilai.teks}
+              <span className="font-normal text-gray-400"> / {s.satuan === "persen" ? "100%" : "10"}</span>
+            </p>
           </li>
         )
       })}
+    </ul>
+  )
+}
+
+function DaftarRekomendasi({ indikator }: { indikator: Indikator }) {
+  return (
+    <ul className="mt-3 space-y-2 text-sm text-gray-600">
+      {indikator.rekomendasi.map((r) => (
+        <li key={r} className="flex gap-2">
+          <Check className="w-4 h-4 mt-0.5 flex-shrink-0 text-emerald-600" />
+          <span>{r}</span>
+        </li>
+      ))}
     </ul>
   )
 }
@@ -43,37 +58,46 @@ function Rekomendasi({ indikator, buka, onToggle }: { indikator: Indikator; buka
         Rekomendasi perbaikan
         <ChevronDown className={cn("w-4 h-4 transition-transform", buka && "rotate-180")} />
       </button>
-      {buka && (
-        <ul className="mt-3 space-y-2 text-sm text-gray-600">
-          {indikator.rekomendasi.map((r) => (
-            <li key={r} className="flex gap-2">
-              <Check className="w-4 h-4 mt-0.5 flex-shrink-0 text-emerald-600" />
-              <span>{r}</span>
-            </li>
-          ))}
-        </ul>
-      )}
+      {buka && <DaftarRekomendasi indikator={indikator} />}
     </div>
   )
 }
 
 // Skor ada di ringkasan atas; kartu ini hanya memuat rincian (subindikator dan rekomendasi).
-function IndikatorCard({ indikator, selaras, terendah, rekomendasiBuka, onToggleRekomendasi }: { indikator: Indikator; selaras?: boolean; terendah?: boolean; rekomendasiBuka: boolean; onToggleRekomendasi: () => void }) {
+function IndikatorCard({ indikator, selaras, terendah, rekomendasiBuka = false, onToggleRekomendasi }: { indikator: Indikator; selaras?: boolean; terendah?: boolean; rekomendasiBuka?: boolean; onToggleRekomendasi?: () => void }) {
   return (
-    <article className={cn("rounded-xl border border-gray-200 bg-white p-5 flex flex-col", selaras && "md:grid md:grid-rows-subgrid md:row-span-3 md:gap-y-0")}>
+    <article className={cn("rounded-xl border border-gray-200 bg-white p-5 flex flex-col", terendah && "overflow-hidden", selaras && "md:grid md:grid-rows-subgrid md:row-span-3 md:gap-y-0")}>
+      {terendah && (
+        <div className="-mx-5 -mt-5 mb-4 flex items-center gap-1.5 border-b border-gray-200 bg-gray-100 px-5 py-2 text-xs font-medium text-gray-700">
+          <CircleAlert className="w-3.5 h-3.5" />
+          Indikator terendah · perlu perhatian lebih
+        </div>
+      )}
       <header className="pb-4 border-b border-gray-200">
         <div className="flex items-baseline justify-between gap-4">
           <div className="min-w-0 flex-1 flex flex-wrap items-center gap-x-3 gap-y-1.5">
             <h3 className="text-base font-semibold text-gray-900 leading-snug">{indikator.nama}</h3>
-            {terendah && <span className="rounded-full bg-red-600 px-2.5 py-0.5 text-xs font-medium text-white">Indikator terendah</span>}
           </div>
-          <span className={cn("shrink-0 text-sm font-semibold tabular-nums", tingkat(indikator.skor).text)}>{fmt(indikator.skor)}</span>
+          <span className={cn("shrink-0 rounded-lg px-2.5 py-1 text-sm font-semibold tabular-nums", tingkat(indikator.skor).solid)}>{fmt(indikator.skor)}</span>
         </div>
       </header>
-      <div className="mt-2">
-        <SubindikatorRows indikator={indikator} />
-      </div>
-      <Rekomendasi indikator={indikator} buka={rekomendasiBuka} onToggle={onToggleRekomendasi} />
+      {terendah ? (
+        // Rekomendasi selalu terbuka dan bersebelahan dengan subindikator agar tidak ada ruang kosong.
+        <div className="mt-2 md:grid md:grid-cols-2 md:gap-8">
+          <SubindikatorRows indikator={indikator} />
+          <div className="mt-4 border-t border-gray-200 pt-4 md:mt-0 md:border-l md:border-t-0 md:pl-8 md:pt-2.5">
+            <p className={LABEL}>Rekomendasi perbaikan</p>
+            <DaftarRekomendasi indikator={indikator} />
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="mt-2">
+            <SubindikatorRows indikator={indikator} />
+          </div>
+          <Rekomendasi indikator={indikator} buka={rekomendasiBuka} onToggle={onToggleRekomendasi ?? (() => {})} />
+        </>
+      )}
     </article>
   )
 }
@@ -81,12 +105,9 @@ function IndikatorCard({ indikator, selaras, terendah, rekomendasiBuka, onToggle
 export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {}) {
   const [tahun, setTahun] = useState(TAHUN_AKTIF)
   const { data, total, tahunSebelumnya, dataSebelumnya, totalSebelumnya } = useDataTahun(tahun)
-  const [kategori, setKategori] = useState(false)
-  const [prioritasBuka, setPrioritasBuka] = useState(false)
   const [lainBuka, setLainBuka] = useState(false)
   const sebelumnya = (id: string) => dataSebelumnya?.find((i) => i.id === id)?.skor
   const urut = [...data].sort((a, b) => a.skor - b.skor)
-  const temaTotal = TEMA_TOTAL[tingkat(total).label]
   const [prioritas, ...lain] = urut
 
   return (
@@ -98,45 +119,52 @@ export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {
         </div>
 
         <section>
-          <div className="grid gap-4 lg:grid-cols-[17rem_1fr]">
-            <div className={cn("rounded-xl p-5 flex flex-col justify-center gap-3", temaTotal.kartu)}>
-              <p className={cn("text-sm font-medium", temaTotal.redup)}>Skor Indeks BSAN {tahun}</p>
-              <p className="flex items-baseline gap-1.5">
-                <span className="text-6xl font-bold tabular-nums leading-none">{fmt(total)}</span>
-                <span className={cn("text-lg", temaTotal.redup)}>/ 10</span>
-              </p>
-              <span className={cn("self-start rounded-full px-3 py-1 text-sm font-medium", temaTotal.chip)}>{tingkat(total).label}</span>
-              {totalSebelumnya !== undefined && (
-                <p className={cn("text-sm", temaTotal.redup)}>
-                  {total === totalSebelumnya ? "Sama dengan" : total > totalSebelumnya ? `Naik ${fmt(total - totalSebelumnya)} dari` : `Turun ${fmt(totalSebelumnya - total)} dari`} {tahunSebelumnya}
+          <div className="grid gap-4 lg:grid-cols-[18rem_1fr]">
+            <div className={"flex flex-col gap-5 rounded-xl border border-gray-200 bg-white p-6"}>
+              <p className="text-lg font-semibold text-gray-900 leading-snug">Skor Indeks BSAN {tahun}</p>
+
+              <div className="flex flex-1 flex-col justify-center">
+                <p className="flex items-baseline gap-2">
+                  <span className="text-6xl font-bold tabular-nums leading-none text-gray-900">{fmt(total)}</span>
+                  <span className="text-lg text-gray-500">/ 10</span>
                 </p>
-              )}
-              <button type="button" onClick={() => setKategori(!kategori)} className={cn("self-start text-xs underline", temaTotal.redup)}>
-                Lihat kategori skor
-              </button>
-              {kategori && (
-                <ul className="text-xs space-y-1">
-                  <li>Tinggi: 8,0 ke atas</li>
-                  <li>Sedang: 6,0 – 7,9</li>
-                  <li>Rendah: di bawah 6,0</li>
+                <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <TingkatChip skor={total} solid className="px-3 py-1 text-sm" />
+                  <Selisih skor={total} sebelumnya={totalSebelumnya} tahunSebelumnya={tahunSebelumnya} className="text-sm" />
+                </div>
+              </div>
+
+              <div className="border-t border-gray-200 pt-5">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Kategori skor</p>
+                <ul className="overflow-hidden rounded-lg bg-gray-50 divide-y divide-gray-200">
+                  {KATEGORI.map((k) => (
+                    <li key={k.label} className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-600">
+                      <span className={cn("h-2 w-2 shrink-0 rounded-full", tingkat(k.contoh).dot)} />
+                      <span className="flex-1">{k.label}</span>
+                      <span className="w-16 text-right tabular-nums text-xs">{k.rentang}</span>
+                    </li>
+                  ))}
                 </ul>
-              )}
+              </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              {data.map((i) => (
-                <div key={i.id} className="rounded-xl border border-gray-200 bg-white p-4">
-                  <p className="text-sm font-semibold text-gray-900 leading-snug min-h-[2.5rem]">{i.nama}</p>
-                  <p className={cn("mt-2 text-2xl font-bold tabular-nums", tingkat(i.skor).text)}>
-                    {fmt(i.skor)}
-                    <span className="text-sm font-normal text-gray-400"> / 10</span>
-                  </p>
-                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <TingkatChip skor={i.skor} />
-                    <Selisih skor={i.skor} sebelumnya={sebelumnya(i.id)} tahunSebelumnya={tahunSebelumnya} />
+            <div className="rounded-xl border border-gray-200 bg-white p-5">
+              <h2 className="mb-4 text-base font-semibold text-gray-900">4 Indikator Penilaian</h2>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {data.map((i) => (
+                  <div key={i.id} className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                    <p className="text-base font-semibold text-gray-900 leading-snug min-h-[2.75rem]">{i.nama}</p>
+                    <p className="mt-2 text-2xl font-bold tabular-nums text-gray-900">
+                      {fmt(i.skor)}
+                      <span className="text-sm font-normal text-gray-400"> / 10</span>
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <TingkatChip skor={i.skor} solid />
+                      <Selisih skor={i.skor} sebelumnya={sebelumnya(i.id)} tahunSebelumnya={tahunSebelumnya} />
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -146,7 +174,7 @@ export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {
         <h2 className="text-lg font-semibold text-gray-900">Rincian per Indikator</h2>
 
         <div className="space-y-4">
-          <IndikatorCard indikator={prioritas} terendah rekomendasiBuka={prioritasBuka} onToggleRekomendasi={() => setPrioritasBuka(!prioritasBuka)} />
+          <IndikatorCard indikator={prioritas} terendah />
         </div>
 
         <div className="space-y-4">
