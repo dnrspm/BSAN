@@ -1,8 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Check, ChevronDown, CircleAlert } from "lucide-react"
+import { Check, ChevronDown, CircleAlert, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { type Indikator, Selisih, TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, nilaiSubindikator, tingkat, useDataTahun } from "./indeks-bsan/shared"
 
 const KATEGORI = [
@@ -106,6 +108,7 @@ export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {
   const [tahun, setTahun] = useState(TAHUN_AKTIF)
   const { data, total, tahunSebelumnya, dataSebelumnya, totalSebelumnya } = useDataTahun(tahun)
   const [lainBuka, setLainBuka] = useState(false)
+  const [penjelasanBuka, setPenjelasanBuka] = useState(false)
   const sebelumnya = (id: string) => dataSebelumnya?.find((i) => i.id === id)?.skor
   const urut = [...data].sort((a, b) => a.skor - b.skor)
   const [prioritas, ...lain] = urut
@@ -152,7 +155,22 @@ export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {
             </div>
 
             <div className="rounded-xl border border-gray-200 bg-white p-5">
-              <h2 className="mb-4 text-base font-semibold text-gray-900">4 Indikator Penilaian</h2>
+              <div className="mb-4 flex items-center gap-1.5">
+                <h2 className="text-base font-semibold text-gray-900">4 Indikator Penilaian</h2>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => setPenjelasanBuka(true)}
+                      aria-label="Lihat penjelasan indikator penilaian"
+                      className="rounded-full text-gray-400 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>Lihat penjelasan indikator</TooltipContent>
+                </Tooltip>
+              </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 {data.map((i) => (
                   <div key={i.id} className="rounded-xl border border-gray-100 bg-gray-50 p-4">
@@ -188,6 +206,23 @@ export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {
           </div>
         </div>
       </section>
+
+      <Dialog open={penjelasanBuka} onOpenChange={setPenjelasanBuka}>
+        <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>4 Indikator Penilaian</DialogTitle>
+            <DialogDescription>Skor Indeks BSAN dihitung dari empat indikator berikut, masing-masing dinilai pada skala 0–10.</DialogDescription>
+          </DialogHeader>
+          <ul className="divide-y divide-gray-100">
+            {data.map((i) => (
+              <li key={i.id} className="py-3 first:pt-0 last:pb-0">
+                <p className="text-sm font-semibold text-gray-900">{i.nama}</p>
+                <p className="mt-1 text-sm text-gray-600">{i.deskripsi}</p>
+              </li>
+            ))}
+          </ul>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

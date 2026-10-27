@@ -15,6 +15,8 @@ export interface Indikator {
   nama: string
   icon: typeof ShieldCheck
   skor: number
+  /** Penjelasan singkat indikator untuk pop up informasi. */
+  deskripsi: string
   subindikator: Subindikator[]
   rekomendasi: string[]
 }
@@ -26,6 +28,7 @@ export const INDIKATOR: Indikator[] = [
     nama: "Pemenuhan Kebutuhan Spiritual",
     icon: HandHeart,
     skor: 8.2,
+    deskripsi: "Menilai sejauh mana sekolah memenuhi kebutuhan spiritual murid, mulai dari sarana ibadah yang layak, kegiatan keagamaan, hingga ketersediaan pendidik agama sesuai keyakinan murid.",
     subindikator: [
       { nama: "Ketersediaan sarana ibadah yang layak", skor: 8.5 },
       { nama: "Persentase murid mengikuti kegiatan keagamaan", skor: 80, satuan: "persen" },
@@ -41,6 +44,7 @@ export const INDIKATOR: Indikator[] = [
     nama: "Pelindungan Fisik",
     icon: ShieldCheck,
     skor: 6.4,
+    deskripsi: "Menilai pelindungan fisik murid di sekolah, mencakup cakupan Cek Kesehatan Gratis (CKG), kelayakan sarana dan prasarana, serta protokol keselamatan dan tanggap darurat.",
     subindikator: [
       { nama: "Persentase Murid Melaksanakan CKG", skor: 58, satuan: "persen" },
       { nama: "Kelayakan sarana dan prasarana sekolah", skor: 7.0 },
@@ -56,6 +60,7 @@ export const INDIKATOR: Indikator[] = [
     nama: "Kesejahteraan Psikologis dan Keamanan Sosiokultural",
     icon: Heart,
     skor: 4.7,
+    deskripsi: "Menilai kesejahteraan psikologis dan rasa aman sosiokultural murid, meliputi layanan konseling, penanganan kasus perundungan dan kekerasan, serta iklim sekolah yang inklusif terhadap keberagaman.",
     subindikator: [
       { nama: "Ketersediaan layanan konseling", skor: 5.5 },
       { nama: "Penanganan kasus perundungan dan kekerasan", skor: 4.0 },
@@ -72,6 +77,7 @@ export const INDIKATOR: Indikator[] = [
     nama: "Keadaban dan Keamanan Digital",
     icon: Smartphone,
     skor: 7.3,
+    deskripsi: "Menilai keadaban dan keamanan murid di ruang digital, meliputi literasi digital murid dan pendidik, kebijakan penggunaan gawai di sekolah, serta penanganan kasus perundungan siber.",
     subindikator: [
       { nama: "Literasi digital murid dan pendidik", skor: 7.5 },
       { nama: "Kebijakan penggunaan gawai di sekolah", skor: 8.0 },
