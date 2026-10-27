@@ -113,8 +113,11 @@ export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <div>
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-xl font-semibold text-gray-900">{judul}</h1>
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900">{judul}</h1>
+            <p className="mt-1 text-sm text-gray-500">Gambaran penerapan Budaya Sekolah Aman dan Nyaman, dinilai dari 4 indikator dengan skala 0–10.</p>
+          </div>
           <TahunSelect tahun={tahun} onChange={setTahun} />
         </div>
 
