@@ -2008,47 +2008,47 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
 
       <div className={"grid grid-cols-2 gap-3 " + (hideDinonaktifkan ? "sm:grid-cols-5" : "sm:grid-cols-6")}>
         <div className="bg-white rounded-[4px] border border-[#D9DBDD] p-4 shadow-sm">
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-1">
             <FileText className="w-6 h-6 shrink-0 text-gray-600" />
-            <p className="text-xl font-bold leading-none text-gray-900">{stats.total}</p>
+            <p className="text-2xl font-bold leading-none text-gray-900">{stats.total}</p>
+            <p className="col-start-2 min-w-0 text-sm leading-tight text-gray-500">Total</p>
           </div>
-          <p className="text-xs text-gray-500 mt-1.5">Total</p>
         </div>
         <div className="bg-white rounded-[4px] border border-[#D9DBDD] p-4 shadow-sm">
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-1">
             <FileText className="w-6 h-6 shrink-0 text-blue-600" />
-            <p className="text-xl font-bold leading-none text-gray-900">{stats.baru}</p>
+            <p className="text-2xl font-bold leading-none text-gray-900">{stats.baru}</p>
+            <p className="col-start-2 min-w-0 text-sm leading-tight text-gray-500">Belum Diproses</p>
           </div>
-          <p className="text-xs text-gray-500 mt-1.5">Belum Diproses</p>
         </div>
         <div className="bg-white rounded-[4px] border border-[#D9DBDD] p-4 shadow-sm">
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-1">
             <Clock className="w-6 h-6 shrink-0 text-amber-600" />
-            <p className="text-xl font-bold leading-none text-gray-900">{stats.proses}</p>
+            <p className="text-2xl font-bold leading-none text-gray-900">{stats.proses}</p>
+            <p className="col-start-2 min-w-0 text-sm leading-tight text-gray-500">Diproses</p>
           </div>
-          <p className="text-xs text-gray-500 mt-1.5">Diproses</p>
         </div>
         <div className="bg-white rounded-[4px] border border-[#D9DBDD] p-4 shadow-sm">
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-1">
             <CheckCircle className="w-6 h-6 shrink-0 text-green-600" />
-            <p className="text-xl font-bold leading-none text-gray-900">{stats.selesai}</p>
+            <p className="text-2xl font-bold leading-none text-gray-900">{stats.selesai}</p>
+            <p className="col-start-2 min-w-0 text-sm leading-tight text-gray-500">Selesai</p>
           </div>
-          <p className="text-xs text-gray-500 mt-1.5">Selesai</p>
         </div>
         <div className="bg-white rounded-[4px] border border-[#D9DBDD] p-4 shadow-sm">
-          <div className="flex items-center gap-2">
+          <div className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-1">
             <XCircle className="w-6 h-6 shrink-0 text-gray-600" />
-            <p className="text-xl font-bold leading-none text-gray-900">{stats.ditutup}</p>
+            <p className="text-2xl font-bold leading-none text-gray-900">{stats.ditutup}</p>
+            <p className="col-start-2 min-w-0 text-sm leading-tight text-gray-500">Ditutup</p>
           </div>
-          <p className="text-xs text-gray-500 mt-1.5">Ditutup</p>
         </div>
         {!hideDinonaktifkan && (
           <div className="bg-white rounded-[4px] border border-[#D9DBDD] p-4 shadow-sm">
-            <div className="flex items-center gap-2">
+            <div className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-1">
               <Trash2 className="w-6 h-6 shrink-0 text-gray-600" />
-              <p className="text-xl font-bold leading-none text-gray-900">{stats.nonaktif}</p>
+              <p className="text-2xl font-bold leading-none text-gray-900">{stats.nonaktif}</p>
+              <p className="col-start-2 min-w-0 text-sm leading-tight text-gray-500">Nonaktif</p>
             </div>
-            <p className="text-xs text-gray-500 mt-1.5">Nonaktif</p>
           </div>
         )}
       </div>

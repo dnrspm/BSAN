@@ -1436,11 +1436,11 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
           const count = filtered.filter((i) => i.kategoriBentukDukungan === key && i.status !== "nonaktif").length
           return (
             <div key={key} className="bg-white rounded-[4px] border border-[#D9DBDD] p-4 shadow-sm">
-              <div className="flex items-center gap-2">
+              <div className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-1">
                 <span className={`flex shrink-0 ${cfg.color} [&_svg]:w-6 [&_svg]:h-6`}>{cfg.icon}</span>
-                <p className="text-xl font-bold leading-none text-gray-900">{count}</p>
+                <p className="text-2xl font-bold leading-none text-gray-900">{count}</p>
+                <p className="col-start-2 min-w-0 text-sm leading-tight text-gray-500">{cfg.label}</p>
               </div>
-              <p className="text-xs text-gray-500 leading-tight mt-1.5">{cfg.label}</p>
             </div>
           )
         })}
