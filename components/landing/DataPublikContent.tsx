@@ -420,20 +420,20 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
                   return (
                     <React.Fragment key={row.no}>
                       <TableRow className="group">
-                        <TableCell className="text-slate-400 text-sm pl-5 font-medium">{(page - 1) * pageSize + idx + 1}</TableCell>
-                        <TableCell className="font-medium text-slate-900">
+                        <TableCell className="text-slate-400 text-sm pl-5 font-medium px-4 py-3.5">{(page - 1) * pageSize + idx + 1}</TableCell>
+                        <TableCell className="font-medium text-slate-900 px-4 py-3.5">
                           {row.provinsi.includes(" - ") ? `Kota ${row.provinsi.split(" - ")[1]}` : `Provinsi ${row.provinsi}`}
                         </TableCell>
-                        <TableCell className="text-slate-600">
+                        <TableCell className="text-slate-600 px-4 py-3.5">
                           {row.provinsi.includes(" - ") ? row.provinsi.split(" - ")[0] : row.provinsi}
                         </TableCell>
-                        <TableCell className="text-slate-600">
+                        <TableCell className="text-slate-600 px-4 py-3.5">
                           <span className="text-sm text-slate-600">
                             {row.provinsi.includes(" - ") ? "Kota/Kabupaten" : "Provinsi"}
                           </span>
                         </TableCell>
-                        <TableCell>{statusBadge(row.statusPokja)}</TableCell>
-                        <TableCell>
+                        <TableCell className="px-4 py-3.5">{statusBadge(row.statusPokja)}</TableCell>
+                        <TableCell className="px-4 py-3.5">
                           {row.statusPokja === "Aktif" && (
                             <Button
                               variant="outline"

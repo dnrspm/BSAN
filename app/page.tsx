@@ -286,7 +286,7 @@ export default function LandingPage() {
                     ) : selectedProvince === "__hanya_provinsi__" ? (
                       <div className="flex flex-1 gap-6 min-w-0">
                         <div className="w-36 shrink-0 flex flex-col justify-center h-[168px]">
-                          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Provinsi Terbentuk</p>
+                          <p className="text-[13px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Provinsi Terbentuk</p>
                           <p className="text-3xl font-extrabold text-slate-700 tabular-nums leading-none">{Math.round(pokjaAktif / TOTAL_PROVINSI * 100)}%</p>
                           <p className="text-sm text-slate-400 mt-1">{pokjaAktif} dari {TOTAL_PROVINSI} Provinsi</p>
                         </div>
@@ -346,19 +346,19 @@ export default function LandingPage() {
                     ) : (
                       <div className="flex flex-1 gap-6">
                         <div className="shrink-0">
-                          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Provinsi Terbentuk</p>
+                          <p className="text-[13px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Provinsi Terbentuk</p>
                           <p className="text-3xl font-extrabold text-slate-700 tabular-nums leading-none">{selectedProvince && selectedProvince !== "__hanya_provinsi__" ? 100 : Math.round(pokjaAktif / TOTAL_PROVINSI * 100)}%</p>
                           <p className="text-sm text-slate-400 mt-1">{selectedProvince && selectedProvince !== "__hanya_provinsi__" ? 1 : pokjaAktif} dari {selectedProvince && selectedProvince !== "__hanya_provinsi__" ? 1 : TOTAL_PROVINSI} Provinsi</p>
                         </div>
                         <Divider />
                         <div className="shrink-0">
-                          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Kab/Kota Terbentuk</p>
+                          <p className="text-[13px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Kab/Kota Terbentuk</p>
                           <p className="text-3xl font-extrabold text-slate-700 tabular-nums leading-none">{Math.round(totalKabKotaFiltered / kabKotaDenominator * 100)}%</p>
                           <p className="text-sm text-slate-400 mt-1">{totalKabKotaFiltered} dari {kabKotaDenominator} Kab/Kota</p>
                         </div>
                         <Divider />
                         <div className="shrink-0">
-                          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">{isFiltered ? "Capaian Provinsi" : "Capaian Nasional"}</p>
+                          <p className="text-[13px] font-semibold text-slate-500 uppercase tracking-wider mb-1">{isFiltered ? "Capaian Provinsi" : "Capaian Nasional"}</p>
                           <p className="text-3xl font-extrabold text-slate-700 tabular-nums">{Math.round(((selectedProvince && selectedProvince !== "__hanya_provinsi__" ? 1 : pokjaAktif) + totalKabKotaFiltered) / (selectedProvince && selectedProvince !== "__hanya_provinsi__" ? 1 + kabKotaDenominator : 38 + 514) * 100)}%</p>
                           {!isFiltered && <p className="text-sm text-slate-400 mt-1">{pokjaAktif + totalKabKotaFiltered} dari 552 Provinsi dan Kab/Kota</p>}
                         </div>

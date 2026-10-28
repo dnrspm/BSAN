@@ -200,18 +200,18 @@ export function KegiatanContent({ hideHeroPrefix = false }: KegiatanContentProps
                     className="cursor-pointer"
                     onClick={() => setDetailKegiatan(row)}
                   >
-                    <TableCell className="pl-5">
+                    <TableCell className="pl-5 px-4 py-3.5">
                       <div className="font-medium text-slate-900">{row.namaKegiatan}</div>
                     </TableCell>
-                    <TableCell className="text-slate-600 text-sm whitespace-nowrap">
+                    <TableCell className="text-slate-600 text-sm whitespace-nowrap px-4 py-3.5">
                       {row.tanggalMulai === row.tanggalSelesai
                         ? formatDateShort(row.tanggalMulai)
                         : `${formatDateShort(row.tanggalMulai)} – ${formatDateShort(row.tanggalSelesai)}`}
                     </TableCell>
-                    <TableCell className="text-slate-600 text-sm">
+                    <TableCell className="text-slate-600 text-sm px-4 py-3.5">
                       {row.pelaksanaan.includes("luring") && row.pelaksanaan.includes("daring") ? (
                         <div className="flex flex-col gap-1">
-                          <span className="text-sm uppercase tracking-wide text-slate-400 font-semibold">Hybrid</span>
+                          <span className="text-[12px] uppercase tracking-wide text-slate-400 font-semibold">Hybrid</span>
                           <div className="flex items-center gap-2 text-sm">
                             <span className="text-slate-700">{row.wilayah}</span>
                             <span className="text-slate-300">|</span>
@@ -232,12 +232,12 @@ export function KegiatanContent({ hideHeroPrefix = false }: KegiatanContentProps
                         </div>
                       ) : row.pelaksanaan.includes("luring") ? (
                         <div className="flex flex-col gap-1">
-                          <span className="text-sm uppercase tracking-wide text-slate-400 font-semibold">Luring</span>
+                          <span className="text-[12px] uppercase tracking-wide text-slate-400 font-semibold">Luring</span>
                           <span className="text-sm text-slate-700">{row.wilayah}</span>
                         </div>
                       ) : row.pelaksanaan.includes("daring") ? (
                         <div className="flex flex-col gap-1">
-                          <span className="text-sm uppercase tracking-wide text-slate-400 font-semibold">Daring</span>
+                          <span className="text-[12px] uppercase tracking-wide text-slate-400 font-semibold">Daring</span>
                           {row.tautanMeeting ? (
                             <a
                               href={row.tautanMeeting}
@@ -256,7 +256,7 @@ export function KegiatanContent({ hideHeroPrefix = false }: KegiatanContentProps
                         <span className="text-xs text-slate-400">-</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-slate-600 text-sm">
+                    <TableCell className="text-slate-600 text-sm px-4 py-3.5">
                       {row.peserta.length > 0
                         ? row.peserta.map((p) => (
                             <span key={p.kategori} className="inline-block mr-1 last:mr-0 text-[13px] font-semibold bg-[#efefef] text-[#2f3031] px-2.5 py-0.5 rounded-full whitespace-nowrap">
@@ -265,10 +265,10 @@ export function KegiatanContent({ hideHeroPrefix = false }: KegiatanContentProps
                           ))
                         : "-"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="px-4 py-3.5">
                       <StatusBadge status={row.status} />
                     </TableCell>
-                    <TableCell className="text-right pr-5">
+                    <TableCell className="text-right pr-5 px-4 py-3.5">
                       <span
                         onClick={(e) => { e.stopPropagation(); setDetailKegiatan(row) }}
                         className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap cursor-pointer"
@@ -343,10 +343,10 @@ export function KegiatanContent({ hideHeroPrefix = false }: KegiatanContentProps
                     <p className="text-sm text-slate-400 font-semibold uppercase tracking-wider">Pelaksanaan</p>
                     <div className="flex flex-wrap gap-1.5 mt-1">
                       {detailKegiatan.pelaksanaan.includes("luring") && (
-                        <span className="text-[13px] font-medium bg-amber-200 text-amber-950 px-2.5 py-0.5 rounded-full whitespace-nowrap">Luring</span>
+                        <span className="text-[12px] font-medium bg-amber-200 text-amber-950 px-2.5 py-0.5 rounded-full whitespace-nowrap">Luring</span>
                       )}
                       {detailKegiatan.pelaksanaan.includes("daring") && (
-                        <span className="text-[13px] font-medium bg-cyan-200 text-cyan-950 px-2.5 py-0.5 rounded-full whitespace-nowrap">Daring</span>
+                        <span className="text-[12px] font-medium bg-cyan-200 text-cyan-950 px-2.5 py-0.5 rounded-full whitespace-nowrap">Daring</span>
                       )}
                     </div>
                   </div>
