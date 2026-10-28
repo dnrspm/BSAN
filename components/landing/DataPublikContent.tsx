@@ -27,8 +27,8 @@ import {
 } from "@/data/provinsiData"
 import { MOCK_PENGAJUAN, generateDummyPokja } from "@/data/mockPokja"
 import { cn } from "@/lib/utils"
+import { TablePagination } from "@/components/ui/table-pagination"
 
-const PAGE_SIZE = 20
 
 const ALL_BIDANG = ["Bidang Pendidikan", "Bidang Sosial", "Bidang Kesehatan", "Bidang PPPA", "Bidang Kominfo", "Bidang Dukbangga"]
 
@@ -190,6 +190,7 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
   const searchParams = useSearchParams()
   const [search, setSearch] = useState("")
   const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(20)
   const [showWilayahModal, setShowWilayahModal] = useState(false)
   const [selectedRow, setSelectedRow] = useState<ProvinsiRow | null>(null)
   const [statusFilter, setStatusFilter] = useState<ProvinsiRow["statusPokja"] | "Semua">("Aktif")
@@ -288,8 +289,8 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
     return `Provinsi ${wilayahFilter}`
   }, [wilayahFilter])
 
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
-  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const totalPages = Math.ceil(filtered.length / pageSize)
+  const paged = filtered.slice((page - 1) * pageSize, page * pageSize)
 
   const handleSearch = (v: string) => {
     setSearch(v)
@@ -421,7 +422,7 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
                   return (
                     <React.Fragment key={row.no}>
                       <TableRow className="group">
-                        <TableCell className="text-slate-400 text-sm pl-5 font-medium">{(page - 1) * PAGE_SIZE + idx + 1}</TableCell>
+                        <TableCell className="text-slate-400 text-sm pl-5 font-medium">{(page - 1) * pageSize + idx + 1}</TableCell>
                         <TableCell className="font-medium text-slate-900">
                           {row.provinsi.includes(" - ") ? `Kota ${row.provinsi.split(" - ")[1]}` : `Provinsi ${row.provinsi}`}
                         </TableCell>
@@ -453,65 +454,14 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
               </TableBody>
             </Table>
 
-            {totalPages >= 1 && (
-              <div className="px-5 py-4 border-t border-slate-100 flex items-center justify-between gap-4">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-<p className="text-slate-400 text-sm">
-                      Menampilkan {(page - 1) * PAGE_SIZE + 1} - {Math.min(page * PAGE_SIZE, filtered.length)} dari {filtered.length}
-                    </p>
-                  <div className="flex items-center gap-1">
-                    <select
-                      value={PAGE_SIZE}
-                      onChange={(e) => { setPage(1) }}
-                      className="px-1 py-0.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent"
-                    >
-                      <option value={10}>10</option>
-                      <option value={20}>20</option>
-                      <option value={50}>50</option>
-                    </select>
-                    <span className="text-slate-400 text-sm">baris/halaman</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page === 1}
-                    onClick={() => setPage((p) => p - 1)}
-                    className="h-8 px-3 text-xs border-slate-200"
-                  >
-                    Sebelumnya
-                  </Button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1)
-                    .filter((p) => Math.abs(p - page) <= 2)
-                    .map((p) => (
-                      <Button
-                        key={p}
-                        variant={p === page ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setPage(p)}
-                        className={cn(
-                          "h-8 w-8 p-0 text-xs",
-                          p === page
-                            ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
-                            : "border-slate-200"
-                        )}
-                      >
-                        {p}
-                      </Button>
-                    ))}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page === totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                    className="h-8 px-3 text-xs border-slate-200"
-                  >
-                    Berikutnya
-                  </Button>
-                </div>
-              </div>
-            )}
+            <TablePagination
+              total={filtered.length}
+              halaman={page}
+              perHalaman={pageSize}
+              onHalaman={setPage}
+              onPerHalaman={(n) => { setPageSize(n); setPage(1) }}
+              opsiPerHalaman={[10, 20, 50]}
+            />
           </div>
         </div>
       </div>

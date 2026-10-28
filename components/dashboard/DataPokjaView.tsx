@@ -20,6 +20,7 @@ import { Button } from "@/components/ds/Button"
 import { Badge } from "@/components/ds/Badge"
 import type { PokjaItem, MemberField, RoleKey } from "@/types/pokja"
 import { ALL_ROLES } from "@/types/pokja"
+import { TablePagination } from "@/components/ui/table-pagination"
 
 // Region untuk Dinas - hardcoded sesuai login
 const REGION = "Provinsi Aceh"
@@ -234,29 +235,7 @@ function PokjaDetailDrawer({ pokja, onClose }: { pokja: PokjaItem; onClose: () =
                   </table>
                 </div>
 
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50">
-                    <p className="text-xs text-gray-500">
-                      {Math.min((page - 1) * PAGE_SIZE + 1, filtered.length)}–{Math.min(page * PAGE_SIZE, filtered.length)} dari {filtered.length}
-                    </p>
-                    <div className="flex items-center gap-1">
-                      <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
-                        className="p-1.5 rounded border border-gray-200 hover:bg-gray-100 disabled:opacity-40 transition-colors">
-                        <ChevronLeft className="w-3.5 h-3.5 text-gray-600" />
-                      </button>
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                        <button key={p} onClick={() => setPage(p)}
-                          className={`w-7 h-7 rounded text-xs font-medium transition-colors ${p === page ? "bg-blue-600 text-white" : "border border-gray-200 text-gray-600 hover:bg-gray-100"}`}>
-                          {p}
-                        </button>
-                      ))}
-                      <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                        className="p-1.5 rounded border border-gray-200 hover:bg-gray-100 disabled:opacity-40 transition-colors">
-                        <ChevronRight className="w-3.5 h-3.5 text-gray-600" />
-                      </button>
-                    </div>
-                  </div>
-                )}
+                <TablePagination total={filtered.length} halaman={page} perHalaman={PAGE_SIZE} onHalaman={setPage} />
               </>
             )}
           </div>
@@ -566,29 +545,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                       </table>
                     </div>
 
-                    {totalPages > 1 && (
-                      <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 bg-gray-50">
-                        <p className="text-xs text-gray-500">
-                          {Math.min((page - 1) * PAGE_SIZE + 1, filteredRows.length)}–{Math.min(page * PAGE_SIZE, filteredRows.length)} dari {filteredRows.length}
-                        </p>
-                        <div className="flex items-center gap-1">
-                          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
-                            className="p-1.5 rounded border border-gray-200 hover:bg-gray-100 disabled:opacity-40 transition-colors">
-                            <ChevronLeft className="w-3.5 h-3.5 text-gray-600" />
-                          </button>
-                          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                            <button key={p} onClick={() => setPage(p)}
-                              className={`w-7 h-7 rounded text-xs font-medium transition-colors ${p === page ? "bg-blue-600 text-white" : "border border-gray-200 text-gray-600 hover:bg-gray-100"}`}>
-                              {p}
-                            </button>
-                          ))}
-                          <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                            className="p-1.5 rounded border border-gray-200 hover:bg-gray-100 disabled:opacity-40 transition-colors">
-                            <ChevronRight className="w-3.5 h-3.5 text-gray-600" />
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                    <TablePagination total={filteredRows.length} halaman={page} perHalaman={PAGE_SIZE} onHalaman={setPage} />
                   </>
                 )
               })()}

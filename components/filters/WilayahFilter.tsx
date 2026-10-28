@@ -64,7 +64,7 @@ export function WilayahFilter({
           <button
             type="button"
             onClick={bukaModal}
-            className="bg-blue-50 hover:bg-blue-100 text-blue-600 font-medium text-sm px-2 py-1 rounded-md transition"
+            className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 font-medium text-sm px-2.5 py-1 rounded-md transition"
           >
             Ganti
           </button>

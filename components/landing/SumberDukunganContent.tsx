@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from "react"
 import { Search, Globe, ChevronLeft, ChevronRight, X, ChevronDown, MapPin, Phone, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { TablePagination } from "@/components/ui/table-pagination"
 import {
   KATEGORI_CONFIG,
   PENYEDIA_CONFIG,
@@ -259,64 +260,14 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                   </table>
                 </div>
 
-                {/* Pagination */}
-                <div className="px-5 py-4 border-t border-slate-100 flex items-center justify-between gap-4">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-                  <p className="text-slate-400 text-sm">
-                    Menampilkan {startIndex + 1}–{Math.min(startIndex + PAGE_SIZE, filtered.length)} dari {filtered.length}
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <select
-                      value={pageSize}
-                      onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1) }}
-                      className="px-1 py-0.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent"
-                    >
-                      <option value={10}>10</option>
-                      <option value={20}>20</option>
-                      <option value={50}>50</option>
-                    </select>
-                    <span className="text-slate-400 text-sm">baris/halaman</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={safePage === 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    className="h-8 px-3 text-xs border-slate-200"
-                  >
-                    Sebelumnya
-                  </Button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1)
-                    .filter((p) => Math.abs(p - safePage) <= 2)
-                    .map((p) => (
-                      <Button
-                        key={p}
-                        variant={p === safePage ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setPage(p)}
-                        className={cn(
-                          "h-8 w-8 p-0 text-xs",
-                          p === safePage
-                            ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
-                            : "border-slate-200"
-                        )}
-                      >
-                        {p}
-                      </Button>
-                    ))}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={safePage === totalPages}
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    className="h-8 px-3 text-xs border-slate-200"
-                  >
-                    Berikutnya
-                  </Button>
-                </div>
-              </div>
+                <TablePagination
+                  total={filtered.length}
+                  halaman={safePage}
+                  perHalaman={pageSize}
+                  onHalaman={setPage}
+                  onPerHalaman={(n) => { setPageSize(n); setPage(1) }}
+                  opsiPerHalaman={[10, 20, 50]}
+                />
               </>
             )}
           </div>

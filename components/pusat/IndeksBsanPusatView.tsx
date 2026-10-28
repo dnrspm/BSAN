@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { KAB_KOTA_BY_PROVINSI } from "@/data/kabKotaData"
 import { SELURUH_INDONESIA, WilayahFilter, type WilayahPilihan } from "@/components/filters/WilayahFilter"
 import { JENJANG_FIELDS } from "@/components/pusat/LaporanAkhirTahunPusatView"
+import { TablePagination } from "@/components/ui/table-pagination"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, tingkat } from "@/components/sekolah/indeks-bsan/shared"
 
@@ -46,7 +47,6 @@ const WILAYAH_CONTOH: { provinsi: string; kabKota: string }[] = [
 const TOTAL_SEKOLAH = 560
 // Jumlah sekolah yang sudah mengikuti evaluasi per tahun (data contoh).
 const SUDAH_MENGIKUTI: Record<number, number> = { 2026: 235, 2025: 180, 2024: 120 }
-const PER_HALAMAN = 10
 
 // Data contoh deterministik: skor sekolah berasal dari Admin Pusat (0–10, satu desimal).
 // `provinsiTerbatas` (BPMP) membatasi data ke satu provinsi; `kabKotaTerbatas` (Dinas) ke satu kab/kota.
@@ -84,7 +84,7 @@ function buatData(tahun: number, provinsiTerbatas?: string, kabKotaTerbatas?: st
   })
 }
 
-const persen = (sudah: number, total: number) => (total ? `${Math.round((sudah / total) * 100)}%` : "-")
+const persen = (sudah: number, total: number) => (total ? `${Math.round((sudah / total) * 100)}%` : "0%")
 
 const rata2 = (nilai: number[]) => (nilai.length ? Math.round((nilai.reduce((a, b) => a + b, 0) / nilai.length) * 10) / 10 : null)
 
@@ -93,6 +93,13 @@ const KATEGORI_SKOR = [
   { label: "Sedang", rentang: "skor 6,0–7,9", arti: "sebagian indikator sudah baik, namun masih ada yang perlu diperbaiki." },
   { label: "Rendah", rentang: "skor di bawah 6,0", arti: "perlu perhatian dan pendampingan segera pada indikator yang masih lemah." },
 ]
+
+/** Pembagi contoh yang stabil per wilayah dan jenjang (hanya untuk demo). */
+function totalDemo(kunci: string, jenjang: string) {
+  let h = 0
+  for (const c of kunci) h = (h * 31 + c.charCodeAt(0)) >>> 0
+  return jenjang === "Dinas" ? 1 : 8 + (h % 33)
+}
 
 function kategoriDari(skor: number): Kategori {
   return tingkat(skor).label as Kategori
@@ -137,6 +144,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
   const [kategori, setKategori] = useState<Kategori | "belum" | "semua">("semua")
   const [urut, setUrut] = useState<{ kolom: KolomUrut; arah: "asc" | "desc" } | null>(null)
   const [halaman, setHalaman] = useState(1)
+  const [perHalaman, setPerHalaman] = useState(10)
 
   const data = useMemo(() => buatData(tahun, wilayahProvinsi, wilayahKabKota, hanyaSekolah), [tahun, wilayahProvinsi, wilayahKabKota, hanyaSekolah])
 
@@ -149,17 +157,21 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
   const ringkasan = useMemo(() => {
     const data = dataWilayah
     const sudah = data.filter((s) => s.skor !== null)
+    const perJenjang = jenjangList.map((j) => {
+      const sekolah = data.filter((s) => s.jenjang === j)
+      const ikut = sekolah.filter((s) => s.skor !== null)
+      const r = rata2(ikut.map((s) => s.skor as number))
+      // Demo: jenjang tanpa data di wilayah ini tetap diberi pembagi agar tidak tampil 0 / 0.
+      const total = sekolah.length || totalDemo(`${wilayah.provinsi}|${wilayah.kabKota}|${j}`, j)
+      return { jenjang: j, rerata: r, sudah: ikut.length, total }
+    })
     return {
       rerata: rata2(sudah.map((s) => s.skor as number)),
       sudah: sudah.length,
-      perJenjang: jenjangList.map((j) => {
-        const sekolah = data.filter((s) => s.jenjang === j)
-        const ikut = sekolah.filter((s) => s.skor !== null)
-        const r = rata2(ikut.map((s) => s.skor as number))
-        return { jenjang: j, rerata: r, sudah: ikut.length, belum: sekolah.length - ikut.length }
-      }),
+      total: perJenjang.reduce((a, j) => a + j.total, 0),
+      perJenjang,
     }
-  }, [dataWilayah, jenjangList])
+  }, [dataWilayah, jenjangList, wilayah])
 
   const terfilter = useMemo(() => {
     const q = cari.trim().toLowerCase()
@@ -220,10 +232,10 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
     )
   }
 
-  const totalHalaman = Math.max(1, Math.ceil(terfilter.length / PER_HALAMAN))
+  const totalHalaman = Math.max(1, Math.ceil(terfilter.length / perHalaman))
   const halamanAktif = Math.min(halaman, totalHalaman)
-  const mulai = (halamanAktif - 1) * PER_HALAMAN
-  const baris = terfilter.slice(mulai, mulai + PER_HALAMAN)
+  const mulai = (halamanAktif - 1) * perHalaman
+  const baris = terfilter.slice(mulai, mulai + perHalaman)
 
   const ubah = <T,>(set: (v: T) => void) => (v: T) => {
     set(v)
@@ -319,7 +331,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
               <td className="sticky left-48 z-10 bg-gray-50 border-b border-r border-gray-300 px-3 py-4 text-center">
                 <div className="flex flex-col items-center gap-1.5">
                   <span className={cn("text-3xl font-bold tabular-nums leading-none", ringkasan.rerata !== null ? "text-gray-900" : "text-gray-400")}>
-                    {ringkasan.rerata !== null ? fmt(ringkasan.rerata) : "-"}
+                    {fmt(ringkasan.rerata ?? 0)}
                   </span>
                   {ringkasan.rerata !== null && <TingkatChip skor={ringkasan.rerata} solid />}
                 </div>
@@ -333,7 +345,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                     j.rerata !== null ? "text-gray-900" : "text-gray-300"
                   )}
                 >
-                  {j.rerata !== null ? fmt(j.rerata) : "-"}
+                  {fmt(j.rerata ?? 0)}
                 </td>
               ))}
             </tr>
@@ -342,16 +354,16 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                 Sudah mengikuti evaluasi BSAN
               </th>
               <td className="sticky left-48 z-10 bg-gray-50 border-r border-gray-300 px-3 py-4 text-center tabular-nums">
-                <p className="text-3xl font-bold leading-none text-gray-900">{persen(ringkasan.sudah, dataWilayah.length)}</p>
+                <p className="text-3xl font-bold leading-none text-gray-900">{persen(ringkasan.sudah, ringkasan.total)}</p>
                 <p className="mt-1.5 text-xs text-gray-500 whitespace-nowrap">
-                  {ringkasan.sudah.toLocaleString("id-ID")} / {dataWilayah.length.toLocaleString("id-ID")}
+                  {ringkasan.sudah.toLocaleString("id-ID")} / {ringkasan.total.toLocaleString("id-ID")}
                 </p>
               </td>
               {ringkasan.perJenjang.map((j, n, arr) => (
                 <td key={j.jenjang} className={cn("px-3 py-4 text-center tabular-nums border-gray-300", n < arr.length - 1 && "border-r")}>
-                  <p className="text-base font-semibold text-gray-900">{persen(j.sudah, j.sudah + j.belum)}</p>
+                  <p className="text-base font-semibold text-gray-900">{persen(j.sudah, j.total)}</p>
                   <p className="mt-1 text-xs text-gray-500 whitespace-nowrap">
-                    {j.sudah} / {j.sudah + j.belum}
+                    {j.sudah} / {j.total}
                   </p>
                 </td>
               ))}
@@ -446,34 +458,16 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
           </div>
         )}
 
-        {terfilter.length > 0 && (
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-3 border-t border-gray-200 bg-gray-50">
-            <p className="text-xs text-gray-500 tabular-nums">
-              Menampilkan {mulai + 1}-{Math.min(mulai + PER_HALAMAN, terfilter.length)} dari {terfilter.length.toLocaleString("id-ID")} {sebutan}
-            </p>
-            {totalHalaman > 1 && (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setHalaman(halamanAktif - 1)}
-                  disabled={halamanAktif === 1}
-                  className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Sebelumnya
-                </button>
-                <span className="text-xs text-gray-600 tabular-nums">
-                  Halaman {halamanAktif} dari {totalHalaman}
-                </span>
-                <button
-                  onClick={() => setHalaman(halamanAktif + 1)}
-                  disabled={halamanAktif === totalHalaman}
-                  className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Berikutnya
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+        <TablePagination
+          total={terfilter.length}
+          halaman={halamanAktif}
+          perHalaman={perHalaman}
+          onHalaman={setHalaman}
+          onPerHalaman={(n) => {
+            setPerHalaman(n)
+            setHalaman(1)
+          }}
+        />
       </div>
     </div>
   )

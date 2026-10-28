@@ -2,6 +2,7 @@
 import { Search, MapPin, Clock, CheckCircle2, XCircle, AlertCircle, Filter, Building } from "lucide-react"
 import { useState, useMemo } from "react"
 import type { PokjaItem, PokjaStatus } from "@/types/pokja"
+import { TablePagination } from "@/components/ui/table-pagination"
 
 interface DaftarPengajuanViewProps {
   pokjaList: PokjaItem[]
@@ -41,7 +42,7 @@ export function DaftarPengajuanView({ pokjaList, onSelect }: DaftarPengajuanView
   const [search, setSearch] = useState("")
   const [filterStatus, setFilterStatus] = useState<PokjaStatus | "semua">("semua")
   const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+  const [itemsPerPage, setItemsPerPage] = useState(10)
 
   const handleSearchChange = (value: string) => {
     setSearch(value)
@@ -190,47 +191,15 @@ export function DaftarPengajuanView({ pokjaList, onSelect }: DaftarPengajuanView
         )}
       </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between pt-2">
-          <p className="text-xs text-gray-500">
-            Menampilkan {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filtered.length)} dari {filtered.length} Kelompok Kerja
-          </p>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Sebelumnya
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg ${
-                  currentPage === page
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-600 hover:bg-gray-50 border border-gray-300"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Berikutnya
-            </button>
-          </div>
-        </div>
-      )}
-
-      {totalPages <= 1 && (
-        <p className="text-xs text-gray-400 text-right">Menampilkan {filtered.length} dari {pokjaList.length} Kelompok Kerja</p>
-      )}
+      <TablePagination
+        total={filtered.length}
+        halaman={currentPage}
+        perHalaman={itemsPerPage}
+        onHalaman={handlePageChange}
+        onPerHalaman={(n) => { setItemsPerPage(n); setCurrentPage(1) }}
+        satuan="Kelompok Kerja"
+        className="rounded-xl border border-gray-200 bg-white"
+      />
     </div>
   )
 }

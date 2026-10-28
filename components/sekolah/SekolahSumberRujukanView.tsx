@@ -39,6 +39,7 @@ import {
   type SumberRujukan,
   type StatusRujukan,
 } from "@/components/dashboard/SumberRujukanView"
+import { TablePagination } from "@/components/ui/table-pagination"
 
 const PROVINSI_LIST = [
   "Aceh", "Sumatera Utara", "Sumatera Barat", "Riau", "Kepulauan Riau",
@@ -765,7 +766,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
           )}
           <button
             onClick={() => setShowWilayahModal(true)}
-            className="bg-blue-50 hover:bg-blue-100 text-blue-600 font-medium text-sm px-2 py-1 rounded-md transition"
+            className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 font-medium text-sm px-2.5 py-1 rounded-md transition"
           >
             Ganti
           </button>
@@ -944,49 +945,15 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                 </tbody>
               </table>
             </div>
+            <TablePagination
+              total={totalRows}
+              halaman={currentPage}
+              perHalaman={rowsPerPage}
+              onHalaman={setCurrentPage}
+              onPerHalaman={(n) => { setRowsPerPage(n); setCurrentPage(1) }}
+              opsiPerHalaman={[10, 20, 50]}
+            />
           </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-gray-500">
-                Menampilkan {startIndex + 1}-{endIndex} dari {totalRows} data
-              </p>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setCurrentPage(1)}
-                  disabled={currentPage === 1}
-                  className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <ChevronsLeft className="w-4 h-4 text-gray-600" />
-                </button>
-                <button
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <ChevronLeft className="w-4 h-4 text-gray-600" />
-                </button>
-                <span className="px-3 py-1.5 text-xs font-medium">
-                  {currentPage} / {totalPages}
-                </span>
-                <button
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <ChevronRight className="w-4 h-4 text-gray-600" />
-                </button>
-                <button
-                  onClick={() => setCurrentPage(totalPages)}
-                  disabled={currentPage === totalPages}
-                  className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <ChevronsRight className="w-4 h-4 text-gray-600" />
-                </button>
-              </div>
-            </div>
-          )}
         </>
       )}
 

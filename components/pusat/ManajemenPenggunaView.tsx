@@ -14,6 +14,7 @@ import {
   type PenggunaAkses,
   type PeranPengguna,
 } from "@/lib/user-access"
+import { TablePagination } from "@/components/ui/table-pagination"
 
 type KolomUrut = "email" | "peran" | "wilayah" | "diperbarui"
 
@@ -100,7 +101,7 @@ export function ManajemenPenggunaView() {
   const [urutKolom, setUrutKolom] = useState<KolomUrut>("email")
   const [urutArah, setUrutArah] = useState<"asc" | "desc">("asc")
 
-  const perHalaman = 10
+  const [perHalaman, setPerHalaman] = useState(10)
 
   /** Klik kolom yang sama membalik arah; kolom lain mulai dari arah wajarnya. */
   const ubahUrutan = (kolom: KolomUrut) => {
@@ -333,43 +334,15 @@ export function ManajemenPenggunaView() {
         )}
 
         {/* Paginasi */}
-        {mounted && filtered.length > 0 && (
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-3 border-t border-gray-100">
-            <p className="text-xs text-gray-500">
-              Menampilkan {mulai + 1}-{Math.min(mulai + perHalaman, filtered.length)} dari {filtered.length} pengguna
-            </p>
-            {totalHalaman > 1 && (
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setHalaman(halamanAktif - 1)}
-                  disabled={halamanAktif === 1}
-                  className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Sebelumnya
-                </button>
-                {Array.from({ length: totalHalaman }, (_, i) => i + 1).map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => setHalaman(n)}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-lg ${
-                      halamanAktif === n
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-600 hover:bg-gray-50 border border-gray-300"
-                    }`}
-                  >
-                    {n}
-                  </button>
-                ))}
-                <button
-                  onClick={() => setHalaman(halamanAktif + 1)}
-                  disabled={halamanAktif === totalHalaman}
-                  className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Berikutnya
-                </button>
-              </div>
-            )}
-          </div>
+        {mounted && (
+          <TablePagination
+            total={filtered.length}
+            halaman={halamanAktif}
+            perHalaman={perHalaman}
+            onHalaman={setHalaman}
+            onPerHalaman={(n) => { setPerHalaman(n); setHalaman(1) }}
+            satuan="pengguna"
+          />
         )}
       </div>
 

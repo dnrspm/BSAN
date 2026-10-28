@@ -21,6 +21,7 @@ import {
 import { DEFAULT_DINAS_NAMA, getDinasNamaForLogs, readAuthSession } from "@/lib/auth-session"
 import { RUJUKAN_LOG, dinasLog, formatLogTerakhirDisplay, getStatusAfterRestore } from "@/lib/rujukan-logs"
 import { KAB_KOTA_BY_PROVINSI } from "@/data/kabKotaData"
+import { TablePagination } from "@/components/ui/table-pagination"
 
 const D_SEED = DEFAULT_DINAS_NAMA
 const actorDinasSeed = `Admin ${D_SEED}`
@@ -1411,7 +1412,7 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
           )}
           <button
             onClick={() => setShowWilayahModal(true)}
-            className="bg-blue-50 hover:bg-blue-100 text-blue-600 font-medium text-sm px-2 py-1 rounded-md transition"
+            className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 font-medium text-sm px-2.5 py-1 rounded-md transition"
           >
             Ganti
           </button>
@@ -1586,66 +1587,15 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
               </tbody>
             </table>
           </div>
+          <TablePagination
+            total={totalRows}
+            halaman={currentPage}
+            perHalaman={rowsPerPage}
+            onHalaman={setCurrentPage}
+            onPerHalaman={(n) => { setRowsPerPage(n); setCurrentPage(1) }}
+            opsiPerHalaman={[10, 20, 50]}
+          />
         </div>
-
-        {totalRows > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 bg-white border-t border-gray-200">
-            {/* Info & Rows per page */}
-            <div className="flex items-center gap-3 text-sm text-gray-500">
-              <span>
-                Menampilkan {startIndex + 1}-{endIndex} dari {totalRows}
-              </span>
-              <select
-                value={rowsPerPage}
-                onChange={(e) => { setRowsPerPage(Number(e.target.value)); setCurrentPage(1) }}
-                className="rounded-lg border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-              </select>
-              <span className="hidden sm:inline">baris/halaman</span>
-            </div>
-            {/* Page Navigation */}
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
-                title="Halaman pertama"
-              >
-                <ChevronsLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
-                title="Halaman sebelumnya"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <span className="px-3 text-sm text-gray-600">
-                {currentPage} / {totalPages}
-              </span>
-              <button
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
-                title="Halaman berikutnya"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages}
-                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
-                title="Halaman terakhir"
-              >
-                <ChevronsRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
         </>
       )}
 

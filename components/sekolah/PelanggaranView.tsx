@@ -28,6 +28,7 @@ import {
 } from "lucide-react"
 import { readAuthSession } from "@/lib/auth-session"
 import { FormModeToggle, getIdealMode } from "@/components/FormModeToggle"
+import { TablePagination } from "@/components/ui/table-pagination"
 
 type StatusPelanggaran = "baru" | "proses" | "selesai" | "ditutup"
 type TingkatKeparahan = "urgen" | "sangat_urgen"
@@ -1747,77 +1748,6 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
   )
 }
 
-function ScrollableTable({ children }: { children: React.ReactNode }) {
-  const viewportRef = useRef<HTMLDivElement>(null)
-  const vThumbRef = useRef<HTMLDivElement>(null)
-  const hThumbRef = useRef<HTMLDivElement>(null)
-  const hBarRef = useRef<HTMLDivElement>(null)
-  const [canV, setCanV] = useState(false)
-
-  const updateBars = () => {
-    const el = viewportRef.current
-    if (!el) return
-    const overflowV = el.scrollHeight > el.clientHeight
-    const overflowH = el.scrollWidth > el.clientWidth
-    setCanV(overflowV)
-
-    const vTrackH = el.clientHeight
-    const vThumbH = overflowV ? Math.max(28, (el.clientHeight / el.scrollHeight) * el.clientHeight) : 0
-    const vMax = vTrackH - vThumbH
-    const vTop = overflowV ? (el.scrollTop / (el.scrollHeight - el.clientHeight)) * vMax : 0
-    if (vThumbRef.current) {
-      vThumbRef.current.style.height = `${vThumbH}px`
-      vThumbRef.current.style.top = `${vTop}px`
-    }
-
-    const hBar = hBarRef.current
-    const hBarW = hBar?.clientWidth ?? el.clientWidth
-    const hThumbW = overflowH ? Math.max(48, (el.clientWidth / el.scrollWidth) * hBarW) : hBarW
-    const hMax = hBarW - hThumbW
-    const hLeft = overflowH ? (el.scrollLeft / (el.scrollWidth - el.clientWidth)) * hMax : 0
-    if (hThumbRef.current) {
-      hThumbRef.current.style.width = `${hThumbW}px`
-      hThumbRef.current.style.left = `${hLeft}px`
-    }
-  }
-
-  useEffect(() => {
-    const el = viewportRef.current
-    if (!el) return
-    updateBars()
-    const ro = new ResizeObserver(() => updateBars())
-    ro.observe(el)
-    if (el.firstElementChild) ro.observe(el.firstElementChild)
-    window.addEventListener("resize", updateBars)
-    return () => {
-      ro.disconnect()
-      window.removeEventListener("resize", updateBars)
-    }
-  }, [])
-
-  return (
-    <div>
-      <div className="flex">
-        <div
-          ref={viewportRef}
-          onScroll={updateBars}
-          className="flex-1 min-w-0 max-h-[480px] overflow-scroll scrollbar-hide"
-        >
-          {children}
-        </div>
-        {canV && (
-          <div className="w-2.5 flex-shrink-0 bg-gray-100 border-l border-gray-200 relative" aria-hidden="true">
-            <div ref={vThumbRef} className="absolute left-0.5 w-1.5 rounded-full bg-gray-400/80 hover:bg-gray-500" />
-          </div>
-        )}
-      </div>
-      <div ref={hBarRef} className="h-2.5 bg-gray-100 border-t border-gray-200 relative overflow-hidden" aria-hidden="true">
-        <div ref={hThumbRef} className="absolute top-0.5 h-1.5 rounded-full bg-gray-400/80 hover:bg-gray-500" />
-      </div>
-    </div>
-  )
-}
-
 export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?: boolean; editId?: string; wilayahScope?: { provinsi: string; kabKotaList: string[] } }) {
   const [list, setList] = useState<PelanggaranItem[]>([])
   const [search, setSearch] = useState("")
@@ -2205,19 +2135,19 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
       ) : (
         <>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <ScrollableTable>
+            <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[1280px]">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200 text-left">
-                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">No. Kasus</th>
-                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Nama Sekolah</th>
-                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Unsur Terlibat</th>
-                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Tanggal</th>
-                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Kategori</th>
-                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Urgensi</th>
-                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">PIC</th>
-                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                    <th className="sticky top-0 z-10 bg-gray-50 px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">Aksi</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">No. Kasus</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Nama Sekolah</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Unsur Terlibat</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Tanggal</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Kategori</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Urgensi</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">PIC</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -2295,49 +2225,17 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
                   ))}
                 </tbody>
               </table>
-            </ScrollableTable>
-          </div>
-
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-gray-500">
-                Menampilkan {startIndex + 1}-{endIndex} dari {totalRows} data
-              </p>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setCurrentPage(1)}
-                  disabled={currentPage === 1}
-                  className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <ChevronsLeft className="w-4 h-4 text-gray-600" />
-                </button>
-                <button
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <ChevronLeft className="w-4 h-4 text-gray-600" />
-                </button>
-                <span className="px-3 py-1.5 text-xs font-medium">
-                  {currentPage} / {totalPages}
-                </span>
-                <button
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <ChevronRight className="w-4 h-4 text-gray-600" />
-                </button>
-                <button
-                  onClick={() => setCurrentPage(totalPages)}
-                  disabled={currentPage === totalPages}
-                  className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <ChevronsRight className="w-4 h-4 text-gray-600" />
-                </button>
-              </div>
             </div>
-          )}
+
+            <TablePagination
+              total={totalRows}
+              halaman={currentPage}
+              perHalaman={rowsPerPage}
+              onHalaman={setCurrentPage}
+              onPerHalaman={(n) => { setRowsPerPage(n); setCurrentPage(1) }}
+              opsiPerHalaman={[10, 20, 50]}
+            />
+          </div>
         </>
       )}
 
