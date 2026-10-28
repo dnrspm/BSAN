@@ -1,16 +1,17 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { ArrowUp, ChevronDown, Search } from "lucide-react"
+import { ArrowUp, ChevronDown, Download, Info, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { KAB_KOTA_BY_PROVINSI } from "@/data/kabKotaData"
 import { SELURUH_INDONESIA, WilayahFilter, type WilayahPilihan } from "@/components/filters/WilayahFilter"
 import { JENJANG_FIELDS } from "@/components/pusat/LaporanAkhirTahunPusatView"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, tingkat } from "@/components/sekolah/indeks-bsan/shared"
 
 type Jenjang = string
-type Status = "sudah" | "belum"
 type Kategori = "Tinggi" | "Sedang" | "Rendah"
+type KolomUrut = "nama" | "npsn" | "jenjang" | "kabKota" | "kategori" | "skor"
 
 interface SekolahIndeks {
   id: number
@@ -87,6 +88,12 @@ const persen = (sudah: number, total: number) => (total ? `${Math.round((sudah /
 
 const rata2 = (nilai: number[]) => (nilai.length ? Math.round((nilai.reduce((a, b) => a + b, 0) / nilai.length) * 10) / 10 : null)
 
+const KATEGORI_SKOR = [
+  { label: "Tinggi", rentang: "skor 8,0–10", arti: "lingkungan satuan pendidikan sudah aman, nyaman, dan inklusif; pertahankan dan bagikan praktik baiknya." },
+  { label: "Sedang", rentang: "skor 6,0–7,9", arti: "sebagian indikator sudah baik, namun masih ada yang perlu diperbaiki." },
+  { label: "Rendah", rentang: "skor di bawah 6,0", arti: "perlu perhatian dan pendampingan segera pada indikator yang masih lemah." },
+]
+
 function kategoriDari(skor: number): Kategori {
   return tingkat(skor).label as Kategori
 }
@@ -127,14 +134,20 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
   const [cari, setCari] = useState("")
   const [jenjang, setJenjang] = useState<Jenjang | "semua">("semua")
   const [wilayah, setWilayah] = useState<WilayahPilihan>(terbatas ? { provinsi: wilayahProvinsi, kabKota: wilayahKabKota ?? null } : SELURUH_INDONESIA)
-  const [kategori, setKategori] = useState<Kategori | "semua">("semua")
-  const [status, setStatus] = useState<Status | "semua">("semua")
-  const [urut, setUrut] = useState<"asc" | "desc" | null>(null)
+  const [kategori, setKategori] = useState<Kategori | "belum" | "semua">("semua")
+  const [urut, setUrut] = useState<{ kolom: KolomUrut; arah: "asc" | "desc" } | null>(null)
   const [halaman, setHalaman] = useState(1)
 
   const data = useMemo(() => buatData(tahun, wilayahProvinsi, wilayahKabKota, hanyaSekolah), [tahun, wilayahProvinsi, wilayahKabKota, hanyaSekolah])
 
+  // Filter wilayah berlaku untuk tabel ringkasan maupun daftar skor.
+  const dataWilayah = useMemo(
+    () => data.filter((s) => (!wilayah.provinsi || s.provinsi === wilayah.provinsi) && (!wilayah.kabKota || s.kabKota === wilayah.kabKota)),
+    [data, wilayah]
+  )
+
   const ringkasan = useMemo(() => {
+    const data = dataWilayah
     const sudah = data.filter((s) => s.skor !== null)
     return {
       rerata: rata2(sudah.map((s) => s.skor as number)),
@@ -146,27 +159,66 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
         return { jenjang: j, rerata: r, sudah: ikut.length, belum: sekolah.length - ikut.length }
       }),
     }
-  }, [data, jenjangList])
+  }, [dataWilayah, jenjangList])
 
   const terfilter = useMemo(() => {
     const q = cari.trim().toLowerCase()
-    const hasil = data.filter((s) => {
+    const hasil = dataWilayah.filter((s) => {
       if (q && !s.nama.toLowerCase().includes(q) && !s.npsn.includes(q)) return false
       if (jenjang !== "semua" && s.jenjang !== jenjang) return false
-      if (wilayah.provinsi && s.provinsi !== wilayah.provinsi) return false
-      if (wilayah.kabKota && s.kabKota !== wilayah.kabKota) return false
-      if (status !== "semua" && (status === "sudah") !== (s.skor !== null)) return false
-      if (kategori !== "semua" && (s.skor === null || kategoriDari(s.skor) !== kategori)) return false
+      if (kategori === "belum" && s.skor !== null) return false
+      if (kategori !== "semua" && kategori !== "belum" && (s.skor === null || kategoriDari(s.skor) !== kategori)) return false
       return true
     })
     if (!urut) return hasil
-    // Instansi yang belum mengikuti selalu di bagian bawah.
+    const { kolom, arah } = urut
+    const kali = arah === "asc" ? 1 : -1
     return [...hasil].sort((a, b) => {
-      if (a.skor === null) return b.skor === null ? 0 : 1
-      if (b.skor === null) return -1
-      return urut === "asc" ? a.skor - b.skor : b.skor - a.skor
+      if (kolom === "skor" || kolom === "kategori") {
+        // Instansi yang belum mengikuti selalu di bagian bawah.
+        if (a.skor === null) return b.skor === null ? 0 : 1
+        if (b.skor === null) return -1
+        return (a.skor - b.skor) * kali
+      }
+      return a[kolom].localeCompare(b[kolom], "id", { numeric: true }) * kali
     })
-  }, [data, cari, jenjang, wilayah, kategori, status, urut])
+  }, [dataWilayah, cari, jenjang, kategori, urut])
+
+  /** CSV bertitik koma (sep=;) agar langsung terbuka rapi di Excel; isinya mengikuti tahun dan wilayah terpilih. */
+  const eksporExcel = () => {
+    const sel = (v: string) => `"${v.replace(/"/g, '""')}"`
+    const baris = [
+      ["Tahun", "Nama", "NPSN", "Jenjang", "Provinsi", "Kabupaten/Kota", "Skor Indeks BSAN", "Kategori", "Status Evaluasi"],
+      ...dataWilayah.map((s) => [
+        String(tahun), s.nama, s.npsn, s.jenjang, s.provinsi, s.kabKota,
+        s.skor !== null ? fmt(s.skor) : "-", s.skor !== null ? kategoriDari(s.skor) : "-", s.skor !== null ? "Sudah" : "Belum",
+      ]),
+    ]
+    const isi = ["sep=;", ...baris.map((b) => b.map(sel).join(";"))].join("\r\n")
+    const url = URL.createObjectURL(new Blob(["\uFEFF" + isi], { type: "text/csv;charset=utf-8" }))
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `indeks-bsan-${tahun}-${(wilayah.kabKota ?? wilayah.provinsi ?? "indonesia").toLowerCase().replace(/\s+/g, "-")}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  /** Urutan tiap kolom: klik pertama menurun, kedua menaik, ketiga kembali ke urutan awal. */
+  const kepalaUrut = (kolom: KolomUrut, label: React.ReactNode, tengah?: boolean) => {
+    const aktif = urut?.kolom === kolom
+    return (
+      <th key={kolom} className={cn("px-3 py-3", tengah && "text-center")} aria-sort={aktif ? (urut.arah === "asc" ? "ascending" : "descending") : "none"}>
+        <button
+          type="button"
+          onClick={() => ubah(setUrut)(!aktif ? { kolom, arah: "desc" } : urut.arah === "desc" ? { kolom, arah: "asc" } : null)}
+          className="inline-flex items-center gap-1 uppercase tracking-wide hover:text-gray-700"
+        >
+          {label}
+          <ArrowUp className={cn("w-3.5 h-3.5 transition-transform", aktif ? "text-gray-600" : "text-gray-300", aktif && urut.arah === "desc" && "rotate-180")} />
+        </button>
+      </th>
+    )
+  }
 
   const totalHalaman = Math.max(1, Math.ceil(terfilter.length / PER_HALAMAN))
   const halamanAktif = Math.min(halaman, totalHalaman)
@@ -178,10 +230,21 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
     setHalaman(1)
   }
 
+  const pilihTahun = <TahunSelect tahun={tahun} onChange={ubah(setTahun)} />
+  const tombolEkspor = (
+    <button
+      type="button"
+      onClick={eksporExcel}
+      className="flex h-9 items-center gap-1.5 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+    >
+      <Download className="h-4 w-4" /> Ekspor Excel
+    </button>
+  )
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
           <h1 className="text-xl font-bold text-gray-900">{judul}</h1>
           <p className="text-sm text-gray-500 mt-0.5">
             {kabKotaTetap
@@ -191,8 +254,21 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                 : "Skor Indeks BSAN seluruh satuan pendidikan dan dinas."}
           </p>
         </div>
-        <TahunSelect tahun={tahun} onChange={ubah(setTahun)} />
+        <div className="flex shrink-0 items-center gap-2">
+          {kabKotaTetap && pilihTahun}
+          {tombolEkspor}
+        </div>
       </div>
+
+      {!kabKotaTetap && (
+        <>
+          <div className="border-t border-gray-200" />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <WilayahFilter nilai={wilayah} onChange={ubah(setWilayah)} provinsiTetap={wilayahProvinsi} ringkas />
+            {pilihTahun}
+          </div>
+        </>
+      )}
 
       <section className="rounded-xl border border-gray-300 bg-white overflow-x-auto">
         {/* Kolom label dan "Semua" terkunci saat digeser; kolom jenjang berukuran sama. */}
@@ -221,7 +297,24 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
           <tbody>
             <tr>
               <th scope="row" className="sticky left-0 z-10 bg-white border-b border-r border-gray-300 px-4 py-4 text-left font-bold text-gray-900">
-                Rerata Indeks BSAN
+                <span className="inline-flex items-center gap-1.5">
+                  Rerata Indeks BSAN
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button type="button" aria-label="Lihat penjelasan kategori skor Indeks BSAN" className="rounded-full text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
+                        <Info className="h-4 w-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs space-y-2 p-3 text-left leading-relaxed">
+                      <p className="font-semibold">Kategori skor Indeks BSAN</p>
+                      {KATEGORI_SKOR.map((k) => (
+                        <p key={k.label}>
+                          <span className="font-semibold">{k.label}</span> ({k.rentang}): {k.arti}
+                        </p>
+                      ))}
+                    </TooltipContent>
+                  </Tooltip>
+                </span>
               </th>
               <td className="sticky left-48 z-10 bg-gray-50 border-b border-r border-gray-300 px-3 py-4 text-center">
                 <div className="flex flex-col items-center gap-1.5">
@@ -249,9 +342,9 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                 Sudah mengikuti evaluasi BSAN
               </th>
               <td className="sticky left-48 z-10 bg-gray-50 border-r border-gray-300 px-3 py-4 text-center tabular-nums">
-                <p className="text-3xl font-bold leading-none text-gray-900">{persen(ringkasan.sudah, data.length)}</p>
+                <p className="text-3xl font-bold leading-none text-gray-900">{persen(ringkasan.sudah, dataWilayah.length)}</p>
                 <p className="mt-1.5 text-xs text-gray-500 whitespace-nowrap">
-                  {ringkasan.sudah.toLocaleString("id-ID")} / {data.length.toLocaleString("id-ID")}
+                  {ringkasan.sudah.toLocaleString("id-ID")} / {dataWilayah.length.toLocaleString("id-ID")}
                 </p>
               </td>
               {ringkasan.perJenjang.map((j, n, arr) => (
@@ -273,11 +366,11 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
             <h2 className="text-base font-semibold text-gray-900">Daftar Skor {hanyaSekolah ? "Sekolah" : "Instansi"}</h2>
             <p className="text-sm text-gray-500 tabular-nums">
               {terfilter.length.toLocaleString("id-ID")}
-              {terfilter.length !== data.length ? ` dari ${data.length.toLocaleString("id-ID")}` : ""} {sebutan}
+              {terfilter.length !== dataWilayah.length ? ` dari ${dataWilayah.length.toLocaleString("id-ID")}` : ""} {sebutan}
             </p>
           </div>
 
-          <div className={cn("grid gap-2 sm:grid-cols-2", kabKotaTetap ? "lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]" : "lg:grid-cols-[minmax(0,1.6fr)_repeat(4,minmax(0,1fr))]")}>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_repeat(2,minmax(0,1fr))]">
             <div className="relative sm:col-span-2 lg:col-span-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               <input
@@ -294,17 +387,12 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                 <option key={j} value={j}>{j}</option>
               ))}
             </FilterSelect>
-            {!kabKotaTetap && <WilayahFilter nilai={wilayah} onChange={ubah(setWilayah)} provinsiTetap={wilayahProvinsi} />}
-            <FilterSelect value={kategori} onChange={(e) => ubah(setKategori)(e.target.value as Kategori | "semua")} aria-label="Filter kategori">
+            <FilterSelect value={kategori} onChange={(e) => ubah(setKategori)(e.target.value as Kategori | "belum" | "semua")} aria-label="Filter kategori">
               <option value="semua">Semua Kategori</option>
               <option value="Tinggi">Tinggi</option>
               <option value="Sedang">Sedang</option>
               <option value="Rendah">Rendah</option>
-            </FilterSelect>
-            <FilterSelect value={status} onChange={(e) => ubah(setStatus)(e.target.value as Status | "semua")} aria-label="Filter evaluasi BSAN">
-              <option value="semua">Semua Evaluasi</option>
-              <option value="sudah">Sudah</option>
-              <option value="belum">Belum</option>
+              <option value="belum">Belum Tersedia</option>
             </FilterSelect>
           </div>
         </div>
@@ -319,33 +407,22 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
             <table className="w-full text-sm min-w-[920px] table-fixed">
               <colgroup>
                 <col className="w-14" />
-                <col className="w-[27%]" />
+                <col className="w-[30%]" />
+                <col className="w-[13%]" />
                 <col className="w-[11%]" />
-                <col className="w-[10%]" />
-                <col className="w-[15%]" />
-                <col className="w-[15%]" />
-                <col className="w-[11%]" />
-                <col className="w-[11%]" />
+                <col className="w-[20%]" />
+                <col className="w-[13%]" />
+                <col className="w-[13%]" />
               </colgroup>
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
                   <th className="pl-5 pr-2 py-3 text-center">No</th>
-                  <th className="px-3 py-3">Nama {hanyaSekolah ? "Sekolah" : "Instansi"}</th>
-                  <th className="px-3 py-3">NPSN</th>
-                  <th className="px-3 py-3">Jenjang</th>
-                  <th className="px-3 py-3">Kabupaten/Kota</th>
-                  <th className="px-3 py-3">Evaluasi BSAN</th>
-                  <th className="px-3 py-3">Kategori</th>
-                  <th className="px-3 py-3 text-center">
-                    <button
-                      type="button"
-                      onClick={() => setUrut(urut === null ? "desc" : urut === "desc" ? "asc" : null)}
-                      className="inline-flex items-center gap-1 uppercase tracking-wide hover:text-gray-700"
-                    >
-                      Indeks
-                      <ArrowUp className={cn("w-3.5 h-3.5 transition-transform", urut ? "text-gray-600" : "text-gray-300", urut === "desc" && "rotate-180")} />
-                    </button>
-                  </th>
+                  {kepalaUrut("nama", <>Nama {hanyaSekolah ? "Sekolah" : "Instansi"}</>)}
+                  {kepalaUrut("npsn", "NPSN")}
+                  {kepalaUrut("jenjang", "Jenjang")}
+                  {kepalaUrut("kabKota", "Kabupaten/Kota")}
+                  {kepalaUrut("kategori", "Kategori")}
+                  {kepalaUrut("skor", "Indeks", true)}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -358,12 +435,6 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                       <span className="inline-flex rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700 whitespace-nowrap">{s.jenjang}</span>
                     </td>
                     <td className="px-3 py-3.5 text-gray-600 truncate">{s.kabKota}</td>
-                    <td className="px-3 py-3.5">
-                      <span className="inline-flex items-center gap-2 text-gray-700 whitespace-nowrap">
-                        <span className={cn("w-1.5 h-1.5 rounded-full", s.skor !== null ? "bg-blue-500" : "bg-gray-300")} />
-                        {s.skor !== null ? "Sudah" : "Belum"}
-                      </span>
-                    </td>
                     <td className="px-3 py-3.5">{s.skor !== null ? <TingkatChip skor={s.skor} solid /> : <span className="text-gray-300">-</span>}</td>
                     <td className={cn("px-3 py-3.5 text-center font-semibold tabular-nums", s.skor !== null ? "text-gray-900" : "text-gray-300")}>
                       {s.skor !== null ? fmt(s.skor) : "-"}

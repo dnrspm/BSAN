@@ -29,11 +29,14 @@ export function WilayahFilter({
   nilai,
   onChange,
   provinsiTetap,
+  ringkas = false,
 }: {
   nilai: WilayahPilihan
   onChange: (w: WilayahPilihan) => void
   /** Bila diisi (mis. untuk BPMP), pilihan dibatasi pada kab/kota di provinsi ini saja. */
   provinsiTetap?: string
+  /** Pemicu berupa teks "Wilayah: … [Ganti]" (gaya menu Sumber Dukungan admin pusat), bukan tombol selebar kolom. */
+  ringkas?: boolean
 }) {
   const [buka, setBuka] = useState(false)
   const [draf, setDraf] = useState<WilayahPilihan>(nilai)
@@ -52,6 +55,21 @@ export function WilayahFilter({
 
   return (
     <>
+      {ringkas ? (
+        <div className="flex items-center gap-2">
+          <span className="text-gray-500 text-lg">Wilayah:</span>
+          <span className="font-bold text-gray-900 text-lg">
+            {terbatas ? (nilai.kabKota ? `${provinsiTetap} - ${nilai.kabKota}` : provinsiTetap) : nilai.kabKota ? `${nilai.provinsi} - ${nilai.kabKota}` : nilai.provinsi ?? "Semua Wilayah"}
+          </span>
+          <button
+            type="button"
+            onClick={bukaModal}
+            className="bg-blue-50 hover:bg-blue-100 text-blue-600 font-medium text-sm px-2 py-1 rounded-md transition"
+          >
+            Ganti
+          </button>
+        </div>
+      ) : (
       <button
         type="button"
         onClick={bukaModal}
@@ -61,6 +79,7 @@ export function WilayahFilter({
         <span className="flex-1 truncate text-left">{terbatas ? nilai.kabKota ?? "Semua kab/kota" : labelWilayah(nilai)}</span>
         <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
       </button>
+      )}
 
       {buka && (
         <div role="dialog" aria-modal="true" aria-label="Filter Wilayah" className="fixed inset-0 z-50 flex items-center justify-center p-4">
