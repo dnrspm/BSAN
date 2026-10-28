@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation"
 import { LandingNavbar } from "@/components/landing/LandingNavbar"
 import { LandingFooter } from "@/components/landing/LandingFooter"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Users, BookOpen, Calendar, ChevronLeft, ChevronRight, ChevronDown, MapPin, X } from "lucide-react"
+import { Users, BookOpen, CalendarBlank } from "@phosphor-icons/react"
+import { ArrowRight, ChevronLeft, ChevronRight, ChevronDown, MapPin, X } from "lucide-react"
 import { PieChart, Pie, Cell, Label } from "recharts"
 import { TOTAL_PROVINSI, TOTAL_KAB_KOTA, PROVINSI_DATA, KAB_KOTA_PER_PROVINSI } from "@/data/provinsiData"
 import { MOCK_KEGIATAN } from "@/components/landing/KegiatanContent"
@@ -174,9 +175,9 @@ export default function LandingPage() {
               {/* Kelompok Kerja */}
               <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
                 <div className="flex flex-col lg:flex-row">
-                  <div className="bg-[#F9F9F9] lg:w-56 p-6 shrink-0">
+                  <div className="bg-[#F1F1F1] lg:w-56 p-6 shrink-0">
                     <div>
-                      <div className="w-10 h-10 flex items-center justify-center mb-3"><Users className="w-5 h-5 text-blue-600" /></div>
+                      <div className="w-10 h-10 bg-blue-600 rounded-[8px] flex items-center justify-center mb-3"><Users weight="fill" className="w-5 h-5 text-white" /></div>
                       <h3 className="font-bold text-slate-900">Kelompok Kerja</h3>
                       <p className="text-xs text-slate-500 mt-1 leading-snug">Pembentukan Pokja BSAN di seluruh Indonesia</p>
                     </div>
@@ -388,9 +389,9 @@ export default function LandingPage() {
               {/* Sumber Dukungan */}
               <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
                 <div className="flex flex-col lg:flex-row">
-                  <div className="bg-[#F9F9F9] lg:w-56 p-6 shrink-0">
+                  <div className="bg-[#F1F1F1] lg:w-56 p-6 shrink-0">
                     <div>
-                      <div className="w-10 h-10 flex items-center justify-center mb-3"><BookOpen className="w-5 h-5 text-amber-600" /></div>
+                      <div className="w-10 h-10 bg-amber-500 rounded-[8px] flex items-center justify-center mb-3"><BookOpen weight="fill" className="w-5 h-5 text-white" /></div>
                       <h3 className="font-bold text-slate-900">Sumber Dukungan</h3>
                       <p className="text-xs text-slate-500 mt-1 leading-snug">Layanan terverifikasi untuk implementasi BSAN</p>
                     </div>
@@ -443,9 +444,9 @@ export default function LandingPage() {
               {/* Kegiatan */}
               <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
                 <div className="flex flex-col lg:flex-row">
-                  <div className="bg-[#F9F9F9] lg:w-56 p-6 shrink-0">
+                  <div className="bg-[#F1F1F1] lg:w-56 p-6 shrink-0">
                     <div>
-                      <div className="w-10 h-10 flex items-center justify-center mb-3"><Calendar className="w-5 h-5 text-emerald-600" /></div>
+                      <div className="w-10 h-10 bg-emerald-600 rounded-[8px] flex items-center justify-center mb-3"><CalendarBlank weight="fill" className="w-5 h-5 text-white" /></div>
                       <h3 className="font-bold text-slate-900">Kegiatan</h3>
                       <p className="text-xs text-slate-500 mt-1 leading-snug">Pelatihan, workshop &amp; forum koordinasi BSAN</p>
                     </div>

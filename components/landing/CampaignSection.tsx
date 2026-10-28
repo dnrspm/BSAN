@@ -1,4 +1,5 @@
-import { Download, Music2, Quote } from "lucide-react"
+import { Download, Quote } from "lucide-react"
+import { MusicNotes } from "@phosphor-icons/react/ssr"
 import { Button } from "@/components/ui/button"
 
 const testimonials = [
@@ -61,8 +62,8 @@ export function CampaignSection() {
 
           <div className="flex flex-col gap-4">
             <div className="bg-white/10 backdrop-blur-sm rounded-[4px] border border-white/10 p-6 flex-1">
-              <div className="w-12 h-12 flex items-center justify-center mb-4">
-                <Music2 className="w-6 h-6 text-amber-400" />
+              <div className="w-12 h-12 bg-amber-400 rounded-[8px] flex items-center justify-center mb-4">
+                <MusicNotes weight="fill" className="w-6 h-6 text-blue-950" />
               </div>
               <h3 className="text-white font-semibold mb-1">Lagu Kampanye</h3>
               <p className="text-blue-200 text-sm mb-4">

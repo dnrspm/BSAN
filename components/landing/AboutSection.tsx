@@ -1,4 +1,5 @@
-import { CheckCircle2, GraduationCap, BookOpen, Globe, Award } from "lucide-react"
+import { CheckCircle2 } from "lucide-react"
+import { GraduationCap, BookOpen, Globe, Medal } from "@phosphor-icons/react/ssr"
 
 const points = [
   {
@@ -17,7 +18,7 @@ const points = [
     desc: "Program yang dirancang untuk diterapkan di seluruh satuan pendidikan Indonesia.",
   },
   {
-    icon: Award,
+    icon: Medal,
     title: "Verifikasi dan Akuntabilitas",
     desc: "Sistem pemantauan dan pelaporan yang transparan untuk memastikan kepatuhan.",
   },
@@ -61,8 +62,8 @@ export function AboutSection() {
                 key={title}
                 className="bg-white rounded-[4px] p-5 border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all"
               >
-                <div className="w-10 h-10 flex items-center justify-center mb-3">
-                  <Icon className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 bg-blue-600 rounded-[8px] flex items-center justify-center mb-3">
+                  <Icon weight="fill" className="w-5 h-5 text-white" />
                 </div>
                 <h4 className="font-semibold text-slate-900 text-sm mb-1">{title}</h4>
                 <p className="text-slate-500 text-xs leading-relaxed">{desc}</p>

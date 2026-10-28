@@ -149,45 +149,48 @@ export function KegiatanContent({ hideHeroPrefix = false }: KegiatanContentProps
               Update terakhir: {new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })} | {new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2 [&>*]:w-full [&>*]:shrink-0 sm:[&>*]:w-[180px]">
-            <div className="relative flex-1 min-w-[240px] sm:w-auto!">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-              <input
-                type="search"
-                placeholder="Cari kegiatan"
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-                className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-              />
-            </div>
-            <button
-              onClick={() => { setModalPendingProvince(selectedProvince); setModalPendingKota(selectedProvince ? selectedKota : null); setModalBrowseProvince(selectedProvince || null); setShowWilayahModal(true) }}
-              className="h-10 min-w-0 px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-slate-700 hover:bg-[#F9F9F9] transition-colors flex items-center gap-2"
-            >
-              <span className="flex-1 truncate text-left">
-                {selectedKota ? `${selectedKota}, ${selectedProvince}` : selectedProvince || "Seluruh Indonesia"}
-              </span>
-              <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
-            </button>
-            <select
-              value={statusFilter}
-              onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-              aria-label="Filter status"
-              className="h-10 w-full px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-slate-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
-            >
-              {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s === "Semua" ? "Semua Status" : s}</option>)}
-            </select>
-          </div>
           <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-[#D9DBDD]">
+              <div className="flex flex-wrap lg:flex-nowrap items-center gap-2 [&>*]:w-full [&>*]:shrink-0 sm:[&>*]:w-[170px]">
+                <h2 className="text-base font-semibold text-slate-900 sm:w-auto! sm:mr-2">Data Kegiatan BSAN</h2>
+                <button
+                  onClick={() => { setModalPendingProvince(selectedProvince); setModalPendingKota(selectedProvince ? selectedKota : null); setModalBrowseProvince(selectedProvince || null); setShowWilayahModal(true) }}
+                  className="h-10 min-w-0 px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-slate-700 hover:bg-[#F9F9F9] transition-colors flex items-center gap-2"
+                >
+                  <span className="flex-1 truncate text-left">
+                    {selectedKota ? `${selectedKota}, ${selectedProvince}` : selectedProvince || "Seluruh Indonesia"}
+                  </span>
+                  <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                </button>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
+                  aria-label="Filter status"
+                  className="h-10 w-full px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-slate-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                >
+                  {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s === "Semua" ? "Semua Status" : s}</option>)}
+                </select>
+                <div className="relative flex-1 min-w-[180px] sm:w-auto! lg:min-w-0">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <input
+                    type="search"
+                    placeholder="Cari kegiatan"
+                    value={search}
+                    onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+                    className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
             <Table>
               <TableHeader>
                 <TableRow className="bg-[#F1F1F1] hover:bg-[#F1F1F1]">
-                  <TableHead className="text-slate-500 text-xs pl-5">Nama Kegiatan</TableHead>
-                  <TableHead className="w-28 text-slate-500 text-xs">Tanggal</TableHead>
-                  <TableHead className="w-52 text-slate-500 text-xs">Lokasi</TableHead>
-                  <TableHead className="w-36 text-slate-500 text-xs">Peserta</TableHead>
-                  <TableHead className="w-32 text-slate-500 text-xs">Status</TableHead>
-                  <TableHead className="w-24 text-slate-500 text-xs text-right pr-5">Aksi</TableHead>
+                  <TableHead className="pl-5 h-auto px-4 py-3 text-xs font-semibold text-gray-500">Nama Kegiatan</TableHead>
+                  <TableHead className="w-28 h-auto px-4 py-3 text-xs font-semibold text-gray-500">Tanggal</TableHead>
+                  <TableHead className="w-52 h-auto px-4 py-3 text-xs font-semibold text-gray-500">Lokasi</TableHead>
+                  <TableHead className="w-36 h-auto px-4 py-3 text-xs font-semibold text-gray-500">Peserta</TableHead>
+                  <TableHead className="w-32 h-auto px-4 py-3 text-xs font-semibold text-gray-500">Status</TableHead>
+                  <TableHead className="w-24 text-right pr-5 h-auto px-4 py-3 text-xs font-semibold text-gray-500">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

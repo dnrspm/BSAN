@@ -1,4 +1,5 @@
-import { Download, FileText } from "lucide-react"
+import { Download } from "lucide-react"
+import { FileText } from "@phosphor-icons/react/ssr"
 import { Button } from "@/components/ui/button"
 import {
   Accordion,
@@ -54,8 +55,8 @@ export function RegulationSection() {
 
             <div className="mt-8 flex flex-col gap-3">
               <div className="flex items-center gap-4 p-4 rounded-[4px] border border-[#D9DBDD] bg-[#F9F9F9] hover:border-blue-100 transition-colors">
-                <div className="w-10 h-10 flex items-center justify-center shrink-0">
-                  <FileText className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 bg-blue-600 rounded-[8px] flex items-center justify-center shrink-0">
+                  <FileText weight="fill" className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-slate-900 text-sm">Dokumen Regulasi BSAN</p>
@@ -71,8 +72,8 @@ export function RegulationSection() {
               </div>
 
               <div className="flex items-center gap-4 p-4 rounded-[4px] border border-[#D9DBDD] bg-[#F9F9F9] hover:border-blue-100 transition-colors">
-                <div className="w-10 h-10 flex items-center justify-center shrink-0">
-                  <FileText className="w-5 h-5 text-slate-600" />
+                <div className="w-10 h-10 bg-slate-700 rounded-[8px] flex items-center justify-center shrink-0">
+                  <FileText weight="fill" className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-slate-900 text-sm">Slide Presentasi</p>

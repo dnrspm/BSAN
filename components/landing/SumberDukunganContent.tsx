@@ -152,55 +152,58 @@ export function SumberDukunganContent({ hideHeroPrefix = false }: SumberDukungan
             </p>
           </div>
           {/* Table card */}
-          <div className="flex flex-wrap items-center gap-2 [&>*]:w-full [&>*]:shrink-0 sm:[&>*]:w-[180px]">
-            <div className="relative flex-1 min-w-[240px] sm:w-auto!">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-              <input
-                type="search"
-                placeholder="Cari instansi atau kota"
-                value={search}
-                onChange={handleSearchChange}
-                className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-              />
-            </div>
-            <div className="flex gap-2 sm:w-[260px]!">
-              <button
-                onClick={openWilayahModal}
-                className="h-10 min-w-0 flex-1 px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-slate-700 hover:bg-[#F9F9F9] transition-colors flex items-center gap-2"
-              >
-                <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
-                <span className="flex-1 truncate text-left">{wilayahLabel}</span>
-                <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
-              </button>
-              {(filterWilayah !== null || filterPenyedia !== "Pemerintah Pusat" || showAllData) ? (
-                <button
-                  onClick={() => { setFilterWilayah(null); setShowAllData(false); setFilterPenyedia("Pemerintah Pusat"); setPage(1) }}
-                  className="h-10 px-3 text-sm text-slate-500 hover:text-slate-800 border border-[#808489] rounded-[4px] bg-white hover:bg-[#F9F9F9] transition-colors shrink-0"
-                >
-                  Reset
-                </button>
-              ) : null}
-            </div>
-            <select
-              value={filterKategori}
-              onChange={(e) => { setFilterKategori(e.target.value as KategoriDukungan | "semua"); setPage(1) }}
-              aria-label="Filter kategori"
-              className="h-10 w-full px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-            >
-              <option value="semua">Semua Kategori</option>
-              {KATEGORI_KEYS.map((k) => <option key={k} value={k}>{k}</option>)}
-            </select>
-            <select
-              value={filterPenyedia}
-              onChange={(e) => { setFilterPenyedia(e.target.value as KategoriPenyedia | "semua"); setPage(1) }}
-              aria-label="Filter penyedia"
-              className="h-10 w-full px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-            >
-              <option value="semua">Semua Penyedia</option>
-              {PENYEDIA_OPTIONS.map((p) => <option key={p} value={p}>{p}</option>)}
-            </select>
-          </div>
           <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-[#D9DBDD]">
+              <div className="flex flex-wrap lg:flex-nowrap items-center gap-2 [&>*]:w-full [&>*]:shrink-0 sm:[&>*]:w-[170px]">
+                <h2 className="text-base font-semibold text-slate-900 sm:w-auto! sm:mr-2">Data Sumber Dukungan</h2>
+                <div className="flex gap-2 sm:w-[220px]!">
+                  <button
+                    onClick={openWilayahModal}
+                    className="h-10 min-w-0 flex-1 px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-slate-700 hover:bg-[#F9F9F9] transition-colors flex items-center gap-2"
+                  >
+                    <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+                    <span className="flex-1 truncate text-left">{wilayahLabel}</span>
+                    <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                  </button>
+                  {(filterWilayah !== null || filterPenyedia !== "Pemerintah Pusat" || showAllData) ? (
+                    <button
+                      onClick={() => { setFilterWilayah(null); setShowAllData(false); setFilterPenyedia("Pemerintah Pusat"); setPage(1) }}
+                      className="h-10 px-3 text-sm text-slate-500 hover:text-slate-800 border border-[#808489] rounded-[4px] bg-white hover:bg-[#F9F9F9] transition-colors shrink-0"
+                    >
+                      Reset
+                    </button>
+                  ) : null}
+                </div>
+                <select
+                  value={filterKategori}
+                  onChange={(e) => { setFilterKategori(e.target.value as KategoriDukungan | "semua"); setPage(1) }}
+                  aria-label="Filter kategori"
+                  className="h-10 w-full px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                >
+                  <option value="semua">Semua Kategori</option>
+                  {KATEGORI_KEYS.map((k) => <option key={k} value={k}>{k}</option>)}
+                </select>
+                <select
+                  value={filterPenyedia}
+                  onChange={(e) => { setFilterPenyedia(e.target.value as KategoriPenyedia | "semua"); setPage(1) }}
+                  aria-label="Filter penyedia"
+                  className="h-10 w-full px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                >
+                  <option value="semua">Semua Penyedia</option>
+                  {PENYEDIA_OPTIONS.map((p) => <option key={p} value={p}>{p}</option>)}
+                </select>
+                <div className="relative flex-1 min-w-[180px] sm:w-auto! lg:min-w-0">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <input
+                    type="search"
+                    placeholder="Cari instansi atau kota"
+                    value={search}
+                    onChange={handleSearchChange}
+                    className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
             {/* Table */}
             {filtered.length === 0 ? (
               <div className="p-10 text-center">
@@ -225,7 +228,7 @@ export function SumberDukunganContent({ hideHeroPrefix = false }: SumberDukungan
                         const penyediaCfg = item.kategoriPenyedia ? PENYEDIA_CONFIG[item.kategoriPenyedia] : null
 const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Seluruh Indonesia") && (item.kabupatenKota === NASIONAL_WILAYAH || item.kabupatenKota === "Seluruh Indonesia")
                         return (
-                          <tr key={item.id} className={cn("hover:bg-[#F9F9F9] transition-colors border-b border-[#D9DBDD]", isNasional && "bg-[#F9F9F9] border-l-4 border-l-yellow-500")}>
+                          <tr key={item.id} className={cn("hover:bg-[#F9F9F9] transition-colors border-b border-[#D9DBDD]", isNasional && "bg-white border-l-4 border-l-yellow-500")}>
                             <td className="px-4 py-3.5">
                               <p className="font-semibold text-gray-900 whitespace-nowrap">{item.namaInstansi}</p>
 
