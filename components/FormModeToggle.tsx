@@ -45,7 +45,7 @@ export function FormModeToggle({ onChange }: { onChange?: (isIdeal: boolean) => 
         <ArrowLeftRight className="w-3.5 h-3.5" />
         <span>{isIdeal ? "Ideal" : "MVP"}</span>
       </button>
-      <div className="absolute bottom-full right-0 mb-2 px-2.5 py-1.5 bg-gray-900 text-white text-[10px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+      <div className="absolute bottom-full right-0 mb-2 px-2.5 py-1.5 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
         {isIdeal ? "Mode Ideal: DB Sekolah + NPSN" : "Mode MVP: Input Free Text"}
         <div className="absolute top-full right-3 w-2 h-2 bg-gray-900 rotate-45 -mt-1" />
       </div>

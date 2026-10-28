@@ -10,10 +10,10 @@ interface DaftarPengajuanViewProps {
 }
 
 const STATUS_CONFIG: Record<PokjaStatus, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-  "belum-dibentuk": { label: "Belum Dibentuk", color: "text-gray-700", bg: "bg-gray-50 border-gray-200", icon: Building },
-  "masih-diverifikasi": { label: "Perlu Diperiksa", color: "text-amber-700", bg: "bg-amber-50 border-amber-200", icon: Clock },
-  aktif: { label: "Aktif", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200", icon: CheckCircle2 },
-  "butuh-perbaikan": { label: "Perlu Perbaikan", color: "text-red-700", bg: "bg-red-50 border-red-200", icon: XCircle },
+  "belum-dibentuk": { label: "Belum Dibentuk", color: "text-[#2f3031]", bg: "bg-[#efefef]", icon: Building },
+  "masih-diverifikasi": { label: "Perlu Diperiksa", color: "text-amber-950", bg: "bg-amber-200", icon: Clock },
+  aktif: { label: "Aktif", color: "text-emerald-950", bg: "bg-emerald-300", icon: CheckCircle2 },
+  "butuh-perbaikan": { label: "Perlu Perbaikan", color: "text-rose-950", bg: "bg-rose-100", icon: XCircle },
 }
 
 const STATUS_FILTER_OPTIONS: { value: PokjaStatus | "semua"; label: string }[] = [
@@ -93,61 +93,63 @@ export function DaftarPengajuanView({ pokjaList, onSelect }: DaftarPengajuanView
           <p className="text-sm text-gray-500 mt-0.5">Kelola data Kelompok Kerja di seluruh Indonesia</p>
         </div>
       </div>
-      {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            placeholder="Cari wilayah"
-            className="w-full h-9 pl-9 pr-3 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-slate-600 transition"
-          />
+      <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm overflow-hidden">
+        <div className="px-5 pt-5 pb-4 space-y-4">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="text-base font-semibold text-gray-900">Daftar Kelompok Kerja</h2>
+            <p className="text-sm text-gray-500 tabular-nums">{filtered.length.toLocaleString("id-ID")} kelompok kerja</p>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+            <div className="relative sm:col-span-2 lg:col-span-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                placeholder="Cari wilayah"
+                className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              />
+            </div>
+            <select
+              value={filterStatus}
+              onChange={(e) => handleFilterChange(e.target.value as PokjaStatus | "semua")}
+              aria-label="Filter status"
+              className="h-10 w-full px-3 text-sm border border-gray-300 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            >
+              {STATUS_FILTER_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="relative">
-          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-          <select
-            value={filterStatus}
-            onChange={(e) => handleFilterChange(e.target.value as PokjaStatus | "semua")}
-            className="h-9 pl-9 pr-8 text-sm border border-gray-300 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-slate-600 focus:border-slate-600 transition text-gray-700"
-          >
-            {STATUS_FILTER_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Table */}
-      <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400">
+          <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400 border-t border-gray-200">
             <Search className="w-8 h-8" />
             <p className="text-sm">Tidak ada Kelompok Kerja ditemukan</p>
           </div>
         ) : (
+          <>
+            <div className="overflow-x-auto border-t border-gray-200">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Wilayah</th>
-                <th className="text-left px-3 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Tanggal Diverifikasi</th>
-                <th className="text-left px-3 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Tanggal SK Selesai</th>
-                <th className="text-left px-3 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+              <tr className="border-b border-gray-100 bg-[#F1F1F1]">
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500">Wilayah</th>
+                <th className="text-left px-3 py-3 text-xs font-semibold text-gray-500 hidden sm:table-cell">Tanggal Diverifikasi</th>
+                <th className="text-left px-3 py-3 text-xs font-semibold text-gray-500 hidden md:table-cell">Tanggal SK Selesai</th>
+                <th className="text-left px-3 py-3 text-xs font-semibold text-gray-500">Status</th>
                 <th className="px-3 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {paginatedData.map((p) => {
                 const cfg = STATUS_CONFIG[p.effectiveStatus]
-                const Icon = cfg.icon
                 const showSkEndDate = p.effectiveStatus === "aktif" || (p.effectiveStatus === "butuh-perbaikan" && p.expired)
                 const showTanggalDiverifikasi = p.effectiveStatus === "aktif" || p.effectiveStatus === "masih-diverifikasi" || (p.effectiveStatus === "butuh-perbaikan" && p.expired)
                 return (
-                  <tr key={p.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={p.id} className="hover:bg-[#F9F9F9] transition-colors">
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
                           <MapPin className="w-4 h-4 text-gray-500" />
                         </div>
                         <div>
@@ -170,17 +172,16 @@ export function DaftarPengajuanView({ pokjaList, onSelect }: DaftarPengajuanView
                       ) : "-"}
                     </td>
                     <td className="px-3 py-3.5">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${cfg.bg} ${cfg.color}`}>
-                        <Icon className="w-3 h-3" />
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold ${cfg.bg} ${cfg.color}`}>
                         {cfg.label}
                       </span>
                     </td>
                     <td className="px-3 py-3.5 text-right">
                       <button
                         onClick={() => onSelect(p)}
-                        className="text-xs px-3 py-1.5 rounded-lg font-medium transition-colors bg-slate-100 text-slate-700 hover:bg-slate-200"
+                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                       >
-                        {p.effectiveStatus === "masih-diverifikasi" ? "Periksa" : "Cek Detail"}
+                        Cek Detail
                       </button>
                     </td>
                   </tr>
@@ -188,18 +189,18 @@ export function DaftarPengajuanView({ pokjaList, onSelect }: DaftarPengajuanView
               })}
             </tbody>
           </table>
+            </div>
+            <TablePagination
+              total={filtered.length}
+              halaman={currentPage}
+              perHalaman={itemsPerPage}
+              onHalaman={handlePageChange}
+              onPerHalaman={(n) => { setItemsPerPage(n); setCurrentPage(1) }}
+              satuan="Kelompok Kerja"
+            />
+          </>
         )}
       </div>
-
-      <TablePagination
-        total={filtered.length}
-        halaman={currentPage}
-        perHalaman={itemsPerPage}
-        onHalaman={handlePageChange}
-        onPerHalaman={(n) => { setItemsPerPage(n); setCurrentPage(1) }}
-        satuan="Kelompok Kerja"
-        className="rounded-xl border border-gray-200 bg-white"
-      />
     </div>
   )
 }

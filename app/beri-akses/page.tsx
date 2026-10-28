@@ -56,7 +56,7 @@ function SectionCard({
   children: React.ReactNode
 }) {
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-5">
+    <section className="rounded-[4px] border border-gray-200 bg-white p-5">
       <h2 className="text-sm font-bold text-gray-900">{title}</h2>
       {deskripsi && <p className="text-xs text-gray-500 mt-0.5">{deskripsi}</p>}
       <div className="mt-4">{children}</div>
@@ -272,12 +272,12 @@ export default function BeriAksesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
           <button
             onClick={() => router.push(URL_KEMBALI)}
-            className="p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition"
+            className="p-2 rounded-[4px] text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition"
             aria-label="Kembali"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -293,7 +293,7 @@ export default function BeriAksesPage() {
 
       {/* pb-24: ruang agar isi terakhir tidak tertutup bar aksi yang dipatok di bawah */}
       <div className="max-w-3xl mx-auto px-4 py-6 pb-24 space-y-4">
-        <div className="flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2.5">
+        <div className="flex items-start gap-2 rounded-[4px] border border-blue-200 bg-blue-50 px-3 py-2.5">
           <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-blue-800">
             Akses berlaku untuk Admin Pusat, BPMP, dan Admin Dinas Pendidikan yang terdaftar. Jika
@@ -323,7 +323,7 @@ export default function BeriAksesPage() {
               }}
               placeholder="nama@instansi.go.id"
               aria-invalid={formatSalah}
-              className={`w-full h-10 pl-9 pr-3 text-sm border rounded-lg focus:outline-none focus:ring-2 ${
+              className={`w-full h-10 pl-9 pr-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 ${
                 formatSalah
                   ? "border-red-300 focus:ring-red-500 focus:border-red-500"
                   : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
@@ -346,7 +346,7 @@ export default function BeriAksesPage() {
           )}
 
           {saran.length > 0 && (
-            <div className="mt-2 w-full border border-gray-200 rounded-lg overflow-hidden max-h-80 overflow-y-auto">
+            <div className="mt-2 w-full border border-gray-200 rounded-[4px] overflow-hidden max-h-80 overflow-y-auto">
               {saran.map((k) => (
                 <button
                   key={k.email}
@@ -354,7 +354,7 @@ export default function BeriAksesPage() {
                   disabled={k.peran === null}
                   onClick={() => { if (k.peran) tambah({ ...k, peran: k.peran }) }}
                   className={`w-full text-left px-3 py-2.5 border-b border-gray-100 last:border-b-0 ${
-                    k.peran ? "hover:bg-gray-50" : "bg-gray-50/60 cursor-not-allowed"
+                    k.peran ? "hover:bg-[#F9F9F9]" : "bg-[#F9F9F9] cursor-not-allowed"
                   }`}
                 >
                   <span
@@ -379,7 +379,7 @@ export default function BeriAksesPage() {
           {/* Formatnya benar tapi email tidak ada di database: satu-satunya jalan
               adalah mendaftarkannya lewat input manual. */}
           {emailTidakTersedia && !manualOpen && (
-            <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
+            <div className="mt-3 rounded-[4px] border border-amber-200 bg-amber-50 px-3 py-2.5">
               <div className="flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                 <div className="min-w-0">
@@ -393,7 +393,7 @@ export default function BeriAksesPage() {
                   <button
                     type="button"
                     onClick={bukaManual}
-                    className="mt-2.5 inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 text-xs font-medium hover:border-gray-400 hover:bg-gray-50 transition"
+                    className="mt-2.5 inline-flex items-center gap-1.5 h-9 px-3 rounded-[4px] border border-gray-300 bg-white text-gray-900 text-xs font-medium hover:border-gray-400 hover:bg-[#F9F9F9] transition"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     Daftarkan Pengguna
@@ -406,7 +406,7 @@ export default function BeriAksesPage() {
 
         <SectionCard title={`Pengguna Dipilih (${terpilih.length})`}>
           {terpilih.length > 0 ? (
-            <div className="border border-gray-200 rounded-lg">
+            <div className="border border-gray-200 rounded-[4px]">
               {terpilih.map((t) => (
                 <div
                   key={t.email}
@@ -419,7 +419,7 @@ export default function BeriAksesPage() {
                   <button
                     type="button"
                     onClick={() => hapusTerpilih(t.email)}
-                    className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 flex-shrink-0"
+                    className="p-1 rounded-[4px] text-gray-400 hover:text-gray-600 hover:bg-gray-100 flex-shrink-0"
                     aria-label={`Hapus ${t.email}`}
                   >
                     <X className="w-4 h-4" />
@@ -429,7 +429,7 @@ export default function BeriAksesPage() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center text-center py-10 px-6">
-              <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+              <div className="w-12 h-12 flex items-center justify-center">
                 <UserPlus className="w-6 h-6 text-gray-400" />
               </div>
               <p className="text-sm font-medium text-gray-700 mt-3">Belum ada pengguna dipilih</p>
@@ -444,7 +444,7 @@ export default function BeriAksesPage() {
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-end gap-2">
           <button
             onClick={() => router.push(URL_KEMBALI)}
-            className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+            className="px-4 py-2 text-sm font-medium rounded-[4px] border border-gray-300 text-gray-700 hover:bg-[#F9F9F9]"
           >
             Batal
           </button>
@@ -452,7 +452,7 @@ export default function BeriAksesPage() {
             onClick={simpan}
             disabled={terpilih.length === 0}
             title={terpilih.length === 0 ? "Belum ada pengguna dipilih" : undefined}
-            className="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm font-medium rounded-[4px] bg-blue-600 text-white hover:bg-blue-700 transition disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
           >
             Beri Akses{terpilih.length > 0 ? ` (${terpilih.length})` : ""}
           </button>
@@ -486,7 +486,7 @@ export default function BeriAksesPage() {
               <button
                 type="button"
                 onClick={tutupManual}
-                className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 flex-shrink-0"
+                className="p-1 rounded-[4px] text-gray-400 hover:text-gray-600 hover:bg-gray-100 flex-shrink-0"
                 aria-label="Tutup input manual"
               >
                 <X className="w-4 h-4" />
@@ -504,7 +504,7 @@ export default function BeriAksesPage() {
                       key={p}
                       type="button"
                       onClick={() => pilihPeran(p)}
-                      className={`h-10 px-2 rounded-lg border text-sm font-medium transition truncate ${
+                      className={`h-10 px-2 rounded-[4px] border text-sm font-medium transition truncate ${
                         manualPeran === p
                           ? "border-blue-600 bg-blue-50 text-blue-600"
                           : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
@@ -531,7 +531,7 @@ export default function BeriAksesPage() {
                           if (t === "provinsi") setManualKabKota("")
                           setManualError("")
                         }}
-                        className={`h-10 rounded-lg border text-sm font-medium transition ${
+                        className={`h-10 rounded-[4px] border text-sm font-medium transition ${
                           manualTingkat === t
                             ? "border-blue-600 bg-blue-50 text-blue-600"
                             : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
@@ -551,7 +551,7 @@ export default function BeriAksesPage() {
                     <select
                       value={manualProvinsi}
                       onChange={(e) => { setManualProvinsi(e.target.value); setManualKabKota(""); setManualError("") }}
-                      className={`w-full h-10 px-2 mt-1 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      className={`w-full h-10 px-2 mt-1 text-sm border border-gray-300 rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                         manualProvinsi ? "text-gray-900" : "text-gray-400"
                       }`}
                     >
@@ -568,7 +568,7 @@ export default function BeriAksesPage() {
                         value={manualKabKota}
                         onChange={(e) => { setManualKabKota(e.target.value); setManualError("") }}
                         disabled={!manualProvinsi}
-                        className={`w-full h-10 px-2 mt-1 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                        className={`w-full h-10 px-2 mt-1 text-sm border border-gray-300 rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
                           manualKabKota ? "text-gray-900" : "text-gray-400"
                         }`}
                       >
@@ -598,13 +598,13 @@ export default function BeriAksesPage() {
                           value={email}
                           onChange={(e) => ubahEmailManual(i, e.target.value)}
                           placeholder="nama@instansi.go.id"
-                          className="flex-1 h-10 px-3 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                          className="flex-1 h-10 px-3 text-sm border border-gray-300 rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                         />
                         {manualEmails.length > 1 && (
                           <button
                             type="button"
                             onClick={() => hapusBarisEmail(i)}
-                            className="h-10 w-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-red-200 hover:text-red-500 hover:bg-red-50 transition flex-shrink-0"
+                            className="h-10 w-10 flex items-center justify-center rounded-[4px] border border-gray-200 text-gray-400 hover:border-red-200 hover:text-red-500 hover:bg-red-50 transition flex-shrink-0"
                             aria-label={`Hapus email baris ${i + 1}`}
                           >
                             <Trash2 className="w-4 h-4" />
@@ -616,7 +616,7 @@ export default function BeriAksesPage() {
                   <button
                     type="button"
                     onClick={tambahBarisEmail}
-                    className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+                    className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
                   >
                     <Plus className="w-3.5 h-3.5" /> Tambah Email
                   </button>
@@ -630,14 +630,14 @@ export default function BeriAksesPage() {
                 <button
                   type="button"
                   onClick={tutupManual}
-                  className="px-3 h-9 text-xs font-medium rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
+                  className="px-3 h-9 text-xs font-medium rounded-[4px] border border-gray-300 text-gray-700 bg-white hover:bg-[#F9F9F9]"
                 >
                   Batal
                 </button>
                 <button
                   type="button"
                   onClick={tambahManual}
-                  className="inline-flex items-center gap-1.5 px-3 h-9 text-xs font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition"
+                  className="inline-flex items-center gap-1.5 px-3 h-9 text-xs font-medium rounded-[4px] bg-gray-900 text-white hover:bg-gray-800 transition"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Simpan{jumlahEmailTerisi > 1 ? ` ${jumlahEmailTerisi} Email` : ""}

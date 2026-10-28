@@ -32,7 +32,7 @@ export function Input({
   ...props
 }: InputProps) {
   const inputBase =
-    "block w-full rounded-md border bg-white placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+    "block w-full rounded-[4px] border bg-white placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
 
   const sizeStyles: Record<string, string> = {
     sm: "text-sm px-2 py-1",
@@ -42,16 +42,16 @@ export function Input({
   const stateStyles = cn({
     "border-gray-300": !isInvalid && !disabled,
     "border-red-500 text-red-600 focus:ring-red-500 focus:border-red-500": isInvalid,
-    "bg-gray-100 text-gray-500 border-gray-200 cursor-not-allowed": disabled,
+    "bg-[#F9F9F9] text-gray-500 border-gray-200 cursor-not-allowed": disabled,
   })
 
   const characterCount = showCounter && maxLength ? `${String(value ?? "").length}/${maxLength}` : null
 
   return (
     <div className="w-full space-y-1">
-      <div className="relative flex rounded-md shadow-sm">
+      <div className="relative flex rounded-[4px] shadow-sm">
         {leftAddon && (
-          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+          <span className="inline-flex items-center px-3 rounded-l-[4px] border border-r-0 border-gray-300 bg-[#F9F9F9] text-gray-500 text-sm">
             {leftAddon}
           </span>
         )}
@@ -85,7 +85,7 @@ export function Input({
           )}
         </div>
         {rightAddon && (
-          <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+          <span className="inline-flex items-center px-3 rounded-r-[4px] border border-l-0 border-gray-300 bg-[#F9F9F9] text-gray-500 text-sm">
             {rightAddon}
           </span>
         )}

@@ -37,7 +37,7 @@ export function TablePagination({ total, halaman, perHalaman, onHalaman, onPerHa
   const opsi = opsiPerHalaman.includes(perHalaman) ? opsiPerHalaman : [...opsiPerHalaman, perHalaman].sort((a, b) => a - b)
 
   return (
-    <div className={cn("flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-3 border-t border-gray-200 bg-gray-50/60", className)}>
+    <div className={cn("flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-3 border-t border-gray-200 bg-[#F9F9F9]", className)}>
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500 tabular-nums">
         <span>
           Menampilkan {mulai + 1} - {Math.min(mulai + perHalaman, total)} dari {total.toLocaleString("id-ID")} {satuan}
@@ -50,13 +50,13 @@ export function TablePagination({ total, halaman, perHalaman, onHalaman, onPerHa
                 value={perHalaman}
                 onChange={(e) => onPerHalaman(Number(e.target.value))}
                 aria-label="Jumlah data per halaman"
-                className="h-8 appearance-none rounded-lg border border-gray-300 bg-white pl-3 pr-8 text-sm text-gray-700 cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                className="h-8 appearance-none rounded-[4px] border border-gray-300 bg-white pl-3 pr-8 text-sm text-gray-700 cursor-pointer hover:bg-[#F9F9F9] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               >
                 {opsi.map((n) => (
                   <option key={n} value={n}>{n}</option>
                 ))}
               </select>
-              <ChevronDown className="pointer-events-none absolute right-2.5 h-3.5 w-3.5 text-gray-500" />
+              <ChevronDown className="pointer-events-none absolute right-3 h-3.5 w-3.5 text-gray-500" />
             </label>
             <span>per halaman</span>
           </>
@@ -68,7 +68,7 @@ export function TablePagination({ total, halaman, perHalaman, onHalaman, onPerHa
           onClick={() => onHalaman(aktif - 1)}
           disabled={aktif === 1}
           aria-label="Halaman sebelumnya"
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed"
+          className="flex h-8 w-8 items-center justify-center rounded-[4px] text-gray-500 hover:bg-gray-100 disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
         </button>
@@ -82,7 +82,7 @@ export function TablePagination({ total, halaman, perHalaman, onHalaman, onPerHa
               onClick={() => onHalaman(n)}
               aria-current={n === aktif ? "page" : undefined}
               className={cn(
-                "flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm tabular-nums transition-colors",
+                "flex h-8 min-w-8 items-center justify-center rounded-[4px] px-2 text-sm tabular-nums transition-colors",
                 n === aktif ? "bg-gray-200/70 font-semibold text-gray-900" : "text-gray-500 hover:bg-gray-100"
               )}
             >
@@ -95,7 +95,7 @@ export function TablePagination({ total, halaman, perHalaman, onHalaman, onPerHa
           onClick={() => onHalaman(aktif + 1)}
           disabled={aktif === totalHalaman}
           aria-label="Halaman berikutnya"
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-900 hover:bg-gray-100 disabled:text-gray-400 disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed"
+          className="flex h-8 w-8 items-center justify-center rounded-[4px] text-gray-900 hover:bg-gray-100 disabled:text-gray-400 disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed"
         >
           <ChevronRight className="h-3.5 w-3.5" />
         </button>

@@ -131,10 +131,10 @@ export const fmt = (n: number) => n.toLocaleString("id-ID", { minimumFractionDig
 export function TingkatChip({ skor, solid, className }: { skor: number; solid?: boolean; className?: string }) {
   const t = tingkat(skor)
   if (solid) {
-    return <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold", t.solid, className)}>{t.label}</span>
+    return <span className={cn("inline-flex items-center rounded-full whitespace-nowrap px-2.5 py-0.5 text-[13px] font-semibold", t.solid, className)}>{t.label}</span>
   }
   return (
-    <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset", t.chip)}>
+    <span className={cn("inline-flex items-center gap-1.5 rounded-full whitespace-nowrap px-2.5 py-0.5 text-[13px] font-medium ring-1 ring-inset", t.chip)}>
       <span className={cn("w-1.5 h-1.5 rounded-full", t.dot)} />
       {t.label}
     </span>
@@ -168,7 +168,7 @@ export function TahunSelect({ tahun, onChange, className }: { tahun: number; onC
         <select
           value={tahun}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="appearance-none rounded-lg border border-gray-300 bg-white pl-3 pr-9 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="appearance-none rounded-[4px] border border-gray-300 bg-white pl-3 pr-9 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
           {TAHUN_OPSI.map((y) => (
             <option key={y} value={y}>
@@ -226,7 +226,7 @@ export function EksporExcelButton({ tahun, data }: { tahun: number; data: Indika
     <button
       type="button"
       onClick={ekspor}
-      className="flex h-9 items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+      className="flex h-9 items-center gap-1.5 rounded-[4px] border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 transition hover:bg-[#F9F9F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
     >
       <Download className="h-4 w-4" /> Ekspor Excel
     </button>

@@ -113,7 +113,7 @@ function PokjaDetailDrawer({ pokja, onClose }: { pokja: PokjaItem; onClose: () =
       {/* Drawer */}
       <div className="fixed inset-y-0 right-0 z-40 w-full max-w-2xl bg-white shadow-2xl flex flex-col">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div className="flex items-start justify-between gap-4 px-6 py-4 border-b border-gray-200 bg-[#F9F9F9]">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-base font-bold text-gray-900">{pokja.nama}</h2>
@@ -129,7 +129,7 @@ function PokjaDetailDrawer({ pokja, onClose }: { pokja: PokjaItem; onClose: () =
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-gray-200 transition-colors flex-shrink-0"
+            className="p-1.5 rounded-[4px] hover:bg-gray-200 transition-colors flex-shrink-0"
             aria-label="Tutup"
           >
             <X className="w-4 h-4 text-gray-600" />
@@ -139,11 +139,11 @@ function PokjaDetailDrawer({ pokja, onClose }: { pokja: PokjaItem; onClose: () =
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {/* Kanal Pengaduan */}
           {nomorKanal && (
-            <div className="rounded-xl border border-green-200 bg-green-50 p-4">
+            <div className="rounded-[4px] border border-green-200 bg-green-50 p-4">
               <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
-                    <MessageCircle className="w-4 h-4 text-white" />
+                  <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                    <MessageCircle className="w-4 h-4 text-green-600" />
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-0.5">
@@ -156,7 +156,7 @@ function PokjaDetailDrawer({ pokja, onClose }: { pokja: PokjaItem; onClose: () =
                   href={`https://wa.me/62${nomorKanal.replace(/^0/, "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition-colors flex-shrink-0"
+                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition-colors flex-shrink-0"
                 >
                   <Phone className="w-3 h-3" />
                   Hubungi
@@ -166,20 +166,20 @@ function PokjaDetailDrawer({ pokja, onClose }: { pokja: PokjaItem; onClose: () =
           )}
 
           {/* Members table */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-3.5 border-b border-gray-100">
-              <h3 className="text-sm font-semibold text-gray-800">
-                Daftar Anggota
-                <span className="ml-2 text-xs font-normal text-gray-400">({rows.length} anggota)</span>
-              </h3>
-              <div className="relative w-full sm:w-56">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+          <div className="bg-white rounded-[4px] border border-gray-200 overflow-hidden">
+            <div className="px-5 pt-5 pb-4 space-y-4 border-b border-gray-200">
+              <div className="flex items-baseline justify-between gap-3">
+                <h3 className="text-base font-semibold text-gray-900">Daftar Anggota</h3>
+                <p className="text-sm text-gray-500 tabular-nums">{rows.length} anggota</p>
+              </div>
+              <div className="relative sm:max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 <input
-                  type="text"
+                  type="search"
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setPage(1) }}
                   placeholder="Cari nama, posisi"
-                  className="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                 />
               </div>
             </div>
@@ -193,10 +193,10 @@ function PokjaDetailDrawer({ pokja, onClose }: { pokja: PokjaItem; onClose: () =
               <>
                 <div className="overflow-x-auto">
                   <table className="min-w-full text-sm text-left">
-                    <thead className="bg-gray-50 border-b border-gray-100">
+                    <thead className="bg-[#F1F1F1] border-b border-gray-100">
                       <tr>
                         {["Posisi / Peran", "Nama", "Email", "Jenis Kelamin", "Nomor HP", "Instansi"].map((col) => (
-                          <th key={col} className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                          <th key={col} className="px-4 py-3 text-xs font-semibold text-gray-500 whitespace-nowrap">
                             {col}
                           </th>
                         ))}
@@ -204,7 +204,7 @@ function PokjaDetailDrawer({ pokja, onClose }: { pokja: PokjaItem; onClose: () =
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {paginated.length > 0 ? paginated.map((row) => (
-                        <tr key={row.key} className="hover:bg-gray-50 transition-colors">
+                        <tr key={row.key} className="hover:bg-[#F9F9F9] transition-colors">
                           <td className="px-4 py-3 whitespace-nowrap">
                             <Badge variant={ROLE_BADGE_MAP[row.key] ?? "neutral"} size="sm">
                               {row.label}
@@ -294,12 +294,12 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-[4px] border border-gray-100 overflow-hidden">
         {activePokjaList.length === 0 ? (
           <EmptyStatePokja onBuatPokja={onBuatPokja} />
         ) : pokja ? (
           /* Detail view untuk admin dinas yang punya 1 pokja */
-          <div className="p-6 space-y-6 rounded-xl border border-gray-100 bg-white">
+          <div className="p-6 space-y-6 rounded-[4px] border border-gray-100 bg-white">
             {/* Header pokja */}
             <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4 pb-5 border-b border-gray-100">
               <div className="flex-1">
@@ -317,7 +317,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                 <button
                   type="button"
                   onClick={onContinueDraft}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 transition-colors flex-shrink-0"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-[4px] bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 transition-colors flex-shrink-0"
                 >
                   <Pencil className="w-4 h-4" />
                   Lanjutkan Pengisian
@@ -327,7 +327,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                 <button
                   type="button"
                   onClick={() => onPerbaikiPokja?.(pokja)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex-shrink-0"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-[4px] border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-[#F9F9F9] transition-colors flex-shrink-0"
                 >
                   <Pencil className="w-4 h-4" />
                   Edit Kelompok Kerja
@@ -339,7 +339,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
             {!isAdminPusat && pokja.status === "butuh-perbaikan" && (() => {
               const logTolak = [...(pokja.validasiLog ?? [])].reverse().find(l => l.aksi === "tolak")
               return (
-                <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+                <div className="rounded-[4px] border border-red-200 bg-red-50 p-4">
                   <div className="flex items-start gap-3">
                     <XCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                     <div className="flex-1 min-w-0">
@@ -358,7 +358,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                     <button
                       type="button"
                       onClick={() => onPerbaikiPokja?.(pokja)}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-[4px] bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
                     >
                       <FileText className="w-4 h-4" />
                       Perbaiki Kelompok Kerja
@@ -371,20 +371,20 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
             {/* Grid info utama — warna mengikuti status */}
             {(() => {
               const cardColor = {
-                "draf":               { bg: "from-gray-50 to-gray-100/50",     border: "border-gray-200",   icon: "bg-gray-500",   label: "text-gray-600"   },
-                "masih-diverifikasi": { bg: "from-amber-50 to-amber-100/50",   border: "border-amber-200",  icon: "bg-amber-500",  label: "text-amber-700"  },
-                "aktif":              { bg: "from-green-50 to-green-100/50",   border: "border-green-200",  icon: "bg-green-600",  label: "text-green-700"  },
-                "butuh-perbaikan":    { bg: "from-red-50 to-red-100/50",       border: "border-red-200",    icon: "bg-red-500",    label: "text-red-700"    },
-                "belum-dibentuk":     { bg: "from-gray-50 to-gray-100/50",     border: "border-gray-200",   icon: "bg-gray-400",   label: "text-gray-600"   },
-              }[pokja.status] ?? { bg: "from-gray-50 to-gray-100/50", border: "border-gray-200", icon: "bg-gray-400", label: "text-gray-600" }
+                "draf":               { bg: "from-[#F9F9F9] to-[#F9F9F9]",     border: "border-gray-200",   icon: "text-gray-500",   label: "text-gray-600"   },
+                "masih-diverifikasi": { bg: "from-amber-50 to-amber-100/50",   border: "border-amber-200",  icon: "text-amber-600",  label: "text-amber-700"  },
+                "aktif":              { bg: "from-green-50 to-green-100/50",   border: "border-green-200",  icon: "text-green-600",  label: "text-green-700"  },
+                "butuh-perbaikan":    { bg: "from-red-50 to-red-100/50",       border: "border-red-200",    icon: "text-red-500",    label: "text-red-700"    },
+                "belum-dibentuk":     { bg: "from-[#F9F9F9] to-[#F9F9F9]",     border: "border-gray-200",   icon: "text-gray-400",   label: "text-gray-600"   },
+              }[pokja.status] ?? { bg: "from-[#F9F9F9] to-[#F9F9F9]", border: "border-gray-200", icon: "text-gray-400", label: "text-gray-600" }
 
               return (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Ketua Kelompok Kerja */}
-                  <div className={`bg-gradient-to-br ${cardColor.bg} rounded-xl p-4 border ${cardColor.border}`}>
+                  <div className={`bg-gradient-to-br ${cardColor.bg} rounded-[4px] p-4 border ${cardColor.border}`}>
                     <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-full ${cardColor.icon} flex items-center justify-center flex-shrink-0`}>
-                        <Users className="w-5 h-5 text-white" />
+                      <div className={`flex-shrink-0 ${cardColor.icon}`}>
+                        <Users className="w-6 h-6" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className={`text-xs font-semibold ${cardColor.label} uppercase tracking-wide mb-1`}>Ketua Kelompok Kerja</p>
@@ -403,10 +403,10 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                   </div>
 
                   {/* Total Anggota */}
-                  <div className={`bg-gradient-to-br ${cardColor.bg} rounded-xl p-4 border ${cardColor.border}`}>
+                  <div className={`bg-gradient-to-br ${cardColor.bg} rounded-[4px] p-4 border ${cardColor.border}`}>
                     <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-full ${cardColor.icon} flex items-center justify-center flex-shrink-0`}>
-                        <Users className="w-5 h-5 text-white" />
+                      <div className={`flex-shrink-0 ${cardColor.icon}`}>
+                        <Users className="w-6 h-6" />
                       </div>
                       <div className="flex-1">
                         <p className={`text-xs font-semibold ${cardColor.label} uppercase tracking-wide mb-1`}>Total Anggota</p>
@@ -418,10 +418,10 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                   </div>
 
                   {/* Nomor SK */}
-                  <div className={`bg-gradient-to-br ${cardColor.bg} rounded-xl p-4 border ${cardColor.border}`}>
+                  <div className={`bg-gradient-to-br ${cardColor.bg} rounded-[4px] p-4 border ${cardColor.border}`}>
                     <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-full ${cardColor.icon} flex items-center justify-center flex-shrink-0`}>
-                        <FileText className="w-5 h-5 text-white" />
+                      <div className={`flex-shrink-0 ${cardColor.icon}`}>
+                        <FileText className="w-6 h-6" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className={`text-xs font-semibold ${cardColor.label} uppercase tracking-wide mb-1`}>Nomor SK</p>
@@ -444,10 +444,10 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                   </div>
 
                   {/* Kanal Pengaduan */}
-                  <div className={`bg-gradient-to-br ${cardColor.bg} rounded-xl p-4 border ${cardColor.border}`}>
+                  <div className={`bg-gradient-to-br ${cardColor.bg} rounded-[4px] p-4 border ${cardColor.border}`}>
                     <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-full ${cardColor.icon} flex items-center justify-center flex-shrink-0`}>
-                        <MessageCircle className="w-5 h-5 text-white" />
+                      <div className={`flex-shrink-0 ${cardColor.icon}`}>
+                        <MessageCircle className="w-6 h-6" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className={`text-xs font-semibold ${cardColor.label} uppercase tracking-wide mb-1`}>Kanal Pengaduan &amp; Aspirasi</p>
@@ -464,22 +464,20 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
             })()}
 
             {/* Daftar Anggota */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b border-gray-100 bg-gray-50">
-                <h3 className="text-base font-bold text-gray-800">
-                  Daftar Anggota Kelompok Kerja
-                  <span className="ml-2 text-sm font-normal text-gray-500">
-                    ({pokja.data?.members ? toTableRows(pokja.data.members).length : 0} anggota)
-                  </span>
-                </h3>
-                <div className="relative w-full sm:w-64">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+            <div className="bg-white rounded-[4px] border border-gray-200 overflow-hidden">
+              <div className="px-5 pt-5 pb-4 space-y-4 border-b border-gray-200">
+                <div className="flex items-baseline justify-between gap-3">
+                  <h3 className="text-base font-semibold text-gray-900">Daftar Anggota Kelompok Kerja</h3>
+                  <p className="text-sm text-gray-500 tabular-nums">{pokja.data?.members ? toTableRows(pokja.data.members).length : 0} anggota</p>
+                </div>
+                <div className="relative sm:max-w-sm">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   <input
-                    type="text"
+                    type="search"
                     value={search}
                     onChange={(e) => { setSearch(e.target.value); setPage(1) }}
                     placeholder="Cari nama, posisi"
-                    className="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                    className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                   />
                 </div>
               </div>
@@ -503,10 +501,10 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                   <>
                     <div className="overflow-x-auto">
                       <table className="min-w-full text-sm text-left">
-                        <thead className="bg-gray-50 border-b border-gray-100">
+                        <thead className="bg-[#F1F1F1] border-b border-gray-100">
                           <tr>
                             {["Posisi / Peran", "Nama", "Email", "Jenis Kelamin", "Nomor HP", "Instansi"].map((col) => (
-                              <th key={col} className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                              <th key={col} className="px-4 py-3 text-xs font-semibold text-gray-500 whitespace-nowrap">
                                 {col}
                               </th>
                             ))}
@@ -514,7 +512,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                           {paginatedRows.length > 0 ? paginatedRows.map((row) => (
-                            <tr key={row.key} className="hover:bg-gray-50 transition-colors">
+                            <tr key={row.key} className="hover:bg-[#F9F9F9] transition-colors">
                               <td className="px-4 py-3 whitespace-nowrap">
                                 <Badge variant={ROLE_BADGE_MAP[row.key] ?? "neutral"} size="sm">
                                   {row.label}
@@ -552,8 +550,8 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
             </div>
 
             {/* Riwayat Aktivitas */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <div className="px-5 py-4 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+            <div className="bg-white rounded-[4px] border border-gray-200 overflow-hidden">
+              <div className="px-5 py-4 border-b border-gray-100 bg-[#F9F9F9] flex items-center gap-2">
                 <FileText className="w-4 h-4 text-gray-500" />
                 <h3 className="text-base font-bold text-gray-800">Riwayat Aktivitas</h3>
                 {pokja.validasiLog && pokja.validasiLog.length > 0 && (
@@ -578,7 +576,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                           admin_pusat: "Admin Pusat",
                           sistem:      "Sistem",
                         }
-                        const cfg = aksiConfig[log.aksi] ?? { label: log.aksi, color: "text-gray-700 bg-gray-50 border-gray-200", dot: "bg-gray-400" }
+                        const cfg = aksiConfig[log.aksi] ?? { label: log.aksi, color: "text-gray-700 bg-[#F9F9F9] border-gray-200", dot: "bg-gray-400" }
                         return (
                           <div key={idx} className="px-5 py-4 flex items-start gap-4">
                             <div className="pt-1">
@@ -595,7 +593,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                                 <span className="text-xs text-gray-400 ml-auto">{log.tanggal}</span>
                               </div>
                               {log.alasan && (
-                                <p className="text-sm text-gray-600 bg-gray-50 rounded px-3 py-2 mt-1 border border-gray-100">
+                                <p className="text-sm text-gray-600 bg-[#F9F9F9] rounded px-3 py-2 mt-1 border border-gray-100">
                                   {log.alasan}
                                 </p>
                               )}
@@ -609,19 +607,20 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
           </div>
         ) : (
           <>
-            {/* Search bar */}
-            <div className="px-5 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <p className="text-sm text-gray-500">
-                <span className="font-semibold text-gray-700">{pokjaList.length}</span> Kelompok Kerja terdaftar
-              </p>
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+            {/* Judul, jumlah data, dan pencarian */}
+            <div className="px-5 pt-5 pb-4 space-y-4 border-b border-gray-200">
+              <div className="flex items-baseline justify-between gap-3">
+                <h3 className="text-base font-semibold text-gray-900">Daftar Kelompok Kerja</h3>
+                <p className="text-sm text-gray-500 tabular-nums">{pokjaList.length.toLocaleString("id-ID")} kelompok kerja</p>
+              </div>
+              <div className="relative sm:max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 <input
-                  type="text"
+                  type="search"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Cari nama kelompok kerja, ketua, SK"
-                  className="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                 />
               </div>
             </div>
@@ -629,10 +628,10 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
             {/* Table */}
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm text-left">
-                <thead className="bg-gray-50 border-b border-gray-100">
+                <thead className="bg-[#F1F1F1] border-b border-gray-100">
                   <tr>
                     {["No", "Nama Kelompok Kerja", "Wilayah", "Jumlah Anggota", "Ketua Kelompok Kerja", "Nomor SK", "Kontak Kelompok Kerja", "Status", "Aksi"].map((col) => (
-                      <th key={col} className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                      <th key={col} className="px-4 py-3 text-xs font-semibold text-gray-500 whitespace-nowrap">
                         {col}
                       </th>
                     ))}
@@ -648,7 +647,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                     const regionName = safeData?.region ?? null
 
                     return (
-                      <tr key={pokja.id} className="hover:bg-gray-50 transition-colors">
+                      <tr key={pokja.id} className="hover:bg-[#F9F9F9] transition-colors">
                         {/* No */}
                         <td className="px-4 py-3.5 text-gray-400 text-xs w-10">{idx + 1}</td>
 
@@ -733,17 +732,15 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                           {isAdminPusat && pokja.status === "masih-diverifikasi" ? (
                             <button
                               onClick={() => onValidatePusat?.(pokja)}
-                              className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600 hover:text-amber-800 transition-colors"
+                              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                             >
-                              <Eye className="w-3.5 h-3.5" />
-                              Periksa
+                              Cek Detail
                             </button>
                           ) : (
                             <button
                               onClick={() => setDetailPokja(pokja)}
-                              className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors"
+                              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                             >
-                              <Eye className="w-3.5 h-3.5" />
                               Cek Detail
                             </button>
                           )}

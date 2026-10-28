@@ -111,7 +111,7 @@ function FilterSelect(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
     <div className="relative">
       <select
         {...props}
-        className="w-full h-10 appearance-none pl-3 pr-9 text-sm border border-gray-300 rounded-lg bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        className="w-full h-10 appearance-none pl-3 pr-9 text-sm border border-gray-300 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
       />
       <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
     </div>
@@ -223,7 +223,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
         <button
           type="button"
           onClick={() => ubah(setUrut)(!aktif ? { kolom, arah: "desc" } : urut.arah === "desc" ? { kolom, arah: "asc" } : null)}
-          className="inline-flex items-center gap-1 uppercase tracking-wide hover:text-gray-700"
+          className="inline-flex items-center gap-1 hover:text-gray-700"
         >
           {label}
           <ArrowUp className={cn("w-3.5 h-3.5 transition-transform", aktif ? "text-gray-600" : "text-gray-300", aktif && urut.arah === "desc" && "rotate-180")} />
@@ -247,7 +247,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
     <button
       type="button"
       onClick={eksporExcel}
-      className="flex h-9 items-center gap-1.5 rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+      className="flex h-9 items-center gap-1.5 rounded-[4px] bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
     >
       <Download className="h-4 w-4" /> Ekspor Excel
     </button>
@@ -282,7 +282,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
         </>
       )}
 
-      <section className="rounded-xl border border-gray-300 bg-white overflow-x-auto">
+      <section className="rounded-[4px] border border-gray-300 bg-white overflow-x-auto">
         {/* Kolom label dan "Semua" terkunci saat digeser; kolom jenjang berukuran sama. */}
         <table className="w-full min-w-[960px] table-fixed text-sm border-separate border-spacing-0">
           <colgroup>
@@ -293,13 +293,13 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
             ))}
           </colgroup>
           <thead>
-            <tr className="text-xs font-semibold uppercase tracking-wide text-gray-600">
-              <th className="sticky left-0 z-20 bg-gray-100 border-b border-r border-gray-300 px-4 py-3" />
-              <th className="sticky left-48 z-20 bg-gray-200 border-b border-r border-gray-300 px-3 py-3 text-center">Semua</th>
+            <tr className="text-xs font-semibold text-gray-600">
+              <th className="sticky left-0 z-20 bg-[#F1F1F1] border-b border-r border-gray-300 px-4 py-3" />
+              <th className="sticky left-48 z-20 bg-[#F1F1F1] border-b border-r border-gray-300 px-3 py-3 text-center">Semua</th>
               {ringkasan.perJenjang.map((j, n, arr) => (
                 <th
                   key={j.jenjang}
-                  className={cn("bg-gray-100 border-b border-gray-300 px-2 py-3 text-center leading-tight", n < arr.length - 1 && "border-r")}
+                  className={cn("bg-[#F1F1F1] border-b border-gray-300 px-2 py-3 text-center leading-tight", n < arr.length - 1 && "border-r")}
                 >
                   {j.jenjang}
                 </th>
@@ -328,7 +328,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                   </Tooltip>
                 </span>
               </th>
-              <td className="sticky left-48 z-10 bg-gray-50 border-b border-r border-gray-300 px-3 py-4 text-center">
+              <td className="sticky left-48 z-10 bg-[#F9F9F9] border-b border-r border-gray-300 px-3 py-4 text-center">
                 <div className="flex flex-col items-center gap-1.5">
                   <span className={cn("text-3xl font-bold tabular-nums leading-none", ringkasan.rerata !== null ? "text-gray-900" : "text-gray-400")}>
                     {fmt(ringkasan.rerata ?? 0)}
@@ -353,7 +353,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
               <th scope="row" className="sticky left-0 z-10 bg-white border-r border-gray-300 px-4 py-4 text-left font-bold text-gray-900">
                 Sudah mengikuti evaluasi BSAN
               </th>
-              <td className="sticky left-48 z-10 bg-gray-50 border-r border-gray-300 px-3 py-4 text-center tabular-nums">
+              <td className="sticky left-48 z-10 bg-[#F9F9F9] border-r border-gray-300 px-3 py-4 text-center tabular-nums">
                 <p className="text-3xl font-bold leading-none text-gray-900">{persen(ringkasan.sudah, ringkasan.total)}</p>
                 <p className="mt-1.5 text-xs text-gray-500 whitespace-nowrap">
                   {ringkasan.sudah.toLocaleString("id-ID")} / {ringkasan.total.toLocaleString("id-ID")}
@@ -372,7 +372,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
         </table>
       </section>
 
-      <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+      <div className="rounded-[4px] border border-gray-200 bg-white overflow-hidden">
         <div className="px-5 pt-5 pb-4 space-y-4">
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="text-base font-semibold text-gray-900">Daftar Skor {hanyaSekolah ? "Sekolah" : "Instansi"}</h2>
@@ -390,7 +390,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                 value={cari}
                 onChange={(e) => ubah(setCari)(e.target.value)}
                 placeholder={`Cari nama ${sebutan} atau NPSN`}
-                className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               />
             </div>
             <FilterSelect value={jenjang} onChange={(e) => ubah(setJenjang)(e.target.value as Jenjang | "semua")} aria-label="Filter jenjang">
@@ -427,7 +427,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                 <col className="w-[13%]" />
               </colgroup>
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <tr className="bg-[#F1F1F1] border-b border-gray-200 text-left text-xs font-semibold text-gray-500">
                   <th className="pl-5 pr-2 py-3 text-center">No</th>
                   {kepalaUrut("nama", <>Nama {hanyaSekolah ? "Sekolah" : "Instansi"}</>)}
                   {kepalaUrut("npsn", "NPSN")}
@@ -439,12 +439,12 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {baris.map((s, n) => (
-                  <tr key={s.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={s.id} className="hover:bg-[#F9F9F9] transition-colors">
                     <td className="pl-5 pr-2 py-3.5 text-center text-gray-400 tabular-nums">{mulai + n + 1}</td>
                     <td className="px-3 py-3.5 font-medium text-gray-900 truncate" title={s.nama}>{s.nama}</td>
                     <td className="px-3 py-3.5 text-gray-600 tabular-nums">{s.npsn}</td>
                     <td className="px-3 py-3.5">
-                      <span className="inline-flex rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700 whitespace-nowrap">{s.jenjang}</span>
+                      <span className="inline-flex rounded-full bg-[#efefef] px-2.5 py-0.5 text-[13px] font-semibold text-[#2f3031] whitespace-nowrap">{s.jenjang}</span>
                     </td>
                     <td className="px-3 py-3.5 text-gray-600 truncate">{s.kabKota}</td>
                     <td className="px-3 py-3.5">{s.skor !== null ? <TingkatChip skor={s.skor} solid /> : <span className="text-gray-300">-</span>}</td>

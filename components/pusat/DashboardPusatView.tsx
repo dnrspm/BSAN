@@ -136,7 +136,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
           return (
             <div
               key={stat.label}
-              className={`relative rounded-2xl border-2 ${stat.border} bg-gradient-to-br ${stat.bg} p-5 overflow-hidden`}
+              className={`relative rounded-[4px] border-2 ${stat.border} bg-gradient-to-br ${stat.bg} p-5 overflow-hidden`}
             >
               {/* Decorative icon background */}
               <div className="absolute top-3 right-3 opacity-10">
@@ -159,7 +159,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
 
       {/* Daftar pokja menunggu verifikasi */}
       {menunggu > 0 && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50/50 overflow-hidden">
+        <div className="rounded-[4px] border border-amber-200 bg-amber-50/50 overflow-hidden">
           <div className="px-5 py-4 border-b border-amber-100 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-amber-600" />
@@ -179,7 +179,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
                   className="px-5 py-3 flex items-center gap-3 hover:bg-amber-100/50 cursor-pointer transition-colors"
                   onClick={() => onGoToPokja?.(p)}
                 >
-                  <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
                     <MapPin className="w-4 h-4 text-amber-600" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -187,7 +187,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
                       {(p.data?.region ?? p.nama).replace(/^Provinsi\s*/i, "")}
                     </p>
                   </div>
-                  <span className="text-xs text-amber-700 bg-amber-100 px-2 py-1 rounded-full whitespace-nowrap">
+                  <span className="text-[13px] font-semibold text-amber-950 bg-amber-200 px-2.5 py-0.5 rounded-full whitespace-nowrap">
                     Perlu Diperiksa
                   </span>
                   <ChevronRight className="w-4 h-4 text-amber-400 flex-shrink-0" />
@@ -200,7 +200,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
 
 
       {/* Sumber Dukungan */}
-      <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+      <div className="rounded-[4px] border border-gray-200 bg-white overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
           <h3 className="text-sm font-semibold text-gray-800">Sumber Dukungan</h3>
           {onViewSumberRujukan && (
@@ -231,17 +231,17 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
               ))}
             </div>
           </div>
-          <div className="rounded-lg border border-gray-100 overflow-hidden">
+          <div className="rounded-[4px] border border-gray-100 overflow-hidden">
             <div className="max-h-64 overflow-y-auto">
               <table className="w-full text-xs">
-                <thead><tr className="border-b border-gray-100 bg-gray-50">
+                <thead><tr className="border-b border-gray-100 bg-[#F1F1F1]">
                   <th className="text-left px-3 py-2 font-semibold text-gray-600">Nama</th>
                   <th className="text-left px-3 py-2 font-semibold text-gray-600">Jenis</th>
                   <th className="text-left px-3 py-2 font-semibold text-gray-600">Kontak</th>
                 </tr></thead>
                 <tbody className="divide-y divide-gray-100">
                   {[{nama:"Klinik Sehat",jenis:"Kesehatan",kontak:"0812"},{nama:"Psikolog Dina",jenis:"Konseling",kontak:"0813"}].map((item,i)=>(
-                    <tr key={i} className="hover:bg-gray-50">
+                    <tr key={i} className="hover:bg-[#F9F9F9]">
                       <td className="px-3 py-2.5 text-gray-800 font-medium">{item.nama}</td>
                       <td className="px-3 py-2.5 text-gray-600">{item.jenis}</td>
                       <td className="px-3 py-2.5 text-gray-500">{item.kontak}</td>
@@ -255,7 +255,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
       </div>
 
       {/* Kegiatan */}
-      <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+      <div className="rounded-[4px] border border-gray-200 bg-white overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
           <h3 className="text-sm font-semibold text-gray-800">Kegiatan</h3>
           {onViewActivities && (
@@ -265,7 +265,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
           )}
         </div>
         <div className="px-5 py-4 grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <div className="p-3 border border-gray-100 rounded-lg">
+          <div className="p-3 border border-gray-100 rounded-[4px]">
             <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Juni 2025</p>
             <div className="grid grid-cols-7 gap-1 text-center">
               {["M","S","S","R","K","J","S"].map((d,i)=><p key={i} className="text-xs font-medium text-gray-400">{d}</p>)}
@@ -275,7 +275,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
           <div className="space-y-2">
             <p className="text-xs font-semibold text-gray-600 uppercase">Kegiatan Mendatang</p>
             {[{tanggal:"14 Jun",judul:"Pelatihan"},{tanggal:"17 Jun",judul:"Verifikasi"},{tanggal:"21 Jun",judul:"Rapat"}].map((k,i)=>(
-              <div key={i} className="p-2.5 rounded-lg bg-gray-50 border border-gray-100">
+              <div key={i} className="p-2.5 rounded-[4px] bg-[#F9F9F9] border border-gray-100">
                 <p className="text-xs font-medium text-gray-700">{k.judul}</p>
                 <p className="text-xs text-gray-500">{k.tanggal}</p>
               </div>

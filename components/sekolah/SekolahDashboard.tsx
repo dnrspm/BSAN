@@ -51,7 +51,7 @@ export function SekolahDashboard({ searchParams }: SekolahDashboardProps) {
   const logout = () => clearAuthAndRedirectToLogin(router)
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-[#F9F9F9]">
       <SekolahSidebar activeMenu={menu} onMenuChange={setMenu} onLogout={logout} />
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
         <div className="md:hidden h-14" aria-hidden="true" />

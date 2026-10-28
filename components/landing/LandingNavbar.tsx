@@ -37,7 +37,7 @@ export function LandingNavbar() {
           {navLinks.map((link) => (
             <button key={link.href} onClick={() => handleNavClick(link)}
               className={cn(
-                "px-3 py-2 rounded-md text-sm transition-colors",
+                "px-3 py-2 rounded-[4px] text-sm transition-colors",
                 pathname === link.href
                   ? "text-blue-700 font-semibold"
                   : "text-slate-600 font-medium hover:bg-slate-100 hover:text-slate-900"
@@ -55,7 +55,7 @@ export function LandingNavbar() {
         <div className="md:hidden bg-white border-b border-slate-100">
           <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-1">
             {navLinks.map((link) => (
-              <button key={link.href} onClick={() => handleNavClick(link)} className="text-left px-3 py-2.5 text-sm text-slate-700 rounded-md transition-colors hover:bg-slate-100 hover:text-slate-900">{link.label}</button>
+              <button key={link.href} onClick={() => handleNavClick(link)} className="text-left px-3 py-2.5 text-sm text-slate-700 rounded-[4px] transition-colors hover:bg-slate-100 hover:text-slate-900">{link.label}</button>
             ))}
             <div className="pt-2"><Button onClick={() => router.push("/login")} className="w-full bg-blue-600 hover:bg-blue-800 text-white">Masuk ke Sistem</Button></div>
           </div>

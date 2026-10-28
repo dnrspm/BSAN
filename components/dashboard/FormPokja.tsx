@@ -62,8 +62,8 @@ function MemberSection({
   bidangDisabled?: boolean
 }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
-      <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-200">
+    <div className="rounded-[4px] border border-gray-200 bg-white overflow-hidden">
+      <div className="flex items-center gap-2 px-4 py-3 bg-[#F9F9F9] border-b border-gray-200">
         <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
           <User className="w-3.5 h-3.5 text-blue-700" />
         </div>
@@ -88,13 +88,13 @@ function MemberSection({
               <select
                 value={value.jenisKelamin}
                 onChange={(e) => onChange("jenisKelamin", e.target.value)}
-                className="w-full h-9 pl-3 pr-8 text-sm border border-gray-300 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
+                className="w-full h-9 pl-3 pr-8 text-sm border border-gray-300 rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
               >
                 <option value="" disabled>Pilih jenis kelamin</option>
                 <option value="Laki-Laki">Laki-Laki</option>
                 <option value="Perempuan">Perempuan</option>
               </select>
-              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
             </div>
           </div>
         </div>
@@ -122,7 +122,7 @@ function MemberSection({
                 value={value.noWhatsapp}
                 onChange={(e) => onChange("noWhatsapp", e.target.value.replace(/\D/g, ""))}
                 placeholder="08xxxxxxxxxx"
-                className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               />
             </div>
           </div>
@@ -198,8 +198,8 @@ function InputField({
           readOnly={readOnly}
           onChange={(e) => onChange?.(e.target.value)}
           placeholder={placeholder}
-          className={`w-full h-9 ${icon ? "pl-9" : "pl-3"} pr-3 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition
-            ${readOnly ? "bg-gray-100 border-gray-200 text-gray-600 cursor-default" : "bg-white border-gray-300 text-gray-800"}`}
+          className={`w-full h-9 ${icon ? "pl-9" : "pl-3"} pr-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition
+            ${readOnly ? "bg-[#F9F9F9] border-gray-200 text-gray-600 cursor-default" : "bg-white border-gray-300 text-gray-800"}`}
         />
       </div>
     </div>
@@ -243,8 +243,8 @@ function FileUploadField({
           const f = e.dataTransfer.files[0]
           if (f) handleFile(f)
         }}
-        className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-8 cursor-pointer transition
-          ${error ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50 hover:border-blue-400 hover:bg-blue-50"}`}
+        className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-[4px] p-8 cursor-pointer transition
+          ${error ? "border-red-400 bg-red-50" : "border-gray-300 bg-[#F9F9F9] hover:border-blue-400 hover:bg-blue-50"}`}
       >
         <Upload className={`w-6 h-6 ${error ? "text-red-400" : "text-gray-400"}`} />
         {value ? (
@@ -299,12 +299,12 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
 function ReviewMemberCard({ label, member }: { label: string; member: MemberField }) {
   const isEmpty = !member.nama && !member.email && !member.noWhatsapp
   return (
-    <div className="rounded-lg border border-gray-200 overflow-hidden">
-      <div className="px-3 py-2 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
+    <div className="rounded-[4px] border border-gray-200 overflow-hidden">
+      <div className="px-3 py-2 bg-[#F9F9F9] border-b border-gray-200 flex items-center gap-2">
         <User className="w-3.5 h-3.5 text-blue-600" />
         <span className="text-xs font-semibold text-gray-700">{label}</span>
         {isEmpty && (
-          <span className="ml-auto text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Belum diisi</span>
+          <span className="ml-auto text-[13px] font-semibold text-amber-950 bg-amber-200 px-2.5 py-0.5 rounded-full whitespace-nowrap">Belum diisi</span>
         )}
       </div>
       {!isEmpty && (
@@ -462,7 +462,7 @@ export function FormPokja({ region, onClose, onSubmit }: FormPokjaProps) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
         <div className="bg-white rounded-2xl p-8 flex flex-col items-center gap-4 shadow-2xl max-w-sm w-full text-center">
-          <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
+          <div className="w-14 h-14 flex items-center justify-center">
             <CheckCircle2 className="w-7 h-7 text-green-600" />
           </div>
           <h3 className="text-lg font-bold text-gray-900">Kelompok Kerja Berhasil Dikirim!</h3>
@@ -482,7 +482,7 @@ export function FormPokja({ region, onClose, onSubmit }: FormPokjaProps) {
         role="dialog"
         aria-modal="true"
         aria-label="Form Pembentukan Kelompok Kerja"
-        className="relative z-10 flex flex-col w-full max-w-2xl h-screen bg-gray-50 shadow-2xl"
+        className="relative z-10 flex flex-col w-full max-w-2xl h-screen bg-[#F9F9F9] shadow-2xl"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 flex-shrink-0">
@@ -492,7 +492,7 @@ export function FormPokja({ region, onClose, onSubmit }: FormPokjaProps) {
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition"
+            className="w-8 h-8 rounded-[4px] flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition"
             aria-label="Tutup form"
           >
             <X className="w-4 h-4" />
@@ -515,7 +515,7 @@ export function FormPokja({ region, onClose, onSubmit }: FormPokjaProps) {
                       {isDone ? <CheckCircle2 className="w-4 h-4" /> : s.number}
                     </div>
                     <span
-                      className={`text-[10px] font-medium text-center leading-tight hidden sm:block ${isActive ? "text-blue-700" : isDone ? "text-blue-500" : "text-gray-400"}`}
+                      className={`text-sm font-medium text-center leading-tight hidden sm:block ${isActive ? "text-blue-700" : isDone ? "text-blue-500" : "text-gray-400"}`}
                     >
                       {s.label}
                     </span>
@@ -538,7 +538,7 @@ export function FormPokja({ region, onClose, onSubmit }: FormPokjaProps) {
                 <h3 className="text-sm font-bold text-gray-900">Informasi Dasar</h3>
                 <p className="text-xs text-gray-500 mt-0.5">Isi informasi umum Kelompok Kerja yang akan dibentuk.</p>
               </div>
-              <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-4">
+              <div className="rounded-[4px] border border-gray-200 bg-white p-5 space-y-4">
                 <InputField
 label="Wilayah / Nama Kelompok Kerja"
                   value={region}
@@ -561,11 +561,11 @@ label="Wilayah / Nama Kelompok Kerja"
                         value={kanalPengaduan}
                         onChange={(e) => setKanalPengaduan(e.target.value.replace(/\D/g, ""))}
                         placeholder="Contoh: 08123456789"
-                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                       />
                     </div>
                   </div>
-                  <div className="rounded-lg bg-blue-50 border border-blue-200 p-3 space-y-2">
+                  <div className="rounded-[4px] bg-blue-50 border border-blue-200 p-3 space-y-2">
                     <p className="text-xs font-medium text-blue-900">
                       ℹ️ Nomor ini akan menjadi <strong>call center utama</strong> untuk Pokja Anda
                     </p>
@@ -595,7 +595,7 @@ label="Wilayah / Nama Kelompok Kerja"
                 <button
                   type="button"
                   onClick={downloadTemplate}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition border border-blue-200"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-[4px] transition border border-blue-200"
                 >
                   <Download className="w-3.5 h-3.5" />
                   Unduh Contoh Excel
@@ -603,7 +603,7 @@ label="Wilayah / Nama Kelompok Kerja"
                 <button
                   type="button"
                   onClick={() => excelInputRef.current?.click()}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 px-3 py-2 rounded-lg transition border border-gray-300"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-700 bg-white hover:bg-[#F9F9F9] px-3 py-2 rounded-[4px] transition border border-gray-300"
                 >
                   <Upload className="w-3.5 h-3.5" />
                   Unggah Data Excel
@@ -716,7 +716,7 @@ label="Wilayah / Nama Kelompok Kerja"
                   <button
                     type="button"
                     onClick={addAdditionalMember}
-                    className="flex items-center justify-center gap-2 w-full py-2.5 mt-2 rounded-lg border-2 border-dashed border-gray-300 text-sm font-medium text-gray-500 hover:border-blue-400 hover:text-blue-600 transition"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 mt-2 rounded-[4px] border-2 border-dashed border-gray-300 text-sm font-medium text-gray-500 hover:border-blue-400 hover:text-blue-600 transition"
                   >
                     <Plus className="w-4 h-4" />
                     Tambah Anggota
@@ -733,7 +733,7 @@ label="Wilayah / Nama Kelompok Kerja"
                 <h3 className="text-sm font-bold text-gray-900">Dokumen SK</h3>
                 <p className="text-xs text-gray-500 mt-0.5">Unggah Surat Keputusan (SK) dan isi detail dokumennya.</p>
               </div>
-              <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-5">
+              <div className="rounded-[4px] border border-gray-200 bg-white p-5 space-y-5">
                 <FileUploadField
                   value={skFile}
                   onChange={(f) => { setSkFile(f); if (f) setFileError("") }}
@@ -751,7 +751,7 @@ label="Wilayah / Nama Kelompok Kerja"
                         value={skDetail.nomorSK}
                         onChange={(e) => setSkDetail((p) => ({ ...p, nomorSK: e.target.value }))}
                         placeholder="Contoh: 123/SK/2024"
-                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                       />
                     </div>
                   </div>
@@ -765,7 +765,7 @@ label="Wilayah / Nama Kelompok Kerja"
                         type="date"
                         value={skDetail.tanggalSK}
                         onChange={(e) => setSkDetail((p) => ({ ...p, tanggalSK: e.target.value }))}
-                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
+                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
                       />
                     </div>
                   </div>
@@ -779,7 +779,7 @@ label="Wilayah / Nama Kelompok Kerja"
                         type="date"
                         value={skDetail.periodeMulai}
                         onChange={(e) => setSkDetail((p) => ({ ...p, periodeMulai: e.target.value }))}
-                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
+                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
                       />
                     </div>
                   </div>
@@ -793,7 +793,7 @@ label="Wilayah / Nama Kelompok Kerja"
                         type="date"
                         value={skDetail.periodeSelesai}
                         onChange={(e) => setSkDetail((p) => ({ ...p, periodeSelesai: e.target.value }))}
-                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
+                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
                       />
                     </div>
                   </div>
@@ -811,8 +811,8 @@ label="Wilayah / Nama Kelompok Kerja"
               </div>
 
               {/* Informasi Dasar */}
-              <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
-                <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-200">
+              <div className="rounded-[4px] border border-gray-200 bg-white overflow-hidden">
+                <div className="flex items-center gap-2 px-4 py-3 bg-[#F9F9F9] border-b border-gray-200">
                   <Building2 className="w-3.5 h-3.5 text-blue-600" />
                   <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Informasi Dasar</span>
                   <button
@@ -830,8 +830,8 @@ label="Wilayah / Nama Kelompok Kerja"
               </div>
 
               {/* Susunan Pengurus */}
-              <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
-                <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-200">
+              <div className="rounded-[4px] border border-gray-200 bg-white overflow-hidden">
+                <div className="flex items-center gap-2 px-4 py-3 bg-[#F9F9F9] border-b border-gray-200">
                   <User className="w-3.5 h-3.5 text-blue-600" />
                   <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Susunan Pengurus</span>
                   <button
@@ -843,11 +843,11 @@ label="Wilayah / Nama Kelompok Kerja"
                   </button>
                 </div>
                 <div className="p-4 space-y-2">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Pimpinan</p>
+                  <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Pimpinan</p>
                   {PIMPINAN_ROLES.map((r) => (
                     <ReviewMemberCard key={r.key} label={r.label} member={members[r.key]} />
                   ))}
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-3 mb-1">Anggota per Bidang</p>
+                  <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mt-3 mb-1">Anggota per Bidang</p>
                   {BIDANG_ROLES.map((r) => (
                     <ReviewMemberCard key={r.key} label={r.label} member={members[r.key]} />
                   ))}
@@ -855,8 +855,8 @@ label="Wilayah / Nama Kelompok Kerja"
               </div>
 
               {/* Dokumen SK */}
-              <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
-                <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-200">
+              <div className="rounded-[4px] border border-gray-200 bg-white overflow-hidden">
+                <div className="flex items-center gap-2 px-4 py-3 bg-[#F9F9F9] border-b border-gray-200">
                   <FileText className="w-3.5 h-3.5 text-blue-600" />
                   <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Dokumen SK</span>
                   <button
@@ -905,7 +905,7 @@ label="Wilayah / Nama Kelompok Kerja"
               <button
                 type="button"
                 onClick={handleBack}
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-gray-900 px-3 py-2 rounded-[4px] hover:bg-gray-100 transition"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Kembali
@@ -916,7 +916,7 @@ label="Wilayah / Nama Kelompok Kerja"
                 type="button"
                 onClick={handleNext}
                 disabled={!canGoNext()}
-                className={`inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg transition
+                className={`inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-[4px] transition
                   ${canGoNext()
                     ? "bg-blue-600 text-white hover:bg-blue-700"
                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
@@ -929,7 +929,7 @@ label="Wilayah / Nama Kelompok Kerja"
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="inline-flex items-center gap-1.5 text-sm font-semibold bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold bg-blue-600 text-white px-4 py-2 rounded-[4px] hover:bg-blue-700 transition"
               >
                 <Eye className="w-4 h-4" />
                 Submit

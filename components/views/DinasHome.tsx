@@ -34,12 +34,12 @@ type Props = {
 }
 
 function Panel({ children }: { children: React.ReactNode }) {
-  return <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">{children}</div>
+  return <div className="bg-white rounded-[4px] border border-gray-100 shadow-sm overflow-hidden">{children}</div>
 }
 
 function PanelHeader({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50">
+    <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-[#F9F9F9]">
       <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
       <div className="flex items-center gap-2">{children}</div>
     </div>
@@ -50,7 +50,7 @@ function ViewBtn({ label, onClick }: { label: string; onClick?: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="h-8 px-2.5 rounded-lg text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors border border-blue-200 flex items-center gap-1.5"
+      className="h-8 px-2.5 rounded-[4px] text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors border border-blue-200 flex items-center gap-1.5"
     >
       {label} <ChevronRight className="w-3.5 h-3.5" />
     </button>
@@ -60,7 +60,7 @@ function ViewBtn({ label, onClick }: { label: string; onClick?: () => void }) {
 function MiniCalendar() {
   const weekDays = ["M", "S", "S", "R", "K", "J", "S"]
   return (
-    <div className="p-3 border border-gray-100 rounded-lg">
+    <div className="p-3 border border-gray-100 rounded-[4px]">
       <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Juni 2025</p>
       <div className="grid grid-cols-7 gap-1 text-center">
         {weekDays.map((d, i) => (
@@ -89,7 +89,7 @@ function VerifyDrawer({ item, onClose, onVerify }: {
           <h2 className="text-lg font-bold text-gray-900">Detail Verifikasi</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-lg leading-none">{"×"}</button>
         </div>
-        <div className="space-y-3 bg-gray-50 rounded-lg p-4">
+        <div className="space-y-3 bg-[#F9F9F9] rounded-[4px] p-4">
           {[{ k: "Nama", v: item.nama }, { k: "Jenis", v: item.jenis }, { k: "Kontak", v: item.kontak }].map(({ k, v }) => (
             <div key={k}>
               <p className="text-xs text-gray-500 uppercase tracking-wide">{k}</p>
@@ -97,8 +97,8 @@ function VerifyDrawer({ item, onClose, onVerify }: {
             </div>
           ))}
         </div>
-        <button onClick={() => { onVerify(item); onClose() }} className="w-full py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium text-sm">Verifikasi Data</button>
-        <button onClick={onClose} className="w-full py-2.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium text-sm">Batal</button>
+        <button onClick={() => { onVerify(item); onClose() }} className="w-full py-2.5 rounded-[4px] bg-green-600 hover:bg-green-700 text-white font-medium text-sm">Verifikasi Data</button>
+        <button onClick={onClose} className="w-full py-2.5 rounded-[4px] bg-[#F9F9F9] hover:bg-gray-200 text-gray-900 font-medium text-sm">Batal</button>
       </div>
     </div>
   )
@@ -201,7 +201,7 @@ export function DashboardView({
         {/* Jika belum ada pokja, tampilkan empty state */}
         {total === 0 ? (
           <div className="px-5 py-8 flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 flex items-center justify-center mb-4">
               <svg className="w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
@@ -217,38 +217,38 @@ export function DashboardView({
             {activePokjaList.map((pokja) => {
               const statusConfig = {
                 "draf": {
-                  bg: "bg-gray-50",
+                  bg: "bg-[#F9F9F9]",
                   border: "border-gray-200",
                   text: "text-gray-700",
-                  badge: "bg-gray-100 text-gray-800",
+                  badge: "bg-[#efefef] text-[#2f3031]",
                   label: "Draf",
                 },
                 "aktif": {
                   bg: "bg-green-50",
                   border: "border-green-200",
                   text: "text-green-700",
-                  badge: "bg-green-100 text-green-800",
+                  badge: "bg-emerald-300 text-emerald-950",
                   label: "Aktif",
                 },
                 "masih-diverifikasi": {
                   bg: "bg-amber-50",
                   border: "border-amber-200",
                   text: "text-amber-700",
-                  badge: "bg-amber-100 text-amber-800",
+                  badge: "bg-amber-200 text-amber-950",
                   label: "Sedang Diajukan",
                 },
                 "butuh-perbaikan": {
                   bg: "bg-red-50",
                   border: "border-red-200",
                   text: "text-red-700",
-                  badge: "bg-red-100 text-red-800",
+                  badge: "bg-rose-100 text-rose-950",
                   label: "Perlu Perbaikan",
                 },
                 "belum-dibentuk": {
-                  bg: "bg-gray-50",
+                  bg: "bg-[#F9F9F9]",
                   border: "border-gray-200",
                   text: "text-gray-700",
-                  badge: "bg-gray-100 text-gray-800",
+                  badge: "bg-[#efefef] text-[#2f3031]",
                   label: "Belum Dibentuk",
                 }
               }
@@ -262,7 +262,7 @@ export function DashboardView({
                 : 0
 
               return (
-                <div key={pokja.id} className={`rounded-xl border-2 ${config.border} ${config.bg} p-5 space-y-4`}>
+                <div key={pokja.id} className={`rounded-[4px] border-2 ${config.border} ${config.bg} p-5 space-y-4`}>
                   {/* Header dengan nama dan status */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
@@ -270,14 +270,14 @@ export function DashboardView({
                       <p className="text-sm text-gray-600">{region}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${config.badge}`}>{config.label}</span>
+                      <span className={`px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold ${config.badge}`}>{config.label}</span>
                     </div>
                   </div>
 
                   {/* Detail Grid - selalu tampil semua placeholders */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Ketua Kelompok Kerja */}
-                    <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
+                    <div className="bg-white/60 rounded-[4px] p-3 border border-gray-200">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Ketua Kelompok Kerja</p>
                       {ketua?.nama ? (
                         <>
@@ -290,13 +290,13 @@ export function DashboardView({
                     </div>
 
                     {/* Jumlah Anggota */}
-                    <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
+                    <div className="bg-white/60 rounded-[4px] p-3 border border-gray-200">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Jumlah Angggota</p>
                       <p className="text-sm font-bold text-gray-900">{memberCount > 0 ? `${memberCount} Orang` : "0"}</p>
                     </div>
 
                     {/* Nomor SK */}
-                    <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
+                    <div className="bg-white/60 rounded-[4px] p-3 border border-gray-200">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Nomor SK</p>
                       {sk?.nomorSK ? (
                         <>
@@ -309,7 +309,7 @@ export function DashboardView({
                     </div>
 
                     {/* Kanal Pengaduan */}
-                    <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
+                    <div className="bg-white/60 rounded-[4px] p-3 border border-gray-200">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Kanal Pengaduan</p>
                       {kanal ? (
                         <a 
@@ -334,7 +334,7 @@ export function DashboardView({
                     <button
                       type="button"
                       onClick={onContinueDraft}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-[4px] bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
                     >
                       <Pencil className="w-4 h-4" />
                       Lanjutkan Pengisian
@@ -343,7 +343,7 @@ export function DashboardView({
 
                   {/* Info tambahan untuk status tertentu */}
                   {pokja.status === "masih-diverifikasi" && (
-                    <div className="flex items-start gap-2 p-3 bg-amber-100/50 rounded-lg border border-amber-300">
+                    <div className="flex items-start gap-2 p-3 bg-amber-100/50 rounded-[4px] border border-amber-300">
                       <AlertTriangle className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
                       <p className="text-xs text-amber-800">
                         Pengajuan Kelompok Kerja sedang dalam proses pemeriksaan oleh Pusat.
@@ -354,7 +354,7 @@ export function DashboardView({
                   {pokja.status === "butuh-perbaikan" && (() => {
                     const logTolak = [...(pokja.validasiLog ?? [])].reverse().find(l => l.aksi === "tolak")
                     return (
-                      <div className="rounded-xl border border-red-200 bg-red-50 p-4 space-y-3">
+                      <div className="rounded-[4px] border border-red-200 bg-red-50 p-4 space-y-3">
                         <div className="flex items-start gap-2">
                           <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
                           <div className="flex-1">
@@ -369,7 +369,7 @@ export function DashboardView({
                         <button
                           type="button"
                           onClick={() => onPerbaikiPokja?.(pokja)}
-                          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-[4px] bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors"
                         >
                           Perbaiki Kelompok Kerja
                         </button>
@@ -379,7 +379,7 @@ export function DashboardView({
 
                   {pokja.status === "aktif" && (
                     <div className="space-y-2">
-                      <div className="flex items-start gap-2 p-3 bg-green-100/50 rounded-lg border border-green-300">
+                      <div className="flex items-start gap-2 p-3 bg-green-100/50 rounded-[4px] border border-green-300">
                         <CheckCircle2 className="w-4 h-4 text-green-700 flex-shrink-0 mt-0.5" />
                         <p className="text-xs text-green-800">
                           <strong>Kelompok Kerja Aktif:</strong> Kelompok Kerja Anda telah diverifikasi dan aktif. Anda dapat mengelola kegiatan dan Sumber Dukungan.
@@ -388,7 +388,7 @@ export function DashboardView({
                       <button
                         type="button"
                         onClick={() => onPerbaikiPokja?.(pokja)}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-[4px] border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-[#F9F9F9] transition-colors"
                       >
                         Ubah Kelompok Kerja
                       </button>
@@ -438,7 +438,7 @@ export function DashboardView({
                 {hoveredRujukan ? (
                   <div className="text-center px-2">
                     <p className="text-lg font-bold text-gray-900 leading-tight">{hoveredRujukan.count}</p>
-                    <p className="text-[10px] text-gray-600 leading-tight mt-0.5 max-w-[80px] text-center">{hoveredRujukan.label}</p>
+                    <p className="text-sm text-gray-600 leading-tight mt-0.5 max-w-[80px] text-center">{hoveredRujukan.label}</p>
                   </div>
                 ) : (
                   <div className="text-center">
@@ -457,11 +457,11 @@ export function DashboardView({
               ))}
             </div>
           </div>
-          <div className="rounded-lg border border-gray-100 overflow-hidden">
+          <div className="rounded-[4px] border border-gray-100 overflow-hidden">
             <div className="max-h-64 overflow-y-auto">
               <table className="w-full text-xs">
                 <thead>
-                  <tr className="border-b border-gray-100 sticky top-0 bg-gray-50">
+                  <tr className="border-b border-gray-100 sticky top-0 bg-[#F1F1F1]">
                     <th className="text-left px-3 py-2 font-semibold text-gray-600">Nama</th>
                     <th className="text-left px-3 py-2 font-semibold text-gray-600">Jenis</th>
                     <th className="text-left px-3 py-2 font-semibold text-gray-600">Kontak</th>
@@ -471,7 +471,7 @@ export function DashboardView({
                   {pending > 0 && (
                     <tr>
                       <td colSpan={3} className="px-3 py-2.5">
-                        <div className="rounded-lg bg-amber-50 border border-amber-200 p-2.5 flex items-start gap-2.5">
+                        <div className="rounded-[4px] bg-amber-50 border border-amber-200 p-2.5 flex items-start gap-2.5">
                           <AlertTriangle className="w-3.5 h-3.5 text-amber-600 flex-shrink-0 mt-0.5" />
                           <div>
                             <p className="text-xs font-semibold text-amber-800">{pending} Sedang Diajukan</p>
@@ -482,7 +482,7 @@ export function DashboardView({
                     </tr>
                   )}
                   {pendingData.map((item, i) => (
-                    <tr key={i} className="hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => setSelectedItem(item)}>
+                    <tr key={i} className="hover:bg-[#F9F9F9] transition-colors cursor-pointer" onClick={() => setSelectedItem(item)}>
                       <td className="px-3 py-2.5 text-gray-800 font-medium">{item.nama}</td>
                       <td className="px-3 py-2.5 text-gray-600">{item.jenis}</td>
                       <td className="px-3 py-2.5 text-gray-500">{item.kontak}</td>
@@ -508,7 +508,7 @@ export function DashboardView({
               { tanggal: "17 Jun", judul: "Verifikasi Sumber Dukungan" },
               { tanggal: "21 Jun", judul: "Rapat Koordinasi Bulanan" },
             ].map((k, i) => (
-              <div key={i} className="p-2.5 rounded-lg bg-gray-50 border border-gray-100 hover:bg-blue-50 transition-colors cursor-pointer">
+              <div key={i} className="p-2.5 rounded-[4px] bg-[#F9F9F9] border border-gray-100 hover:bg-blue-50 transition-colors cursor-pointer">
                 <p className="text-xs font-medium text-gray-700">{k.judul}</p>
                 <p className="text-xs text-gray-500 mt-0.5">{k.tanggal}</p>
               </div>
@@ -522,7 +522,7 @@ export function DashboardView({
         <div className="px-5 py-4 overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50">
+              <tr className="border-b border-gray-100 bg-[#F1F1F1]">
                 <th className="text-left px-3 py-2 font-semibold text-gray-600">Waktu</th>
                 <th className="text-left px-3 py-2 font-semibold text-gray-600">Pengguna</th>
                 <th className="text-left px-3 py-2 font-semibold text-gray-600">Aksi</th>
@@ -534,7 +534,7 @@ export function DashboardView({
                 { waktu: "11:30", user: "Admin Sekolah", aksi: "Unggah Dokumen Kelompok Kerja" },
                 { waktu: "10:15", user: "Admin Dinas", aksi: "Memverifikasi Sumber Dukungan" },
               ].map((log, i) => (
-                <tr key={i} className="hover:bg-gray-50">
+                <tr key={i} className="hover:bg-[#F9F9F9]">
                   <td className="px-3 py-2.5 text-gray-700">{log.waktu}</td>
                   <td className="px-3 py-2.5 text-gray-700">{log.user}</td>
                   <td className="px-3 py-2.5 text-gray-600">{log.aksi}</td>

@@ -42,7 +42,7 @@ const SEED_DATA: Kegiatan[] = [
 ]
 
 function getPenyelenggaraColors(_type: string) {
-  return { bg: "bg-gray-100", text: "text-gray-600" }
+  return { bg: "bg-[#efefef]", text: "text-[#2f3031]" }
 }
 
 // ---------------------------------------------------------------------------
@@ -50,23 +50,23 @@ function getPenyelenggaraColors(_type: string) {
 // ---------------------------------------------------------------------------
 function StatusBadge({ status }: { status: StatusKegiatan }) {
   if (status === "terealisasi") return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
-      <CheckCircle className="w-3 h-3" /> Terealisasi
+    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-emerald-300 text-emerald-950">
+      Terealisasi
     </span>
   )
   if (status === "selesai") return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-      <CheckCircle className="w-3 h-3" /> Selesai
+    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-emerald-300 text-emerald-950">
+      Selesai
     </span>
   )
   if (status === "berlangsung") return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-      <PlayCircle className="w-3 h-3" /> Berlangsung
+    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-sky-200 text-sky-950">
+      Berlangsung
     </span>
   )
   return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
-      <Clock className="w-3 h-3" /> Terjadwal
+    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-amber-200 text-amber-950">
+      Terjadwal
     </span>
   )
 }
@@ -130,48 +130,53 @@ export function KegiatanView() {
         </div>
         <a
           href="/tambah-kegiatan"
-          className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition shrink-0"
+          className="flex items-center gap-1.5 h-9 px-4 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition shrink-0"
         >
           <Plus className="w-4 h-4" /> Tambah Kegiatan
         </a>
       </div>
 
-      {/* Search + Filter */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari nama kegiatan, penyelenggara, atau lokasi"
-            className="w-full pl-9 pr-3 h-9 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-          />
+      <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm overflow-hidden">
+        <div className="px-5 pt-5 pb-4 space-y-4">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="text-base font-semibold text-gray-900">Daftar Kegiatan</h2>
+            <p className="text-sm text-gray-500 tabular-nums">{filtered.length.toLocaleString("id-ID")} kegiatan</p>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+            <div className="relative sm:col-span-2 lg:col-span-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Cari nama kegiatan, penyelenggara, atau lokasi"
+                className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              />
+            </div>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value as "semua" | StatusKegiatan)}
+              aria-label="Filter status"
+              className="h-10 w-full px-3 text-sm border border-gray-300 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            >
+              <option value="semua">Semua Status</option>
+              <option value="menunggu">Terjadwal</option>
+              <option value="berlangsung">Berlangsung</option>
+              <option value="selesai">Selesai</option>
+              <option value="terealisasi">Terealisasi</option>
+            </select>
+          </div>
         </div>
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value as "semua" | StatusKegiatan)}
-          className="h-9 px-3 text-sm rounded-lg border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="semua">Semua Status</option>
-          <option value="menunggu">Terjadwal</option>
-          <option value="berlangsung">Berlangsung</option>
-          <option value="selesai">Selesai</option>
-          <option value="terealisasi">Terealisasi</option>
-        </select>
-      </div>
-
-      {/* Table */}
-      <div className="rounded-xl border border-gray-200 overflow-hidden bg-white shadow-sm">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto border-t border-gray-200">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200 text-left">
-                <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Nama Kegiatan</th>
-                <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Penyelenggara</th>
-                <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Waktu</th>
-                <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Peserta</th>
-                <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">Aksi</th>
+              <tr className="bg-[#F1F1F1] border-b border-gray-200 text-left">
+                <th className="px-4 py-3 text-xs font-semibold text-gray-500">Nama Kegiatan</th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-500">Penyelenggara</th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-500">Waktu</th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-500">Peserta</th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-500">Status</th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-500 text-right">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -183,14 +188,14 @@ export function KegiatanView() {
                 </tr>
               ) : (
                 filtered.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={item.id} className="hover:bg-[#F9F9F9] transition-colors">
                     <td className="px-4 py-3.5 font-medium text-gray-800">{item.namaKegiatan}</td>
                     <td className="px-4 py-3.5">
                       <div className="flex flex-wrap gap-1">
                         {item.penyelenggara.map((p) => {
                           const colors = getPenyelenggaraColors(p)
                           return (
-                            <span key={p} className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${colors.bg} ${colors.text}`}>
+                            <span key={p} className={`inline-flex items-center px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold ${colors.bg} ${colors.text}`}>
                               {p}
                             </span>
                           )
@@ -206,7 +211,7 @@ export function KegiatanView() {
                     <td className="px-4 py-3.5 text-gray-600">
                       {item.peserta && item.peserta.length > 0
                         ? item.peserta.map((p) => (
-                            <span key={p.kategori} className="inline-block mr-1 last:mr-0 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded whitespace-nowrap">
+                            <span key={p.kategori} className="inline-block mr-1 last:mr-0 text-[13px] font-semibold bg-[#efefef] text-[#2f3031] px-2.5 py-0.5 rounded-full whitespace-nowrap">
                               {p.kategori}: {p.jumlah}
                             </span>
                           ))
@@ -218,9 +223,9 @@ export function KegiatanView() {
                     <td className="px-4 py-3.5 text-right">
                       <a
                         href={`/tambah-kegiatan?view=${item.id}`}
-                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition border border-blue-200 whitespace-nowrap"
+                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                       >
-                        <Eye className="w-3.5 h-3.5" /> Cek Detail
+                        Cek Detail
                       </a>
                     </td>
                   </tr>

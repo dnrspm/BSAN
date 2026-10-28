@@ -71,7 +71,7 @@ function InputField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          "h-9 px-3 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
+          "h-9 px-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
           hasError ? "border-red-400 bg-red-50" : "border-gray-300"
         )}
       />
@@ -88,12 +88,12 @@ function MemberSection({ label, value, onChange, isCollapsed, onToggleCollapse, 
 }) {
   const hasErr = showErrors && !(value.nama && value.email && value.noWhatsapp && value.jenisKelamin && value.instansi)
   return (
-    <div className={cn("rounded-xl border bg-white overflow-hidden", hasErr ? "border-red-300" : "border-gray-200")}>
+    <div className={cn("rounded-[4px] border bg-white overflow-hidden", hasErr ? "border-red-300" : "border-gray-200")}>
       <div
-        className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition"
+        className="flex items-center justify-between px-4 py-3 bg-[#F9F9F9] border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition"
         onClick={onToggleCollapse}
       >
-        <div className="flex items-center gapx-4 mt-2 mb-4">
+        <div className="flex items-center gap-2 mt-2 mb-4">
           <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
             <User className="w-3.5 h-3.5 text-blue-700" />
           </div>
@@ -103,7 +103,7 @@ function MemberSection({ label, value, onChange, isCollapsed, onToggleCollapse, 
           )}
         </div>
         {onToggleCollapse && (
-          <div className="p-1 rounded-lg text-gray-400 hover:text-gray-600 transition">
+          <div className="p-1 rounded-[4px] text-gray-400 hover:text-gray-600 transition">
             {isCollapsed ? <ChevronDown className="w-4 h-4 rotate-180" /> : <ChevronDown className="w-4 h-4" />}
           </div>
         )}
@@ -118,7 +118,7 @@ function MemberSection({ label, value, onChange, isCollapsed, onToggleCollapse, 
               value={value.jenisKelamin}
               onChange={(e) => onChange("jenisKelamin", e.target.value)}
               className={cn(
-                "w-full h-9 pl-3 pr-8 text-sm border rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700",
+                "w-full h-9 pl-3 pr-8 text-sm border rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700",
                 showErrors && !value.jenisKelamin ? "border-red-400 bg-red-50" : "border-gray-300"
               )}
             >
@@ -126,7 +126,7 @@ function MemberSection({ label, value, onChange, isCollapsed, onToggleCollapse, 
               <option value="Laki-Laki">Laki-Laki</option>
               <option value="Perempuan">Perempuan</option>
             </select>
-            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
           </div>
         </div>
         <InputField label="Instansi" required placeholder="Nama instansi" value={value.instansi} onChange={(v) => onChange("instansi", v)} hasError={showErrors && !value.instansi} />
@@ -141,7 +141,7 @@ function MemberSection({ label, value, onChange, isCollapsed, onToggleCollapse, 
               onChange={(e) => onChange("noWhatsapp", e.target.value.replace(/\D/g, ""))}
               placeholder="08xxxxxxxxxx"
               className={cn(
-                "w-full h-9 pl-9 pr-3 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
+                "w-full h-9 pl-9 pr-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
                 showErrors && !value.noWhatsapp ? "border-red-400 bg-red-50" : "border-gray-300"
               )}
             />
@@ -164,12 +164,12 @@ function MandatoryMemberSection({ label, value, onChange, bidangValue, isCollaps
 }) {
   const hasErr = showErrors && !(value.nama && value.email && value.noWhatsapp && value.jenisKelamin && value.instansi)
   return (
-    <div className={cn("rounded-xl border bg-white overflow-hidden", hasErr ? "border-red-300" : "border-gray-200")}>
+    <div className={cn("rounded-[4px] border bg-white overflow-hidden", hasErr ? "border-red-300" : "border-gray-200")}>
       <div
-        className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition"
+        className="flex items-center justify-between px-4 py-3 bg-[#F9F9F9] border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition"
         onClick={onToggleCollapse}
       >
-        <div className="flex items-center gapx-4 mt-2 mb-4">
+        <div className="flex items-center gap-2 mt-2 mb-4">
           <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
             <User className="w-3.5 h-3.5 text-blue-700" />
           </div>
@@ -179,7 +179,7 @@ function MandatoryMemberSection({ label, value, onChange, bidangValue, isCollaps
           )}
         </div>
         {onToggleCollapse && (
-          <div className="p-1 rounded-lg text-gray-400 hover:text-gray-600 transition">
+          <div className="p-1 rounded-[4px] text-gray-400 hover:text-gray-600 transition">
             {isCollapsed ? <ChevronDown className="w-4 h-4 rotate-180" /> : <ChevronDown className="w-4 h-4" />}
           </div>
         )}
@@ -194,7 +194,7 @@ function MandatoryMemberSection({ label, value, onChange, bidangValue, isCollaps
               value={value.jenisKelamin}
               onChange={(e) => onChange("jenisKelamin", e.target.value)}
               className={cn(
-                "w-full h-9 pl-3 pr-8 text-sm border rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700",
+                "w-full h-9 pl-3 pr-8 text-sm border rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700",
                 showErrors && !value.jenisKelamin ? "border-red-400 bg-red-50" : "border-gray-300"
               )}
             >
@@ -202,7 +202,7 @@ function MandatoryMemberSection({ label, value, onChange, bidangValue, isCollaps
               <option value="Laki-Laki">Laki-Laki</option>
               <option value="Perempuan">Perempuan</option>
             </select>
-            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
           </div>
         </div>
         <InputField label="Instansi" required placeholder="Nama instansi" value={value.instansi} onChange={(v) => onChange("instansi", v)} hasError={showErrors && !value.instansi} />
@@ -217,7 +217,7 @@ function MandatoryMemberSection({ label, value, onChange, bidangValue, isCollaps
               onChange={(e) => onChange("noWhatsapp", e.target.value.replace(/\D/g, ""))}
               placeholder="08xxxxxxxxxx"
               className={cn(
-                "w-full h-9 pl-9 pr-3 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
+                "w-full h-9 pl-9 pr-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
                 showErrors && !value.noWhatsapp ? "border-red-400 bg-red-50" : "border-gray-300"
               )}
             />
@@ -264,8 +264,8 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
 function ReviewMemberCard({ label, member }: { label: string; member: MemberField }) {
   const isEmpty = !member.nama && !member.email && !member.noWhatsapp
   return (
-    <div className="rounded-lg border border-gray-200 overflow-hidden">
-      <div className="px-3 py-2 bg-gray-50 border-b border-gray-200 flex items-center gapx-4 mt-2 mb-4">
+    <div className="rounded-[4px] border border-gray-200 overflow-hidden">
+      <div className="px-3 py-2 bg-[#F9F9F9] border-b border-gray-200 flex items-center gap-2 mt-2 mb-4">
         <User className="w-3.5 h-3.5 text-blue-600" />
         <span className="text-xs font-semibold text-gray-700">{label}</span>
         {isEmpty && (
@@ -413,16 +413,16 @@ function ReviewTable({ members, anggotaList, onEdit, onDelete, onResetMember }: 
   )
 
   return (
-    <div ref={scrollRef} className="overflow-x-auto border border-gray-200 rounded-lg">
+    <div ref={scrollRef} className="overflow-x-auto border border-gray-200 rounded-[4px]">
       <table className="w-full text-sm border-separate border-spacing-0">
-        <thead className="bg-gray-50">
+        <thead className="bg-[#F1F1F1]">
           <tr>
-            <th className="w-10 px-2 py-3 text-center font-semibold text-gray-500 whitespace-nowrap bg-gray-50 sticky left-0 z-20 border-b border-gray-200">No</th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap bg-gray-50 border-b border-gray-200 sticky z-20" style={{ left: "2.5rem" }}>
+            <th className="w-10 px-2 py-3 text-center font-semibold text-gray-500 whitespace-nowrap bg-[#F1F1F1] sticky left-0 z-20 border-b border-gray-200">No</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap bg-[#F1F1F1] border-b border-gray-200 sticky z-20" style={{ left: "2.5rem" }}>
               Nama *
               <Cue />
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap bg-gray-50 border-b border-gray-200">Jabatan Kelompok Kerja *</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap bg-[#F1F1F1] border-b border-gray-200">Jabatan Kelompok Kerja *</th>
             <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-gray-200">Jenis Kelamin *</th>
             <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-gray-200">Instansi *</th>
             <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-gray-200">Jabatan Instansi *</th>
@@ -437,12 +437,12 @@ function ReviewTable({ members, anggotaList, onEdit, onDelete, onResetMember }: 
             const isCategoryRow = row.isCategory
             if (isCategoryRow) {
               return (
-                <tr key={idx} className="bg-gray-50">
-                  <td colSpan={2} className="px-4 py-2 text-[11px] font-semibold text-gray-400 uppercase tracking-widest bg-gray-50 sticky left-0 z-20 border-b border-gray-100 min-w-[280px]">
+                <tr key={idx} className="bg-[#F9F9F9]">
+                  <td colSpan={2} className="px-4 py-2 text-sm font-semibold text-gray-400 uppercase tracking-widest bg-[#F9F9F9] sticky left-0 z-20 border-b border-gray-100 min-w-[280px]">
                     {row.kategori}
                     <Cue />
                   </td>
-                  <td colSpan={8} className="px-4 py-2 bg-gray-50 border-b border-gray-100"></td>
+                  <td colSpan={8} className="px-4 py-2 bg-[#F9F9F9] border-b border-gray-100"></td>
                 </tr>
               )
             }
@@ -474,17 +474,17 @@ function ReviewTable({ members, anggotaList, onEdit, onDelete, onResetMember }: 
                 <td className={cn("px-4 py-3 whitespace-nowrap border-b border-gray-100", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "bg-red-50" : "bg-white")}>
                   {row.status && (
                     <span className={cn(
-                      "px-2 py-1 rounded-full text-xs font-medium",
-                      row.status === "Lengkap" ? "bg-green-50 text-green-700" :
-                      row.status === "Tidak Lengkap" ? "bg-red-100 text-red-600" :
-                      "bg-amber-50 text-amber-600"
+                      "px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold",
+                      row.status === "Lengkap" ? "bg-emerald-300 text-emerald-950" :
+                      row.status === "Tidak Lengkap" ? "bg-rose-100 text-rose-950" :
+                      "bg-amber-200 text-amber-950"
                     )}>
                       {row.status}
                     </span>
                   )}
                 </td>
                 <td className={cn("px-4 py-3 whitespace-nowrap border-b border-gray-100", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "bg-red-50" : "bg-white")}>
-                  <div className="flex items-center gapx-4 mt-2 mb-4">
+                  <div className="flex items-center gap-2 mt-2 mb-4">
                     {!row.isCategory && (
                       <button 
                         onClick={() => {
@@ -494,7 +494,7 @@ function ReviewTable({ members, anggotaList, onEdit, onDelete, onResetMember }: 
                             onEdit(row.roleKey)
                           }
                         }} 
-                        className="text-xs text-blue-600 hover:underline"
+                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                       >
                         Ubah
                       </button>
@@ -508,7 +508,7 @@ function ReviewTable({ members, anggotaList, onEdit, onDelete, onResetMember }: 
                             onResetMember(row.roleKey)
                           }
                         }} 
-                        className="text-xs text-red-600 hover:underline"
+                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-red-600 hover:bg-red-50 transition-colors whitespace-nowrap"
                       >
                         Hapus
                       </button>
@@ -536,7 +536,7 @@ function ReviewAccordion({ members, anggotaList }: { members: Members; anggotaLi
     const isOpen = openKeys.has(rowKey)
     return (
       <div>
-<button type="button" className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition text-left" onClick={() => toggle(rowKey)}>
+<button type="button" className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#F9F9F9] transition text-left" onClick={() => toggle(rowKey)}>
           <div className="flex items-center gap-3">
             <div className={cn("w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0", purple ? "bg-purple-100" : "bg-blue-100")}>
               <User className={cn("w-3 h-3", purple ? "text-purple-700" : "text-blue-700")} />
@@ -657,7 +657,7 @@ const AnggotaRow = ({ a, rowKey, label }: { a: AnggotaItem; rowKey: string; labe
     const isOpen = openKeys.has(rowKey)
     return (
       <div>
-<button type="button" className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition text-left" onClick={() => toggle(rowKey)}>
+<button type="button" className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#F9F9F9] transition text-left" onClick={() => toggle(rowKey)}>
           <div className="flex items-center gap-3">
             <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
               <User className="w-3 h-3 text-purple-700" />
@@ -709,14 +709,14 @@ const AnggotaRow = ({ a, rowKey, label }: { a: AnggotaItem; rowKey: string; labe
   }
 
   const SectionHeader = ({ title }: { title: string }) => (
-    <div className="px-4 py-2 bg-gray-100 border-b border-gray-200">
-      <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">{title}</p>
+    <div className="px-4 py-2 bg-[#F9F9F9] border-b border-gray-200">
+      <p className="text-sm font-semibold text-gray-400 uppercase tracking-widest">{title}</p>
     </div>
   )
 
   const SubHeader = ({ title }: { title: string }) => (
-    <div className="px-4 py-1.5 bg-gray-50 border-t border-b border-gray-100">
-      <p className="text-[11px] font-medium text-gray-400 uppercase tracking-widest">{title}</p>
+    <div className="px-4 py-1.5 bg-[#F9F9F9] border-t border-b border-gray-100">
+      <p className="text-sm font-medium text-gray-400 uppercase tracking-widest">{title}</p>
     </div>
   )
 
@@ -725,7 +725,7 @@ const AnggotaRow = ({ a, rowKey, label }: { a: AnggotaItem; rowKey: string; labe
 
   return (
     <div className="flex flex-col gap-4 mt-2 mb-4">
-      <div className="rounded-xl border border-gray-200 overflow-hidden">
+      <div className="rounded-[4px] border border-gray-200 overflow-hidden">
         <SectionHeader title="Pimpinan" />
         <div className="divide-y divide-gray-200">
           {PIMPINAN_ROLES.map((r, i) => <MemberRow key={r.key} rowKey={r.key} label={r.label} m={members[r.key]} variant={i === 0 ? "default" : i === 1 ? "kecil" : "compact"} />)}
@@ -735,7 +735,7 @@ const AnggotaRow = ({ a, rowKey, label }: { a: AnggotaItem; rowKey: string; labe
       {BIDANG_ROLES.map(r => {
         const extras = anggotaList.filter(a => a.bidang === r.label)
         return (
-          <div key={r.key} className="rounded-xl border border-gray-200 overflow-hidden">
+          <div key={r.key} className="rounded-[4px] border border-gray-200 overflow-hidden">
             <SectionHeader title={r.label} />
             <div className="divide-y divide-gray-200">
               <MemberRow rowKey={r.key} label="Koordinator Bidang" m={members[r.key]} />
@@ -749,7 +749,7 @@ const AnggotaRow = ({ a, rowKey, label }: { a: AnggotaItem; rowKey: string; labe
       })}
 
       {lainnyaAnggota.length > 0 && (
-        <div className="rounded-xl border border-gray-200 overflow-hidden">
+        <div className="rounded-[4px] border border-gray-200 overflow-hidden">
           <SectionHeader title="Lainnya" />
           <div className="divide-y divide-gray-200">
             {lainnyaAnggota.map(a => {
@@ -781,13 +781,13 @@ function FileUploadField({ value, onChange, error }: { value: File | null; onCha
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f) }}
         className={cn(
-          "flex flex-col items-center justify-center gapx-4 mt-2 mb-4 border-2 border-dashed rounded-xl p-8 cursor-pointer transition",
-          error ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50 hover:border-blue-400 hover:bg-blue-50"
+          "flex flex-col items-center justify-center gapx-4 mt-2 mb-4 border-2 border-dashed rounded-[4px] p-8 cursor-pointer transition",
+          error ? "border-red-400 bg-red-50" : "border-gray-300 bg-[#F9F9F9] hover:border-blue-400 hover:bg-blue-50"
         )}
       >
         <Upload className={cn("w-6 h-6", error ? "text-red-400" : "text-gray-400")} />
         {value ? (
-          <div className="flex items-center gapx-4 mt-2 mb-4">
+          <div className="flex items-center gap-2 mt-2 mb-4">
             <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
             <span className="text-sm font-medium text-gray-800 break-all">{value.name}</span>
             <button type="button" onClick={(e) => { e.stopPropagation(); onChange(null) }} className="ml-1 text-gray-400 hover:text-red-500 transition" aria-label="Hapus file">
@@ -1191,9 +1191,9 @@ export default function BuatPokjaPage() {
     const isPusat = role === "pusat"
 
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center p-6">
         <div className="bg-white rounded-2xl p-10 flex flex-col items-center gap-3 shadow-xl max-w-sm w-full text-center">
-          <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+          <div className="w-16 h-16 flex items-center justify-center">
             <CheckCircle2 className="w-8 h-8 text-green-600" />
           </div>
           <h3 className="text-xl font-bold text-gray-900">
@@ -1221,11 +1221,11 @@ export default function BuatPokjaPage() {
   // Form page
   // ---------------------------------------------------------------------------
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-[#F9F9F9] flex flex-col">
       {/* Top bar */}
       <header className="sticky topx-4 mt-2 mb-4 z-10 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gapx-4 mt-2 mb-4">
+          <div className="flex items-center gap-2 mt-2 mb-4">
             <button
               onClick={() => router.back()}
               className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition"
@@ -1243,7 +1243,7 @@ export default function BuatPokjaPage() {
           <button
             onClick={handleSaveDraft}
             disabled={isSavingDraft}
-            className="flex items-center gapx-4 mt-2 mb-4 px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition"
+            className="flex items-center gap-2 mt-2 mb-4 px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-[4px] hover:bg-blue-100 transition"
           >
             {isSavingDraft ? "Menyimpan..." : "Simpan Draf"}
           </button>
@@ -1254,14 +1254,14 @@ export default function BuatPokjaPage() {
       <div className="fixed bottom-6 right-6 z-40 flex items-center gap-1">
         <button
           onClick={fillDummyData}
-          className="px-4 mt-2 mb-4 text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition shadow-sm"
+          className="px-4 mt-2 mb-4 text-amber-700 bg-amber-50 border border-amber-200 rounded-[4px] hover:bg-amber-100 transition shadow-sm"
           title="Isi Otomatis (Demo)"
         >
           <Wand2 className="w-4 h-4" />
         </button>
         <button
           onClick={() => setFlowSteps(flowSteps === 3 ? 4 : 3)}
-          className={cn("px-4 mt-2 mb-4 border rounded-lg transition shadow-sm", flowSteps === 4 ? "bg-blue-600 text-white border-blue-600" : "text-gray-500 bg-white border-gray-200 hover:bg-gray-100")}
+          className={cn("px-4 mt-2 mb-4 border rounded-[4px] transition shadow-sm", flowSteps === 4 ? "bg-blue-600 text-white border-blue-600" : "text-gray-500 bg-white border-gray-200 hover:bg-gray-100")}
           title={flowSteps === 3 ? "3 Langkah (klik untuk 4)" : "4 Langkah (klik untuk 3)"}
         >
           {flowSteps === 3 ? <ToggleLeft className="w-4 h-4" /> : <ToggleRight className="w-4 h-4" />}
@@ -1270,7 +1270,7 @@ export default function BuatPokjaPage() {
 
       {/* Toast notification for draft saved */}
       {showSavedToast && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gapx-4 mt-2 mb-4 px-4 py-3 bg-green-600 text-white rounded-lg shadow-lg animate-pulse">
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 mt-2 mb-4 px-4 py-3 bg-green-600 text-white rounded-lg shadow-lg animate-pulse">
           <CheckCircle2 className="w-4 h-4" />
           <span className="text-sm font-medium">Draf berhasil disimpan!</span>
         </div>
@@ -1278,7 +1278,7 @@ export default function BuatPokjaPage() {
 
       <div className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 flex flex-col gap-8">
         {/* Step indicator */}
-        <div className="flex items-center gapx-4 mt-2 mb-4">
+        <div className="flex items-center gap-2 mt-2 mb-4">
           {STEPS.map((s, i) => {
             const isActive = s.number === step
             const isDone = s.number < step
@@ -1304,10 +1304,10 @@ export default function BuatPokjaPage() {
         </div>
 
         {/* Step content */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm overflow-hidden">
           {/* Step header */}
           <div 
-            className={cn("px-6 py-5 border-b border-gray-100 bg-gray-50", step === 2 && "flex items-center justify-between cursor-pointer hover:bg-gray-100 transition")}
+            className={cn("px-6 py-5 border-b border-gray-100 bg-[#F9F9F9]", step === 2 && "flex items-center justify-between cursor-pointer hover:bg-gray-100 transition")}
             onClick={step === 2 ? toggleCollapseAllStep2 : undefined}
           >
             <div>
@@ -1325,7 +1325,7 @@ export default function BuatPokjaPage() {
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-gray-600">Wilayah</label>
-                  <div className="flex items-center gapx-4 mt-2 mb-4 h-9 px-3 border border-gray-200 rounded-lg bg-gray-50">
+                  <div className="flex items-center gap-2 mt-2 mb-4 h-9 px-3 border border-gray-200 rounded-[4px] bg-[#F9F9F9]">
                     <Building2 className="w-4 h-4 text-gray-400 flex-shrink-0" />
                     <span className="text-sm text-gray-500">{REGION}</span>
                   </div>
@@ -1339,7 +1339,7 @@ export default function BuatPokjaPage() {
                     value={kanalPengaduan}
                     onChange={setKanalPengaduan}
                   />
-                  <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2.5 flex flex-col gap-1">
+                  <div className="rounded-[4px] bg-amber-50 border border-amber-200 px-3 py-2.5 flex flex-col gap-1">
                     <p className="text-xs font-semibold text-amber-900">Nomor di atas akan menjadi kontak utama Kelompok Kerja</p>
                     <ul className="text-xs text-amber-800 space-y-0.5 list-disc list-inside">
                       <li>Nomor akan dipublikasikan sebagai saluran pengaduan</li>
@@ -1356,7 +1356,7 @@ export default function BuatPokjaPage() {
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-gray-600">Wilayah</label>
-                  <div className="flex items-center gapx-4 mt-2 mb-4 h-9 px-3 border border-gray-200 rounded-lg bg-gray-50">
+                  <div className="flex items-center gap-2 mt-2 mb-4 h-9 px-3 border border-gray-200 rounded-[4px] bg-[#F9F9F9]">
                     <Building2 className="w-4 h-4 text-gray-400 flex-shrink-0" />
                     <span className="text-sm text-gray-500">{REGION}</span>
                   </div>
@@ -1373,22 +1373,22 @@ export default function BuatPokjaPage() {
                       <label className="text-xs font-semibold text-gray-600">Nomor SK <span className="text-red-500">*</span></label>
                       <input type="text" value={skDetail.nomorSK} onChange={(e) => setSkDetail((p) => ({ ...p, nomorSK: e.target.value }))}
                         placeholder="Contoh: 421/001/SK/2025"
-                        className="h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                        className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-semibold text-gray-600">Tanggal SK <span className="text-red-500">*</span></label>
                       <input type="date" value={skDetail.tanggalSK} onChange={(e) => setSkDetail((p) => ({ ...p, tanggalSK: e.target.value }))}
-                        className="h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                        className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-semibold text-gray-600">Tanggal Mulai <span className="text-red-500">*</span></label>
                       <input type="date" value={skDetail.periodeMulai} onChange={(e) => setSkDetail((p) => ({ ...p, periodeMulai: e.target.value }))}
-                        className="h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                        className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-semibold text-gray-600">Tanggal Selesai <span className="text-red-500">*</span></label>
                       <input type="date" value={skDetail.periodeSelesai} onChange={(e) => setSkDetail((p) => ({ ...p, periodeSelesai: e.target.value }))}
-                        className="h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                        className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                     </div>
                   </div>
                 </div>
@@ -1403,7 +1403,7 @@ export default function BuatPokjaPage() {
                     value={kanalPengaduan}
                     onChange={setKanalPengaduan}
                   />
-                  <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2.5 flex flex-col gap-1">
+                  <div className="rounded-[4px] bg-amber-50 border border-amber-200 px-3 py-2.5 flex flex-col gap-1">
                     <p className="text-xs font-semibold text-amber-900">Nomor di atas akan menjadi kontak utama Kelompok Kerja</p>
                     <ul className="text-xs text-amber-800 space-y-0.5 list-disc list-inside">
                       <li>Nomor akan dipublikasikan sebagai saluran pengaduan</li>
@@ -1515,12 +1515,12 @@ export default function BuatPokjaPage() {
                     const isCollapsed = collapsedAnggota.has(index)
                     const anggotaHasErr = step2Errors && !(anggota.bidang && anggota.nama && anggota.jenisKelamin && anggota.email && anggota.noWhatsapp && anggota.instansi)
                     return (
-                    <div key={index} className={cn("rounded-xl border bg-white overflow-hidden", anggotaHasErr ? "border-red-300" : "border-gray-200")}>
+                    <div key={index} className={cn("rounded-[4px] border bg-white overflow-hidden", anggotaHasErr ? "border-red-300" : "border-gray-200")}>
                       <div
-                        className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition"
+                        className="flex items-center justify-between px-4 py-3 bg-[#F9F9F9] border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition"
                         onClick={() => toggleCollapse(index)}
                       >
-                        <div className="flex items-center gapx-4 mt-2 mb-4 flex-1">
+                        <div className="flex items-center gap-2 mt-2 mb-4 flex-1">
                           <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
                             <User className="w-3.5 h-3.5 text-blue-700" />
                           </div>
@@ -1534,7 +1534,7 @@ export default function BuatPokjaPage() {
                                 value={anggota.bidang}
                                 onChange={(e) => updateAnggota(index, "bidang", e.target.value)}
                                 className={cn(
-                                  "w-full h-8 pl-3 pr-8 text-xs border rounded-lg appearance-none transition text-gray-700 bg-white",
+                                  "w-full h-8 pl-3 pr-8 text-xs border rounded-[4px] appearance-none transition text-gray-700 bg-white",
                                   step2Errors && !anggota.bidang ? "border-red-400 bg-red-50" : "border-gray-300"
                                 )}
                               >
@@ -1547,19 +1547,19 @@ export default function BuatPokjaPage() {
                                 <option value="Bidang Kominfo">Bidang Kominfo</option>
                                 <option value="Lainnya (Tokoh Masyarakat, Akademisi, Kepolisian, dan sebagainya..)">Lainnya</option>
                               </select>
-                              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gapx-4 mt-2 mb-4">
+                        <div className="flex items-center gap-2 mt-2 mb-4">
                           <div
-                            className="p-1 rounded-lg text-gray-400 hover:text-gray-600 transition"
+                            className="p-1 rounded-[4px] text-gray-400 hover:text-gray-600 transition"
                           >
                             {isCollapsed ? <ChevronDown className="w-4 h-4 rotate-180" /> : <ChevronDown className="w-4 h-4" />}
                           </div>
                           <button
                             onClick={(e) => { e.stopPropagation(); removeAnggota(index) }}
-                            className="p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition"
+                            className="p-1 rounded-[4px] text-gray-400 hover:text-red-500 hover:bg-red-50 transition"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -1590,7 +1590,7 @@ export default function BuatPokjaPage() {
                                 value={anggota.jenisKelamin}
                                 onChange={(e) => updateAnggota(index, "jenisKelamin", e.target.value)}
                                 className={cn(
-                                  "w-full h-9 pl-3 pr-8 text-sm border rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
+                                  "w-full h-9 pl-3 pr-8 text-sm border rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
                                   step2Errors && !anggota.jenisKelamin ? "border-red-400 bg-red-50 text-gray-400" : anggota.jenisKelamin ? "border-gray-300 text-gray-700" : "border-gray-300 text-gray-400"
                                 )}
                               >
@@ -1598,7 +1598,7 @@ export default function BuatPokjaPage() {
                                 <option value="Laki-Laki">Laki-Laki</option>
                                 <option value="Perempuan">Perempuan</option>
                               </select>
-                              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
                             </div>
                           </div>
                           <InputField
@@ -1637,7 +1637,7 @@ export default function BuatPokjaPage() {
                                 onChange={(e) => updateAnggota(index, "noWhatsapp", e.target.value.replace(/\D/g, ""))}
                                 placeholder="08xxxxxxxxxx"
                                 className={cn(
-                                  "w-full h-9 pl-9 pr-3 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
+                                  "w-full h-9 pl-9 pr-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
                                   step2Errors && !anggota.noWhatsapp ? "border-red-400 bg-red-50" : "border-gray-300"
                                 )}
                               />
@@ -1652,7 +1652,7 @@ export default function BuatPokjaPage() {
                   <button
                     onClick={addAnggota}
                     type="button"
-                    className="flex items-center justify-center gapx-4 mt-2 mb-4 w-full py-2.5 mt-2 border-2 border-dashed border-gray-300 rounded-lg text-sm font-medium text-gray-500 hover:border-blue-400 hover:text-blue-600 transition"
+                    className="flex items-center justify-center gapx-4 mt-2 mb-4 w-full py-2.5 mt-2 border-2 border-dashed border-gray-300 rounded-[4px] text-sm font-medium text-gray-500 hover:border-blue-400 hover:text-blue-600 transition"
                   >
                     <Plus className="w-4 h-4" /> Tambah Anggota
                   </button>
@@ -1669,22 +1669,22 @@ export default function BuatPokjaPage() {
                     <label className="text-xs font-semibold text-gray-600">Nomor SK <span className="text-red-500">*</span></label>
                     <input type="text" value={skDetail.nomorSK} onChange={(e) => setSkDetail((p) => ({ ...p, nomorSK: e.target.value }))}
                       placeholder="Contoh: 421/001/SK/2025"
-                      className="h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                      className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-gray-600">Tanggal SK <span className="text-red-500">*</span></label>
                     <input type="date" value={skDetail.tanggalSK} onChange={(e) => setSkDetail((p) => ({ ...p, tanggalSK: e.target.value }))}
-                      className="h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                      className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-gray-600">Tanggal Mulai <span className="text-red-500">*</span></label>
                     <input type="date" value={skDetail.periodeMulai} onChange={(e) => setSkDetail((p) => ({ ...p, periodeMulai: e.target.value }))}
-                      className="h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                      className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-gray-600">Tanggal Selesai <span className="text-red-500">*</span></label>
                     <input type="date" value={skDetail.periodeSelesai} onChange={(e) => setSkDetail((p) => ({ ...p, periodeSelesai: e.target.value }))}
-                      className="h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                      className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                   </div>
                 </div>
               </div>
@@ -1701,7 +1701,7 @@ export default function BuatPokjaPage() {
                     </p>
                     <button onClick={() => setStep(1)} className="text-xs text-blue-600 hover:underline flex items-center gap-1"><Eye className="w-3 h-3" /> Ubah</button>
                   </div>
-                  <div className="rounded-xl border border-gray-200 p-4">
+                  <div className="rounded-[4px] border border-gray-200 p-4">
                     <table className="w-full">
                       <tbody>
                         <ReviewTableRow label="Wilayah" value={REGION} />
@@ -1745,7 +1745,7 @@ export default function BuatPokjaPage() {
                       <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Dokumen SK</p>
                       <button onClick={() => setStep(3)} className="text-xs text-blue-600 hover:underline flex items-center gap-1"><Eye className="w-3 h-3" /> Ubah</button>
                     </div>
-                    <div className="rounded-xl border border-gray-200 p-4">
+                    <div className="rounded-[4px] border border-gray-200 p-4">
                       <table className="w-full">
                         <tbody>
                           <ReviewTableRow label="File SK" value={skFile?.name ?? "-"} />
@@ -1770,7 +1770,7 @@ export default function BuatPokjaPage() {
                       onChange={(e) => setDeskripsiPerbaikan(e.target.value)}
                       placeholder="Contoh: Memperbarui nomor SK, mengganti anggota koordinator, dan memperpanjang periode berlaku..."
                       rows={4}
-                      className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      className="w-full rounded-[4px] border border-gray-300 px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                     />
                   </div>
                 )}
@@ -1783,7 +1783,7 @@ export default function BuatPokjaPage() {
 
             {/* Persetujuan */}
             {((flowSteps === 3 && step === 3) || (flowSteps === 4 && step === 4)) && (
-              <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+              <div className="rounded-[4px] border border-gray-200 bg-white p-4 shadow-sm">
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -1811,7 +1811,7 @@ export default function BuatPokjaPage() {
                     <button
                       type="button"
                       onClick={() => setShowPrivacyModal(false)}
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition"
+                      className="w-8 h-8 rounded-[4px] flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -1895,7 +1895,7 @@ export default function BuatPokjaPage() {
                     <button
                       type="button"
                       onClick={() => setShowPrivacyModal(false)}
-                      className="px-5 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                      className="px-5 py-2 text-sm font-semibold bg-blue-600 text-white rounded-[4px] hover:bg-blue-700 transition"
                     >
                       Tutup
                     </button>
@@ -1906,7 +1906,7 @@ export default function BuatPokjaPage() {
 
             <div className="flex items-center justify-between pb-8">
           {step > 1 ? (
-            <button onClick={handleBack} className="flex items-center gapx-4 mt-2 mb-4 px-4 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
+            <button onClick={handleBack} className="flex items-center gap-2 mt-2 mb-4 px-4 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-[4px] hover:bg-gray-100 transition">
               <ChevronLeft className="w-4 h-4" /> Sebelumnya
             </button>
           ) : <div />}
@@ -1916,7 +1916,7 @@ export default function BuatPokjaPage() {
               onClick={handleNext}
               disabled={!canGoNext()}
               className={cn(
-                "flex items-center gapx-4 mt-2 mb-4 px-5 py-2 text-sm font-semibold rounded-lg transition",
+                "flex items-center gap-2 mt-2 mb-4 px-5 py-2 text-sm font-semibold rounded-[4px] transition",
                 canGoNext()
                   ? "bg-blue-600 text-white hover:bg-blue-700"
                   : "bg-gray-200 text-gray-400 cursor-not-allowed"
@@ -1925,11 +1925,11 @@ export default function BuatPokjaPage() {
               Selanjutnya <ChevronRight className="w-4 h-4" />
             </button>
           ) : (
-            <div className="flex items-center gapx-4 mt-2 mb-4">
+            <div className="flex items-center gap-2 mt-2 mb-4">
               <button
                 onClick={handleSubmit}
                 disabled={!consent}
-                className={`flex items-center gapx-4 mt-2 mb-4 px-6 py-2 text-sm font-semibold rounded-lg transition ${
+                className={`flex items-center gap-2 mt-2 mb-4 px-6 py-2 text-sm font-semibold rounded-[4px] transition ${
                   consent
                     ? "bg-green-600 text-white hover:bg-green-700"
                     : "bg-gray-200 text-gray-400 cursor-not-allowed"

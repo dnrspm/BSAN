@@ -76,8 +76,8 @@ function fmtDate(d: string) {
 // ---------------------------------------------------------------------------
 function SectionCard({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-      <div className="flex items-center gap-2.5 px-5 py-4 bg-gray-50 border-b border-gray-200 rounded-t-xl">
+    <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm">
+      <div className="flex items-center gap-2.5 px-5 py-4 bg-[#F9F9F9] border-b border-gray-200 rounded-t-xl">
         <span className="text-gray-900 flex-shrink-0">{icon}</span>
         <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
       </div>
@@ -92,7 +92,7 @@ function SesuaiToggle({ value, onChange }: { value: boolean | null; onChange: (v
       <button
         type="button"
         onClick={() => onChange(true)}
-        className={`flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-semibold border transition ${
+        className={`flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-semibold border transition ${
           value === true
             ? "bg-emerald-600 border-emerald-600 text-white"
             : "bg-white border-gray-300 text-gray-600 hover:border-emerald-400 hover:text-emerald-600"
@@ -103,7 +103,7 @@ function SesuaiToggle({ value, onChange }: { value: boolean | null; onChange: (v
       <button
         type="button"
         onClick={() => onChange(false)}
-        className={`flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-semibold border transition ${
+        className={`flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-semibold border transition ${
           value === false
             ? "bg-red-500 border-red-500 text-white"
             : "bg-white border-gray-300 text-gray-600 hover:border-red-400 hover:text-red-500"
@@ -248,9 +248,9 @@ function LaporkanRealisasiInner() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 text-center max-w-sm w-full">
-          <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-7 h-7 text-emerald-600" />
           </div>
           <h2 className="text-lg font-bold text-gray-900">Realisasi Dilaporkan</h2>
@@ -262,20 +262,20 @@ function LaporkanRealisasiInner() {
 
   if (!kegiatan) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center">
         <p className="text-sm text-gray-400">Memuat data kegiatan...</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F9F9F9]">
       {/* Sticky header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
           <button
             onClick={goBack}
-            className="p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition"
+            className="p-2 rounded-[4px] text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition"
             aria-label="Kembali"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -290,7 +290,7 @@ function LaporkanRealisasiInner() {
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
 
         {/* Petunjuk */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+        <div className="bg-blue-50 border border-blue-200 rounded-[4px] px-4 py-3">
           <p className="text-xs text-blue-700">
             Tinjau setiap data rencana kegiatan. Pilih <strong>Sesuai</strong> jika pelaksanaan sesuai rencana, atau <strong>Tidak Sesuai</strong> untuk menginput data yang sebenarnya.
           </p>
@@ -319,7 +319,7 @@ function LaporkanRealisasiInner() {
                     type="date"
                     value={aktualTanggalMulai}
                     onChange={(e) => setAktualTanggalMulai(e.target.value)}
-                    className="h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div className="flex flex-col gap-1">
@@ -328,7 +328,7 @@ function LaporkanRealisasiInner() {
                     type="date"
                     value={aktualTanggalSelesai}
                     onChange={(e) => setAktualTanggalSelesai(e.target.value)}
-                    className="h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -343,7 +343,7 @@ function LaporkanRealisasiInner() {
               const Icon = getPenyelenggaraIcon(p)
               const colors = getPenyelenggaraColors(p)
               return (
-                <div key={p} className="flex items-center gap-2 py-1.5 px-2 bg-gray-50 rounded-lg">
+                <div key={p} className="flex items-center gap-2 py-1.5 px-2 bg-[#F9F9F9] rounded-[4px]">
                   <div className={`w-7 h-7 rounded-full ${colors.bg} flex items-center justify-center flex-shrink-0`}>
                     <Icon className={`w-3.5 h-3.5 ${colors.text}`} />
                   </div>
@@ -365,7 +365,7 @@ function LaporkanRealisasiInner() {
                     onBlur={() => setTimeout(() => setShowTagDropdown(false), 200)}
                     onClick={() => setShowTagDropdown(true)}
                     placeholder="Tambah penyelenggara aktual"
-                    className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                   {showTagDropdown && filteredOptions.length > 0 && (
                     <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-40 overflow-y-auto">
@@ -393,7 +393,7 @@ function LaporkanRealisasiInner() {
                       const Icon = getPenyelenggaraIcon(p)
                       const colors = getPenyelenggaraColors(p)
                       return (
-                        <div key={p} className="flex items-center gap-2 py-1.5 px-2 bg-gray-50 rounded-lg">
+                        <div key={p} className="flex items-center gap-2 py-1.5 px-2 bg-[#F9F9F9] rounded-[4px]">
                           <div className={`w-7 h-7 rounded-full ${colors.bg} flex items-center justify-center flex-shrink-0`}>
                             <Icon className={`w-3.5 h-3.5 ${colors.text}`} />
                           </div>
@@ -426,7 +426,7 @@ function LaporkanRealisasiInner() {
                 value={aktualLokasi}
                 onChange={(e) => setAktualLokasi(e.target.value)}
                 placeholder="Lokasi aktual pelaksanaan"
-                className="mt-2 w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="mt-2 w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           )}
@@ -437,7 +437,7 @@ function LaporkanRealisasiInner() {
           {kegiatan.peserta && kegiatan.peserta.length > 0 ? (
             <div className="flex flex-col gap-2">
               {kegiatan.peserta.map((p, i) => (
-                <div key={i} className="flex items-center gap-3 py-2 px-3 bg-gray-50 rounded-lg">
+                <div key={i} className="flex items-center gap-3 py-2 px-3 bg-[#F9F9F9] rounded-[4px]">
                   <span className="text-sm font-medium text-gray-700 min-w-[100px]">{p.kategori}</span>
                   <span className="text-sm text-gray-500">: {p.jumlah} orang</span>
                 </div>
@@ -469,7 +469,7 @@ function LaporkanRealisasiInner() {
                         setAktualPeserta(next)
                       }}
                       placeholder="Kategori"
-                      className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                     <input
                       type="number"
@@ -481,13 +481,13 @@ function LaporkanRealisasiInner() {
                         setAktualPeserta(next)
                       }}
                       placeholder="Jumlah"
-                      className="w-24 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-24 h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                     <span className="text-sm text-gray-500 whitespace-nowrap">orang</span>
                     <button
                       type="button"
                       onClick={() => setAktualPeserta((prev) => prev.filter((_, idx) => idx !== i))}
-                      className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition"
+                      className="p-1.5 hover:bg-red-50 rounded-[4px] text-red-400 hover:text-red-600 transition"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -517,7 +517,7 @@ function LaporkanRealisasiInner() {
                 value={linkDokumentasi}
                 onChange={(e) => setLinkDokumentasi(e.target.value)}
                 placeholder="https://drive.google.com/..."
-                className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -527,7 +527,7 @@ function LaporkanRealisasiInner() {
                 onChange={(e) => setCatatan(e.target.value)}
                 placeholder="Tambahkan catatan jika ada hal yang perlu disampaikan..."
                 rows={3}
-                className="p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
+                className="p-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
               />
             </div>
           </div>
@@ -538,7 +538,7 @@ function LaporkanRealisasiInner() {
           <button
             type="button"
             onClick={goBack}
-            className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition"
+            className="flex-1 py-2.5 rounded-[4px] border border-gray-300 text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition"
           >
             Batal
           </button>
@@ -546,7 +546,7 @@ function LaporkanRealisasiInner() {
             type="button"
             onClick={handleSimpan}
             disabled={!canSubmit}
-            className="flex-1 py-2.5 rounded-lg bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="flex-1 py-2.5 rounded-[4px] bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
             Simpan Laporan
           </button>

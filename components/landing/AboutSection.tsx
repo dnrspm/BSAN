@@ -25,7 +25,7 @@ const points = [
 
 export function AboutSection() {
   return (
-    <section id="tentang" className="py-24 bg-slate-50">
+    <section id="tentang" className="py-24 bg-[#F9F9F9]">
       <div className="max-w-6xl mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
@@ -59,10 +59,10 @@ export function AboutSection() {
             {points.map(({ icon: Icon, title, desc }) => (
               <div
                 key={title}
-                className="bg-white rounded-xl p-5 border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all"
+                className="bg-white rounded-[4px] p-5 border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all"
               >
-                <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center mb-3">
-                  <Icon className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 flex items-center justify-center mb-3">
+                  <Icon className="w-5 h-5 text-blue-600" />
                 </div>
                 <h4 className="font-semibold text-slate-900 text-sm mb-1">{title}</h4>
                 <p className="text-slate-500 text-xs leading-relaxed">{desc}</p>

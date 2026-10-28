@@ -49,7 +49,7 @@ export function UrgencySection() {
           {urgencies.map(({ icon: Icon, color, bg, title, description }) => (
             <Card key={title} className="border-slate-100 shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="pt-6">
-                <div className={`w-12 h-12 rounded-xl ${bg} flex items-center justify-center mb-4`}>
+                <div className={`w-12 h-12 flex items-center justify-center mb-4`}>
                   <Icon className={`w-6 h-6 ${color}`} />
                 </div>
                 <h3 className="font-semibold text-slate-900 text-lg mb-2">{title}</h3>

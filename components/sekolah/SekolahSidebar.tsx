@@ -57,7 +57,7 @@ export function SekolahSidebar({ activeMenu, onMenuChange, onLogout }: SekolahSi
                 setMobileOpen(false)
               }}
               className={cn(
-                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "w-full flex items-center gap-3 px-3 py-2.5 rounded-[4px] text-sm font-medium transition-colors",
                 isActive
                   ? "bg-white/15 text-white"
                   : "text-emerald-100 hover:bg-white/10 hover:text-white"
@@ -74,7 +74,7 @@ export function SekolahSidebar({ activeMenu, onMenuChange, onLogout }: SekolahSi
         <button
           type="button"
           onClick={onLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-emerald-100 hover:bg-white/10 hover:text-white transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[4px] text-sm font-medium text-emerald-100 hover:bg-white/10 hover:text-white transition-colors"
         >
           <LogOut className="w-4 h-4 flex-shrink-0" />
           Keluar

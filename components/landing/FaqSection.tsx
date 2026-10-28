@@ -46,7 +46,7 @@ const faqs = [
 
 export function FaqSection() {
   return (
-    <section id="faq" className="py-24 bg-slate-50">
+    <section id="faq" className="py-24 bg-[#F9F9F9]">
       <div className="max-w-3xl mx-auto px-4">
         <div className="text-center mb-12">
           <span className="text-blue-600 text-sm font-semibold uppercase tracking-widest">
@@ -60,7 +60,7 @@ export function FaqSection() {
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-[4px] border border-slate-100 shadow-sm overflow-hidden">
           <Accordion type="single" collapsible>
             {faqs.map((faq) => (
               <AccordionItem key={faq.id} value={faq.id} className="px-6">

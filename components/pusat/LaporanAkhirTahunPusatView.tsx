@@ -137,20 +137,20 @@ function StatusBadge({ status }: { status: StatusLaporan }) {
   switch (status) {
     case "terjadwal":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-          <Calendar className="w-3 h-3" /> Belum Dimulai
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-sky-200 text-sky-950">
+          Belum Dimulai
         </span>
       )
     case "berlangsung":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-          <Clock className="w-3 h-3" /> Sedang Berlangsung
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-emerald-300 text-emerald-950">
+          Sedang Berlangsung
         </span>
       )
     case "selesai":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
-          <CheckCircle className="w-3 h-3" /> Selesai
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-[#efefef] text-[#2f3031]">
+          Selesai
         </span>
       )
   }
@@ -213,7 +213,7 @@ function FormModal({
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+            <div className="w-10 h-10 flex items-center justify-center">
               <FileText className="w-5 h-5 text-blue-600" />
             </div>
             <div>
@@ -223,7 +223,7 @@ function FormModal({
               <p className="text-xs text-gray-500">Tentukan judul, deskripsi, dan jadwal pengisian formulir evaluasi.</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-lg">
+          <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-[4px]">
             <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
@@ -236,7 +236,7 @@ function FormModal({
               value={judul}
               onChange={(e) => setJudul(e.target.value)}
               placeholder="Contoh: Formulir Evaluasi Tahun 2025"
-              className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
           </div>
 
@@ -247,7 +247,7 @@ function FormModal({
               onChange={(e) => setDeskripsi(e.target.value)}
               placeholder="Deskripsi periode (opsional)"
               rows={3}
-              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
+              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
             />
           </div>
 
@@ -258,7 +258,7 @@ function FormModal({
                 type="date"
                 value={periodeAwal}
                 onChange={(e) => setPeriodeAwal(e.target.value)}
-                className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
             <div>
@@ -267,7 +267,7 @@ function FormModal({
                 type="date"
                 value={periodeAkhir}
                 onChange={(e) => setPeriodeAkhir(e.target.value)}
-                className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
           </div>
@@ -290,7 +290,7 @@ function FormModal({
                       setGoogleFormUrls((prev) => ({ ...prev, [field.key]: e.target.value }))
                     }
                     placeholder="https://docs.google.com/forms/d/..."
-                    className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   />
                 </div>
               ))}
@@ -302,7 +302,7 @@ function FormModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+            className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
           >
             Batal
           </button>
@@ -310,7 +310,7 @@ function FormModal({
             type="button"
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {initialData ? "Simpan" : "Buat Formulir"}
           </button>
@@ -330,7 +330,7 @@ function DetailModal({ item, onClose, onEdit, onDelete, isReadOnly }: { item: La
       <div className="relative w-full max-w-lg max-h-[85vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         <div className="flex items-start justify-between gap-3 px-6 py-5 border-b border-gray-100 flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+            <div className="w-11 h-11 flex items-center justify-center flex-shrink-0">
               <FileText className="w-5 h-5 text-blue-600" />
             </div>
             <div className="min-w-0">
@@ -339,14 +339,14 @@ function DetailModal({ item, onClose, onEdit, onDelete, isReadOnly }: { item: La
               </h2>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition flex-shrink-0">
+          <button type="button" onClick={onClose} className="p-1.5 rounded-[4px] hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition flex-shrink-0">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
           <div>
-            <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">Jadwal</p>
+            <p className="text-sm font-medium uppercase tracking-wide text-gray-400">Jadwal</p>
             <div className="flex items-center gap-2 mt-1 overflow-x-auto">
               <span className="flex items-center gap-1 text-sm text-gray-700 whitespace-nowrap flex-shrink-0">
                 <Calendar className="w-3.5 h-3.5" />
@@ -360,7 +360,7 @@ function DetailModal({ item, onClose, onEdit, onDelete, isReadOnly }: { item: La
 
           {(item.deskripsi || item.catatan) && (
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">Deskripsi</p>
+              <p className="text-sm font-medium uppercase tracking-wide text-gray-400">Deskripsi</p>
               <p className="text-sm text-gray-700 mt-1 leading-relaxed">{item.deskripsi || item.catatan}</p>
             </div>
           )}
@@ -368,9 +368,9 @@ function DetailModal({ item, onClose, onEdit, onDelete, isReadOnly }: { item: La
           <div>
             <div className="flex items-center gap-1.5 text-gray-400 mb-2">
               <Link2 className="w-3.5 h-3.5" />
-              <p className="text-[11px] font-medium uppercase tracking-wide">Google Form per Jenjang</p>
+              <p className="text-sm font-medium uppercase tracking-wide">Google Form per Jenjang</p>
             </div>
-            <div className="rounded-xl border border-gray-100 divide-y divide-gray-100">
+            <div className="rounded-[4px] border border-gray-100 divide-y divide-gray-100">
               {JENJANG_FIELDS.map((field) => {
                 const url = item.googleFormUrls?.[field.key]
                 return (
@@ -386,7 +386,7 @@ function DetailModal({ item, onClose, onEdit, onDelete, isReadOnly }: { item: La
                         <ExternalLink className="w-3.5 h-3.5" /> Buka
                       </a>
                     ) : (
-                      <span className="text-[11px] font-medium text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full flex-shrink-0">
+                      <span className="text-[13px] font-semibold bg-[#efefef] text-[#2f3031] px-2.5 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
                         Belum diisi
                       </span>
                     )}
@@ -406,14 +406,14 @@ function DetailModal({ item, onClose, onEdit, onDelete, isReadOnly }: { item: La
             <button
               type="button"
               onClick={() => onEdit(item)}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-[4px] text-sm font-semibold text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
             >
               <Pencil className="w-4 h-4" /> Edit
             </button>
             <button
               type="button"
               onClick={() => setShowConfirmDelete(true)}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 transition"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-[4px] text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 transition"
             >
               <Trash2 className="w-4 h-4" /> Hapus
             </button>
@@ -425,7 +425,7 @@ function DetailModal({ item, onClose, onEdit, onDelete, isReadOnly }: { item: La
             <div className="fixed inset-0 bg-black/50" onClick={() => setShowConfirmDelete(false)} />
             <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
               <div className="text-center">
-                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                <div className="w-12 h-12 flex items-center justify-center mx-auto mb-4">
                   <Trash2 className="w-6 h-6 text-red-600" />
                 </div>
                 <h3 className="text-base font-bold text-gray-900 mb-2">Hapus Formulir Evaluasi?</h3>
@@ -436,7 +436,7 @@ function DetailModal({ item, onClose, onEdit, onDelete, isReadOnly }: { item: La
                   <button
                     type="button"
                     onClick={() => setShowConfirmDelete(false)}
-                    className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                    className="flex-1 px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
                   >
                     Batal
                   </button>
@@ -446,7 +446,7 @@ function DetailModal({ item, onClose, onEdit, onDelete, isReadOnly }: { item: La
                       setShowConfirmDelete(false)
                       onDelete(item.id)
                     }}
-                    className="flex-1 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
+                    className="flex-1 px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
                   >
                     Hapus
                   </button>
@@ -472,7 +472,7 @@ function FormLinksModal({ item, onClose }: { item: LaporanItem; onClose: () => v
               <h3 className="text-base font-bold text-gray-900">Link Google Form</h3>
               <p className="text-xs text-gray-500">{item.judul || `Tahun ${item.tahun}`}</p>
             </div>
-            <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-lg">
+            <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-[4px]">
               <X className="w-5 h-5 text-gray-500" />
             </button>
           </div>
@@ -649,7 +649,7 @@ export function LaporanAkhirTahunPusatView({
                 setEditingItem(undefined)
                 setShowForm(true)
               }}
-              className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
+              className="flex items-center gap-1.5 h-9 px-4 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
             >
               <Plus className="w-4 h-4" /> Buat Formulir
             </button>
@@ -660,8 +660,8 @@ export function LaporanAkhirTahunPusatView({
       <div className="border-t border-gray-200" />
 
       {list.length === 0 ? (
-        <div className="bg-white rounded-xl border border-dashed border-gray-300 p-10 text-center">
-          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+        <div className="bg-white rounded-[4px] border border-dashed border-gray-300 p-10 text-center">
+          <div className="w-12 h-12 flex items-center justify-center mx-auto mb-3">
             <FileText className="w-6 h-6 text-gray-400" />
           </div>
             <p className="font-semibold text-gray-700 text-sm">Belum ada formulir evaluasi</p>
@@ -672,24 +672,24 @@ export function LaporanAkhirTahunPusatView({
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[800px]">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-left">
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Judul</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Deskripsi</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Jadwal Pengisian Formulir</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Formulir</th>
+                <tr className="bg-[#F1F1F1] border-b border-gray-200 text-left">
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500">Judul</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500">Deskripsi</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500">Jadwal Pengisian Formulir</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500">Status</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500">Formulir</th>
                   {!isReadOnly && (
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Aksi</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500">Aksi</th>
                   )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {list.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={item.id} className="hover:bg-[#F9F9F9] transition-colors">
                     <td className="px-4 py-3.5 font-semibold text-gray-900">
                       <button
                         onClick={() => setSelected(item)}
@@ -728,21 +728,21 @@ export function LaporanAkhirTahunPusatView({
                     </td>
                     {!isReadOnly && (
                       <td className="px-4 py-3.5">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
                           <button
                             onClick={() => {
                               setEditingItem(item)
                               setShowForm(true)
                             }}
-                            className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                           >
-                            <Pencil className="w-3.5 h-3.5" /> Edit
+                            Edit
                           </button>
                           <button
                             onClick={() => setDeleteTarget(item)}
-                            className="text-red-600 hover:underline text-sm flex items-center gap-1"
+                            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-red-600 hover:bg-red-50 transition-colors whitespace-nowrap"
                           >
-                            <Trash2 className="w-3.5 h-3.5" /> Hapus
+                            Hapus
                           </button>
                         </div>
                       </td>
@@ -788,7 +788,7 @@ export function LaporanAkhirTahunPusatView({
           <div className="fixed inset-0 bg-black/50" onClick={() => setDeleteTarget(null)} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
                 <AlertTriangle className="w-5 h-5 text-red-600" />
               </div>
               <div>
@@ -802,7 +802,7 @@ export function LaporanAkhirTahunPusatView({
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
-                className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 text-sm font-medium rounded-[4px] border border-gray-300 text-gray-700 hover:bg-[#F9F9F9]"
               >
                 Batal
               </button>
@@ -812,7 +812,7 @@ export function LaporanAkhirTahunPusatView({
                   handleDelete(deleteTarget.id)
                   setDeleteTarget(null)
                 }}
-                className="px-4 py-2 text-sm font-medium rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
+                className="px-4 py-2 text-sm font-medium rounded-[4px] bg-red-600 text-white hover:bg-red-700 transition"
               >
                 Ya, Hapus
               </button>

@@ -137,7 +137,7 @@ function TextInput({ value, onChange, placeholder, type = "text", disabled }: {
       onChange={(e) => onChange?.(e.target.value)}
       placeholder={placeholder}
       disabled={disabled}
-      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
+      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
     />
   )
 }
@@ -155,13 +155,13 @@ function SelectInput({ value, onChange, options, placeholder, disabled }: {
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         disabled={disabled}
-        className="w-full h-9 pl-3 pr-8 text-sm border border-gray-300 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700 disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
+        className="w-full h-9 pl-3 pr-8 text-sm border border-gray-300 rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700 disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
       >
         {placeholder && <option value="" disabled>{placeholder}</option>}
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
       </select>
       {!disabled && (
-        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
       )}
     </div>
   )
@@ -169,8 +169,8 @@ function SelectInput({ value, onChange, options, placeholder, disabled }: {
 
 function SectionCard({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-      <div className="flex items-center gap-2.5 px-5 py-4 bg-gray-50 border-b border-gray-200">
+    <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm overflow-hidden">
+      <div className="flex items-center gap-2.5 px-5 py-4 bg-[#F9F9F9] border-b border-gray-200">
         <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center text-blue-700 flex-shrink-0">
           {icon}
         </div>
@@ -183,26 +183,26 @@ function SectionCard({ icon, title, children }: { icon: React.ReactNode; title: 
 
 function StatusBadge({ status, jenisMenunggu, jenisButuhPerbaikan, isSekolah }: { status: StatusRujukan; jenisMenunggu?: "pengajuan" | "perbaikan" | "perbaikan_laporan" | "penonaktifan" | "pemulihan"; jenisButuhPerbaikan?: "ditolak" | "perbaikan"; isSekolah?: boolean }) {
   if (status === "terverifikasi") {
-    return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">Terverifikasi</span>
+    return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-emerald-300 text-emerald-950">Terverifikasi</span>
   }
   if (status === "nonaktif") {
-    return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">Nonaktif</span>
+    return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-[#efefef] text-[#2f3031]">Nonaktif</span>
   }
   
   if (status === "butuh_perbaikan") {
     if (jenisButuhPerbaikan === "perbaikan") {
-      return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">Perlu Perbaikan</span>
+      return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-amber-200 text-amber-950">Perlu Perbaikan</span>
     }
-    return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">Ditolak</span>
+    return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-rose-100 text-rose-950">Ditolak</span>
   }
   if (status === "menunggu") {
     // Sekolah sees "Dalam Proses Verifikasi", others see "Perlu Verifikasi"
     const label = isSekolah ? "Dalam Proses Verifikasi" : "Perlu Verifikasi"
-    return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">{label}</span>
+    return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-amber-200 text-amber-950">{label}</span>
   }
   // Default fallback for menunggu_review or other waiting states
   const defaultLabel = isSekolah ? "Dalam Proses Verifikasi" : "Perlu Verifikasi"
-  return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">{defaultLabel}</span>
+  return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-amber-200 text-amber-950">{defaultLabel}</span>
 }
 
 const emptyForm = (): FormState => ({
@@ -741,9 +741,9 @@ function RujukanFormInner() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 text-center max-w-sm w-full">
-          <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 flex items-center justify-center mx-auto mb-4">
             <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
@@ -764,14 +764,14 @@ function RujukanFormInner() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F9F9F9]">
       {/* Top bar */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
           <button
             type="button"
             onClick={() => router.push(getRujukanFormExitHref())}
-            className="p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition"
+            className="p-2 rounded-[4px] text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition"
             aria-label="Kembali"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -796,7 +796,7 @@ function RujukanFormInner() {
 {/* Status Banner - selalu tampil di mode view */}
       {isView && (
         <div className="max-w-2xl mx-auto px-4 pt-4">
-          <div className={`rounded-lg px-4 py-3 border-2 ${(() => {
+          <div className={`rounded-[4px] px-4 py-3 border-2 ${(() => {
             if (form.status === "terverifikasi") return "bg-green-50 border-green-200"
             if (form.status === "menunggu") {
               if (form.jenisMenunggu === "perbaikan") return "bg-orange-50 border-orange-200"
@@ -810,7 +810,7 @@ function RujukanFormInner() {
               if (form.jenisButuhPerbaikan === "perbaikan") return "bg-yellow-50 border-yellow-200"
               return "bg-red-50 border-red-200"
             }
-            if (form.status === "nonaktif") return "bg-gray-50 border-gray-200"
+            if (form.status === "nonaktif") return "bg-[#F9F9F9] border-gray-200"
             return "bg-amber-50 border-amber-200"
           })()}`}>
             <p className={`text-xs font-bold uppercase mb-2 ${(() => {
@@ -879,7 +879,7 @@ function RujukanFormInner() {
       {/* Bulk upload info banner - only show for new creation, and only for non-pusat roles */}
       {isPusat === false && !isEdit && !isView && (
         <div className="max-w-2xl mx-auto px-4 pt-4">
-          <div className="rounded-lg bg-blue-50 border border-blue-100 px-3 py-2.5">
+          <div className="rounded-[4px] bg-blue-50 border border-blue-100 px-3 py-2.5">
             <p className="text-xs text-blue-700">
               <span className="font-semibold">Informasi:</span> Untuk melakukan bulk upload data sumber dukungan, hubungi nomor kontak person Puspeka di{" "}
               <a href="https://wa.me/6282127282918" target="_blank" rel="noopener noreferrer" className="font-medium underline hover:text-blue-800">082127282918</a> (WhatsApp).
@@ -1022,7 +1022,7 @@ function RujukanFormInner() {
 
             {/* Info banner */}
             {!isReadOnly && (
-              <div className="rounded-lg bg-blue-50 border border-blue-100 px-3 py-2.5 space-y-1">
+              <div className="rounded-[4px] bg-blue-50 border border-blue-100 px-3 py-2.5 space-y-1">
                 <p className="text-xs text-blue-700">
                   <span className="font-semibold">Nomor Call Center</span> bisa lebih dari satu.
                 </p>
@@ -1045,12 +1045,12 @@ function RujukanFormInner() {
             <div className="space-y-2">
               {isReadOnly ? (
                 form.kontak.filter((k) => k.nomor.trim()).map((k, i) => (
-                  <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-200">
+                  <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-[4px] bg-[#F9F9F9] border border-gray-200">
                     <div className={`w-2 h-2 rounded-full flex-shrink-0 ${k.tipe === "call_center" ? "bg-blue-500" : "bg-green-500"}`} />
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900">{k.nomor}</p>
                     </div>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${k.tipe === "call_center" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"}`}>
+                    <span className={`text-[13px] font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap ${k.tipe === "call_center" ? "bg-sky-200 text-sky-950" : "bg-emerald-300 text-emerald-950"}`}>
                       {k.tipe === "call_center" ? "Call Center" : "Nomor Pribadi"}
                     </span>
                   </div>
@@ -1069,7 +1069,7 @@ function RujukanFormInner() {
                         set("kontak", updated)
                       }}
                       placeholder="08xxxxxxxxxx"
-                      className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white"
+                      className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white"
                     />
                     {/* Tipe select */}
                     <select
@@ -1080,7 +1080,7 @@ function RujukanFormInner() {
                         )
                         set("kontak", updated)
                       }}
-                      className="w-36 h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 cursor-pointer"
+                      className="w-36 h-9 px-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 cursor-pointer"
                     >
                       <option value="call_center">Call Center</option>
                       <option value="nomor_pribadi">Nomor Pribadi</option>
@@ -1090,7 +1090,7 @@ function RujukanFormInner() {
                       <button
                         type="button"
                         onClick={() => set("kontak", form.kontak.filter((_, idx) => idx !== i))}
-                        className="h-9 w-9 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-red-200 hover:text-red-500 hover:bg-red-50 transition flex-shrink-0"
+                        className="h-9 w-9 flex items-center justify-center rounded-[4px] border border-gray-200 text-gray-400 hover:border-red-200 hover:text-red-500 hover:bg-red-50 transition flex-shrink-0"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1105,7 +1105,7 @@ function RujukanFormInner() {
               <button
                 type="button"
                 onClick={() => set("kontak", [...form.kontak, { nomor: "", tipe: "call_center" }])}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
               >
                 <Plus className="w-3.5 h-3.5" /> Tambah Kontak
               </button>
@@ -1122,7 +1122,7 @@ function RujukanFormInner() {
                   onChange={(e) => set("website", e.target.value)}
                   placeholder="https://www.instansi.go.id"
                   disabled={isReadOnly}
-                  className={`w-full h-9 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-white disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default ${isReadOnly ? "pl-3" : "pl-9"}`}
+                  className={`w-full h-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-white disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default ${isReadOnly ? "pl-3" : "pl-9"}`}
                 />
               </div>
             </div>
@@ -1134,17 +1134,17 @@ function RujukanFormInner() {
             <p className="text-xs text-gray-500">Tentukan siapa yang dapat mengakses informasi Sumber Dukungan ini.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {([
-                { value: "publik" as AksesInfo, label: "Publik", desc: "Dapat diakses oleh publik tanpa masuk ke portal", icon: <Users className="w-4 h-4" />, color: "border-green-400 bg-green-50", iconBg: "bg-green-100 text-green-700" },
-                { value: "terbatas" as AksesInfo, label: "Terbatas", desc: "Hanya dapat diakses oleh pengguna yang masuk ke portal", icon: <Lock className="w-4 h-4" />, color: "border-amber-400 bg-amber-50", iconBg: "bg-amber-100 text-amber-700" },
+                { value: "publik" as AksesInfo, label: "Publik", desc: "Dapat diakses oleh publik tanpa masuk ke portal", icon: <Users className="w-4 h-4" />, color: "border-green-400 bg-green-50", iconBg: "text-green-700" },
+                { value: "terbatas" as AksesInfo, label: "Terbatas", desc: "Hanya dapat diakses oleh pengguna yang masuk ke portal", icon: <Lock className="w-4 h-4" />, color: "border-amber-400 bg-amber-50", iconBg: "text-amber-700" },
               ]).map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => { if (!isReadOnly) set("aksesInfo", opt.value) }}
                   disabled={isReadOnly}
-                  className={`flex items-start gap-3 p-4 rounded-xl border-2 text-left transition disabled:cursor-default ${form.aksesInfo === opt.value ? opt.color : "border-gray-200 bg-white hover:border-gray-300 disabled:hover:border-gray-200"}`}
+                  className={`flex items-start gap-3 p-4 rounded-[4px] border-2 text-left transition disabled:cursor-default ${form.aksesInfo === opt.value ? opt.color : "border-gray-200 bg-white hover:border-gray-300 disabled:hover:border-gray-200"}`}
                 >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${opt.iconBg}`}>{opt.icon}</div>
+                  <div className={`w-8 h-8 flex items-center justify-center flex-shrink-0 ${opt.iconBg}`}>{opt.icon}</div>
                   <div>
                     <p className="text-sm font-semibold text-gray-900">{opt.label}</p>
                     <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{opt.desc}</p>
@@ -1168,7 +1168,7 @@ function RujukanFormInner() {
                   description: "Sumber dukungan akan dikembalikan ke status Terverifikasi dan akan tampil kembali di tabel publik.",
                   onConfirm: handleRestore
                 })}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition inline-flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition inline-flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-4 h-4" />
                 Pulihkan
@@ -1179,7 +1179,7 @@ function RujukanFormInner() {
               <button
                 type="button"
                 onClick={() => setShowPulihkanModal(true)}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 transition inline-flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 transition inline-flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-4 h-4" /> Pulihkan
               </button>
@@ -1190,7 +1190,7 @@ function RujukanFormInner() {
                 <button
                   type="button"
                   onClick={() => router.push(`/sumber-rujukan/form?edit=${viewId}`)}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition inline-flex items-center justify-center gap-2"
+                  className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition inline-flex items-center justify-center gap-2"
                 >
                   <Pencil className="w-4 h-4" />
                   Perbaiki Sumber Dukungan
@@ -1198,7 +1198,7 @@ function RujukanFormInner() {
                 <button
                   type="button"
                   onClick={() => setShowHapusModal(true)}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
+                  className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
                 >
                   Hapus
                 </button>
@@ -1210,7 +1210,7 @@ function RujukanFormInner() {
                     <button
                       type="button"
                       onClick={() => router.push(`/sumber-rujukan/form?edit=${viewId}`)}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition inline-flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition inline-flex items-center justify-center gap-2"
                     >
                       <Pencil className="w-4 h-4" />
                       Edit
@@ -1218,7 +1218,7 @@ function RujukanFormInner() {
                     <button
                       type="button"
                       onClick={() => setShowNonaktifModal(true)}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
+                      className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
                     >
                       Nonaktif
                     </button>
@@ -1229,7 +1229,7 @@ function RujukanFormInner() {
                   <button
                     type="button"
                     onClick={() => setShowReportModal(true)}
-                    className="flex-1 py-2.5 rounded-xl border border-red-300 text-sm font-semibold text-red-600 bg-white hover:bg-red-50 transition"
+                    className="flex-1 py-2.5 rounded-[4px] border border-red-300 text-sm font-semibold text-red-600 bg-white hover:bg-red-50 transition"
                   >
                     Laporkan Sumber Dukungan
                   </button>
@@ -1245,14 +1245,14 @@ function RujukanFormInner() {
                         description: "Sumber dukungan ini akan dinonaktifkan. Statusnya akan berubah menjadi Nonaktif dan tidak akan ditampilkan di tabel publik.",
                         onConfirm: handleTerimaPenonaktifan
                       })}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-green-600 hover:bg-green-700 transition inline-flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-green-600 hover:bg-green-700 transition inline-flex items-center justify-center gap-2"
                     >
                       <CheckCircle className="w-4 h-4" /> Terima Penonaktifan
                     </button>
                     <button
                       type="button"
                       onClick={() => { setTolakModalMode("tolak_penonaktifan"); setShowPerbaikanModal(true) }}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition inline-flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition inline-flex items-center justify-center gap-2"
                     >
                       <XCircle className="w-4 h-4" /> Tolak
                     </button>
@@ -1269,14 +1269,14 @@ function RujukanFormInner() {
                         description: "Sumber dukungan ini akan dikembalikan ke status Terverifikasi dan akan tampil kembali di tabel publik.",
                         onConfirm: handleVerify
                       })}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 transition inline-flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 transition inline-flex items-center justify-center gap-2"
                     >
                       <CheckCircle className="w-4 h-4" /> Terima Pemulihan
                     </button>
                     <button
                       type="button"
                       onClick={() => { setTolakModalMode("tolak_pemulihan"); setShowPerbaikanModal(true) }}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition inline-flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition inline-flex items-center justify-center gap-2"
                     >
                       <XCircle className="w-4 h-4" /> Tolak
                     </button>
@@ -1293,14 +1293,14 @@ function RujukanFormInner() {
                         description: "Laporan perbaikan data akan diterima. Status sumber dukungan berubah menjadi Ditolak dan admin sekolah perlu memperbaiki datanya.",
                         onConfirm: handleTerimaPerbaikanNonSekolah
                       })}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-green-600 hover:bg-green-700 transition inline-flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-green-600 hover:bg-green-700 transition inline-flex items-center justify-center gap-2"
                     >
                       <CheckCircle className="w-4 h-4" /> Terima Laporan
                     </button>
                     <button
                       type="button"
                       onClick={() => { setTolakModalMode("tolak_laporan"); setShowPerbaikanModal(true) }}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition inline-flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition inline-flex items-center justify-center gap-2"
                     >
                       <XCircle className="w-4 h-4" /> Tolak
                     </button>
@@ -1317,14 +1317,14 @@ function RujukanFormInner() {
                         description: "Sumber dukungan baru ini akan diverifikasi dan ditampilkan di tabel publik sebagai sumber dukungan terverifikasi.",
                         onConfirm: handleVerify
                       })}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-green-600 hover:bg-green-700 transition inline-flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-green-600 hover:bg-green-700 transition inline-flex items-center justify-center gap-2"
                     >
                       <CheckCircle className="w-4 h-4" /> Terima Pengajuan
                     </button>
                     <button
                       type="button"
                       onClick={() => { setTolakModalMode("tolak"); setShowPerbaikanModal(true) }}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition inline-flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition inline-flex items-center justify-center gap-2"
                     >
                       <XCircle className="w-4 h-4" /> Tolak
                     </button>
@@ -1336,7 +1336,7 @@ function RujukanFormInner() {
                     <button
                       type="button"
                       onClick={() => router.push(`/sumber-rujukan/form?edit=${viewId}`)}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition inline-flex items-center justify-center gap-2"
+                      className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition inline-flex items-center justify-center gap-2"
                     >
                       <Pencil className="w-4 h-4" /> Edit
                     </button>
@@ -1348,7 +1348,7 @@ function RujukanFormInner() {
                         description: "Sumber dukungan ini akan dinonaktifkan dan tidak akan ditampilkan di tabel publik. Anda dapat memulihkannya nanti bila diperlukan.",
                         onConfirm: handleDelete
                       })}
-                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
+                      className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
                     >
                       Nonaktif
                     </button>
@@ -1364,7 +1364,7 @@ function RujukanFormInner() {
                       description: "Sumber dukungan ini akan dinonaktifkan dan tidak akan ditampilkan di tabel publik. Anda dapat memulihkannya nanti bila diperlukan.",
                       onConfirm: handleDelete
                     })}
-                    className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
+                    className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
                   >
                     Nonaktif
                   </button>
@@ -1373,7 +1373,7 @@ function RujukanFormInner() {
         ) : (
           <div className="flex flex-col gap-2 pt-2 pb-8">
             {duplicateError && (
-              <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-red-50 border border-red-200">
+              <div className="flex items-start gap-2 px-3 py-2.5 rounded-[4px] bg-red-50 border border-red-200">
                 <div className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0 mt-1.5" />
                 <p className="text-xs text-red-600">{duplicateError}</p>
               </div>
@@ -1382,7 +1382,7 @@ function RujukanFormInner() {
               <button
                 type="button"
                 onClick={() => router.push(getRujukanFormExitHref())}
-                className="flex-1 py-2.5 rounded-xl border border-gray-300 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition"
+                className="flex-1 py-2.5 rounded-[4px] border border-gray-300 text-sm font-semibold text-gray-700 bg-white hover:bg-[#F9F9F9] transition"
               >
                 Batal
               </button>
@@ -1395,7 +1395,7 @@ function RujukanFormInner() {
                   }
                 }}
                 disabled={!canSubmit}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                className="flex-1 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
                 {isEdit && mounted && isSekolah && (form.status === "terverifikasi" || form.status === "butuh_perbaikan") ? "Ajukan Pengubahan" : isEdit ? "Simpan Pengubahan" : (mounted && isSekolah) ? "Kirim Usulan" : "Simpan Sumber Dukungan"}
               </button>
@@ -1410,7 +1410,7 @@ function RujukanFormInner() {
           <div className="fixed inset-0 bg-black/50" onClick={() => { setShowAjukanModal(false); setAjukanAlasan("") }} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100">
+              <div className="w-10 h-10 flex items-center justify-center ">
                 <Pencil className="w-5 h-5 text-blue-600" />
               </div>
               <div>
@@ -1429,7 +1429,7 @@ function RujukanFormInner() {
                   value={ajukanAlasan}
                   onChange={(e) => setAjukanAlasan(e.target.value)}
                   placeholder="Jelaskan alasan pengubahan data..."
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   rows={4}
                 />
               </div>
@@ -1437,14 +1437,14 @@ function RujukanFormInner() {
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button
                 onClick={() => { setShowAjukanModal(false); setAjukanAlasan("") }}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 onClick={() => { setShowAjukanModal(false); handleSubmit() }}
                 disabled={!ajukanAlasan.trim()}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Ajukan Pengubahan
               </button>
@@ -1458,7 +1458,7 @@ function RujukanFormInner() {
           <div className="fixed inset-0 bg-black/50" onClick={() => setShowHapusModal(false)} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-red-100">
+              <div className="w-10 h-10 flex items-center justify-center ">
                 <Trash2 className="w-5 h-5 text-red-600" />
               </div>
               <div>
@@ -1472,13 +1472,13 @@ function RujukanFormInner() {
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button
                 onClick={() => setShowHapusModal(false)}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 onClick={handleSekolahHapus}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition"
               >
                 Hapus Permanen
               </button>
@@ -1492,7 +1492,7 @@ function RujukanFormInner() {
           <div className="fixed inset-0 bg-black/50" onClick={() => { setShowNonaktifModal(false); setNonaktifAlasan("") }} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-red-100">
+              <div className="w-10 h-10 flex items-center justify-center ">
                 <XCircle className="w-5 h-5 text-red-600" />
               </div>
               <div>
@@ -1511,7 +1511,7 @@ function RujukanFormInner() {
                   value={nonaktifAlasan}
                   onChange={(e) => setNonaktifAlasan(e.target.value)}
                   placeholder="Jelaskan alasan penonaktifan..."
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                   rows={4}
                 />
               </div>
@@ -1519,14 +1519,14 @@ function RujukanFormInner() {
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button
                 onClick={() => { setShowNonaktifModal(false); setNonaktifAlasan("") }}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 onClick={handleSekolahNonaktif}
                 disabled={!nonaktifAlasan.trim()}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Kirim Usulan
               </button>
@@ -1540,7 +1540,7 @@ function RujukanFormInner() {
           <div className="fixed inset-0 bg-black/50" onClick={() => { setShowPulihkanModal(false); setPulihkanAlasan("") }} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-teal-100">
+              <div className="w-10 h-10 flex items-center justify-center ">
                 <RotateCcw className="w-5 h-5 text-teal-600" />
               </div>
               <div>
@@ -1559,7 +1559,7 @@ function RujukanFormInner() {
                   value={pulihkanAlasan}
                   onChange={(e) => setPulihkanAlasan(e.target.value)}
                   placeholder="Jelaskan alasan pemulihan..."
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
                   rows={4}
                 />
               </div>
@@ -1567,14 +1567,14 @@ function RujukanFormInner() {
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button
                 onClick={() => { setShowPulihkanModal(false); setPulihkanAlasan("") }}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 onClick={handleSubmitPulihkan}
                 disabled={!pulihkanAlasan.trim()}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Kirim Usulan
               </button>
@@ -1588,7 +1588,7 @@ function RujukanFormInner() {
           <div className="fixed inset-0 bg-black/50" onClick={() => setShowPerbaikanModal(false)} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-red-100">
+              <div className="w-10 h-10 flex items-center justify-center ">
                 <XCircle className="w-5 h-5 text-red-600" />
               </div>
               <div>
@@ -1599,7 +1599,7 @@ function RujukanFormInner() {
               </div>
             </div>
             <div className="p-5 space-y-4">
-              <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
+              <div className="p-3 rounded-[4px] bg-amber-50 border border-amber-200">
                 <p className="text-sm text-amber-900">
                   {tolakModalMode === "tolak_penonaktifan" && "Penolakan akan dikirim ke admin sekolah. Status tetap Terverifikasi dan item akan tetap aktif di tabel publik."}
                   {tolakModalMode === "tolak_laporan" && "Penolakan akan dikirim ke admin sekolah. Status tetap Terverifikasi dan item akan tetap aktif di tabel publik."}
@@ -1617,7 +1617,7 @@ function RujukanFormInner() {
                   value={perbaikanCatatan}
                   onChange={(e) => setPerbaikanCatatan(e.target.value)}
                   placeholder="Jelaskan alasan penolakan..."
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                   rows={4}
                 />
               </div>
@@ -1625,14 +1625,14 @@ function RujukanFormInner() {
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button
                 onClick={() => { setShowPerbaikanModal(false); setPerbaikanCatatan("") }}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 onClick={handleSubmitPerbaikan}
                 disabled={!perbaikanCatatan.trim()}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {tolakModalMode === "tolak_penonaktifan" ? "Tolak Penonaktifan" : tolakModalMode === "tolak_laporan" ? "Tolak Laporan" : tolakModalMode === "tolak_pemulihan" ? "Tolak Pemulihan" : "Tolak"}
               </button>
@@ -1646,7 +1646,7 @@ function RujukanFormInner() {
           <div className="fixed inset-0 bg-black/50" onClick={() => setShowReportModal(false)} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+              <div className="w-10 h-10 flex items-center justify-center">
                 <Flag className="w-5 h-5 text-red-600" />
               </div>
               <div>
@@ -1666,7 +1666,7 @@ function RujukanFormInner() {
                     { value: "perbaikan", label: "Perbaikan data", desc: "Data yang tercantum tidak akurat atau perlu diperbarui" },
                     { value: "penonaktifan", label: "Usulan Penonaktifan", desc: "Layanan ini sudah tidak aktif atau tidak dapat dihubungi" },
                   ] as { value: "perbaikan" | "penonaktifan"; label: string; desc: string }[]).map((opt) => (
-                    <label key={opt.value} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${reportJenis === opt.value ? "border-red-400 bg-red-50" : "border-gray-200 hover:bg-gray-50"}`}>
+                    <label key={opt.value} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${reportJenis === opt.value ? "border-red-400 bg-red-50" : "border-gray-200 hover:bg-[#F9F9F9]"}`}>
                       <input
                         type="radio"
                         name="reportJenis"
@@ -1689,7 +1689,7 @@ function RujukanFormInner() {
                   value={reportAlasan}
                   onChange={(e) => setReportAlasan(e.target.value)}
                   placeholder={reportJenis === "penonaktifan" ? "Jelaskan alasan penonaktifan..." : "Jelaskan data yang perlu diperbaiki..."}
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                   rows={3}
                 />
               </div>
@@ -1697,14 +1697,14 @@ function RujukanFormInner() {
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button
                 onClick={() => { setShowReportModal(false); setReportJenis(null); setReportAlasan("") }}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 onClick={handleSubmitReport}
                 disabled={!reportAlasan.trim() || !reportJenis}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Kirim Laporan
               </button>
@@ -1718,7 +1718,7 @@ function RujukanFormInner() {
           <div className="fixed inset-0 bg-black/50" onClick={() => setShowDeleteModal(false)} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+              <div className="w-10 h-10 flex items-center justify-center">
                 <Trash2 className="w-5 h-5 text-red-600" />
               </div>
               <div>
@@ -1737,7 +1737,7 @@ function RujukanFormInner() {
                   value={deleteAlasan}
                   onChange={(e) => setDeleteAlasan(e.target.value)}
                   placeholder="Contoh: Data tidak valid atau sudah tidak beroperasi..."
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                   rows={3}
                 />
               </div>
@@ -1745,14 +1745,14 @@ function RujukanFormInner() {
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 onClick={handleDelete}
                 disabled={!deleteAlasan.trim()}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Nonaktifkan
               </button>
@@ -1768,12 +1768,12 @@ function RujukanFormInner() {
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                <div className="w-8 h-8 flex items-center justify-center">
                   <MapPin className="w-4 h-4 text-blue-700" />
                 </div>
                 <h3 className="text-base font-bold text-gray-900">Pratinjau Lokasi</h3>
               </div>
-              <button onClick={() => setShowMapModal(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
+              <button onClick={() => setShowMapModal(false)} className="w-8 h-8 rounded-[4px] flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
@@ -1807,7 +1807,7 @@ function RujukanFormInner() {
           <div className="absolute inset-0 bg-black/50" onClick={() => setConfirmModal({ ...confirmModal, show: false })} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
             <div className="text-center">
-              <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 flex items-center justify-center mx-auto mb-4">
                 <MessageCircle className="w-6 h-6 text-amber-600" />
               </div>
               <h3 className="text-lg font-bold text-gray-900 mb-2">{confirmModal.title}</h3>
@@ -1815,7 +1815,7 @@ function RujukanFormInner() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setConfirmModal({ ...confirmModal, show: false })}
-                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                  className="flex-1 px-4 py-2.5 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
                 >
                   Batal
                 </button>
@@ -1824,7 +1824,7 @@ function RujukanFormInner() {
                     confirmModal.onConfirm()
                     setConfirmModal({ ...confirmModal, show: false })
                   }}
-                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
+                  className="flex-1 px-4 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
                 >
                   Ya, Lanjutkan
                 </button>
@@ -1839,7 +1839,7 @@ function RujukanFormInner() {
 
 function RujukanFormFallback() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center p-4">
       <p className="text-sm text-gray-500">Memuat…</p>
     </div>
   )

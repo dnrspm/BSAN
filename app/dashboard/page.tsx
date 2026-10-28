@@ -525,7 +525,7 @@ function DashboardPageInner() {
   return (
     <>
       {role === "dinas" && (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-[#F9F9F9] flex">
           <Sidebar activeMenu={dinasMenu} onMenuChange={setDinasMenu} />
           <div className="flex-1 flex flex-col min-w-0">
             <Header />
@@ -562,7 +562,7 @@ function DashboardPageInner() {
       )}
 
       {role === "pusat" && (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-[#F9F9F9] flex">
           <SidebarPusat activeMenu={pusatMenu} onMenuChange={setPusatMenu} />
           <div className="flex-1 flex flex-col min-w-0">
             <div className="md:hidden h-14" aria-hidden="true" />
@@ -615,7 +615,7 @@ function DashboardPageInner() {
       )}
 
       {role === "bpmp" && (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-[#F9F9F9] flex">
           <SidebarBpmp activeMenu={bpmpMenu} onMenuChange={setBpmpMenu} />
           <div className="flex-1 flex flex-col min-w-0">
             <div className="md:hidden h-14" aria-hidden="true" />
@@ -644,7 +644,7 @@ function DashboardPageInner() {
       )}
 
       {role === "sekolah" && (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-[#F9F9F9]">
           <SekolahDashboard searchParams={searchParams} />
         </div>
       )}

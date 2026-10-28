@@ -72,7 +72,7 @@ export function HeroSection() {
           {pillars.map(({ icon: Icon, label }) => (
             <div
               key={label}
-              className="flex flex-col items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-4 border border-white/10"
+              className="flex flex-col items-center gap-2 bg-white/10 backdrop-blur-sm rounded-[4px] px-4 py-4 border border-white/10"
             >
               <Icon className="w-6 h-6 text-amber-400" />
               <span className="text-white/90 text-xs font-medium text-center leading-tight">

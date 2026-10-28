@@ -45,7 +45,7 @@ export function Header({ userName = "Admin Dinas" }: HeaderProps) {
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-[4px] hover:bg-gray-100 transition-colors"
             aria-expanded={open}
             aria-haspopup="menu"
           >
@@ -76,7 +76,7 @@ export function Header({ userName = "Admin Dinas" }: HeaderProps) {
                 type="button"
                 role="menuitem"
                 onClick={() => { setOpen(false); logout() }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-[#F9F9F9]"
               >
                 <LogOut className="w-4 h-4 text-gray-500" />
                 Keluar

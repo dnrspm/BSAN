@@ -65,11 +65,11 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#F9F9F9] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-600 mb-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 mb-4">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
               <polyline points="9 22 9 12 15 12 15 22"/>
@@ -81,7 +81,7 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-[4px] shadow-sm border border-gray-200 p-6">
           <h2 className="text-base font-semibold text-gray-900 mb-5">Masuk ke Akun</h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -102,7 +102,7 @@ export default function LoginPage() {
                   placeholder="Masukkan username"
                   autoComplete="username"
                   required
-                  className="w-full pl-9 pr-3 py-2.5 text-sm rounded-lg border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  className="w-full pl-9 pr-3 py-2.5 text-sm rounded-[4px] border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                 />
               </div>
             </div>
@@ -124,7 +124,7 @@ export default function LoginPage() {
                   placeholder="Masukkan password"
                   autoComplete="current-password"
                   required
-                  className="w-full pl-9 pr-10 py-2.5 text-sm rounded-lg border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  className="w-full pl-9 pr-10 py-2.5 text-sm rounded-[4px] border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                 />
                 <button
                   type="button"
@@ -139,7 +139,7 @@ export default function LoginPage() {
 
             {/* Error */}
             {error && (
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-[4px] bg-red-50 border border-red-200">
                 <div className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />
                 <p className="text-xs text-red-600">{error}</p>
               </div>
@@ -149,7 +149,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading || !username || !password}
-              className="mt-1 w-full py-2.5 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition"
+              className="mt-1 w-full py-2.5 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition"
             >
               {loading ? "Memverifikasi..." : "Masuk"}
             </button>

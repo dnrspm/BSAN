@@ -41,12 +41,12 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
 function ReviewMemberCard({ label, member }: { label: string; member: MemberField }) {
   const isEmpty = !member.nama && !member.email && !member.noWhatsapp
   return (
-    <div className="rounded-lg border border-gray-200 overflow-hidden">
-      <div className="px-3 py-2 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
+    <div className="rounded-[4px] border border-gray-200 overflow-hidden">
+      <div className="px-3 py-2 bg-[#F9F9F9] border-b border-gray-200 flex items-center gap-2">
         <User className="w-3.5 h-3.5 text-blue-600" />
         <span className="text-xs font-semibold text-gray-700">{label}</span>
         {isEmpty && (
-          <span className="ml-auto text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Belum diisi</span>
+          <span className="ml-auto text-[13px] font-semibold text-amber-950 bg-amber-200 px-2.5 py-0.5 rounded-full whitespace-nowrap">Belum diisi</span>
         )}
       </div>
       {!isEmpty && (
@@ -81,7 +81,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
     <>
       <div className="fixed inset-0 bg-black/30 z-30" onClick={onClose} />
       <div className="fixed inset-y-0 right-0 z-40 w-full max-w-2xl bg-white shadow-2xl flex flex-col">
-        <div className="flex items-start justify-between gap-4 px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div className="flex items-start justify-between gap-4 px-6 py-4 border-b border-gray-200 bg-[#F9F9F9]">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-base font-bold text-gray-900">{pokja.nama}</h2>
@@ -91,7 +91,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
               {pokja.data?.region}
             </p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-200 transition-colors">
+          <button onClick={onClose} className="p-1.5 rounded-[4px] hover:bg-gray-200 transition-colors">
             <X className="w-4 h-4 text-gray-600" />
           </button>
         </div>
@@ -103,7 +103,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
               <div className="flex items-center justify-between mb-3">
                 <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Alasan Perlu Perbaikan</p>
               </div>
-              <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+              <div className="rounded-[4px] border border-red-200 bg-red-50 p-4">
                 <p className="text-sm font-medium text-red-800">{pokja.alasanPenolakan}</p>
               </div>
             </div>
@@ -114,7 +114,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Informasi Dasar</p>
             </div>
-            <div className="rounded-xl border border-gray-200 p-4 grid grid-cols-2 gap-4">
+            <div className="rounded-[4px] border border-gray-200 p-4 grid grid-cols-2 gap-4">
               <ReviewRow label="Wilayah" value={pokja.nama} />
               <ReviewRow label="Nomor Kanal Pengaduan" value={pokja.data?.nomorKanal || "-"} />
             </div>
@@ -125,7 +125,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Dokumen SK</p>
             </div>
-            <div className="rounded-xl border border-gray-200 p-4 grid grid-cols-2 gap-4">
+            <div className="rounded-[4px] border border-gray-200 p-4 grid grid-cols-2 gap-4">
               <ReviewRow label="Nomor SK" value={pokja.data?.sk?.nomorSK || "-"} />
               <ReviewRow label="Tanggal SK" value={pokja.data?.sk?.tanggalSK ? formatDate(pokja.data.sk.tanggalSK) : "-"} />
               <ReviewRow label="Periode" value={
@@ -141,9 +141,9 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Susunan Pengurus</p>
             </div>
-            <div className="rounded-xl border border-gray-200 overflow-hidden">
+            <div className="rounded-[4px] border border-gray-200 overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-[#F1F1F1] border-b border-gray-200">
                   <tr>
                     <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500">Jabatan pada Instansi</th>
                     <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500">Nama</th>
@@ -157,7 +157,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
                     const m = members?.[r.key]
                     const isEmpty = !m?.nama
                     return (
-                      <tr key={r.key} className={isEmpty ? "bg-gray-50" : ""}>
+                      <tr key={r.key} className={isEmpty ? "bg-[#F9F9F9]" : ""}>
                         <td className="px-4 py-2 text-gray-700 font-medium">{r.label}</td>
                         <td className="px-4 py-2 text-gray-800">{m?.nama || "-"}</td>
                         <td className="px-4 py-2 text-gray-600">{m?.email || "-"}</td>
@@ -170,7 +170,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
                     const m = members?.[r.key]
                     const isEmpty = !m?.nama
                     return (
-                      <tr key={r.key} className={isEmpty ? "bg-gray-50" : ""}>
+                      <tr key={r.key} className={isEmpty ? "bg-[#F9F9F9]" : ""}>
                         <td className="px-4 py-2 text-gray-700 font-medium">{r.label}</td>
                         <td className="px-4 py-2 text-gray-800">{m?.nama || "-"}</td>
                         <td className="px-4 py-2 text-gray-600">{m?.email || "-"}</td>
@@ -185,8 +185,8 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
           </div>
 
           {/* Riwayat Aktivitas */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+          <div className="bg-white rounded-[4px] border border-gray-200 overflow-hidden">
+            <div className="px-4 py-3 border-b border-gray-100 bg-[#F9F9F9] flex items-center gap-2">
               <FileText className="w-4 h-4 text-gray-500" />
               <p className="text-sm font-bold text-gray-800">Riwayat Aktivitas</p>
               {pokja.validasiLog && pokja.validasiLog.length > 0 && (
@@ -211,7 +211,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
                       admin_pusat: "Admin Pusat",
                       sistem:      "Sistem",
                     }
-                    const cfg = aksiConfig[log.aksi] ?? { label: log.aksi, color: "text-gray-700 bg-gray-50 border-gray-200", dot: "bg-gray-400" }
+                    const cfg = aksiConfig[log.aksi] ?? { label: log.aksi, color: "text-gray-700 bg-[#F9F9F9] border-gray-200", dot: "bg-gray-400" }
                     return (
                       <div key={idx} className="px-5 py-4 flex items-start gap-4">
                         <div className="pt-1">
@@ -228,7 +228,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
                             <span className="text-xs text-gray-400 ml-auto">{log.tanggal}</span>
                           </div>
                           {log.alasan && (
-                            <p className="text-sm text-gray-600 bg-gray-50 rounded px-3 py-2 mt-1 border border-gray-100">
+                            <p className="text-sm text-gray-600 bg-[#F9F9F9] rounded px-3 py-2 mt-1 border border-gray-100">
                               {log.alasan}
                             </p>
                           )}
@@ -241,7 +241,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
           </div>
 
           {showRejectForm && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+            <div className="rounded-[4px] border border-red-200 bg-red-50 p-4">
               <div className="flex items-center gap-2 mb-2">
                 <AlertCircle className="w-4 h-4 text-red-600" />
                 <span className="text-sm font-medium text-red-700">Alasan Penolakan</span>
@@ -250,7 +250,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
                 value={rejectAlasan}
                 onChange={(e) => setRejectAlasan(e.target.value)}
                 placeholder="Masukkan alasan penolakan..."
-                className="w-full px-3 py-2 text-sm border border-red-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full px-3 py-2 text-sm border border-red-200 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-red-500"
                 rows={3}
               />
             </div>
@@ -258,7 +258,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
         </div>
 
         {!isReadOnly && (
-          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+          <div className="px-6 py-4 border-t border-gray-200 bg-[#F9F9F9]">
             {!showRejectForm ? (
               <div className="flex gap-3">
                 <button
@@ -273,14 +273,14 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
                     }
                     onSave(newPokja)
                   }}
-                  className="flex-1 py-2.5 rounded-lg text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+                  className="flex-1 py-2.5 rounded-[4px] text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
                 >
                   <CheckCircle2 className="w-4 h-4 inline mr-1.5" />
                   Terima Pengajuan
                 </button>
                 <button
                   onClick={() => setShowRejectForm(true)}
-                  className="flex-1 py-2.5 rounded-lg text-sm font-medium border border-red-300 text-red-700 hover:bg-red-50 transition-colors"
+                  className="flex-1 py-2.5 rounded-[4px] text-sm font-medium border border-red-300 text-red-700 hover:bg-red-50 transition-colors"
                 >
                   <XCircle className="w-4 h-4 inline mr-1.5" />
                   Tolak Pengajuan
@@ -293,7 +293,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
                     setShowRejectForm(false)
                     setRejectAlasan("")
                   }}
-                  className="flex-1 py-2.5 rounded-lg text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="flex-1 py-2.5 rounded-[4px] text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
                 >
                   Batal
                 </button>
@@ -311,7 +311,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
                     onSave(newPokja)
                   }}
                   disabled={!rejectAlasan.trim()}
-                  className="flex-1 py-2.5 rounded-lg text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 py-2.5 rounded-[4px] text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Simpan Penolakan
                 </button>

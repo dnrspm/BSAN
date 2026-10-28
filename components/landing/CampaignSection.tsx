@@ -41,7 +41,7 @@ export function CampaignSection() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 mb-16">
-          <div className="md:col-span-2 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/10 p-6">
+          <div className="md:col-span-2 bg-white/10 backdrop-blur-sm rounded-[4px] border border-white/10 p-6">
             <p className="text-blue-200 text-sm uppercase tracking-wider font-semibold mb-6">
               Testimoni
             </p>
@@ -60,8 +60,8 @@ export function CampaignSection() {
           </div>
 
           <div className="flex flex-col gap-4">
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/10 p-6 flex-1">
-              <div className="w-12 h-12 rounded-xl bg-amber-400/20 flex items-center justify-center mb-4">
+            <div className="bg-white/10 backdrop-blur-sm rounded-[4px] border border-white/10 p-6 flex-1">
+              <div className="w-12 h-12 flex items-center justify-center mb-4">
                 <Music2 className="w-6 h-6 text-amber-400" />
               </div>
               <h3 className="text-white font-semibold mb-1">Lagu Kampanye</h3>
@@ -81,7 +81,7 @@ export function CampaignSection() {
               </Button>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/10 p-5">
+            <div className="bg-white/10 backdrop-blur-sm rounded-[4px] border border-white/10 p-5">
               <h3 className="text-white font-semibold text-sm mb-3">Materi Kampanye</h3>
               <div className="space-y-2">
                 {["Poster Digital", "Infografis Program", "Buku Saku BSAN"].map((item) => (

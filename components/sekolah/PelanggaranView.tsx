@@ -501,9 +501,9 @@ function getAsalGroups(u: any): DisplayAsalGroup[] {
   }]
 }
 
-const SELECT_BASE = "w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8"
-const SELECT_SM = "h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-6"
-const SELECT_FILTER = "rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8"
+const SELECT_BASE = "w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8"
+const SELECT_SM = "h-9 px-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8"
+const SELECT_FILTER = "h-10 rounded-[4px] border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8"
 
 function Select({ value, onChange, className, children }: { value: string; onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; className?: string; children: React.ReactNode }) {
   return (
@@ -511,7 +511,7 @@ function Select({ value, onChange, className, children }: { value: string; onCha
       <select value={value} onChange={onChange} className={`w-full ${className ?? ""}`}>
         {children}
       </select>
-      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
     </div>
   )
 }
@@ -577,38 +577,38 @@ function StatusBadge({ status }: { status: StatusPelanggaran | "dinonaktifkan" |
   switch (status) {
     case "baru":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-          <FileText className="w-3 h-3" /> Belum Diproses
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-sky-200 text-sky-950">
+          Belum Diproses
         </span>
       )
     case "proses":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
-          <Clock className="w-3 h-3" /> Diproses
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-amber-200 text-amber-950">
+          Diproses
         </span>
       )
     case "selesai":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-          <CheckCircle className="w-3 h-3" /> Selesai
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-emerald-300 text-emerald-950">
+          Selesai
         </span>
       )
     case "ditutup":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-          <XCircle className="w-3 h-3" /> Ditutup
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-[#efefef] text-[#2f3031]">
+          Ditutup
         </span>
       )
     case "dinonaktifkan":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-600">
-          <Trash2 className="w-3 h-3" /> Nonaktif
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-[#efefef] text-[#2f3031]">
+          Nonaktif
         </span>
       )
     case "dipulihkan":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-700">
-          <RotateCcw className="w-3 h-3" /> Dipulihkan
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-teal-200 text-teal-950">
+          Dipulihkan
         </span>
       )
   }
@@ -634,9 +634,9 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
     <>
       <div className="fixed inset-0 z-50 bg-black/40" onClick={onClose} />
       <div className="fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-white shadow-2xl flex flex-col">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-[#F9F9F9] flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
               <AlertTriangle className="w-5 h-5 text-red-600" />
             </div>
             <div className="min-w-0">
@@ -644,7 +644,7 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
               <StatusBadge status={item.status} />
             </div>
           </div>
-          <button type="button" onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-500 transition flex-shrink-0">
+          <button type="button" onClick={onClose} className="p-1.5 rounded-[4px] hover:bg-gray-200 text-gray-500 transition flex-shrink-0">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -661,7 +661,7 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
               {item.namaSekolah.map((s, i) => {
                 const npsn = getNpsn(item, i)
                 return (
-                  <span key={i} className="inline-flex items-center gap-1 text-sm font-semibold text-gray-900 bg-gray-50 px-2 py-0.5 rounded border border-gray-200">
+                  <span key={i} className="inline-flex items-center gap-1 text-sm font-semibold text-gray-900 bg-[#F9F9F9] px-2 py-0.5 rounded border border-gray-200">
                     <GraduationCap className="w-3 h-3 text-gray-400" />
                     {s}
                     {npsn && (
@@ -747,9 +747,9 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
             </div>
             <div className="ml-6 space-y-1.5">
               {(Array.isArray(item.unsurTerlibat) ? item.unsurTerlibat : []).map((u, i) => (
-                <div key={i} className="border border-gray-200 rounded-lg px-3 py-2 space-y-1.5">
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                    u.peran === "pelaku" ? "bg-red-100 text-red-700" : u.peran === "korban" ? "bg-blue-100 text-blue-700" : u.peran === "saksi" ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-700"
+                <div key={i} className="border border-gray-200 rounded-[4px] px-3 py-2 space-y-1.5">
+                  <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
+                    u.peran === "pelaku" ? "bg-rose-100 text-rose-950" : u.peran === "korban" ? "bg-sky-200 text-sky-950" : u.peran === "saksi" ? "bg-amber-200 text-amber-950" : "bg-[#efefef] text-[#2f3031]"
                   }`}>
                     {u.peran === "pelaku" ? "Pelaku" : u.peran === "korban" ? "Korban" : u.peran === "saksi" ? "Saksi" : u.peran === "lainnya" ? (u.peranLainnya || "Lainnya") : u.peran || "-"}
                   </span>
@@ -838,7 +838,7 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
                 const labelAksi = entry.aksi === "perbaharui_status" ? "Diperbaharui" : entry.aksi === "edit" ? "Diedit" : entry.aksi === "nonaktifkan" ? "Dinonaktifkan" : entry.aksi === "pulihkan" ? "Diaktifkan kembali" : "Dibuat"
                 const keterangan = entry.keterangan.replace(/ — oleh .+$/, "").replace(/^Laporan awal (dibuat )?/, "").trim()
                 return (
-                  <div key={i} className="p-3 bg-gray-50 rounded-lg space-y-1">
+                  <div key={i} className="p-3 bg-[#F9F9F9] rounded-[4px] space-y-1">
                     <div className="flex items-center gap-2">
                       <StatusBadge status={entry.status} />
                       <span className="text-xs text-gray-500">{labelAksi} oleh {dibuatOleh}</span>
@@ -864,7 +864,7 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
                 setDokumentasiStatus("")
                 setShowStatusModal(true)
               }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-[4px] text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
             >
               <Check className="w-4 h-4" /> Update Status
             </button>
@@ -878,7 +878,7 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm">
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
               <h3 className="text-base font-bold text-gray-900">Update Status</h3>
-              <button onClick={() => setShowStatusModal(false)} className="p-1 hover:bg-gray-100 rounded-lg">
+              <button onClick={() => setShowStatusModal(false)} className="p-1 hover:bg-gray-100 rounded-[4px]">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
@@ -892,8 +892,8 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
                 <button
                   key={opt.value}
                   onClick={() => setSelectedStatus(opt.value)}
-                  className={`w-full text-left p-4 rounded-lg border-2 transition ${
-                    selectedStatus === opt.value ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                  className={`w-full text-left p-4 rounded-[4px] border-2 transition ${
+                    selectedStatus === opt.value ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300 hover:bg-[#F9F9F9]"
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -917,7 +917,7 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
                   onChange={(e) => setKeteranganStatus(e.target.value)}
                   placeholder="Tambahkan keterangan..."
                   rows={2}
-                  className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 />
               </div>
               <div>
@@ -927,13 +927,13 @@ function DetailModal({ item, onClose, onUpdateStatus, readOnly }: { item: Pelang
                   value={dokumentasiStatus}
                   onChange={(e) => setDokumentasiStatus(e.target.value)}
             placeholder="Tautan atau keterangan dokumentasi"
-                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 />
               </div>
             </div>
             <div className="flex gap-3 px-5 pb-5">
-              <button onClick={() => setShowStatusModal(false)} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Batal</button>
-              <button onClick={() => { setShowStatusModal(false); onUpdateStatus(item.id, selectedStatus, keteranganStatus, dokumentasiStatus) }} disabled={selectedStatus === item.status} className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition">Simpan</button>
+              <button onClick={() => setShowStatusModal(false)} className="flex-1 py-2.5 rounded-[4px] border border-gray-300 text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition">Batal</button>
+              <button onClick={() => { setShowStatusModal(false); onUpdateStatus(item.id, selectedStatus, keteranganStatus, dokumentasiStatus) }} disabled={selectedStatus === item.status} className="flex-1 py-2.5 rounded-[4px] bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition">Simpan</button>
             </div>
           </div>
         </div>
@@ -1082,7 +1082,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+            <div className="w-10 h-10 flex items-center justify-center">
               <AlertTriangle className="w-5 h-5 text-red-600" />
             </div>
             <div>
@@ -1090,7 +1090,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
               <p className="text-xs text-gray-500">Lengkapi formulir pelaporan</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-lg">
+          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-[4px]">
             <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
@@ -1111,7 +1111,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                   onBlur={() => setTimeout(() => setShowSekolahDropdown(false), 200)}
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSekolah(sekolahInput) } }}
                   placeholder="Tambah nama sekolah"
-                  className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 />
                 {showSekolahDropdown && filteredSekolahOptions.length > 0 && (
                   <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
@@ -1121,7 +1121,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => addSekolah(o)}
-                        className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 text-gray-700"
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-[#F9F9F9] text-gray-700"
                       >
                         {o}
                       </button>
@@ -1136,7 +1136,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
               <div className="flex flex-col gap-2 mt-1">
                 {namaRows.map((s, i) => (
                   <div key={i} className="flex items-start gap-2">
-                    <div className="flex-1 border border-gray-200 rounded-lg p-3">
+                    <div className="flex-1 border border-gray-200 rounded-[4px] p-3">
                       <div className="grid grid-cols-[1fr_120px] gap-2">
                         <div>
                           <label className="block text-xs font-semibold text-gray-700 mb-1">Nama Sekolah</label>
@@ -1150,7 +1150,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                               if (npsnSekolah.length === 0) setNpsnSekolah(npsnRows)
                             }}
                             placeholder="Nama sekolah"
-                            className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                           />
                         </div>
                         <div>
@@ -1165,7 +1165,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                               if (namaSekolah.length === 0) setNamaSekolah(namaRows)
                             }}
                             placeholder="NPSN"
-                            className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                           />
                         </div>
                       </div>
@@ -1184,7 +1184,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                 <button
                   type="button"
                   onClick={() => { setNamaSekolah([...namaRows, ""]); setNpsnSekolah([...npsnRows, ""]) }}
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
                 >
                   <Plus className="w-3.5 h-3.5" /> Tambah Sekolah
                 </button>
@@ -1195,7 +1195,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
             {isIdealMode && namaSekolah.length > 0 && (
               <div className="flex flex-col gap-1.5 mt-3">
                 {namaSekolah.map((s, i) => (
-                  <div key={i} className="flex items-center gap-2 py-1.5 px-2 bg-gray-50 rounded-lg">
+                  <div key={i} className="flex items-center gap-2 py-1.5 px-2 bg-[#F9F9F9] rounded-[4px]">
                     <span className="text-sm font-medium text-gray-700 flex-1">{s}</span>
                     <button type="button" onClick={() => removeSekolah(i)} className="p-0.5 hover:bg-gray-200 rounded-full">
                       <X className="w-3.5 h-3.5 text-gray-400" />
@@ -1214,7 +1214,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                 const isKategoriCustom = kategori !== "" && !predefinedKategori.includes(kategori)
                 const displayKategori = isKategoriCustom ? "Lainnya" : kategori
                 return (
-                  <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                  <div className="border border-gray-300 rounded-[4px] overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
                     <Select
                       value={displayKategori}
                       onChange={(e) => setKategori(e.target.value)}
@@ -1268,7 +1268,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                         next[i] = { ...next[i], tanggal: e.target.value }
                         setKronologi(next)
                       }}
-                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     />
                   </div>
                 )
@@ -1283,7 +1283,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                         next[i] = { ...next[i], jam: e.target.value }
                         setKronologi(next)
                       }}
-                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     />
                   </div>
                 )
@@ -1299,13 +1299,13 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                         setKronologi(next)
                       }}
                       placeholder="Lokasi..."
-                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     />
                   </div>
                 )
                 return (
                 <div key={i} className="flex items-start gap-2">
-                <div className="flex-1 border border-gray-200 rounded-lg p-3">
+                <div className="flex-1 border border-gray-200 rounded-[4px] p-3">
                   {isIdealMode ? (
                     <div className="flex items-end gap-2">
                       {tanggalField}
@@ -1322,7 +1322,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                             setKronologi(next)
                           }}
                           placeholder="Deskripsikan kejadian pada tanggal ini..."
-                          className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                          className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                         />
                       </div>
                     </div>
@@ -1333,7 +1333,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                         {jamField}
                         {lokasiField}
                       </div>
-                      <div className="mt-2 bg-gray-50 rounded-lg px-3 py-2">
+                      <div className="mt-2 bg-[#F9F9F9] rounded-[4px] px-3 py-2">
                         <label className="block text-xs text-gray-700 mb-1">Keterangan</label>
                         <textarea
                           value={entry.keterangan ?? ""}
@@ -1344,7 +1344,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                           }}
                           placeholder="Deskripsikan kejadian pada tanggal ini..."
                           rows={3}
-                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
                         />
                       </div>
                     </>
@@ -1365,7 +1365,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
               <button
                 type="button"
                 onClick={() => setKronologi([...kronologi, { tanggal: "", jam: "", lokasi: "", keterangan: "" }])}
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
               >
                 <Plus className="w-3.5 h-3.5" /> Tambah Kronologi
               </button>
@@ -1404,7 +1404,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                 }
                 const peranField = (
                   <div>
-                    <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                    <div className="border border-gray-300 rounded-[4px] overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
                       <Select
                         value={u.peran}
                         onChange={(e) => {
@@ -1438,7 +1438,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                 )
                 const asalField = (
                   <div>
-                    <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                    <div className="border border-gray-300 rounded-[4px] overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
                       <Select
                         value={displayAsal}
                         onChange={(e) => {
@@ -1471,7 +1471,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                 )
                 const statusField = (
                   <div>
-                    <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                    <div className="border border-gray-300 rounded-[4px] overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
                       <Select
                         value={displayKategori}
                         onChange={(e) => {
@@ -1513,13 +1513,13 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                         syncIndividu(next)
                       }}
                       placeholder="Jml"
-                      className="w-full h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-full h-9 px-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     />
                   </div>
                 )
                 return (
                 <div key={i} className="flex items-start gap-2">
-                <div className="flex-1 border border-gray-200 rounded-lg px-3 py-2.5">
+                <div className="flex-1 border border-gray-200 rounded-[4px] px-3 py-2.5">
                   <div className="space-y-2">
                     {isIdealMode ? (
                       <div className="grid grid-cols-[1fr_1fr_1fr_90px] gap-2 items-start">
@@ -1554,7 +1554,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                               setUnsurTerlibat(next)
                             }}
                             placeholder="Nama"
-                            className="flex-1 min-w-0 h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            className="flex-1 min-w-0 h-9 px-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                           />
                           <input
                             type="number"
@@ -1566,7 +1566,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                               setUnsurTerlibat(next)
                             }}
                             placeholder="Umur"
-                            className="w-[72px] shrink-0 h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            className="w-[72px] shrink-0 h-9 px-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                           />
                         </div>
                         ))}
@@ -1587,7 +1587,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
               <button
                 type="button"
                 onClick={() => setUnsurTerlibat((prev) => [...prev, { peran: "", kategori: "", asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "" }] }])}
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
               >
                 <Plus className="w-3.5 h-3.5" /> Tambah Kelompok Unsur
               </button>
@@ -1601,7 +1601,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
               onChange={(e) => setMotif(e.target.value)}
               placeholder="Tuliskan motif kejadian..."
               rows={3}
-              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y min-h-[60px]"
+              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y min-h-[60px]"
             />
           </div>
 
@@ -1612,7 +1612,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
               onChange={(e) => setRekomendasi(e.target.value)}
               placeholder="Tuliskan detail kasus..."
               rows={4}
-              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
+              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
             />
           </div>
 
@@ -1636,7 +1636,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                 value={pelaporLainnya}
                 onChange={(e) => setPelaporLainnya(e.target.value)}
                 placeholder="Tuliskan sumber laporan..."
-                className="w-full h-9 px-3 mt-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full h-9 px-3 mt-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             )}
           </div>
@@ -1654,7 +1654,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                   onBlur={() => setTimeout(() => setShowPicDropdown(false), 200)}
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (filteredPicOptions.length > 0) selectPic(filteredPicOptions[0]) } }}
                   placeholder="Masukkan nama anggota Kelompok Kerja"
-                  className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 />
                 {showPicDropdown && filteredPicOptions.length > 0 && (
                   <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
@@ -1664,7 +1664,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => selectPic(name)}
-                        className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 text-gray-700"
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-[#F9F9F9] text-gray-700"
                       >
                         {name}
                       </button>
@@ -1673,7 +1673,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-2 py-1.5 px-2 mt-1 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-2 py-1.5 px-2 mt-1 bg-[#F9F9F9] rounded-[4px]">
                 <Users className="w-3.5 h-3.5 text-gray-400" />
                 <span className="text-sm font-medium text-gray-700 flex-1">{pic}</span>
                 <button type="button" onClick={clearPic} className="p-0.5 hover:bg-gray-200 rounded-full">
@@ -1709,7 +1709,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
               onChange={(e) => setTindakLanjut(e.target.value)}
               placeholder="Catat apa yang sudah atau akan dilakukan"
               rows={3}
-              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
+              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
             />
           </div>
 
@@ -1719,7 +1719,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
             <input
               type="text"
               placeholder="Tautan atau keterangan dokumentasi"
-              className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
           </div>
           </>
@@ -1730,7 +1730,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+            className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
           >
             Batal
           </button>
@@ -1738,7 +1738,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
             type="button"
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${canSubmit ? "text-white bg-emerald-600 hover:bg-emerald-700" : "text-gray-400 bg-gray-200 cursor-not-allowed"}`}
+            className={`px-4 py-2 rounded-[4px] text-sm font-semibold transition ${canSubmit ? "text-white bg-emerald-600 hover:bg-emerald-700" : "text-gray-400 bg-gray-200 cursor-not-allowed"}`}
           >
             {initialData ? "Simpan" : "Kirim Laporan"}
           </button>
@@ -1989,14 +1989,14 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
             type="button"
             onClick={downloadCsv}
             disabled={filtered.length === 0}
-            className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex items-center gap-1.5 h-9 px-4 rounded-[4px] text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-[#F9F9F9] transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Download className="w-4 h-4" /> Ekspor Excel
           </button>
           {!readOnly && (
             <a
               href="/tambah-pelanggaran?create"
-              className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
+              className="flex items-center gap-1.5 h-9 px-4 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
             >
               <Plus className="w-4 h-4" /> Buat Laporan
             </a>
@@ -2007,87 +2007,79 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
       <div className="border-t border-gray-200" />
 
       <div className={"grid grid-cols-2 gap-3 " + (hideDinonaktifkan ? "sm:grid-cols-5" : "sm:grid-cols-6")}>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
-            <FileText className="w-5 h-5" />
+        <div className="bg-white rounded-[4px] border border-gray-200 p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <FileText className="w-6 h-6 shrink-0 text-gray-600" />
+            <p className="text-xl font-bold leading-none text-gray-900">{stats.total}</p>
           </div>
-          <div>
-            <p className="text-xl font-bold text-gray-900">{stats.total}</p>
-            <p className="text-xs text-gray-500">Total</p>
-          </div>
+          <p className="text-xs text-gray-500 mt-1.5">Total</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-            <FileText className="w-5 h-5" />
+        <div className="bg-white rounded-[4px] border border-gray-200 p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <FileText className="w-6 h-6 shrink-0 text-blue-600" />
+            <p className="text-xl font-bold leading-none text-gray-900">{stats.baru}</p>
           </div>
-          <div>
-            <p className="text-xl font-bold text-gray-900">{stats.baru}</p>
-            <p className="text-xs text-gray-500">Belum Diproses</p>
-          </div>
+          <p className="text-xs text-gray-500 mt-1.5">Belum Diproses</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
-            <Clock className="w-5 h-5" />
+        <div className="bg-white rounded-[4px] border border-gray-200 p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <Clock className="w-6 h-6 shrink-0 text-amber-600" />
+            <p className="text-xl font-bold leading-none text-gray-900">{stats.proses}</p>
           </div>
-          <div>
-            <p className="text-xl font-bold text-gray-900">{stats.proses}</p>
-            <p className="text-xs text-gray-500">Diproses</p>
-          </div>
+          <p className="text-xs text-gray-500 mt-1.5">Diproses</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-            <CheckCircle className="w-5 h-5" />
+        <div className="bg-white rounded-[4px] border border-gray-200 p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="w-6 h-6 shrink-0 text-green-600" />
+            <p className="text-xl font-bold leading-none text-gray-900">{stats.selesai}</p>
           </div>
-          <div>
-            <p className="text-xl font-bold text-gray-900">{stats.selesai}</p>
-            <p className="text-xs text-gray-500">Selesai</p>
-          </div>
+          <p className="text-xs text-gray-500 mt-1.5">Selesai</p>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
-            <XCircle className="w-5 h-5" />
+        <div className="bg-white rounded-[4px] border border-gray-200 p-4 shadow-sm">
+          <div className="flex items-center gap-2">
+            <XCircle className="w-6 h-6 shrink-0 text-gray-600" />
+            <p className="text-xl font-bold leading-none text-gray-900">{stats.ditutup}</p>
           </div>
-          <div>
-            <p className="text-xl font-bold text-gray-900">{stats.ditutup}</p>
-            <p className="text-xs text-gray-500">Ditutup</p>
-          </div>
+          <p className="text-xs text-gray-500 mt-1.5">Ditutup</p>
         </div>
         {!hideDinonaktifkan && (
-          <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
-              <Trash2 className="w-5 h-5" />
+          <div className="bg-white rounded-[4px] border border-gray-200 p-4 shadow-sm">
+            <div className="flex items-center gap-2">
+              <Trash2 className="w-6 h-6 shrink-0 text-gray-600" />
+              <p className="text-xl font-bold leading-none text-gray-900">{stats.nonaktif}</p>
             </div>
-            <div>
-              <p className="text-xl font-bold text-gray-900">{stats.nonaktif}</p>
-              <p className="text-xs text-gray-500">Nonaktif</p>
-            </div>
+            <p className="text-xs text-gray-500 mt-1.5">Nonaktif</p>
           </div>
         )}
       </div>
 
-      <div className="flex flex-row gap-2 items-center">
-        <div className="relative flex-1 min-w-0">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari sekolah atau NPSN"
-            className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
-          />
-        </div>
-        <div className="flex-shrink-0 w-[140px] sm:w-[180px]">
-          <Select
-            value={filterKategori}
-            onChange={(e) => setFilterKategori(e.target.value)}
-            className={SELECT_FILTER}
-          >
-            <option value="semua">Semua Kategori</option>
-            {KATEGORI_PELANGGARAN.map((k) => (
-              <option key={k} value={k}>{k}</option>
-            ))}
-          </Select>
-        </div>
-<div className="flex-shrink-0 w-[120px] sm:w-[150px]">
+      <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm overflow-hidden">
+        <div className="px-5 pt-5 pb-4 space-y-4">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="text-base font-semibold text-gray-900">Daftar Kasus Pelanggaran</h2>
+            <p className="text-sm text-gray-500 tabular-nums">{totalRows.toLocaleString("id-ID")} kasus</p>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_repeat(4,minmax(0,1fr))]">
+            <div className="relative sm:col-span-2 lg:col-span-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Cari sekolah atau NPSN"
+                className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              />
+            </div>
+            <Select
+              value={filterKategori}
+              onChange={(e) => setFilterKategori(e.target.value)}
+              className={SELECT_FILTER}
+            >
+              <option value="semua">Semua Kategori</option>
+              {KATEGORI_PELANGGARAN.map((k) => (
+                <option key={k} value={k}>{k}</option>
+              ))}
+            </Select>
             <Select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value as StatusPelanggaran | "dinonaktifkan" | "semua")}
@@ -2100,59 +2092,54 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
               <option value="ditutup">Ditutup</option>
               {!hideDinonaktifkan && <option value="dinonaktifkan">Nonaktif</option>}
             </Select>
+            <Select
+              value={filterTingkatUrgensi}
+              onChange={(e) => setFilterTingkatUrgensi(e.target.value as TingkatKeparahan | "semua")}
+              className={SELECT_FILTER}
+            >
+              <option value="semua">Semua Urgensi</option>
+              {TINGKAT_KEPARAHAN.map((t) => (
+                <option key={t.value} value={t.value}>{t.label}</option>
+              ))}
+            </Select>
+            <Select
+              value={filterPIC}
+              onChange={(e) => setFilterPIC(e.target.value)}
+              className={SELECT_FILTER}
+            >
+              <option value="semua">Semua PIC</option>
+              {uniquePIC.map((name) => (
+                <option key={name} value={name}>{name}</option>
+              ))}
+            </Select>
           </div>
-        <div className="flex-shrink-0 w-[120px] sm:w-[150px]">
-          <Select
-            value={filterTingkatUrgensi}
-            onChange={(e) => setFilterTingkatUrgensi(e.target.value as TingkatKeparahan | "semua")}
-            className={SELECT_FILTER}
-          >
-            <option value="semua">Semua Urgensi</option>
-            {TINGKAT_KEPARAHAN.map((t) => (
-              <option key={t.value} value={t.value}>{t.label}</option>
-            ))}
-          </Select>
         </div>
-        <div className="flex-shrink-0 w-[120px] sm:w-[150px]">
-          <Select
-            value={filterPIC}
-            onChange={(e) => setFilterPIC(e.target.value)}
-            className={SELECT_FILTER}
-          >
-            <option value="semua">Semua PIC</option>
-            {uniquePIC.map((name) => (
-              <option key={name} value={name}>{name}</option>
-            ))}
-          </Select>
-        </div>
-      </div>
-
-      {totalRows === 0 ? (
-        <div className="bg-white rounded-xl border border-dashed border-gray-300 p-10 text-center">
-          <p className="font-semibold text-gray-700 text-sm">Belum Ada Data Pelanggaran</p>
-            {!readOnly && <p className="text-gray-500 text-xs mt-1">Klik &apos;Buat Laporan&apos; untuk mulai menambahkan data kasus pelanggaran.</p>}
-        </div>
-      ) : (
-        <>
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        {totalRows === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-1 text-center border-t border-gray-200">
+            <p className="font-semibold text-gray-700 text-sm">Belum Ada Data Pelanggaran</p>
+            {!readOnly && <p className="text-gray-500 text-sm">Klik &apos;Buat Laporan&apos; untuk mulai menambahkan data kasus pelanggaran.</p>}
+          </div>
+        ) : (
+          <>
+            <div className="border-t border-gray-200">
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[1280px]">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200 text-left">
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">No. Kasus</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Nama Sekolah</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Unsur Terlibat</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Tanggal</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Kategori</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Urgensi</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">PIC</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">Aksi</th>
+                  <tr className="bg-[#F1F1F1] border-b border-gray-200 text-left">
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500">No. Kasus</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500">Nama Sekolah</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500">Unsur Terlibat</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500">Tanggal</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500">Kategori</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500">Urgensi</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500">PIC</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500">Status</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {paginatedData.map((item) => (
-                    <tr key={item.id} className={`transition-colors ${item.dihapus ? "opacity-50 bg-gray-100" : "hover:bg-gray-50"} ${item.tingkatKeparahan === "sangat_urgen" ? "border-l-4 border-l-red-500" : ""}`}>
+                    <tr key={item.id} className={`transition-colors ${item.dihapus ? "opacity-50 bg-[#F9F9F9]" : "hover:bg-[#F9F9F9]"} ${item.tingkatKeparahan === "sangat_urgen" ? "border-l-4 border-l-red-500" : ""}`}>
                       <td className="px-4 py-3.5 text-sm text-gray-800">
                         {item.nomorKasus || <span className="text-gray-400">-</span>}
                       </td>
@@ -2181,7 +2168,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
                             })
                             .sort((a, b) => a.label.localeCompare(b.label, "id"))
                             .map((u, i) => (
-                              <span key={i} className="inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                              <span key={i} className="inline-flex items-center gap-1 text-[13px] font-medium px-1.5 py-0.5 rounded-full whitespace-nowrap bg-[#efefef] text-[#2f3031]">
                                 {u.label}{u.total > 0 && <span className="opacity-60">({u.total})</span>}
                               </span>
                             ))}
@@ -2208,7 +2195,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
                       </td>
                       <td className="px-4 py-3.5">
                         {item.dihapus ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-600"><Trash2 className="w-3 h-3" /> Nonaktif</span>
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-[#efefef] text-[#2f3031]">Nonaktif</span>
                         ) : (
                           <StatusBadge status={item.status} />
                         )}
@@ -2216,9 +2203,9 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
                       <td className="px-4 py-3.5 text-right">
                         <a
                           href={`/tambah-pelanggaran?view=${item.id}`}
-                          className="text-blue-600 hover:underline text-sm flex items-center gap-1 ml-auto"
+                          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap ml-auto w-fit"
                         >
-                          <Eye className="w-3.5 h-3.5" /> Detail
+                          Cek Detail
                         </a>
                       </td>
                     </tr>
@@ -2226,7 +2213,7 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
                 </tbody>
               </table>
             </div>
-
+            </div>
             <TablePagination
               total={totalRows}
               halaman={currentPage}
@@ -2235,9 +2222,10 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
               onPerHalaman={(n) => { setRowsPerPage(n); setCurrentPage(1) }}
               opsiPerHalaman={[10, 20, 50]}
             />
-          </div>
-        </>
-      )}
+
+          </>
+        )}
+      </div>
 
       {selected && (
         <DetailModal

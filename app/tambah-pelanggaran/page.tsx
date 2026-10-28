@@ -186,7 +186,7 @@ function KategoriMultiSelect({ selected, lainnya, custom, error, onChange }: {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className={`w-full min-h-9 px-3 py-2 text-sm text-left border rounded-lg focus:outline-none focus:ring-2 bg-white flex items-center justify-between gap-2 ${
+        className={`w-full min-h-9 px-3 py-2 text-sm text-left border rounded-[4px] focus:outline-none focus:ring-2 bg-white flex items-center justify-between gap-2 ${
           error
             ? "border-red-400 focus:ring-red-400"
             : "border-gray-300 focus:ring-blue-500 focus:border-blue-400"
@@ -201,18 +201,16 @@ function KategoriMultiSelect({ selected, lainnya, custom, error, onChange }: {
       {(selected.length > 0 || lainnya) && (
         <div className="flex flex-wrap gap-1.5">
           {selected.map((k) => (
-            <span key={k} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-medium">
+            <span key={k} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap bg-sky-200 text-sky-950 text-[13px] font-semibold">
               {k}
               <button type="button" onClick={() => toggle(k)} className="hover:text-blue-900">
-                <X className="w-3 h-3" />
               </button>
             </span>
           ))}
           {lainnya && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 text-xs font-medium">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full whitespace-nowrap bg-[#efefef] text-[#2f3031] text-[13px] font-medium">
               {custom.trim() ? custom : "Lainnya"}
               <button type="button" onClick={() => onChange({ lainnya: false })} className="hover:text-gray-900">
-                <X className="w-3 h-3" />
               </button>
             </span>
           )}
@@ -224,7 +222,7 @@ function KategoriMultiSelect({ selected, lainnya, custom, error, onChange }: {
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div className="absolute z-20 mt-0.5 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto">
             {predefined.map((k) => (
-              <label key={k} className="flex items-start gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer">
+              <label key={k} className="flex items-start gap-2 px-3 py-2 hover:bg-[#F9F9F9] cursor-pointer">
                 <input
                   type="checkbox"
                   checked={selected.includes(k)}
@@ -234,7 +232,7 @@ function KategoriMultiSelect({ selected, lainnya, custom, error, onChange }: {
                 <span className="text-sm text-gray-700 leading-snug">{k}</span>
               </label>
             ))}
-            <label className="flex items-start gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer border-t border-gray-100">
+            <label className="flex items-start gap-2 px-3 py-2 hover:bg-[#F9F9F9] cursor-pointer border-t border-gray-100">
               <input
                 type="checkbox"
                 checked={lainnya}
@@ -251,7 +249,7 @@ function KategoriMultiSelect({ selected, lainnya, custom, error, onChange }: {
                   value={custom}
                   onChange={(e) => onChange({ custom: e.target.value })}
                   placeholder="Tulis kategori lainnya..."
-                  className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 />
               </div>
             )}
@@ -334,8 +332,8 @@ function diffPelanggaranFields(before: Record<string, unknown>, after: Record<st
 }
 
 const TINGKAT_KEPARAHAN: { value: TingkatKeparahan; label: string; color: string }[] = [
-  { value: "urgen", label: "Mendesak", color: "bg-orange-100 text-orange-700" },
-  { value: "sangat_urgen", label: "Sangat Mendesak", color: "bg-red-100 text-red-700" },
+  { value: "urgen", label: "Mendesak", color: "bg-amber-200 text-amber-950" },
+  { value: "sangat_urgen", label: "Sangat Mendesak", color: "bg-rose-100 text-rose-950" },
 ]
 
 const TINGKAT_URGENSI_SEGMENTS: { value: TingkatKeparahan; label: string; desc: string; selected: string; selectedDesc: string }[] = [
@@ -357,10 +355,10 @@ const PELAPOR_OPTIONS: { value: Pelapor; label: string }[] = [
   { value: "lainnya", label: "Lainnya" },
 ]
 
-const SELECT_BASE = "w-full h-9 px-3 mt-1 text-sm border rounded-lg focus:outline-none focus:ring-2 bg-white appearance-none pr-8 border-gray-300 focus:ring-blue-500"
+const SELECT_BASE = "w-full h-9 px-3 mt-1 text-sm border rounded-[4px] focus:outline-none focus:ring-2 bg-white appearance-none pr-8 border-gray-300 focus:ring-blue-500"
 /** Kelas dasar select tanpa warna border, dipakai saat field bertanda error. */
-const SELECT_BASE_ERROR = "w-full h-9 px-3 mt-1 text-sm border rounded-lg focus:outline-none focus:ring-2 bg-white appearance-none pr-8 border-red-400 focus:ring-red-400"
-const SELECT_SM = "h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-6"
+const SELECT_BASE_ERROR = "w-full h-9 px-3 mt-1 text-sm border rounded-[4px] focus:outline-none focus:ring-2 bg-white appearance-none pr-8 border-red-400 focus:ring-red-400"
+const SELECT_SM = "h-9 px-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none pr-8"
 
 function Select({ value, onChange, className, children, id, disabled }: { value: string; onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; className?: string; children: React.ReactNode; id?: string; disabled?: boolean }) {
   return (
@@ -368,7 +366,7 @@ function Select({ value, onChange, className, children, id, disabled }: { value:
       <select id={id} value={value} onChange={onChange} disabled={disabled} className={`w-full ${className ?? ""} ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}>
         {children}
       </select>
-      <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
     </div>
   )
 }
@@ -466,15 +464,15 @@ function TextInput({ value }: { value: string }) {
       type="text"
       value={value}
       disabled
-      className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-default"
+      className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] bg-[#F9F9F9] text-gray-600 cursor-default"
     />
   )
 }
 
 function SectionCard({ icon, title, right, children }: { icon: React.ReactNode; title: string; right?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-      <div className="flex items-center gap-2.5 px-5 py-4 bg-gray-50 border-b border-gray-200 rounded-t-xl">
+    <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm">
+      <div className="flex items-center gap-2.5 px-5 py-4 bg-[#F9F9F9] border-b border-gray-200 rounded-t-xl">
         <span className="text-gray-900 flex-shrink-0">{icon}</span>
         <h3 className="text-sm font-semibold text-gray-900 flex-1">{title}</h3>
         {right}
@@ -497,7 +495,7 @@ function NomorKasusBadge({ nomorKasus }: { nomorKasus: string }) {
         } catch {}
       }}
       title="Salin nomor kasus"
-      className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 transition"
+      className="flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-[#F9F9F9] transition"
     >
       <span>No. Kasus: {nomorKasus}</span>
       {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5 text-gray-400" />}
@@ -509,38 +507,38 @@ function StatusBadge({ status }: { status: StatusPelanggaran | "dinonaktifkan" |
   switch (status) {
     case "baru":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-          <FileText className="w-3 h-3" /> Belum Diproses
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-sky-200 text-sky-950">
+          Belum Diproses
         </span>
       )
     case "proses":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
-          <Clock className="w-3 h-3" /> Diproses
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-amber-200 text-amber-950">
+          Diproses
         </span>
       )
     case "selesai":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-          <CheckCircle className="w-3 h-3" /> Selesai
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-emerald-300 text-emerald-950">
+          Selesai
         </span>
       )
     case "ditutup":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-          <XCircle className="w-3 h-3" /> Ditutup
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-[#efefef] text-[#2f3031]">
+          Ditutup
         </span>
       )
     case "dinonaktifkan":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-600">
-          <Trash2 className="w-3 h-3" /> Nonaktif
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-[#efefef] text-[#2f3031]">
+          Nonaktif
         </span>
       )
     case "dipulihkan":
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-700">
-          <RotateCcw className="w-3 h-3" /> Dipulihkan
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-teal-200 text-teal-950">
+          Dipulihkan
         </span>
       )
   }
@@ -576,7 +574,7 @@ function StatusLogList({ entries }: { entries?: { status: StatusPelanggaran | "d
         const labelAksi = entry.aksi === "perbaharui_status" ? "Diperbaharui" : entry.aksi === "edit" ? "Diedit" : entry.aksi === "nonaktifkan" ? "Dinonaktifkan" : entry.aksi === "pulihkan" ? "Diaktifkan kembali" : "Dibuat"
         const keterangan = entry.keterangan.replace(/ — oleh .+$/, "").replace(/^Laporan awal (dibuat )?/, "").trim()
         return (
-          <div key={i} className="p-3 bg-gray-50 rounded-lg space-y-1">
+          <div key={i} className="p-3 bg-[#F9F9F9] rounded-[4px] space-y-1">
             <div className="flex items-center gap-2">
               <StatusBadge status={entry.status} />
               <span className="text-xs text-gray-500">{labelAksi} oleh {dibuatOleh}</span>
@@ -586,10 +584,10 @@ function StatusLogList({ entries }: { entries?: { status: StatusPelanggaran | "d
             {Array.isArray((entry as any).perubahan) && (entry as any).perubahan.length > 0 && (
               <div className="text-xs text-gray-700">
                 <span className="font-medium">Perubahan:</span>
-                <div className="mt-1 border border-gray-200 rounded-lg overflow-hidden">
+                <div className="mt-1 border border-gray-200 rounded-[4px] overflow-hidden">
                   <table className="w-full text-xs border-collapse">
                     <thead>
-                      <tr className="bg-gray-100">
+                      <tr className="bg-[#F1F1F1]">
                         <th className="text-left font-medium text-gray-500 px-2 py-1 w-1/4">Field</th>
                         <th className="text-left font-medium text-gray-500 px-2 py-1 w-[37.5%]">Sebelum</th>
                         <th className="text-left font-medium text-gray-500 px-2 py-1 w-[37.5%]">Sesudah</th>
@@ -1093,9 +1091,9 @@ function TambahPelanggaranInner() {
   // Success screen for form submit
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 text-center max-w-sm w-full">
-          <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 flex items-center justify-center mx-auto mb-4">
             <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
@@ -1117,10 +1115,10 @@ function TambahPelanggaranInner() {
       return peran || "-"
     }
     const peranColor = (peran: string) => {
-      if (peran === "pelaku") return "bg-amber-100 text-amber-700"
-      if (peran === "korban") return "bg-red-100 text-red-700"
-      if (peran === "saksi") return "bg-blue-100 text-blue-700"
-      return "bg-gray-100 text-gray-700"
+      if (peran === "pelaku") return "bg-amber-200 text-amber-950"
+      if (peran === "korban") return "bg-rose-100 text-rose-950"
+      if (peran === "saksi") return "bg-sky-200 text-sky-950"
+      return "bg-[#efefef] text-[#2f3031]"
     }
     const peranLineColor = (peran: string) => {
       if (peran === "pelaku") return "border-amber-400"
@@ -1130,12 +1128,12 @@ function TambahPelanggaranInner() {
     }
 
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-[#F9F9F9]">
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
             <button
               onClick={() => { window.location.href = pelanggaranBackHref(role) }}
-              className="p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition"
+              className="p-2 rounded-[4px] text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition"
               aria-label="Kembali"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -1144,8 +1142,8 @@ function TambahPelanggaranInner() {
               <h1 className="text-base font-bold text-gray-900">Detail Pelanggaran</h1>
               <div className="mt-1">
                 {item.dihapus ? (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-600">
-                    <Trash2 className="w-3 h-3" /> Nonaktif
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-[#efefef] text-[#2f3031]">
+                    Nonaktif
                   </span>
                 ) : (
                   <StatusBadge status={item.status} />
@@ -1157,13 +1155,13 @@ function TambahPelanggaranInner() {
 
         {item.dihapus && (role === "pusat" || role === "bpmp") && (
           <div className="max-w-2xl mx-auto px-4 pt-4">
-            <div className="bg-red-50 border border-red-200 rounded-xl p-5">
+            <div className="bg-red-50 border border-red-200 rounded-[4px] p-5">
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-semibold text-red-700">Laporan Nonaktif</p>
                   <p className="text-sm text-red-600 mt-0.5">Anda dapat mengaktifkan laporan kembali untuk lanjut memproses kasus pelanggaran.</p>
-                  <button onClick={() => { setAlasanRestore(""); setShowRestoreConfirm(true) }} className="mt-4 py-2.5 px-5 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Aktifkan Laporan</button>
+                  <button onClick={() => { setAlasanRestore(""); setShowRestoreConfirm(true) }} className="mt-4 py-2.5 px-5 rounded-[4px] bg-white border border-gray-300 text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition">Aktifkan Laporan</button>
                 </div>
               </div>
             </div>
@@ -1179,7 +1177,7 @@ function TambahPelanggaranInner() {
                 <div className="flex flex-col gap-2 mt-1">
                   {item.namaSekolah.length > 0 ? item.namaSekolah.map((s, i) => (
                     <div key={i} className="flex items-start gap-2">
-                      <div className="flex-1 border border-gray-200 rounded-lg p-3">
+                      <div className="flex-1 border border-gray-200 rounded-[4px] p-3">
                         <div className="grid grid-cols-[1fr_140px] gap-2">
                           <div>
                             <label className="block text-xs font-semibold text-gray-700 mb-1">Nama Sekolah</label>
@@ -1217,8 +1215,8 @@ function TambahPelanggaranInner() {
                     return (
                       <div
                         key={t.value}
-                        className={`px-2 py-2.5 rounded-lg border text-center text-[13px] font-semibold transition-colors ${
-                          isSelected ? t.selected : "border-gray-200 bg-gray-50 text-gray-400"
+                        className={`px-2 py-2.5 rounded-[4px] border text-center text-sm font-semibold transition-colors ${
+                          isSelected ? t.selected : "border-gray-200 bg-[#F9F9F9] text-gray-400"
                         }`}
                       >
                         {t.label}
@@ -1238,7 +1236,7 @@ function TambahPelanggaranInner() {
                 {item.unsurTerlibat.length > 0 ? item.unsurTerlibat.map((u, i) => (
                   <div key={i} className="flex flex-col gap-3">
                     <div className="flex items-center gap-2">
-                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${peranColor(u.peran)}`}>
+                      <span className={`text-[13px] font-semibold px-2.5 py-0.5 rounded-full whitespace-nowrap ${peranColor(u.peran)}`}>
                         {peranLabel(u.peran, u.peranLainnya)}
                       </span>
                     </div>
@@ -1248,7 +1246,7 @@ function TambahPelanggaranInner() {
                         <div className="flex flex-col gap-2">
                           {Array.isArray(u.asalGroups) && u.asalGroups.map((ag, gi) => (
                             <div key={gi} className="flex items-start gap-2">
-                              <div className="flex-1 border border-gray-200 rounded-lg p-3 bg-white">
+                              <div className="flex-1 border border-gray-200 rounded-[4px] p-3 bg-white">
                                 <div className="grid grid-cols-[1fr_90px] gap-2 items-start">
                                   <div>
                                     <label className="block text-xs font-semibold text-gray-700 mb-1">Asal Sekolah</label>
@@ -1260,7 +1258,7 @@ function TambahPelanggaranInner() {
                                   </div>
                                 </div>
                                 {Array.isArray(ag.individu) && ag.individu.some((ind) => ind.nama) && (
-                                  <div className="bg-gray-50 rounded-lg mt-3 mb-2 divide-y divide-gray-200">
+                                  <div className="bg-[#F9F9F9] rounded-[4px] mt-3 mb-2 divide-y divide-gray-200">
                                     {ag.individu.map((ind, idx) => (
                                       <div key={idx} className="p-2.5">
                                         <div className="flex items-start gap-2">
@@ -1305,7 +1303,7 @@ function TambahPelanggaranInner() {
                 <div className="flex flex-col gap-4 mt-1">
                   {(item as any).kronologi.map((entry: { tanggal?: string; jam?: string; lokasi?: string; keterangan?: string }, i: number) => (
                     <div key={i} className="flex items-start gap-2">
-                      <div className="flex-1 border border-gray-200 rounded-lg p-3">
+                      <div className="flex-1 border border-gray-200 rounded-[4px] p-3">
                         <div className="flex items-end gap-2">
                           <div className="flex-1">
                             <label className="block text-xs font-semibold text-gray-700 mb-1">Tanggal</label>
@@ -1320,7 +1318,7 @@ function TambahPelanggaranInner() {
                             <TextInput value={entry.lokasi || "-"} />
                           </div>
                         </div>
-                        <div className="mt-2 bg-gray-50 rounded-lg px-3 py-2">
+                        <div className="mt-2 bg-[#F9F9F9] rounded-[4px] px-3 py-2">
                           <label className="block text-xs font-semibold text-gray-700 mb-1">Keterangan</label>
                           <div className="text-sm text-gray-600 whitespace-pre-wrap min-h-[20px]">{entry.keterangan || "-"}</div>
                         </div>
@@ -1334,7 +1332,7 @@ function TambahPelanggaranInner() {
 
               <div className="flex flex-col gap-1.5">
               <FieldLabel required>Motif Kejadian</FieldLabel>
-                <div className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-default min-h-[80px] whitespace-pre-wrap">
+                <div className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-[4px] bg-[#F9F9F9] text-gray-600 cursor-default min-h-[80px] whitespace-pre-wrap">
                   {(item as any).motif || "-"}
                 </div>
               </div>
@@ -1342,7 +1340,7 @@ function TambahPelanggaranInner() {
               {item.dokumentasi && (
                 <div className="flex flex-col gap-1.5">
                   <FieldLabel>Tautan Dokumentasi</FieldLabel>
-                  <div className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 min-h-[36px] break-all text-gray-600">
+                  <div className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-[4px] bg-[#F9F9F9] min-h-[36px] break-all text-gray-600">
                     <DocumentasiValue value={item.dokumentasi} />
                   </div>
                 </div>
@@ -1399,7 +1397,7 @@ function TambahPelanggaranInner() {
               {item.pic && (
                 <div className="flex flex-col gap-1.5">
                   <FieldLabel>{role === "pusat" ? "Nama Penanggung Jawab" : "Penanggung Jawab"}</FieldLabel>
-                  <div className="flex items-center gap-2 py-1.5 px-2 mt-1 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-2 py-1.5 px-2 mt-1 bg-[#F9F9F9] rounded-[4px]">
                     <Users className="w-3.5 h-3.5 text-gray-400" />
                     <span className="text-sm font-medium text-gray-700 flex-1">{item.pic}</span>
                   </div>
@@ -1414,7 +1412,7 @@ function TambahPelanggaranInner() {
                 <>
                 <div className="flex flex-col gap-1.5">
                   <FieldLabel>Rencana Pencegahan Pelanggaran di Masa Depan</FieldLabel>
-                  <div className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-default whitespace-pre-wrap">
+                  <div className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-[4px] bg-[#F9F9F9] text-gray-600 cursor-default whitespace-pre-wrap">
                     {(item as any).rencanaProgram}
                   </div>
                 </div>
@@ -1437,10 +1435,10 @@ function TambahPelanggaranInner() {
                   <button
                     key={opt}
                     onClick={() => setNewStatus(opt)}
-                    className={`w-full text-left px-4 py-3 rounded-lg border text-sm font-medium transition ${
+                    className={`w-full text-left px-4 py-3 rounded-[4px] border text-sm font-medium transition ${
                       newStatus === opt
                         ? "border-blue-500 bg-blue-50 text-blue-700"
-                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700"
+                        : "border-gray-200 hover:border-gray-300 hover:bg-[#F9F9F9] text-gray-700"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -1461,7 +1459,7 @@ function TambahPelanggaranInner() {
                     onChange={(e) => setKeteranganStatus(e.target.value)}
                     placeholder="Tambahkan keterangan..."
                     rows={2}
-                    className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    className="w-full p-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                   />
                 </div>
                 <div>
@@ -1471,13 +1469,13 @@ function TambahPelanggaranInner() {
                     value={dokumentasiStatus}
                     onChange={(e) => setDokumentasiStatus(e.target.value)}
                     placeholder="Link atau keterangan dokumentasi..."
-                    className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   />
                 </div>
               </div>
               <div className="flex gap-3 mt-4">
-                <button onClick={() => setShowStatusModal(false)} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Batal</button>
-                <button onClick={handleUpdateStatus} disabled={!keteranganStatus.trim()} className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition">Simpan</button>
+                <button onClick={() => setShowStatusModal(false)} className="flex-1 py-2.5 rounded-[4px] border border-gray-300 text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition">Batal</button>
+                <button onClick={handleUpdateStatus} disabled={!keteranganStatus.trim()} className="flex-1 py-2.5 rounded-[4px] bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition">Simpan</button>
               </div>
             </div>
           </div>
@@ -1487,12 +1485,12 @@ function TambahPelanggaranInner() {
           <div className="max-w-2xl mx-auto px-4 pb-8 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               {(role === "pusat" || role === "bpmp") && (
-                <button onClick={() => { setAlasanNonaktif(""); setShowDeleteConfirm(true) }} className="py-2 px-1 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50 font-medium text-sm transition">Nonaktifkan</button>
+                <button onClick={() => { setAlasanNonaktif(""); setShowDeleteConfirm(true) }} className="py-2 px-1 rounded-[4px] text-red-600 hover:text-red-700 hover:bg-red-50 font-medium text-sm transition">Nonaktifkan</button>
               )}
             </div>
             <div className="flex items-center gap-3 flex-shrink-0">
-              <a href={`/tambah-pelanggaran?edit=${item.id}`} className="py-2.5 px-5 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium text-sm hover:bg-gray-50 transition text-center">Edit</a>
-              <button onClick={() => { setNewStatus(item.status); setKeteranganStatus(""); setDokumentasiStatus(""); setShowStatusModal(true) }} className="py-2.5 px-5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition text-center">Perbarui Status</button>
+              <a href={`/tambah-pelanggaran?edit=${item.id}`} className="py-2.5 px-5 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition text-center">Edit</a>
+              <button onClick={() => { setNewStatus(item.status); setKeteranganStatus(""); setDokumentasiStatus(""); setShowStatusModal(true) }} className="py-2.5 px-5 rounded-[4px] bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition text-center">Perbarui Status</button>
             </div>
           </div>
         )}
@@ -1503,7 +1501,7 @@ function TambahPelanggaranInner() {
             <div className="fixed inset-0 bg-black/50" onClick={() => setShowDeleteConfirm(false)} />
             <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
                   <Trash2 className="w-6 h-6 text-red-600" />
                 </div>
                 <h3 className="text-base font-bold text-gray-900">Nonaktifkan Laporan?</h3>
@@ -1516,12 +1514,12 @@ function TambahPelanggaranInner() {
                   onChange={(e) => setAlasanNonaktif(e.target.value)}
                   rows={2}
                   placeholder="Tulis alasan menonaktifkan laporan..."
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                 />
               </div>
               <div className="flex gap-3 mt-5">
-                <button onClick={() => setShowDeleteConfirm(false)} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Batal</button>
-                <button onClick={handleDelete} className="flex-1 py-2.5 rounded-lg bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition">Ya, Nonaktifkan</button>
+                <button onClick={() => setShowDeleteConfirm(false)} className="flex-1 py-2.5 rounded-[4px] border border-gray-300 text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition">Batal</button>
+                <button onClick={handleDelete} className="flex-1 py-2.5 rounded-[4px] bg-red-600 text-white font-medium text-sm hover:bg-red-700 transition">Ya, Nonaktifkan</button>
               </div>
             </div>
           </div>
@@ -1533,7 +1531,7 @@ function TambahPelanggaranInner() {
             <div className="fixed inset-0 bg-black/50" onClick={() => setShowRestoreConfirm(false)} />
             <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
                   <RotateCcw className="w-6 h-6 text-green-600" />
                 </div>
                 <h3 className="text-base font-bold text-gray-900">Aktifkan Laporan?</h3>
@@ -1546,12 +1544,12 @@ function TambahPelanggaranInner() {
                   onChange={(e) => setAlasanRestore(e.target.value)}
                   rows={2}
                   placeholder="Tulis alasan mengaktifkan kembali laporan..."
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
                 />
               </div>
               <div className="flex gap-3 mt-5">
-                <button onClick={() => setShowRestoreConfirm(false)} className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Batal</button>
-                <button onClick={() => { handleRestore(); setShowRestoreConfirm(false) }} className="flex-1 py-2.5 rounded-lg bg-green-600 text-white font-medium text-sm hover:bg-green-700 transition">Ya, Aktifkan</button>
+                <button onClick={() => setShowRestoreConfirm(false)} className="flex-1 py-2.5 rounded-[4px] border border-gray-300 text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition">Batal</button>
+                <button onClick={() => { handleRestore(); setShowRestoreConfirm(false) }} className="flex-1 py-2.5 rounded-[4px] bg-green-600 text-white font-medium text-sm hover:bg-green-700 transition">Ya, Aktifkan</button>
               </div>
             </div>
           </div>
@@ -1563,7 +1561,7 @@ function TambahPelanggaranInner() {
   // Loading state
   if (isView && !item) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center p-4">
         <p className="text-sm text-gray-500">Data tidak ditemukan.</p>
       </div>
     )
@@ -1573,12 +1571,12 @@ function TambahPelanggaranInner() {
   const pageTitle = createMode ? "Buat Laporan" : editId ? "Edit Laporan" : ""
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
           <button
             onClick={() => { window.location.href = pelanggaranBackHref(role) }}
-            className="p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition"
+            className="p-2 rounded-[4px] text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition"
             aria-label="Kembali"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -1606,7 +1604,7 @@ function TambahPelanggaranInner() {
                   onBlur={() => setTimeout(() => setShowSekolahDropdown(false), 200)}
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSekolah(sekolahInput) } }}
                   placeholder="Ketik nama sekolah yang ingin dilaporkan"
-                  className={`w-full h-9 px-3 text-sm border rounded-lg focus:outline-none focus:ring-2 bg-white ${
+                  className={`w-full h-9 px-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 bg-white ${
                     err("namaSekolah") ? "border-red-400 focus:ring-red-400" : "border-gray-300 focus:ring-blue-500"
                   }`}
                 />
@@ -1618,7 +1616,7 @@ function TambahPelanggaranInner() {
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => addSekolah(o.nama)}
-                        className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex flex-col"
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-[#F9F9F9] flex flex-col"
                       >
                         <span className="text-gray-800">{o.nama}{o.npsn && <span className="text-xs text-gray-400 ml-2">NPSN {o.npsn}</span>}</span>
                       </button>
@@ -1630,7 +1628,7 @@ function TambahPelanggaranInner() {
               {form.namaSekolah.length > 0 && (
                 <div className="flex flex-col gap-1.5 mt-3">
                   {form.namaSekolah.map((s, i) => (
-                    <div key={i} className="flex items-center gap-2 py-1.5 px-2 bg-gray-50 rounded-lg">
+                    <div key={i} className="flex items-center gap-2 py-1.5 px-2 bg-[#F9F9F9] rounded-[4px]">
                       <span className="text-sm font-medium text-gray-700 flex-1">{s}</span>
                       <button type="button" onClick={() => removeSekolah(i)} className="p-0.5 hover:bg-gray-200 rounded-full">
                         <X className="w-3.5 h-3.5 text-gray-400" />
@@ -1661,7 +1659,7 @@ function TambahPelanggaranInner() {
                   type="date"
                   value={form.tanggalPelaporan ?? ""}
                   onChange={(e) => setForm((prev) => ({ ...prev, tanggalPelaporan: e.target.value }))}
-                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 />
               </div>
             </div>
@@ -1676,7 +1674,7 @@ function TambahPelanggaranInner() {
                       key={t.value}
                       type="button"
                       onClick={() => setForm((prev) => ({ ...prev, tingkatKeparahan: t.value }))}
-                      className={`px-2 py-2.5 rounded-lg border text-center text-[13px] font-semibold transition-colors ${
+                      className={`px-2 py-2.5 rounded-[4px] border text-center text-sm font-semibold transition-colors ${
                         isSelected
                           ? t.selected
                           : err("tingkatKeparahan")
@@ -1717,7 +1715,7 @@ function TambahPelanggaranInner() {
                     { value: "pelaku", label: "Terduga Pelaku", selected: "border-amber-600 bg-amber-50 text-amber-600", line: "border-amber-400" },
                     { value: "korban", label: "Terduga Korban", selected: "border-red-600 bg-red-50 text-red-600", line: "border-red-400" },
                     { value: "saksi", label: "Saksi", selected: "border-blue-600 bg-blue-50 text-blue-600", line: "border-blue-400" },
-                    { value: "lainnya", label: "Lainnya", selected: "border-gray-600 bg-gray-100 text-gray-700", line: "border-gray-400" },
+                    { value: "lainnya", label: "Lainnya", selected: "border-gray-600 bg-[#F9F9F9] text-gray-700", line: "border-gray-400" },
                   ]
                   const peranLineColor = PERAN_CHIPS.find((opt) => opt.value === u.peran)?.line ?? "border-gray-300"
                   const canDeleteGroup = form.unsurTerlibat.length > 1
@@ -1756,7 +1754,7 @@ function TambahPelanggaranInner() {
                                 setForm((prev) => ({ ...prev, unsurTerlibat: next }))
                               }}
                               className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-                                isSelected ? opt.selected : isDisabled ? "border-gray-200 bg-gray-100 text-gray-300 cursor-not-allowed" : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
+                                isSelected ? opt.selected : isDisabled ? "border-gray-200 bg-[#F9F9F9] text-gray-300 cursor-not-allowed" : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
                               }`}
                             >
                               {opt.label}
@@ -1773,7 +1771,7 @@ function TambahPelanggaranInner() {
                             setForm((prev) => ({ ...prev, unsurTerlibat: next }))
                           }}
                           placeholder="Tulis peran..."
-                          className="w-full h-9 px-2 mt-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                          className="w-full h-9 px-2 mt-1.5 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                         />
                       )}
                     </div>
@@ -1826,11 +1824,11 @@ function TambahPelanggaranInner() {
                         const jmlAg = parseInt(ag.jumlah) || 0
                         return (
                           <div key={gi} className="flex items-start gap-2">
-                          <div className="flex-1 border border-gray-200 rounded-lg p-3 bg-white">
+                          <div className="flex-1 border border-gray-200 rounded-[4px] p-3 bg-white">
                             <div className="grid grid-cols-[1fr_90px] gap-2 items-start">
                               <div>
                                 <label className="block text-xs font-semibold text-gray-700 mb-1">Asal Sekolah</label>
-                                <div className="relative border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                                <div className="relative border border-gray-300 rounded-[4px] overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
                                   {displayAsal === "lainnya" ? (
                                     <>
                                       <input
@@ -1889,12 +1887,12 @@ function TambahPelanggaranInner() {
                                     syncIndividu(next, gi)
                                   }}
                                   placeholder="Jml"
-                                  className="w-full h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                  className="w-full h-9 px-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                                 />
                               </div>
                             </div>
                             {jmlAg > 0 && (
-                              <div className="bg-gray-50 rounded-lg mt-4 mb-2 divide-y divide-gray-200">
+                              <div className="bg-[#F9F9F9] rounded-[4px] mt-4 mb-2 divide-y divide-gray-200">
                                 {ag.individu.map((ind, idx) => {
                                   const isStatusCustom = ind.status !== "" && !predefined.includes(ind.status)
                                   const displayStatus = isStatusCustom ? "Lainnya" : ind.status
@@ -1913,12 +1911,12 @@ function TambahPelanggaranInner() {
                                               setForm((prev) => ({ ...prev, unsurTerlibat: next }))
                                             }}
                                             placeholder="Nama/Inisial"
-                                            className="w-full h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                            className="w-full h-9 px-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                                           />
                                         </div>
                                         <div>
                                           {idx === 0 && <label className="block text-xs text-gray-700 mb-1">Status</label>}
-                                          <div className="relative border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
+                                          <div className="relative border border-gray-300 rounded-[4px] overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-400">
                                             {isStatusCustom ? (
                                               <>
                                                 <input
@@ -1994,7 +1992,7 @@ function TambahPelanggaranInner() {
                                               setForm((prev) => ({ ...prev, unsurTerlibat: next }))
                                             }}
                                             placeholder="Umur"
-                                            className="w-full h-9 px-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                            className="w-full h-9 px-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                                           />
                                         </div>
                                       </div>
@@ -2028,7 +2026,7 @@ function TambahPelanggaranInner() {
                           next[i] = { ...next[i], asalGroups: [...next[i].asalGroups, { asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "", status: "", jenisKelamin: "" }] }] }
                           setForm((prev) => ({ ...prev, unsurTerlibat: next }))
                         }}
-                        className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-2.5 py-1.5 transition w-full justify-center"
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-[4px] px-2.5 py-1.5 transition w-full justify-center"
                       >
                         <Plus className="w-3 h-3" /> Tambah Asal Sekolah
                       </button>
@@ -2044,7 +2042,7 @@ function TambahPelanggaranInner() {
                     <button
                       type="button"
                       onClick={() => setForm((prev) => ({ ...prev, unsurTerlibat: [...prev.unsurTerlibat, { peran: "", kategori: "", asalGroups: [{ asalSekolah: "", jumlah: "", individu: [{ nama: "", umur: "", status: "", jenisKelamin: "" }] }] }] }))}
-                      className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+                      className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
                     >
                       <Plus className="w-3.5 h-3.5" /> Tambah Kelompok Unsur
                     </button>
@@ -2070,7 +2068,7 @@ function TambahPelanggaranInner() {
                       next[i] = { ...next[i], tanggal: e.target.value }
                       setForm((prev) => ({ ...prev, kronologi: next }))
                     }}
-                    className={`w-full h-9 px-3 text-sm border rounded-lg focus:outline-none focus:ring-2 bg-white ${
+                    className={`w-full h-9 px-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 bg-white ${
                       tanggalKosong ? "border-red-400 focus:ring-red-400" : "border-gray-300 focus:ring-blue-500"
                     }`}
                   />
@@ -2089,7 +2087,7 @@ function TambahPelanggaranInner() {
                       next[i] = { ...next[i], jam: e.target.value }
                       setForm((prev) => ({ ...prev, kronologi: next }))
                     }}
-                    className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   />
                 </div>
               )
@@ -2107,19 +2105,19 @@ function TambahPelanggaranInner() {
                       setForm((prev) => ({ ...prev, kronologi: next }))
                     }}
                     placeholder="Lokasi..."
-                    className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   />
                 </div>
               )
               return (
               <div key={i} className="flex items-start gap-2">
-              <div className="flex-1 border border-gray-200 rounded-lg p-3">
+              <div className="flex-1 border border-gray-200 rounded-[4px] p-3">
                 <div className="flex items-end gap-2">
                   {tanggalField}
                   {jamField}
                   {lokasiField}
                 </div>
-                <div className="mt-2 bg-gray-50 rounded-lg px-3 py-2">
+                <div className="mt-2 bg-[#F9F9F9] rounded-[4px] px-3 py-2">
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Keterangan <span className="text-red-500">*</span></label>
                   <textarea
                     required
@@ -2131,7 +2129,7 @@ function TambahPelanggaranInner() {
                     }}
                     placeholder="Deskripsikan kejadian pada waktu yang sudah dipilih, termasuk dampak yang terjadi pada terduga korban dan terduga pelaku."
                     rows={3}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
                   />
                 </div>
               </div>
@@ -2151,7 +2149,7 @@ function TambahPelanggaranInner() {
               type="button"
               disabled={form.kronologi.length >= 20}
               onClick={() => setForm((prev) => ({ ...prev, kronologi: [...prev.kronologi, { tanggal: "", jam: "", lokasi: "", keterangan: "" }] }))}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-gray-600 disabled:hover:border-gray-300"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-gray-600 disabled:hover:border-gray-300"
             >
               <Plus className="w-3.5 h-3.5" /> Tambah Kronologi {form.kronologi.length >= 20 && <span className="text-gray-400">(maks 20)</span>}
             </button>
@@ -2166,7 +2164,7 @@ function TambahPelanggaranInner() {
                 onChange={(e) => setForm((prev) => ({ ...prev, motif: e.target.value }))}
                 placeholder="Jika sudah diketahui, tulis motif atau alasan pelanggaran (contoh: perselisihan, candaan, diskriminasi, senioritas, balas dendam, dll.). Jika belum, mohon tulis “Belum diketahui”."
                 rows={4}
-                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
+                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
               />
             </div>
           </div>
@@ -2180,7 +2178,7 @@ function TambahPelanggaranInner() {
                 <FieldLabel required>Pelapor / Sumber Laporan</FieldLabel>
                 <div
                   data-error-wajib={err("pelapor") ? "1" : undefined}
-                  className={`relative mt-1 border rounded-lg overflow-hidden focus-within:ring-2 ${
+                  className={`relative mt-1 border rounded-[4px] overflow-hidden focus-within:ring-2 ${
                     err("pelapor")
                       ? "border-red-400 focus-within:ring-red-400"
                       : "border-gray-300 focus-within:ring-blue-500 focus-within:border-blue-400"
@@ -2230,7 +2228,7 @@ function TambahPelanggaranInner() {
                   value={form.kontakPelapor}
                   onChange={(e) => setForm((prev) => ({ ...prev, kontakPelapor: e.target.value }))}
                   placeholder="Nama / no. HP untuk konfirmasi"
-                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 />
               </div>
             </div>
@@ -2325,7 +2323,7 @@ function TambahPelanggaranInner() {
                     <button
                       type="button"
                       onClick={() => { setPicManualMode(false); setPicInput("") }}
-                      className="shrink-0 p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600"
+                      className="shrink-0 p-1.5 hover:bg-gray-100 rounded-[4px] text-gray-400 hover:text-gray-600"
                     >
                       <ArrowLeft className="w-4 h-4" />
                     </button>
@@ -2336,13 +2334,13 @@ function TambahPelanggaranInner() {
                       onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (picInput.trim()) selectPic(picInput.trim()) } }}
                       placeholder="Ketik nama penanggung jawab"
                       autoFocus
-                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     />
                     <button
                       type="button"
                       onClick={() => { if (picInput.trim()) selectPic(picInput.trim()) }}
                       disabled={!picInput.trim()}
-                      className="shrink-0 h-9 px-3 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
+                      className="shrink-0 h-9 px-3 text-sm font-medium text-white bg-blue-500 rounded-[4px] hover:bg-blue-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
                     >
                       Konfirmasi
                     </button>
@@ -2358,7 +2356,7 @@ function TambahPelanggaranInner() {
                       onBlur={() => setTimeout(() => setShowPicDropdown(false), 200)}
                       onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (picInput.trim()) selectPic(picInput.trim()) } }}
                       placeholder="Masukkan nama anggota Kelompok Kerja"
-                      className={`w-full h-9 px-3 text-sm border rounded-lg focus:outline-none focus:ring-2 bg-white ${
+                      className={`w-full h-9 px-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 bg-white ${
                         err("pic") ? "border-red-400 focus:ring-red-400" : "border-gray-300 focus:ring-blue-500"
                       }`}
                     />
@@ -2370,7 +2368,7 @@ function TambahPelanggaranInner() {
                             type="button"
                             onMouseDown={(e) => e.preventDefault()}
                             onClick={() => selectPic(name)}
-                            className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 text-gray-700"
+                            className="w-full text-left px-3 py-2 text-sm hover:bg-[#F9F9F9] text-gray-700"
                           >
                             {name}
                           </button>
@@ -2379,7 +2377,7 @@ function TambahPelanggaranInner() {
                           type="button"
                           onMouseDown={(e) => e.preventDefault()}
                           onClick={() => { setPicManualMode(true); setShowPicDropdown(false) }}
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 text-gray-500 italic border-t border-gray-100"
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-[#F9F9F9] text-gray-500 italic border-t border-gray-100"
                         >
                           Lainnya..
                         </button>
@@ -2388,7 +2386,7 @@ function TambahPelanggaranInner() {
                   </div>
                 )
               ) : (
-                <div className="flex items-center gap-2 py-1.5 px-2 mt-1 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-2 py-1.5 px-2 mt-1 bg-[#F9F9F9] rounded-[4px]">
                   <Users className="w-3.5 h-3.5 text-gray-400" />
                   <span className="text-sm font-medium text-gray-700 flex-1">{form.pic}</span>
                   <button type="button" onClick={clearPic} className="p-0.5 hover:bg-gray-200 rounded-full">
@@ -2412,7 +2410,7 @@ function TambahPelanggaranInner() {
                   onChange={(e) => setForm((prev) => ({ ...prev, rencanaProgram: e.target.value }))}
                   placeholder="Contoh: sosialisasi pencegahan perundungan tiap semester, pembentukan tim satgas sekolah, pelatihan guru BK, atau penyusunan SOP penanganan kasus."
                   rows={3}
-                  className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
+                  className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
                 />
               </div>
               <hr className="border-gray-300 -mx-5 my-2" />
@@ -2428,7 +2426,7 @@ function TambahPelanggaranInner() {
                 onChange={(e) => setForm((prev) => ({ ...prev, rencanaProgram: e.target.value }))}
                 placeholder="Contoh: sosialisasi pencegahan perundungan tiap semester, pembentukan tim satgas sekolah, pelatihan guru BK, atau penyusunan SOP penanganan kasus."
                 rows={3}
-                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
+                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
               />
             </div>
 
@@ -2458,7 +2456,7 @@ function TambahPelanggaranInner() {
                 onChange={(e) => setForm((prev) => ({ ...prev, tindakLanjut: e.target.value }))}
                 placeholder="Jelaskan tindakan penanganan awal yang sudah dilakukan. Contoh: korban telah diamankan, orang tua telah dihubungi, kepala sekolah telah diinformasikan, atau telah dilakukan mediasi."
                 rows={3}
-                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
+                className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
               />
             </div>
 
@@ -2470,7 +2468,7 @@ function TambahPelanggaranInner() {
                 value={form.dokumentasi ?? ""}
                 onChange={(e) => setForm((prev) => ({ ...prev, dokumentasi: e.target.value }))}
                 placeholder="https://drive.google.com/..."
-                className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
           </div>
@@ -2481,13 +2479,13 @@ function TambahPelanggaranInner() {
       <div className="max-w-2xl mx-auto px-4 pb-8 flex gap-3">
         <a
           href={pelanggaranBackHref(role)}
-          className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition text-center"
+          className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition text-center"
         >
           Batal
         </a>
         <button
           onClick={handleSubmit}
-          className="flex-1 py-2.5 rounded-lg font-medium text-sm transition bg-blue-600 text-white hover:bg-blue-700"
+          className="flex-1 py-2.5 rounded-[4px] font-medium text-sm transition bg-blue-600 text-white hover:bg-blue-700"
         >
           {editId ? "Simpan Perubahan" : "Kirim Laporan"}
         </button>

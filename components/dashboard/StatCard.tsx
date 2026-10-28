@@ -22,7 +22,7 @@ export function StatCard({
   const resolvedTextColor = textColor ?? color ?? "text-gray-900"
 
   return (
-    <div className={`bg-white rounded-xl border border-gray-100 border-l-4 ${borderColor} px-4 py-3.5 shadow-sm flex items-center justify-between gap-3`}>
+    <div className={`bg-white rounded-[4px] border border-gray-100 border-l-4 ${borderColor} px-4 py-3.5 shadow-sm flex items-center justify-between gap-3`}>
       <div>
         <p suppressHydrationWarning className={`text-2xl font-bold leading-none ${resolvedTextColor}`}>
           {count}

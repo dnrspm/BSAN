@@ -105,35 +105,35 @@ function resolveJenisMenunggu(item: Pick<SumberRujukan, "jenisMenunggu" | "logTe
 function StatusBadge({ status, jenisMenunggu, jenisButuhPerbaikan }: { status: StatusRujukan; jenisMenunggu?: "pengajuan" | "perbaikan" | "perbaikan_laporan" | "penonaktifan" | "pemulihan"; jenisButuhPerbaikan?: "ditolak" | "perbaikan" }) {
   if (status === "terverifikasi") {
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-        <CheckCircle className="w-3 h-3" /> Terverifikasi
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-emerald-300 text-emerald-950">
+        Terverifikasi
       </span>
     )
   }
   if (status === "menunggu") {
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
-        <Clock className="w-3 h-3" /> Dalam Proses Verifikasi
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-amber-200 text-amber-950">
+        Dalam Proses Verifikasi
       </span>
     )
   }
   if (status === "butuh_perbaikan") {
     if (jenisButuhPerbaikan === "perbaikan") {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">
-          <XCircle className="w-3 h-3" /> Perlu Perbaikan
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-amber-200 text-amber-950">
+          Perlu Perbaikan
         </span>
       )
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-        <XCircle className="w-3 h-3" /> Ditolak
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-rose-100 text-rose-950">
+        Ditolak
       </span>
     )
   }
   return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
-      <XCircle className="w-3 h-3" /> Nonaktif
+    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-[#efefef] text-[#2f3031]">
+      Nonaktif
     </span>
   )
 }
@@ -149,9 +149,9 @@ function ReadOnlyDetailPanel({ item, onClose, onEdit, onReport, onUsulNonaktif, 
     <>
       <div className="fixed inset-0 z-40 bg-black/40" onClick={onClose} />
       <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white shadow-2xl flex flex-col">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-[#F9F9F9] flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className={`w-9 h-9 rounded-full ${kategoriCfg.bg} ${kategoriCfg.color} flex items-center justify-center flex-shrink-0`}>
+            <div className={`w-9 h-9 ${kategoriCfg.color} flex items-center justify-center flex-shrink-0`}>
               {kategoriCfg.icon}
             </div>
             <div className="min-w-0">
@@ -159,7 +159,7 @@ function ReadOnlyDetailPanel({ item, onClose, onEdit, onReport, onUsulNonaktif, 
               <StatusBadge status={item.status} jenisMenunggu={resolveJenisMenunggu(item)} jenisButuhPerbaikan={item.jenisButuhPerbaikan} />
             </div>
           </div>
-          <button type="button" onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-500 transition flex-shrink-0">
+          <button type="button" onClick={onClose} className="p-1.5 rounded-[4px] hover:bg-gray-200 text-gray-500 transition flex-shrink-0">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -167,7 +167,7 @@ function ReadOnlyDetailPanel({ item, onClose, onEdit, onReport, onUsulNonaktif, 
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
           {/* Catatan banner */}
           {item.catatanPerbaikan && (
-            <div className="border border-yellow-200 rounded-lg p-4 bg-yellow-50">
+            <div className="border border-yellow-200 rounded-[4px] p-4 bg-yellow-50">
               <div className="flex items-center gap-1.5 mb-1">
                 <MessageCircle className="w-3.5 h-3.5 text-yellow-600 flex-shrink-0" />
                 <p className="text-xs font-semibold text-yellow-700">
@@ -180,7 +180,7 @@ function ReadOnlyDetailPanel({ item, onClose, onEdit, onReport, onUsulNonaktif, 
 
           {/* Kategori */}
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-full ${kategoriCfg.bg} ${kategoriCfg.color} flex items-center justify-center flex-shrink-0`}>
+            <div className={`w-10 h-10 ${kategoriCfg.color} flex items-center justify-center flex-shrink-0`}>
               {kategoriCfg.icon}
             </div>
             <div>
@@ -192,7 +192,7 @@ function ReadOnlyDetailPanel({ item, onClose, onEdit, onReport, onUsulNonaktif, 
           {/* Penyedia */}
           {penyediaCfg && (
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-full ${penyediaCfg.bg} ${penyediaCfg.color} flex items-center justify-center flex-shrink-0`}>
+              <div className={`w-10 h-10 ${penyediaCfg.color} flex items-center justify-center flex-shrink-0`}>
                 {penyediaCfg.icon}
               </div>
               <div>
@@ -272,7 +272,7 @@ function ReadOnlyDetailPanel({ item, onClose, onEdit, onReport, onUsulNonaktif, 
             canEdit && item.usulanDari === "sekolah" && onPulihkan ? (
               <button
                 onClick={() => onPulihkan(item)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-teal-700 bg-teal-50 hover:bg-teal-100 transition"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-[4px] text-sm font-medium text-teal-700 bg-teal-50 hover:bg-teal-100 transition"
               >
                 <RotateCcw className="w-4 h-4" /> Pulihkan
               </button>
@@ -285,7 +285,7 @@ function ReadOnlyDetailPanel({ item, onClose, onEdit, onReport, onUsulNonaktif, 
               {canEdit && onEdit && (
                 <button
                   onClick={() => onEdit(item.id)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-[4px] text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition"
                 >
                   <Pencil className="w-4 h-4" /> Perbaiki Sumber Dukungan
                 </button>
@@ -293,7 +293,7 @@ function ReadOnlyDetailPanel({ item, onClose, onEdit, onReport, onUsulNonaktif, 
               {onDelete && (
                 <button
                   onClick={() => onDelete(item.id)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-[4px] text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition"
                 >
                   <Trash2 className="w-4 h-4" /> Hapus
                 </button>
@@ -305,7 +305,7 @@ function ReadOnlyDetailPanel({ item, onClose, onEdit, onReport, onUsulNonaktif, 
               {canEdit && onEdit && (
                 <button
                   onClick={() => onEdit(item.id)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-[4px] text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition"
                 >
                   <Pencil className="w-4 h-4" /> Edit
                 </button>
@@ -313,7 +313,7 @@ function ReadOnlyDetailPanel({ item, onClose, onEdit, onReport, onUsulNonaktif, 
               {canEdit && item.usulanDari === "sekolah" && item.status !== "menunggu" && onUsulNonaktif && (
                 <button
                   onClick={() => onUsulNonaktif(item)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-[4px] text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition"
                 >
                   <XCircle className="w-4 h-4" /> Usulkan Penonaktifan
                 </button>
@@ -321,7 +321,7 @@ function ReadOnlyDetailPanel({ item, onClose, onEdit, onReport, onUsulNonaktif, 
               {!canEdit && onReport && (
                 <button
                   onClick={() => onReport(item)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-[4px] text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition"
                 >
                   <Flag className="w-4 h-4" /> Laporkan Sumber Dukungan
                 </button>
@@ -742,7 +742,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
         </div>
         <button
           onClick={() => router.push(`/sumber-rujukan/form?provinsi=${encodeURIComponent(formProvinsi)}&kabupaten=${encodeURIComponent(formKabupaten)}`)}
-          className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition flex-shrink-0"
+          className="flex items-center gap-1.5 h-9 px-4 rounded-[4px] text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition flex-shrink-0"
         >
           <Plus className="w-4 h-4" /> Usul Sumber Dukungan
         </button>
@@ -766,7 +766,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
           )}
           <button
             onClick={() => setShowWilayahModal(true)}
-            className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 font-medium text-sm px-2.5 py-1 rounded-md transition"
+            className="bg-white hover:bg-[#F9F9F9] text-gray-700 border border-gray-300 font-medium text-sm px-2.5 py-1 rounded-[4px] transition"
           >
             Ganti
           </button>
@@ -788,128 +788,128 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
           {stats.byKategori.filter(k => k.count > 0).map((k) => {
             const cfg = KATEGORI_CONFIG[k.label]
             return (
-              <div key={k.label} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-full ${cfg.bg} ${cfg.color} flex items-center justify-center flex-shrink-0`}>
-                  {cfg.icon}
+              <div key={k.label} className="bg-white rounded-[4px] border border-gray-200 p-4 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <span className={`flex shrink-0 ${cfg.color} [&_svg]:w-6 [&_svg]:h-6`}>{cfg.icon}</span>
+                  <p className="text-xl font-bold leading-none text-gray-900">{k.count}</p>
                 </div>
-                <div>
-                  <p className="text-xl font-bold text-gray-900">{k.count}</p>
-                  <p className="text-xs text-gray-500 leading-tight">{k.label}</p>
-                </div>
+                <p className="text-xs text-gray-500 leading-tight mt-1.5">{k.label}</p>
               </div>
             )
           })}
         </div>
       )}
 
-      {/* My View Tabs */}
-      <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1 w-fit">
-        {([
-          { value: "semua", label: "Semua" },
-          { value: "usulan_saya", label: "Usulan Saya" },
-          { value: "dilaporkan", label: "Pernah Dilaporkan" },
-        ] as { value: MyViewFilter; label: string }[]).map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => setMyView(tab.value)}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-              myView === tab.value
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Ketik nama instansi atau kota"
-          className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
-        />
-      </div>
-
-      {/* Sort + Filter + Ekspor CSV */}
-      <div className="flex flex-row items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-2 bg-white">
-          <ArrowUpDown className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-          <select
-            value={sortMode}
-            onChange={(e) => setSortMode(e.target.value as SortMode)}
-            className="text-sm focus:outline-none bg-transparent text-gray-700"
-          >
-            <option value="terbaru">Terbaru</option>
-            <option value="nama_az">Nama A–Z</option>
-          </select>
+      <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm overflow-hidden">
+        <div className="px-5 pt-5 pb-4 space-y-4">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="text-base font-semibold text-gray-900">Daftar Sumber Dukungan</h2>
+            <p className="text-sm text-gray-500 tabular-nums">{totalRows.toLocaleString("id-ID")} sumber dukungan</p>
+          </div>
+          <div className="flex items-center gap-1 bg-[#F9F9F9] rounded-[4px] p-1 w-fit">
+            {([
+              { value: "semua", label: "Semua" },
+              { value: "usulan_saya", label: "Usulan Saya" },
+              { value: "dilaporkan", label: "Pernah Dilaporkan" },
+            ] as { value: MyViewFilter; label: string }[]).map((tab) => (
+              <button
+                key={tab.value}
+                onClick={() => setMyView(tab.value)}
+                className={`px-3 py-1.5 rounded-[4px] text-sm font-medium transition-all ${
+                  myView === tab.value
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))_auto]">
+            <div className="relative sm:col-span-2 lg:col-span-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Cari nama instansi atau kota"
+                className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              />
+            </div>
+            <div className="flex h-10 items-center gap-1.5 rounded-[4px] border border-gray-300 px-3 bg-white">
+              <ArrowUpDown className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+              <select
+                value={sortMode}
+                onChange={(e) => setSortMode(e.target.value as SortMode)}
+                aria-label="Urutkan"
+                className="w-full text-sm focus:outline-none bg-transparent text-gray-700"
+              >
+                <option value="terbaru">Terbaru</option>
+                <option value="nama_az">Nama A–Z</option>
+              </select>
+            </div>
+            <select
+              value={filterKategori}
+              onChange={(e) => setFilterKategori(e.target.value as KategoriDukungan | "semua")}
+              aria-label="Filter kategori"
+              className="h-10 w-full px-3 text-sm border border-gray-300 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            >
+              <option value="semua">Semua Kategori</option>
+              {(Object.keys(KATEGORI_CONFIG) as KategoriDukungan[]).map((k) => (
+                <option key={k} value={k}>{k}</option>
+              ))}
+            </select>
+            <select
+              value={filterPenyedia}
+              onChange={(e) => setFilterPenyedia(e.target.value as KategoriPenyedia | "semua")}
+              aria-label="Filter penyedia"
+              className="h-10 w-full px-3 text-sm border border-gray-300 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            >
+              <option value="semua">Semua Penyedia</option>
+              {(["Pemerintah Pusat", "Pemerintah Daerah", "Swasta", "OMS", "Lainnya"] as KategoriPenyedia[]).map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={downloadCsv}
+              disabled={filtered.length === 0}
+              className="flex items-center justify-center gap-1.5 h-10 px-4 rounded-[4px] text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-[#F9F9F9] transition disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+            >
+              <Download className="w-4 h-4" /> Ekspor CSV
+            </button>
+          </div>
         </div>
-        <div className="w-px h-6 bg-gray-200" />
-        <select
-          value={filterKategori}
-          onChange={(e) => setFilterKategori(e.target.value as KategoriDukungan | "semua")}
-          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-        >
-          <option value="semua">Semua Kategori</option>
-          {(Object.keys(KATEGORI_CONFIG) as KategoriDukungan[]).map((k) => (
-            <option key={k} value={k}>{k}</option>
-          ))}
-        </select>
-        <select
-          value={filterPenyedia}
-          onChange={(e) => setFilterPenyedia(e.target.value as KategoriPenyedia | "semua")}
-          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-        >
-          <option value="semua">Semua Penyedia</option>
-          {(["Pemerintah Pusat", "Pemerintah Daerah", "Swasta", "OMS", "Lainnya"] as KategoriPenyedia[]).map((p) => (
-            <option key={p} value={p}>{p}</option>
-          ))}
-        </select>
-        <div className="w-px h-6 bg-gray-200" />
-        <button
-          type="button"
-          onClick={downloadCsv}
-          disabled={filtered.length === 0}
-          className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <Download className="w-4 h-4" /> Ekspor CSV
-        </button>
-      </div>
-
-      {/* Table */}
-      {totalRows === 0 ? (
-        <div className="bg-white rounded-xl border border-dashed border-gray-300 p-10 text-center">
-          <p className="font-semibold text-gray-700 text-sm">Tidak ada sumber dukungan</p>
-          <p className="text-gray-500 text-xs mt-1">Coba ubah filter atau kata kunci pencarian.</p>
-        </div>
-      ) : (
-        <>
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        {totalRows === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-1 text-center border-t border-gray-200">
+            <p className="font-semibold text-gray-700 text-sm">Tidak ada sumber dukungan</p>
+            <p className="text-gray-500 text-sm">Coba ubah filter atau kata kunci pencarian.</p>
+          </div>
+        ) : (
+          <>
+            <div className="border-t border-gray-200">
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[640px]">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200 text-left">
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Nama Instansi</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Wilayah</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Kategori</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">Aksi</th>
+                  <tr className="bg-[#F1F1F1] border-b border-gray-200 text-left">
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500">Nama Instansi</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500">Wilayah</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500">Kategori</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500">Status</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {paginatedData.map((item) => {
                     const kategoriCfg = KATEGORI_CONFIG[item.kategoriBentukDukungan]
                     return (
-                      <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                      <tr key={item.id} className="hover:bg-[#F9F9F9] transition-colors">
                         <td className="px-4 py-3.5">
                           <div className="flex items-center gap-1.5">
                             <p className="font-semibold text-gray-900 whitespace-nowrap">{item.namaInstansi}</p>
                             {item.usulanDari === "sekolah" && (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-700 whitespace-nowrap flex-shrink-0">
-                                <Flag className="w-2.5 h-2.5" /> Usulan Saya
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[13px] font-semibold bg-emerald-300 text-emerald-950 whitespace-nowrap flex-shrink-0">
+                                Usulan Saya
                               </span>
                             )}
                           </div>
@@ -924,7 +924,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                           {item.isNasional || item.provinsi === "Seluruh Indonesia" ? "Nasional" : `${getWilayahType(item.kabupatenKota)} ${item.kabupatenKota}`}
                         </td>
                         <td className="px-4 py-3.5">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 whitespace-nowrap">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[13px] font-medium bg-[#efefef] text-[#2f3031] whitespace-nowrap">
                             {kategoriCfg.label}
                           </span>
                         </td>
@@ -934,7 +934,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                         <td className="px-4 py-3.5 text-right">
                           <a
                             href={`/sumber-rujukan/form?view=${item.id}`}
-                            className="text-blue-600 hover:underline text-sm"
+                            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                           >
                             Cek Detail
                           </a>
@@ -945,6 +945,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                 </tbody>
               </table>
             </div>
+            </div>
             <TablePagination
               total={totalRows}
               halaman={currentPage}
@@ -953,9 +954,10 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
               onPerHalaman={(n) => { setRowsPerPage(n); setCurrentPage(1) }}
               opsiPerHalaman={[10, 20, 50]}
             />
-          </div>
-        </>
-      )}
+
+          </>
+        )}
+      </div>
 
       {/* wilayah Filter Modal */}
       {showWilayahModal && (
@@ -964,7 +966,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col">
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
               <h3 className="text-base font-bold text-gray-900">Filter Wilayah</h3>
-              <button onClick={() => setShowWilayahModal(false)} className="p-1 hover:bg-gray-100 rounded-lg">
+              <button onClick={() => setShowWilayahModal(false)} className="p-1 hover:bg-gray-100 rounded-[4px]">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
@@ -974,13 +976,13 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                   <div className="p-2">
                     <button
                       onClick={() => { setFilterWilayah({ province: formProvinsi, kabupaten: formKabupaten }); setShowWilayahModal(false) }}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium ${filterWilayah?.province === formProvinsi && filterWilayah?.kabupaten === formKabupaten ? "bg-emerald-50 text-emerald-700" : "hover:bg-gray-50"}`}
+                      className={`w-full text-left px-3 py-2 rounded-[4px] text-sm font-medium ${filterWilayah?.province === formProvinsi && filterWilayah?.kabupaten === formKabupaten ? "bg-emerald-50 text-emerald-700" : "hover:bg-[#F9F9F9]"}`}
                     >
                       Wilayah Saya
                     </button>
                     <button
                       onClick={() => { setFilterWilayah(null); setShowWilayahModal(false) }}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium ${!filterWilayah ? "bg-emerald-50 text-emerald-700" : "hover:bg-gray-50"}`}
+                      className={`w-full text-left px-3 py-2 rounded-[4px] text-sm font-medium ${!filterWilayah ? "bg-emerald-50 text-emerald-700" : "hover:bg-[#F9F9F9]"}`}
                     >
                       Semua Provinsi
                     </button>
@@ -991,8 +993,8 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                         <button
                           key={province}
                           onClick={() => setFilterWilayah({ province, kabupaten: "" })}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between ${
-                            isSelected ? "bg-emerald-50 text-emerald-700 font-medium" : "hover:bg-gray-50"
+                          className={`w-full text-left px-3 py-2 rounded-[4px] text-sm flex items-center justify-between ${
+                            isSelected ? "bg-emerald-50 text-emerald-700 font-medium" : "hover:bg-[#F9F9F9]"
                           }`}
                         >
                           <span className="truncate">{province}</span>
@@ -1014,7 +1016,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                           <>
                             <button
                               onClick={() => { setFilterWilayah({ province: filterWilayah.province, kabupaten: "" }); setShowWilayahModal(false) }}
-                              className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
+                              className={`w-full text-left px-3 py-2 rounded-[4px] text-sm ${
                                 !filterWilayah.kabupaten ? "bg-emerald-50 text-emerald-700 font-medium" : "hover:bg-gray-100"
                               }`}
                             >
@@ -1024,7 +1026,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                               <button
                                 key={kab}
                                 onClick={() => { setFilterWilayah({ province: filterWilayah.province, kabupaten: kab }); setShowWilayahModal(false) }}
-                                className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
+                                className={`w-full text-left px-3 py-2 rounded-[4px] text-sm ${
                                   filterWilayah?.kabupaten === kab ? "bg-emerald-50 text-emerald-700 font-medium" : "hover:bg-gray-100"
                                 }`}
                               >
@@ -1044,13 +1046,13 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button
                 onClick={() => setShowWilayahModal(false)}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 onClick={() => setShowWilayahModal(false)}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition"
               >
                 Terapkan
               </button>
@@ -1078,7 +1080,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
           <div className="fixed inset-0 bg-black/50" onClick={() => setShowReportModal(false)} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+              <div className="w-10 h-10 flex items-center justify-center">
                 <Flag className="w-5 h-5 text-red-600" />
               </div>
               <div>
@@ -1098,7 +1100,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                     { value: "perbaikan", label: "Perbaikan data", desc: "Data yang tercantum tidak akurat atau perlu diperbarui" },
                     { value: "penonaktifan", label: "Usulan Penonaktifan", desc: "Layanan ini sudah tidak aktif atau tidak dapat dihubungi" },
                   ] as { value: "perbaikan" | "penonaktifan"; label: string; desc: string }[]).map((opt) => (
-                    <label key={opt.value} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${reportJenis === opt.value ? "border-red-400 bg-red-50" : "border-gray-200 hover:bg-gray-50"}`}>
+                    <label key={opt.value} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${reportJenis === opt.value ? "border-red-400 bg-red-50" : "border-gray-200 hover:bg-[#F9F9F9]"}`}>
                       <input
                         type="radio"
                         name="reportJenis"
@@ -1121,7 +1123,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                   value={reportAlasan}
                   onChange={(e) => setReportAlasan(e.target.value)}
                   placeholder={reportJenis === "penonaktifan" ? "Jelaskan alasan penonaktifan..." : "Jelaskan data yang perlu diperbaiki..."}
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                   rows={3}
                 />
               </div>
@@ -1129,14 +1131,14 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button
                 onClick={() => setShowReportModal(false)}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 onClick={handleSubmitReport}
                 disabled={!reportAlasan.trim() || !reportJenis}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Kirim Laporan
               </button>
@@ -1151,7 +1153,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
           <div className="fixed inset-0 bg-black/50" onClick={() => setShowUsulNonaktifModal(false)} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+              <div className="w-10 h-10 flex items-center justify-center">
                 <XCircle className="w-5 h-5 text-red-600" />
               </div>
               <div>
@@ -1170,7 +1172,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                   value={usulNonaktifAlasan}
                   onChange={(e) => setUsulNonaktifAlasan(e.target.value)}
                   placeholder="Jelaskan alasan mengapa sumber dukungan ini perlu dinonaktifkan..."
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                   rows={3}
                 />
               </div>
@@ -1178,14 +1180,14 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button
                 onClick={() => setShowUsulNonaktifModal(false)}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 onClick={handleSubmitUsulNonaktif}
                 disabled={!usulNonaktifAlasan.trim()}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Kirim Usulan
               </button>
@@ -1200,7 +1202,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
           <div className="fixed inset-0 bg-black/50" onClick={() => setShowPulihkanModal(false)} />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200">
-              <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center">
+              <div className="w-10 h-10 flex items-center justify-center">
                 <RotateCcw className="w-5 h-5 text-teal-600" />
               </div>
               <div>
@@ -1219,7 +1221,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                   value={pulihkanAlasan}
                   onChange={(e) => setPulihkanAlasan(e.target.value)}
                   placeholder="Jelaskan alasan mengapa sumber dukungan ini perlu dipulihkan..."
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
                   rows={3}
                 />
               </div>
@@ -1227,14 +1229,14 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button
                 onClick={() => setShowPulihkanModal(false)}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 onClick={handleSubmitPulihkan}
                 disabled={!pulihkanAlasan.trim()}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Kirim Usulan
               </button>
@@ -1250,14 +1252,14 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             {submitted ? (
               <div className="p-8 text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-8 h-8 text-green-600" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-2">Usulan Berhasil Dikirim</h3>
                 <p className="text-sm text-gray-600 mb-6">Usulan sumber dukungan Anda akan diverifikasi oleh admin.</p>
                 <button
                   onClick={handleCloseForm}
-                  className="px-6 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition"
+                  className="px-6 py-2 rounded-[4px] text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition"
                 >
                   Tutup
                 </button>
@@ -1266,7 +1268,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
               <div className="flex flex-col">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 sticky top-0 bg-white z-10">
                   <h3 className="text-base font-bold text-gray-900">Usul Sumber Dukungan</h3>
-                  <button onClick={handleCloseForm} className="p-1.5 hover:bg-gray-100 rounded-lg">
+                  <button onClick={handleCloseForm} className="p-1.5 hover:bg-gray-100 rounded-[4px]">
                     <X className="w-5 h-5 text-gray-500" />
                   </button>
                 </div>
@@ -1279,7 +1281,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                       onChange={(e) => setFormNama(e.target.value)}
                       placeholder="Nama instansi atau layanan"
                       required
-                      className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1288,7 +1290,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                       <select
                         value={formKategori}
                         onChange={(e) => setFormKategori(e.target.value as KategoriDukungan)}
-                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
                       >
                         {(Object.keys(KATEGORI_CONFIG) as KategoriDukungan[]).map((k) => (
                           <option key={k} value={k}>{k}</option>
@@ -1300,7 +1302,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                       <select
                         value={formPenyedia}
                         onChange={(e) => setFormPenyedia(e.target.value as KategoriPenyedia)}
-                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
                       >
                         {(["Pemerintah Pusat", "Pemerintah Daerah", "Swasta", "OMS", "Lainnya"] as KategoriPenyedia[]).map((p) => (
                           <option key={p} value={p}>{p}</option>
@@ -1310,7 +1312,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-gray-600">Wilayah Anda</label>
-                    <div className="mt-1 px-3 py-2 text-sm bg-gray-100 rounded-lg text-gray-600">
+                    <div className="mt-1 px-3 py-2 text-sm bg-[#F9F9F9] rounded-[4px] text-gray-600">
                       {formProvinsi}{formKabupaten ? ` - ${formKabupaten}` : ""}
                     </div>
                   </div>
@@ -1321,7 +1323,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                       value={formNamaJalan}
                       onChange={(e) => setFormNamaJalan(e.target.value)}
                       placeholder="Nama jalan, nomor,(rt/rw), dll"
-                      className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1332,7 +1334,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                         value={formKecamatan}
                         onChange={(e) => setFormKecamatan(e.target.value)}
                         placeholder="Nama kecamatan"
-                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
                     <div>
@@ -1342,7 +1344,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                         value={formKelurahan}
                         onChange={(e) => setFormKelurahan(e.target.value)}
                         placeholder="Nama kelurahan/desa"
-                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
                   </div>
@@ -1354,7 +1356,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                         value={formNamaJalan}
                         onChange={(e) => setFormNamaJalan(e.target.value)}
                         placeholder="Nama jalan"
-                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
                     <div>
@@ -1364,7 +1366,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                         value={formNomorJalan}
                         onChange={(e) => setFormNomorJalan(e.target.value)}
                         placeholder="Nomor"
-                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
                   </div>
@@ -1376,10 +1378,10 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                         value={formKodePos}
                         onChange={(e) => setFormKodePos(e.target.value)}
                         placeholder="Kode pos"
-                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
-                    <div className="rounded-lg bg-blue-50 border border-blue-100 px-3 py-2.5 space-y-1">
+                    <div className="rounded-[4px] bg-blue-50 border border-blue-100 px-3 py-2.5 space-y-1">
                       <p className="text-xs text-blue-700">
                         <span className="font-semibold">Nomor Call Center</span> bisa lebih dari satu.
                       </p>
@@ -1401,12 +1403,12 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                           value={k.nomor}
                           onChange={(e) => updateKontak(i, "nomor", e.target.value)}
                           placeholder="08xxxxxxxxxx"
-                          className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         />
                         <select
                           value={k.tipe}
                           onChange={(e) => updateKontak(i, "tipe", e.target.value)}
-                          className="w-36 px-2 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                          className="w-36 px-2 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
                         >
                           <option value="call_center">Call Center</option>
                           <option value="nomor_pribadi">Nomor Pribadi</option>
@@ -1426,14 +1428,14 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                     <button
                       type="button"
                       onClick={handleCloseForm}
-                      className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                      className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
                     >
                       Batal
                     </button>
                     <button
                       type="submit"
                       disabled={sending}
-                      className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 transition"
+                      className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 transition"
                     >
                       {sending ? "Mengirim..." : "Kirim Usulan"}
                     </button>

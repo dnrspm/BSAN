@@ -64,7 +64,7 @@ export function WilayahFilter({
           <button
             type="button"
             onClick={bukaModal}
-            className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 font-medium text-sm px-2.5 py-1 rounded-md transition"
+            className="bg-white hover:bg-[#F9F9F9] text-gray-700 border border-gray-300 font-medium text-sm px-2.5 py-1 rounded-[4px] transition"
           >
             Ganti
           </button>
@@ -73,7 +73,7 @@ export function WilayahFilter({
       <button
         type="button"
         onClick={bukaModal}
-        className="w-full h-10 px-3 flex items-center gap-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+        className="w-full h-10 px-3 flex items-center gap-2 text-sm border border-gray-300 rounded-[4px] bg-white text-gray-700 hover:bg-[#F9F9F9] focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
       >
         <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
         <span className="flex-1 truncate text-left">{terbatas ? nilai.kabKota ?? "Semua kab/kota" : labelWilayah(nilai)}</span>
@@ -87,7 +87,7 @@ export function WilayahFilter({
           <div className={cn("relative bg-white rounded-xl shadow-2xl w-full max-h-[80vh] flex flex-col", terbatas ? "max-w-md" : "max-w-2xl")}>
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
               <h3 className="text-base font-bold text-gray-900">Filter Wilayah</h3>
-              <button type="button" onClick={() => setBuka(false)} className="p-1 hover:bg-gray-100 rounded-lg" aria-label="Tutup">
+              <button type="button" onClick={() => setBuka(false)} className="p-1 hover:bg-gray-100 rounded-[4px]" aria-label="Tutup">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
@@ -98,7 +98,7 @@ export function WilayahFilter({
                 <button
                   type="button"
                   onClick={() => setDraf({ provinsi: provinsiTetap, kabKota: null })}
-                  className={cn(BARIS, "font-medium", draf.kabKota === null ? AKTIF : "hover:bg-gray-50 text-gray-700")}
+                  className={cn(BARIS, "font-medium", draf.kabKota === null ? AKTIF : "hover:bg-[#F9F9F9] text-gray-700")}
                 >
                   Semua Kabupaten/Kota
                 </button>
@@ -108,7 +108,7 @@ export function WilayahFilter({
                     key={k}
                     type="button"
                     onClick={() => setDraf({ provinsi: provinsiTetap, kabKota: k })}
-                    className={cn(BARIS, draf.kabKota === k ? AKTIF : "hover:bg-gray-50 text-gray-700")}
+                    className={cn(BARIS, draf.kabKota === k ? AKTIF : "hover:bg-[#F9F9F9] text-gray-700")}
                   >
                     {k}
                   </button>
@@ -120,7 +120,7 @@ export function WilayahFilter({
                 <button
                   type="button"
                   onClick={() => setDraf(SELURUH_INDONESIA)}
-                  className={cn(BARIS, "font-medium", draf.provinsi === null ? AKTIF : "hover:bg-gray-50 text-gray-700")}
+                  className={cn(BARIS, "font-medium", draf.provinsi === null ? AKTIF : "hover:bg-[#F9F9F9] text-gray-700")}
                 >
                   Seluruh Indonesia
                 </button>
@@ -130,7 +130,7 @@ export function WilayahFilter({
                     key={p}
                     type="button"
                     onClick={() => setDraf({ provinsi: p, kabKota: null })}
-                    className={cn(BARIS, "flex items-center justify-between", draf.provinsi === p ? AKTIF : "hover:bg-gray-50 text-gray-700")}
+                    className={cn(BARIS, "flex items-center justify-between", draf.provinsi === p ? AKTIF : "hover:bg-[#F9F9F9] text-gray-700")}
                   >
                     <span className="truncate">{p}</span>
                     {draf.provinsi === p && <ChevronRight className="w-3.5 h-3.5 shrink-0 text-blue-500" />}
@@ -138,7 +138,7 @@ export function WilayahFilter({
                 ))}
               </div>
 
-              <div className="w-1/2 overflow-y-auto bg-gray-50/40 p-2 space-y-0.5">
+              <div className="w-1/2 overflow-y-auto bg-[#F9F9F9] p-2 space-y-0.5">
                 {draf.provinsi ? (
                   <>
                     <p className="px-3 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wide">{draf.provinsi}</p>
@@ -169,10 +169,10 @@ export function WilayahFilter({
             )}
 
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
-              <button type="button" onClick={() => setBuka(false)} className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition">
+              <button type="button" onClick={() => setBuka(false)} className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition">
                 Batal
               </button>
-              <button type="button" onClick={terapkan} className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition">
+              <button type="button" onClick={terapkan} className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition">
                 Terapkan
               </button>
             </div>

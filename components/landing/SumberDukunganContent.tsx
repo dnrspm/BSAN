@@ -128,7 +128,7 @@ export function SumberDukunganContent({ hideHeroPrefix = false }: SumberDukungan
     : []
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <div className="pt-16">
         {/* Hero */}
         <div className="bg-[#C8F1F7]">
@@ -152,33 +152,48 @@ export function SumberDukunganContent({ hideHeroPrefix = false }: SumberDukungan
             </p>
           </div>
           {/* Table card */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            {/* Filter bar */}
-            <div className="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <h2 className="font-semibold text-slate-900 shrink-0">Data Sumber Dukungan</h2>
-                <button
-                  onClick={openWilayahModal}
-                  className="h-8 px-3 text-sm border border-slate-400 rounded-lg bg-white text-slate-800 font-medium hover:bg-slate-50 hover:border-slate-500 transition-colors flex items-center gap-2"
-                >
-                  <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                  <span className="max-w-[200px] truncate">{wilayahLabel}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                </button>
-                {(filterWilayah !== null || filterPenyedia !== "Pemerintah Pusat" || showAllData) ? (
-                  <button
-                    onClick={() => { setFilterWilayah(null); setShowAllData(false); setFilterPenyedia("Pemerintah Pusat"); setPage(1) }}
-                    className="h-8 px-3 text-sm text-slate-500 hover:text-slate-800 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 transition-colors shrink-0"
-                  >
-                    Reset
-                  </button>
-                ) : null}
+          <div className="bg-white rounded-[4px] border border-slate-100 shadow-sm overflow-hidden">
+            {/* Judul dan jumlah data, lalu filter dengan pencarian di awal */}
+            <div className="px-5 pt-5 pb-4 space-y-4">
+              <div className="flex items-baseline justify-between gap-3">
+                <h2 className="text-base font-semibold text-slate-900">Data Sumber Dukungan</h2>
+                <p className="text-sm text-slate-500 tabular-nums">{filtered.length.toLocaleString("id-ID")} sumber dukungan</p>
               </div>
-              <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]">
+                <div className="relative sm:col-span-2 lg:col-span-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <input
+                    type="search"
+                    placeholder="Cari instansi atau kota"
+                    value={search}
+                    onChange={handleSearchChange}
+                    className="w-full h-10 pl-9 pr-3 text-sm border border-slate-200 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={openWilayahModal}
+                    className="h-10 min-w-0 flex-1 px-3 text-sm border border-slate-200 rounded-[4px] bg-white text-slate-700 hover:bg-[#F9F9F9] transition-colors flex items-center gap-2"
+                  >
+                    <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+                    <span className="flex-1 truncate text-left">{wilayahLabel}</span>
+                    <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                  </button>
+                  {(filterWilayah !== null || filterPenyedia !== "Pemerintah Pusat" || showAllData) ? (
+                    <button
+                      onClick={() => { setFilterWilayah(null); setShowAllData(false); setFilterPenyedia("Pemerintah Pusat"); setPage(1) }}
+                      className="h-10 px-3 text-sm text-slate-500 hover:text-slate-800 border border-slate-200 rounded-[4px] bg-white hover:bg-[#F9F9F9] transition-colors shrink-0"
+                    >
+                      Reset
+                    </button>
+                  ) : null}
+                </div>
                 <select
                   value={filterKategori}
                   onChange={(e) => { setFilterKategori(e.target.value as KategoriDukungan | "semua"); setPage(1) }}
-                  className="h-9 px-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white text-slate-700 shrink-0"
+                  aria-label="Filter kategori"
+                  className="h-10 w-full px-3 text-sm border border-slate-200 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                 >
                   <option value="semua">Semua Kategori</option>
                   {KATEGORI_KEYS.map((k) => <option key={k} value={k}>{k}</option>)}
@@ -186,40 +201,31 @@ export function SumberDukunganContent({ hideHeroPrefix = false }: SumberDukungan
                 <select
                   value={filterPenyedia}
                   onChange={(e) => { setFilterPenyedia(e.target.value as KategoriPenyedia | "semua"); setPage(1) }}
-                  className="h-9 px-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white text-slate-700 shrink-0"
+                  aria-label="Filter penyedia"
+                  className="h-10 w-full px-3 text-sm border border-slate-200 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                 >
                   <option value="semua">Semua Penyedia</option>
                   {PENYEDIA_OPTIONS.map((p) => <option key={p} value={p}>{p}</option>)}
                 </select>
-                <div className="relative flex-1 sm:flex-none sm:w-56">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    placeholder="Cari instansi atau kota"
-                    value={search}
-                    onChange={handleSearchChange}
-                    className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  />
-                </div>
               </div>
             </div>
 
             {/* Table */}
             {filtered.length === 0 ? (
-              <div className="p-10 text-center">
+              <div className="p-10 text-center border-t border-gray-200">
                 <p className="font-semibold text-gray-700 text-sm">Tidak ada sumber dukungan ditemukan</p>
                 <p className="text-gray-500 text-xs mt-1">Coba ubah filter, wilayah, atau kata kunci pencarian.</p>
               </div>
             ) : (
               <>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto border-t border-gray-200">
                   <table className="w-full text-sm min-w-[640px]">
                     <thead>
-                      <tr className="bg-gray-50 border-b border-gray-200 text-left">
-                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Nama Instansi</th>
-                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Wilayah</th>
-                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Kategori Dukungan</th>
-                        <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide" />
+                      <tr className="bg-[#F1F1F1] border-b border-gray-200 text-left">
+                        <th className="px-4 py-3 text-xs font-semibold text-gray-500">Nama Instansi</th>
+                        <th className="px-4 py-3 text-xs font-semibold text-gray-500">Wilayah</th>
+                        <th className="px-4 py-3 text-xs font-semibold text-gray-500">Kategori Dukungan</th>
+                        <th className="px-4 py-3 text-xs font-semibold text-gray-500" />
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -228,7 +234,7 @@ export function SumberDukunganContent({ hideHeroPrefix = false }: SumberDukungan
                         const penyediaCfg = item.kategoriPenyedia ? PENYEDIA_CONFIG[item.kategoriPenyedia] : null
 const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Seluruh Indonesia") && (item.kabupatenKota === NASIONAL_WILAYAH || item.kabupatenKota === "Seluruh Indonesia")
                         return (
-                          <tr key={item.id} className={cn("hover:bg-gray-50 transition-colors border-b border-gray-200", isNasional && "bg-gray-50 border-l-4 border-l-yellow-500")}>
+                          <tr key={item.id} className={cn("hover:bg-[#F9F9F9] transition-colors border-b border-gray-200", isNasional && "bg-[#F9F9F9] border-l-4 border-l-yellow-500")}>
                             <td className="px-4 py-3.5">
                               <p className="font-semibold text-gray-900 whitespace-nowrap">{item.namaInstansi}</p>
 
@@ -239,16 +245,16 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                               </span>
                             </td>
                             <td className="px-4 py-3.5">
-                              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#efefef] text-[#2f3031]">
                                 <span className="whitespace-nowrap">{kategoriCfg.label}</span>
                               </div>
                             </td>
                             <td className="px-4 py-3.5 text-right">
                               <Button
-                                variant={isNasional ? "default" : "outline"}
+                                variant="outline"
                                 size="sm"
                                 onClick={() => setSelectedItem(item)}
-                                className={cn("h-7 text-xs", isNasional ? "bg-blue-600 hover:bg-blue-700 text-white" : "border-slate-200 text-blue-600 hover:text-blue-700 hover:bg-blue-50")}
+                                className="h-8 text-xs rounded-[4px] border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] hover:text-gray-700"
                               >
                                 Cek Detail
                               </Button>
@@ -284,7 +290,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                 <p className="text-xs text-slate-500 mb-0.5">Sumber Dukungan</p>
                 <h3 className="text-base font-bold text-slate-900">{selectedItem.namaInstansi}</h3>
               </div>
-              <button onClick={() => setSelectedItem(null)} className="p-1 hover:bg-slate-100 rounded-lg">
+              <button onClick={() => setSelectedItem(null)} className="p-1 hover:bg-slate-100 rounded-[4px]">
                 <X className="w-5 h-5 text-slate-500" />
               </button>
             </div>
@@ -336,7 +342,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                         href={selectedItem.tautanGoogleMaps}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-medium hover:bg-slate-50 transition-colors"
+                        className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-medium hover:bg-[#F9F9F9] transition-colors"
                       >
                         <MapPin className="w-3.5 h-3.5" />
                         Lihat Peta
@@ -355,7 +361,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                           selectedItem.alamatProvinsi ?? (selectedItem.provinsi !== "Seluruh Indonesia" ? selectedItem.provinsi : null),
                         ].filter(Boolean).join(", ")}
                       </p>
-                      <div className="rounded-lg border border-slate-200 overflow-hidden h-48">
+                      <div className="rounded-[4px] border border-slate-200 overflow-hidden h-48">
                         <iframe
                           src={`https://maps.google.com/maps?q=${encodeURIComponent([
                             selectedItem.namaJalan,
@@ -391,7 +397,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                           href={`https://wa.me/62${nomor.replace(/^0/, "")}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`mt-3 w-full flex items-center justify-center gap-2 px-3 py-3 rounded-lg text-sm font-semibold transition-colors ${isMain ? "bg-green-600 hover:bg-green-700 text-white" : "border border-slate-300 text-slate-700 hover:bg-slate-50"}`}
+                          className={`mt-3 w-full flex items-center justify-center gap-2 px-3 py-3 rounded-lg text-sm font-semibold transition-colors ${isMain ? "bg-green-600 hover:bg-green-700 text-white" : "border border-slate-300 text-slate-700 hover:bg-[#F9F9F9]"}`}
                         >
                           <Phone className="w-4 h-4" />
                           {nomor}
@@ -400,7 +406,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                     )
 
                     return (
-                        <div className={`grid grid-cols-1 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 rounded-lg ${total > 1 ? "border border-slate-200" : ""} sm:grid-cols-[repeat(auto-fit,minmax(0,1fr))]`}>
+                        <div className={`grid grid-cols-1 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 rounded-[4px] ${total > 1 ? "border border-slate-200" : ""} sm:grid-cols-[repeat(auto-fit,minmax(0,1fr))]`}>
                           {selectedItem.nomorCallCenter && renderCard("Call Center", selectedItem.nomorCallCenter, true)}
                           {selectedItem.nomorCallCenter2 && renderCard("Call Center 2", selectedItem.nomorCallCenter2)}
                           {selectedItem.nomorPribadi && renderCard("Penanggung Jawab", selectedItem.nomorPribadi)}
@@ -440,7 +446,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
               <h3 className="text-base font-bold text-gray-900">Filter Wilayah</h3>
-              <button onClick={() => setShowWilayahModal(false)} className="p-1 hover:bg-gray-100 rounded-lg">
+              <button onClick={() => setShowWilayahModal(false)} className="p-1 hover:bg-gray-100 rounded-[4px]">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
@@ -452,13 +458,13 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                   <div className="p-2 space-y-0.5">
                     <button
                       onClick={() => { setModalPendingFilter(null); setModalBrowseProvinsi(null); setModalPendingShowAll(true) }}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${!modalBrowseProvinsi && modalPendingFilter === null && modalPendingShowAll ? "bg-blue-50 text-blue-700" : "hover:bg-gray-50 text-gray-700"}`}
+                      className={`w-full text-left px-3 py-2 rounded-[4px] text-sm font-medium transition-colors ${!modalBrowseProvinsi && modalPendingFilter === null && modalPendingShowAll ? "bg-blue-50 text-blue-700" : "hover:bg-[#F9F9F9] text-gray-700"}`}
                     >
                       Seluruh Indonesia
                     </button>
                     <button
                       onClick={() => { setModalPendingFilter(null); setModalBrowseProvinsi(null); setModalPendingShowAll(false) }}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${!modalBrowseProvinsi && modalPendingFilter === null && !modalPendingShowAll ? "bg-blue-50 text-blue-700" : "hover:bg-gray-50 text-gray-700"}`}
+                      className={`w-full text-left px-3 py-2 rounded-[4px] text-sm font-medium transition-colors ${!modalBrowseProvinsi && modalPendingFilter === null && !modalPendingShowAll ? "bg-blue-50 text-blue-700" : "hover:bg-[#F9F9F9] text-gray-700"}`}
                     >
                       Nasional
                     </button>
@@ -469,8 +475,8 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                         <button
                           key={province}
                           onClick={() => setModalBrowseProvinsi(province)}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between transition-colors ${
-                            isBrowsed ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-50 text-gray-700"
+                          className={`w-full text-left px-3 py-2 rounded-[4px] text-sm flex items-center justify-between transition-colors ${
+                            isBrowsed ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-[#F9F9F9] text-gray-700"
                           }`}
                         >
                           <span className="truncate">{province}</span>
@@ -482,14 +488,14 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                 </div>
 
                 {/* Kolom kanan: Kabupaten/Kota */}
-                <div className="w-1/2 overflow-y-auto bg-gray-50/40">
+                <div className="w-1/2 overflow-y-auto bg-[#F9F9F9]">
                   <div className="p-2 space-y-0.5">
                     {modalBrowseProvinsi ? (
                       <>
                         <p className="px-3 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wide">{modalBrowseProvinsi}</p>
                         <button
                           onClick={() => setModalPendingFilter({ province: modalBrowseProvinsi, kabupaten: "" })}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          className={`w-full text-left px-3 py-2 rounded-[4px] text-sm font-medium transition-colors ${
                             modalPendingFilter?.province === modalBrowseProvinsi && !modalPendingFilter.kabupaten
                               ? "bg-blue-50 text-blue-700"
                               : "hover:bg-gray-100 text-gray-700"
@@ -502,7 +508,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                           <button
                             key={kab}
                             onClick={() => setModalPendingFilter({ province: modalBrowseProvinsi, kabupaten: kab })}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                            className={`w-full text-left px-3 py-2 rounded-[4px] text-sm transition-colors ${
                               modalPendingFilter?.kabupaten === kab
                                 ? "bg-blue-50 text-blue-700 font-medium"
                                 : "hover:bg-gray-100 text-gray-700"
@@ -523,14 +529,14 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button
                 onClick={() => setShowWilayahModal(false)}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 onClick={applyWilayahFilter}
                 disabled={modalBrowseProvinsi !== null && modalPendingFilter?.province !== modalBrowseProvinsi}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Terapkan
               </button>

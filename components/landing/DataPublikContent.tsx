@@ -43,14 +43,14 @@ function getBidangList(row: ProvinsiRow): string[] {
 
 function statusBadge(status: ProvinsiRow["statusPokja"]) {
   const map: Record<ProvinsiRow["statusPokja"], { label: string; className: string }> = {
-    "Aktif":           { label: "Aktif",           className: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-50" },
-    "Perlu Diperiksa": { label: "Perlu Diperiksa", className: "bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-50" },
-    "Perlu Perbaikan": { label: "Perlu Perbaikan", className: "bg-red-50 text-red-700 border-red-200 hover:bg-red-50" },
-    "Belum Dibentuk":  { label: "Belum Dibentuk",  className: "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-50" },
-    "Belum Terbentuk": { label: "Belum Terbentuk", className: "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-50" },
+    "Aktif":           { label: "Aktif",           className: "bg-emerald-300 text-emerald-950 hover:bg-emerald-300" },
+    "Perlu Diperiksa": { label: "Perlu Diperiksa", className: "bg-amber-200 text-amber-950 hover:bg-amber-200" },
+    "Perlu Perbaikan": { label: "Perlu Perbaikan", className: "bg-rose-100 text-rose-950 hover:bg-rose-100" },
+    "Belum Dibentuk":  { label: "Belum Dibentuk",  className: "bg-[#efefef] text-[#2f3031] hover:bg-[#efefef]" },
+    "Belum Terbentuk": { label: "Belum Terbentuk", className: "bg-[#efefef] text-[#2f3031] hover:bg-[#efefef]" },
   }
   const { label, className } = map[status] ?? map["Belum Terbentuk"]
-  return <Badge className={className}>{label}</Badge>
+  return <Badge className={`border-transparent rounded-full px-2.5 py-0.5 text-[13px] font-semibold whitespace-nowrap ${className}`}>{label}</Badge>
 }
 
 
@@ -81,7 +81,7 @@ function DetailModal({ row, onClose }: { row: ProvinsiRow; onClose: () => void }
           </div>
           <div className="flex items-center gap-3">
             {statusBadge(row.statusPokja)}
-            <button onClick={onClose} className="p-1 hover:bg-slate-100 rounded-lg shrink-0">
+            <button onClick={onClose} className="p-1 hover:bg-slate-100 rounded-[4px] shrink-0">
               <X className="w-5 h-5 text-slate-500" />
             </button>
           </div>
@@ -133,9 +133,9 @@ function DetailModal({ row, onClose }: { row: ProvinsiRow; onClose: () => void }
                   <span>{pokja.members.length} Pengurus</span>
                 </div>
               </div>
-              <div className="border border-slate-100 rounded-lg overflow-hidden">
+              <div className="border border-slate-100 rounded-[4px] overflow-hidden">
                 <table className="w-full text-sm">
-                  <thead className="bg-slate-50">
+                  <thead className="bg-[#F1F1F1]">
                     <tr>
                       <th className="text-left text-xs text-slate-500 px-4 py-2.5 font-medium">Peran di Kelompok Kerja</th>
                       <th className="text-left text-xs text-slate-500 px-4 py-2.5 font-medium">Asal Instansi</th>
@@ -319,7 +319,7 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#F9F9F9]">
       <div className="pt-16">
         <div className="bg-[#C8F1F7]">
           <div className="max-w-6xl mx-auto px-4">
@@ -352,53 +352,57 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
               Update terakhir: {new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })} | {new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
             </p>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-              <div className="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <h2 className="font-semibold text-slate-900 shrink-0">Data Kelompok Kerja</h2>
-                <button
-                  onClick={openWilayahModal}
-                  className="h-8 px-3 text-sm border border-slate-400 rounded-lg bg-white text-slate-800 font-medium hover:bg-slate-50 hover:border-slate-500 transition-colors flex items-center gap-2"
-                >
-                  <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                  <span className="max-w-[200px] truncate">{wilayahLabel}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                </button>
-                {wilayahFilter !== "all" && (
-                  <button
-                    onClick={() => { setWilayahFilter("all"); setPage(1); router.push("/kelompok-kerja") }}
-                    className="h-8 px-3 text-sm text-slate-500 hover:text-slate-800 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 transition-colors shrink-0"
-                  >
-                    Reset
-                  </button>
-                )}
+          <div className="bg-white rounded-[4px] border border-slate-100 shadow-sm overflow-hidden">
+            <div className="px-5 pt-5 pb-4 space-y-4 border-b border-slate-200">
+              <div className="flex items-baseline justify-between gap-3">
+                <h2 className="text-base font-semibold text-slate-900">Data Kelompok Kerja</h2>
+                <p className="text-sm text-slate-500 tabular-nums">{filtered.length.toLocaleString("id-ID")} kelompok kerja</p>
               </div>
-              <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]">
+                <div className="relative sm:col-span-2 lg:col-span-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <input
+                    type="search"
+                    placeholder="Cari wilayah kelompok kerja"
+                    value={search}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    className="w-full h-10 pl-9 pr-3 text-sm border border-slate-200 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={openWilayahModal}
+                    className="h-10 min-w-0 flex-1 px-3 text-sm border border-slate-200 rounded-[4px] bg-white text-slate-700 hover:bg-[#F9F9F9] transition-colors flex items-center gap-2"
+                  >
+                    <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+                    <span className="flex-1 truncate text-left">{wilayahLabel}</span>
+                    <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+                  </button>
+                  {wilayahFilter !== "all" && (
+                    <button
+                      onClick={() => { setWilayahFilter("all"); setPage(1); router.push("/kelompok-kerja") }}
+                      className="h-10 px-3 text-sm text-slate-500 hover:text-slate-800 border border-slate-200 rounded-[4px] bg-white hover:bg-[#F9F9F9] transition-colors shrink-0"
+                    >
+                      Reset
+                    </button>
+                  )}
+                </div>
                 <select
                   value={statusFilter}
                   onChange={(e) => { setStatusFilter(e.target.value as typeof statusFilter); setPage(1) }}
-                  className="h-9 px-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white text-slate-700 shrink-0"
+                  aria-label="Filter status"
+                  className="h-10 w-full px-3 text-sm border border-slate-200 rounded-[4px] bg-white text-slate-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
                 >
                   <option value="Semua">Semua Status</option>
                   <option value="Aktif">Aktif</option>
                   <option value="Belum Dibentuk">Belum Dibentuk</option>
                 </select>
-                <div className="relative flex-1 sm:flex-none sm:w-56">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    placeholder="Cari wilayah kelompok kerja"
-                    value={search}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  />
-                </div>
-                
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={exportCSV}
-                  className="h-9 gap-1.5 border-slate-200 shrink-0"
+                  className="h-10 gap-1.5 rounded-[4px] border-slate-200"
                 >
                   <Download className="w-4 h-4" />
                   Ekspor Excel
@@ -408,12 +412,12 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
 
             <Table className="text-sm table-fixed w-full">
               <TableHeader>
-                <TableRow className="bg-slate-50/70 hover:bg-slate-50/70">
-                  <TableHead className="w-12 text-slate-500 text-xs font-semibold uppercase tracking-wide pl-5">No</TableHead>
-                  <TableHead className="w-64 text-slate-500 text-xs font-semibold uppercase tracking-wide">Wilayah</TableHead>
-                  <TableHead className="w-56 text-slate-500 text-xs font-semibold uppercase tracking-wide">Provinsi</TableHead>
-                  <TableHead className="w-44 text-slate-500 text-xs font-semibold uppercase tracking-wide">Cakupan</TableHead>
-                  <TableHead className="w-40 text-slate-500 text-xs font-semibold uppercase tracking-wide">Status</TableHead>
+                <TableRow className="bg-[#F1F1F1] hover:bg-[#F1F1F1]">
+                  <TableHead className="w-12 text-slate-500 text-xs font-semibold pl-5">No</TableHead>
+                  <TableHead className="w-64 text-slate-500 text-xs font-semibold">Wilayah</TableHead>
+                  <TableHead className="w-56 text-slate-500 text-xs font-semibold">Provinsi</TableHead>
+                  <TableHead className="w-44 text-slate-500 text-xs font-semibold">Cakupan</TableHead>
+                  <TableHead className="w-40 text-slate-500 text-xs font-semibold">Status</TableHead>
                   <TableHead className="w-28" />
                 </TableRow>
               </TableHeader>
@@ -441,7 +445,7 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
                               variant="outline"
                               size="sm"
                               onClick={() => setSelectedRow(row)}
-                              className="h-7 text-xs border-slate-200 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                              className="h-8 text-xs rounded-[4px] border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] hover:text-gray-700"
                             >
                               Cek Detail
                             </Button>
@@ -477,7 +481,7 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
               <h3 className="text-base font-bold text-gray-900">Filter Wilayah</h3>
-              <button onClick={() => setShowWilayahModal(false)} className="p-1 hover:bg-gray-100 rounded-lg">
+              <button onClick={() => setShowWilayahModal(false)} className="p-1 hover:bg-gray-100 rounded-[4px]">
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
@@ -488,13 +492,13 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
                   <div className="p-2 space-y-0.5">
                     <button
                       onClick={() => { setModalPending("all"); setModalBrowseProvince(null) }}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${modalPending === "all" ? "bg-blue-50 text-blue-700" : "hover:bg-gray-50 text-gray-700"}`}
+                      className={`w-full text-left px-3 py-2 rounded-[4px] text-sm font-medium transition-colors ${modalPending === "all" ? "bg-blue-50 text-blue-700" : "hover:bg-[#F9F9F9] text-gray-700"}`}
                     >
                       Seluruh Indonesia
                     </button>
                     <button
                       onClick={() => { setModalPending("provinsi_only"); setModalBrowseProvince(null) }}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${modalPending === "provinsi_only" ? "bg-blue-50 text-blue-700" : "hover:bg-gray-50 text-gray-700"}`}
+                      className={`w-full text-left px-3 py-2 rounded-[4px] text-sm font-medium transition-colors ${modalPending === "provinsi_only" ? "bg-blue-50 text-blue-700" : "hover:bg-[#F9F9F9] text-gray-700"}`}
                     >
                       Hanya Tingkat Provinsi
                     </button>
@@ -506,8 +510,8 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
                         <button
                           key={prov.provinsi}
                           onClick={() => { setModalBrowseProvince(prov.provinsi); setModalPending(prov.provinsi) }}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between transition-colors ${
-                            isBrowsed ? "bg-blue-50 text-blue-700 font-medium" : isSelected ? "bg-blue-50/50 text-blue-600" : "hover:bg-gray-50 text-gray-700"
+                          className={`w-full text-left px-3 py-2 rounded-[4px] text-sm flex items-center justify-between transition-colors ${
+                            isBrowsed ? "bg-blue-50 text-blue-700 font-medium" : isSelected ? "bg-blue-50/50 text-blue-600" : "hover:bg-[#F9F9F9] text-gray-700"
                           }`}
                         >
                           <span className="truncate">{prov.provinsi}</span>
@@ -519,7 +523,7 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
                 </div>
 
                 {/* Right: kab/kota */}
-                <div className="w-1/2 overflow-y-auto bg-gray-50/40">
+                <div className="w-1/2 overflow-y-auto bg-[#F9F9F9]">
                   <div className="p-2 space-y-0.5">
                     {modalBrowseProvince ? (() => {
                       const kabRows = PROVINSI_DATA.filter(r => r.provinsi.startsWith(modalBrowseProvince + " - "))
@@ -529,7 +533,7 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
                           <p className="px-3 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wide">{modalBrowseProvince}</p>
                           <button
                             onClick={() => setModalPending(semuaKabValue)}
-                            className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            className={`w-full text-left px-3 py-2 rounded-[4px] text-sm font-medium transition-colors ${
                               modalPending === semuaKabValue ? "bg-blue-50 text-blue-700" : "hover:bg-gray-100 text-gray-700"
                             }`}
                           >
@@ -543,7 +547,7 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
                               <button
                                 key={kab.provinsi}
                                 onClick={() => setModalPending(kab.provinsi)}
-                                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                                className={`w-full text-left px-3 py-2 rounded-[4px] text-sm transition-colors ${
                                   isSelected ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-100 text-gray-700"
                                 }`}
                               >
@@ -563,14 +567,14 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
             <div className="px-5 py-4 border-t border-gray-200 flex justify-end gap-2">
               <button
                 onClick={() => setShowWilayahModal(false)}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition"
+                className="px-4 py-2 rounded-[4px] text-sm font-medium text-gray-700 bg-[#F9F9F9] hover:bg-gray-200 transition"
               >
                 Batal
               </button>
               <button
                 onClick={applyWilayahFilter}
                 disabled={modalBrowseProvince !== null && modalPending === modalBrowseProvince}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Terapkan
               </button>

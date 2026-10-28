@@ -20,9 +20,9 @@ type KolomUrut = "email" | "peran" | "wilayah" | "diperbarui"
 
 /** Warna badge per peran agar barisnya cepat dibedakan sekilas. */
 const PERAN_BADGE: Record<PeranPengguna, string> = {
-  adminPusat: "bg-purple-50 text-purple-700 border-purple-200",
-  bpmp: "bg-amber-50 text-amber-700 border-amber-200",
-  dinas: "bg-blue-50 text-blue-700 border-blue-200",
+  adminPusat: "bg-purple-200 text-purple-950",
+  bpmp: "bg-amber-200 text-amber-950",
+  dinas: "bg-sky-200 text-sky-950",
 }
 
 /** Penanda arah urutan di header kolom — satu ikon, diputar saat menurun. */
@@ -57,7 +57,7 @@ function CabutAksesModal({
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
             <AlertTriangle className="w-5 h-5 text-red-600" />
           </div>
           <div>
@@ -70,13 +70,13 @@ function CabutAksesModal({
         <div className="flex items-center justify-end gap-2 mt-5">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+            className="px-4 py-2 text-sm font-medium rounded-[4px] border border-gray-300 text-gray-700 hover:bg-[#F9F9F9]"
           >
             Batal
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 text-sm font-medium rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
+            className="px-4 py-2 text-sm font-medium rounded-[4px] bg-red-600 text-white hover:bg-red-700 transition"
           >
             Ya, Cabut Akses
           </button>
@@ -196,7 +196,7 @@ export function ManajemenPenggunaView() {
         </div>
         <button
           onClick={() => router.push("/beri-akses")}
-          className="inline-flex items-center justify-center gap-2 px-4 h-9 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition flex-shrink-0 whitespace-nowrap self-start sm:self-center"
+          className="inline-flex items-center justify-center gap-2 px-4 h-9 text-sm font-medium rounded-[4px] bg-blue-600 text-white hover:bg-blue-700 transition flex-shrink-0 whitespace-nowrap self-start sm:self-center"
         >
           <Plus className="w-4 h-4" />
           Beri Akses
@@ -204,40 +204,39 @@ export function ManajemenPenggunaView() {
       </div>
 
       {/* Tabel */}
-      <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
-        {/* Toolbar dalam tabel: jumlah data di kiri, pencarian di kanan */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-3 border-b border-gray-100">
-          <p className="text-sm text-gray-600">
-            <span className="font-semibold text-gray-900">{mounted ? filtered.length : "-"}</span> pengguna
-            {mounted && filtered.length !== list.length ? ` dari ${list.length}` : ""}
-          </p>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-            <select
-              value={filterPeran}
-              onChange={(e) => { setFilterPeran(e.target.value as PeranPengguna | "semua"); setHalaman(1) }}
-              className="h-9 px-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition sm:w-44"
-              aria-label="Filter peran"
-            >
-              <option value="semua">Semua Peran</option>
-              {PERAN_LIST.map((p) => (
-                <option key={p} value={p}>{PERAN_LABEL_SINGKAT[p]}</option>
-              ))}
-            </select>
-            <div className="relative sm:w-64">
+      <div className="rounded-[4px] border border-gray-200 bg-white shadow-sm overflow-hidden">
+        <div className="px-5 pt-5 pb-4 space-y-4">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="text-base font-semibold text-gray-900">Daftar Pengguna</h2>
+            <p className="text-sm text-gray-500 tabular-nums">{mounted ? filtered.length.toLocaleString("id-ID") : "-"} pengguna{mounted && filtered.length !== list.length ? ` dari ${list.length}` : ""}</p>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+            <div className="relative sm:col-span-2 lg:col-span-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               <input
                 type="search"
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setHalaman(1) }}
                 placeholder="Cari email atau wilayah"
-                className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               />
             </div>
+            <select
+              value={filterPeran}
+              onChange={(e) => { setFilterPeran(e.target.value as PeranPengguna | "semua"); setHalaman(1) }}
+              aria-label="Filter peran"
+              className="h-10 w-full px-3 text-sm border border-gray-300 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            >
+              <option value="semua">Semua Peran</option>
+              {PERAN_LIST.map((p) => (
+                <option key={p} value={p}>{PERAN_LABEL_SINGKAT[p]}</option>
+              ))}
+            </select>
           </div>
         </div>
 
         {mounted && filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400">
+          <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400 border-t border-gray-200">
             <Search className="w-8 h-8" />
             <p className="text-sm">Tidak ada pengguna ditemukan</p>
             {filterPeran !== "semua" && (
@@ -250,42 +249,42 @@ export function ManajemenPenggunaView() {
             )}
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto border-t border-gray-200">
             {/* Lebar kolom dipatok agar tidak bergeser mengikuti panjang isinya. */}
             <table className="w-full text-sm min-w-[960px] table-fixed">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
-                  <th className="w-[30%] text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <tr className="border-b border-gray-100 bg-[#F1F1F1]">
+                  <th className="w-[30%] text-left px-4 py-3 text-xs font-semibold text-gray-500">
                     <button
                       onClick={() => ubahUrutan("email")}
-                      className="inline-flex items-center gap-1 uppercase tracking-wide hover:text-gray-700"
+                      className="inline-flex items-center gap-1 hover:text-gray-700"
                     >
                       Pengguna
                       <IkonUrut aktif={urutKolom === "email"} arah={urutArah} />
                     </button>
                   </th>
-                  <th className="w-[16%] text-left px-3 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="w-[16%] text-left px-3 py-3 text-xs font-semibold text-gray-500">
                     <button
                       onClick={() => ubahUrutan("peran")}
-                      className="inline-flex items-center gap-1 uppercase tracking-wide hover:text-gray-700"
+                      className="inline-flex items-center gap-1 hover:text-gray-700"
                     >
                       Peran
                       <IkonUrut aktif={urutKolom === "peran"} arah={urutArah} />
                     </button>
                   </th>
-                  <th className="w-[20%] text-left px-3 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  <th className="w-[20%] text-left px-3 py-3 text-xs font-semibold text-gray-500">
                     <button
                       onClick={() => ubahUrutan("wilayah")}
-                      className="inline-flex items-center gap-1 uppercase tracking-wide hover:text-gray-700"
+                      className="inline-flex items-center gap-1 hover:text-gray-700"
                     >
                       Wilayah Penugasan
                       <IkonUrut aktif={urutKolom === "wilayah"} arah={urutArah} />
                     </button>
                   </th>
-                  <th className="w-[22%] text-left px-3 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">
+                  <th className="w-[22%] text-left px-3 py-3 text-xs font-semibold text-gray-500 hidden lg:table-cell">
                     <button
                       onClick={() => ubahUrutan("diperbarui")}
-                      className="inline-flex items-center gap-1 uppercase tracking-wide hover:text-gray-700"
+                      className="inline-flex items-center gap-1 hover:text-gray-700"
                     >
                       Diberikan Akses
                       <IkonUrut aktif={urutKolom === "diperbarui"} arah={urutArah} />
@@ -296,14 +295,14 @@ export function ManajemenPenggunaView() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {halamanIni.map((p) => (
-                  <tr key={p.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={p.id} className="hover:bg-[#F9F9F9] transition-colors">
                     <td className="px-4 py-3.5">
                       <p className="font-medium text-gray-900 leading-tight truncate">{p.email}</p>
                       <p className="text-xs text-gray-500 mt-0.5 truncate">{p.instansi || "-"}</p>
                     </td>
                     <td className="px-3 py-3.5">
                       <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-md border text-xs font-medium whitespace-nowrap ${PERAN_BADGE[p.peran]}`}
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[13px] font-semibold whitespace-nowrap ${PERAN_BADGE[p.peran]}`}
                       >
                         {PERAN_LABEL_SINGKAT[p.peran]}
                       </span>
@@ -320,9 +319,9 @@ export function ManajemenPenggunaView() {
                       <div className="flex items-center justify-end">
                         <button
                           onClick={() => setDeleting(p)}
-                          className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg font-medium text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300 transition-colors whitespace-nowrap"
+                          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-red-600 hover:bg-red-50 transition-colors whitespace-nowrap"
                         >
-                          <ShieldOff className="w-3.5 h-3.5" /> Cabut Akses
+                          Cabut Akses
                         </button>
                       </div>
                     </td>

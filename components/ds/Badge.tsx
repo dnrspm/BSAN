@@ -18,11 +18,11 @@ export interface BadgeProps {
 }
 
 const variants: Record<string, string> = {
-  success: "bg-green-100 text-green-700",
-  warning: "bg-yellow-100 text-yellow-700",
-  critical: "bg-red-100 text-red-700",
-  informational: "bg-blue-100 text-blue-700",
-  neutral: "bg-gray-100 text-gray-700",
+  success: "bg-emerald-300 text-emerald-950",
+  warning: "bg-amber-200 text-amber-950",
+  critical: "bg-rose-100 text-rose-950",
+  informational: "bg-sky-200 text-sky-950",
+  neutral: "bg-[#efefef] text-[#2f3031]",
   "expressive-success": "bg-green-600 text-white",
   "expressive-warning": "bg-yellow-500 text-white",
   "expressive-critical": "bg-red-600 text-white",
@@ -31,7 +31,7 @@ const variants: Record<string, string> = {
 }
 
 const sizes: Record<string, string> = {
-  sm: "text-xs px-2 py-0.5",
+  sm: "text-[13px] px-2.5 py-0.5",
   md: "text-sm px-3 py-1",
 }
 
@@ -39,7 +39,7 @@ export function Badge({ children, variant = "neutral", size = "sm", className }:
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full font-medium",
+        "inline-flex items-center whitespace-nowrap rounded-full font-semibold",
         sizes[size],
         variants[variant],
         className

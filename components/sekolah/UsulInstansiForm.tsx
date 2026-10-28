@@ -113,7 +113,7 @@ export function UsulInstansiForm({ wilayah }: UsulInstansiFormProps) {
       </div>
 
       {submitted && (
-        <div className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+        <div className="flex items-start gap-3 rounded-[4px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
           <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-semibold">Usulan berhasil dikirim</p>
@@ -124,10 +124,10 @@ export function UsulInstansiForm({ wilayah }: UsulInstansiFormProps) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 md:p-6 space-y-5">
+      <form onSubmit={handleSubmit} className="bg-white rounded-[4px] border border-gray-200 shadow-sm p-5 md:p-6 space-y-5">
         <div>
           <label className="text-xs font-medium text-gray-700">Wilayah</label>
-          <div className="mt-1 flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-700">
+          <div className="mt-1 flex items-center gap-2 rounded-[4px] border border-gray-200 bg-[#F9F9F9] px-3 py-2.5 text-sm text-gray-700">
             <MapPin className="w-4 h-4 text-emerald-600 flex-shrink-0" />
             {wilayah}
           </div>
@@ -145,7 +145,7 @@ export function UsulInstansiForm({ wilayah }: UsulInstansiFormProps) {
               value={namaInstansi}
               onChange={(e) => setNamaInstansi(e.target.value)}
               placeholder="Contoh: Pusat Layanan Anak Terpadu"
-              className="w-full pl-9 pr-3 py-2.5 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full pl-9 pr-3 py-2.5 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
         </div>
@@ -158,7 +158,7 @@ export function UsulInstansiForm({ wilayah }: UsulInstansiFormProps) {
             id="kategori"
             value={kategori}
             onChange={(e) => setKategori(e.target.value as KategoriDukungan)}
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+            className="mt-1 w-full rounded-[4px] border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
           >
             {KATEGORI_OPTIONS.map((k) => (
               <option key={k} value={k}>
@@ -179,7 +179,7 @@ export function UsulInstansiForm({ wilayah }: UsulInstansiFormProps) {
             value={alamat}
             onChange={(e) => setAlamat(e.target.value)}
             placeholder="Jalan, kelurahan, kecamatan"
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="mt-1 w-full rounded-[4px] border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
 
@@ -195,7 +195,7 @@ export function UsulInstansiForm({ wilayah }: UsulInstansiFormProps) {
               value={nomorKontak}
               onChange={(e) => setNomorKontak(e.target.value)}
               placeholder="Contoh: 0651xxxxxx"
-              className="w-full pl-9 pr-3 py-2.5 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full pl-9 pr-3 py-2.5 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
         </div>
@@ -210,14 +210,14 @@ export function UsulInstansiForm({ wilayah }: UsulInstansiFormProps) {
             value={keterangan}
             onChange={(e) => setKeterangan(e.target.value)}
             placeholder="Jelaskan kebutuhan sekolah terkait layanan ini"
-            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="mt-1 w-full rounded-[4px] border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
 
         <button
           type="submit"
           disabled={sending}
-          className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 transition"
+          className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-[4px] text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 transition"
         >
           <Send className="w-4 h-4" />
           {sending ? "Mengirim..." : "Kirim usulan"}

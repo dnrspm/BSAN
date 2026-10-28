@@ -78,7 +78,7 @@ function NotifModal({
 
         {/* Email preview */}
         <div className="px-6 py-5 space-y-4">
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700 space-y-3">
+          <div className="rounded-[4px] border border-gray-200 bg-[#F9F9F9] p-4 text-sm text-gray-700 space-y-3">
             <div className="flex items-center gap-2 text-xs text-gray-400">
               <Mail className="w-3.5 h-3.5" />
               <span>Notifikasi email telah dikirimkan ke:</span>
@@ -106,7 +106,7 @@ function NotifModal({
                 </div>
               )}
               {alasanGlobal && (
-                <div className="mt-3 p-3 rounded-lg bg-red-50 border border-red-100">
+                <div className="mt-3 p-3 rounded-[4px] bg-red-50 border border-red-100">
                   <p className="text-xs font-semibold text-red-700">Alasan Penolakan:</p>
                   <p className="text-xs text-red-600 mt-0.5 leading-relaxed">{alasanGlobal}</p>
                 </div>
@@ -121,7 +121,7 @@ function NotifModal({
         <div className="px-6 pb-5">
           <button
             onClick={onClose}
-            className="w-full h-10 rounded-xl text-sm font-semibold bg-gray-900 text-white hover:bg-gray-700 transition-colors"
+            className="w-full h-10 rounded-[4px] text-sm font-semibold bg-gray-900 text-white hover:bg-gray-700 transition-colors"
           >
             Selesai
           </button>
@@ -154,10 +154,10 @@ function MemberRow({
   }
 
   return (
-    <div className={cn("rounded-xl border overflow-hidden transition-all", actionBg[state.action])}>
+    <div className={cn("rounded-[4px] border overflow-hidden transition-all", actionBg[state.action])}>
       {/* Row header */}
       <div className="flex items-center gap-3 px-4 py-3">
-        <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
+        <div className="w-8 h-8 border-gray-200 flex items-center justify-center flex-shrink-0">
           <User className="w-4 h-4 text-gray-500" />
         </div>
         <div className="flex-1 min-w-0">
@@ -183,7 +183,7 @@ function MemberRow({
             <button
               onClick={() => onChange({ ...state, action: state.action === "approved" ? "pending" : "approved" })}
               className={cn(
-                "h-7 px-2.5 rounded-lg text-xs font-medium transition-colors border",
+                "h-7 px-2.5 rounded-[4px] text-xs font-medium transition-colors border",
                 state.action === "approved"
                   ? "bg-emerald-600 border-emerald-600 text-white"
                   : "bg-white border-gray-300 text-gray-600 hover:border-emerald-500 hover:text-emerald-600"
@@ -194,7 +194,7 @@ function MemberRow({
             <button
               onClick={() => onChange({ ...state, action: state.action === "declined" ? "pending" : "declined" })}
               className={cn(
-                "h-7 px-2.5 rounded-lg text-xs font-medium transition-colors border",
+                "h-7 px-2.5 rounded-[4px] text-xs font-medium transition-colors border",
                 state.action === "declined"
                   ? "bg-red-600 border-red-600 text-white"
                   : "bg-white border-gray-300 text-gray-600 hover:border-red-400 hover:text-red-600"
@@ -220,28 +220,28 @@ function MemberRow({
           <div className="flex items-start gap-2">
             <Mail className="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-[10px] text-gray-400 uppercase tracking-wide">Email</p>
+              <p className="text-sm text-gray-400 uppercase tracking-wide">Email</p>
               <p className="text-xs text-gray-700">{member.email || "—"}</p>
             </div>
           </div>
           <div className="flex items-start gap-2">
             <Phone className="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-[10px] text-gray-400 uppercase tracking-wide">Nomor HP</p>
+              <p className="text-sm text-gray-400 uppercase tracking-wide">Nomor HP</p>
               <p className="text-xs text-gray-700">{member.noWhatsapp || "—"}</p>
             </div>
           </div>
           <div className="flex items-start gap-2">
             <Building2 className="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-[10px] text-gray-400 uppercase tracking-wide">Instansi</p>
+              <p className="text-sm text-gray-400 uppercase tracking-wide">Instansi</p>
               <p className="text-xs text-gray-700">{member.instansi || "—"}</p>
             </div>
           </div>
           <div className="flex items-start gap-2">
             <User className="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-[10px] text-gray-400 uppercase tracking-wide">Jenis Kelamin</p>
+              <p className="text-sm text-gray-400 uppercase tracking-wide">Jenis Kelamin</p>
               <p className="text-xs text-gray-700">{member.jenisKelamin || "—"}</p>
             </div>
           </div>
@@ -249,7 +249,7 @@ function MemberRow({
           {/* Alasan penolakan for this member */}
           {state.action === "declined" && !readOnly && (
             <div className="sm:col-span-2">
-              <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide block mb-1">
+              <label className="text-sm font-semibold text-gray-500 uppercase tracking-wide block mb-1">
                 Alasan Penolakan <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -257,13 +257,13 @@ function MemberRow({
                 value={state.alasan}
                 onChange={(e) => onChange({ ...state, alasan: e.target.value })}
                 placeholder="Tuliskan alasan penolakan anggota ini..."
-                className="w-full text-xs border border-red-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 resize-none"
+                className="w-full text-xs border border-red-300 rounded-[4px] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 resize-none"
               />
             </div>
           )}
           {state.action === "declined" && readOnly && member.alasanPenolakan && (
-            <div className="sm:col-span-2 p-2 bg-red-50 rounded-lg">
-              <p className="text-[10px] font-semibold text-red-600 uppercase tracking-wide">Alasan Penolakan</p>
+            <div className="sm:col-span-2 p-2 bg-red-50 rounded-[4px]">
+              <p className="text-sm font-semibold text-red-600 uppercase tracking-wide">Alasan Penolakan</p>
               <p className="text-xs text-red-700 mt-0.5">{member.alasanPenolakan}</p>
             </div>
           )}
@@ -361,7 +361,7 @@ export function DetailPengajuan({ item, onClose, onSave }: DetailPengajuanProps)
           role="dialog"
           aria-modal="true"
           aria-label="Detail Pengajuan Kelompok Kerja"
-          className="relative z-10 flex flex-col w-full max-w-2xl h-screen bg-gray-50 shadow-2xl"
+          className="relative z-10 flex flex-col w-full max-w-2xl h-screen bg-[#F9F9F9] shadow-2xl"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 flex-shrink-0">
@@ -371,7 +371,7 @@ export function DetailPengajuan({ item, onClose, onSave }: DetailPengajuanProps)
             </div>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition"
+              className="w-8 h-8 rounded-[4px] flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition"
               aria-label="Tutup"
             >
               <X className="w-4 h-4" />
@@ -399,32 +399,32 @@ export function DetailPengajuan({ item, onClose, onSave }: DetailPengajuanProps)
             {/* Informasi Dokumen */}
             <section>
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Informasi Dokumen SK</h3>
-              <div className="rounded-xl border border-gray-200 bg-white p-4 grid grid-cols-2 gap-4">
+              <div className="rounded-[4px] border border-gray-200 bg-white p-4 grid grid-cols-2 gap-4">
                 <div className="flex items-start gap-2">
                   <Hash className="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wide">Nomor SK</p>
+                    <p className="text-sm text-gray-400 uppercase tracking-wide">Nomor SK</p>
                     <p className="text-sm font-medium text-gray-800">{item.nomorSK}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
                   <Calendar className="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wide">Tanggal SK</p>
+                    <p className="text-sm text-gray-400 uppercase tracking-wide">Tanggal SK</p>
                     <p className="text-sm font-medium text-gray-800">{item.tanggalSK}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
                   <Calendar className="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wide">Periode</p>
+                    <p className="text-sm text-gray-400 uppercase tracking-wide">Periode</p>
                     <p className="text-sm font-medium text-gray-800">{item.periodeMulai} — {item.periodeSelesai}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
                   <FileText className="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wide">File SK</p>
+                    <p className="text-sm text-gray-400 uppercase tracking-wide">File SK</p>
                     <button className="text-sm text-emerald-600 font-medium hover:underline flex items-center gap-1">
                       <Download className="w-3 h-3" />
                       {item.skFileName}
@@ -442,13 +442,13 @@ export function DetailPengajuan({ item, onClose, onSave }: DetailPengajuanProps)
                   <div className="flex items-center gap-2">
                     <button
                       onClick={approveAll}
-                      className="text-xs px-2.5 py-1 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-700 font-medium hover:bg-emerald-100 transition-colors"
+                      className="text-xs px-2.5 py-1 rounded-[4px] border border-emerald-300 bg-emerald-50 text-emerald-700 font-medium hover:bg-emerald-100 transition-colors"
                     >
                       Terima Semua
                     </button>
                     <button
                       onClick={declineAll}
-                      className="text-xs px-2.5 py-1 rounded-lg border border-red-300 bg-red-50 text-red-700 font-medium hover:bg-red-100 transition-colors"
+                      className="text-xs px-2.5 py-1 rounded-[4px] border border-red-300 bg-red-50 text-red-700 font-medium hover:bg-red-100 transition-colors"
                     >
                       Tolak Semua
                     </button>
@@ -480,14 +480,14 @@ export function DetailPengajuan({ item, onClose, onSave }: DetailPengajuanProps)
                   value={globalAlasan}
                   onChange={(e) => setGlobalAlasan(e.target.value)}
                   placeholder="Tuliskan alasan penolakan keseluruhan pengajuan Kelompok Kerja ini..."
-                  className="w-full text-sm border border-red-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 resize-none bg-white"
+                  className="w-full text-sm border border-red-300 rounded-[4px] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 resize-none bg-white"
                 />
               </section>
             )}
 
             {/* Read-only global alasan */}
             {isReadOnly && item.alasanPenolakan && (
-              <section className="rounded-xl border border-red-200 bg-red-50 p-4">
+              <section className="rounded-[4px] border border-red-200 bg-red-50 p-4">
                 <h3 className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-1">Alasan Penolakan</h3>
                 <p className="text-sm text-red-700 leading-relaxed">{item.alasanPenolakan}</p>
               </section>
@@ -506,7 +506,7 @@ export function DetailPengajuan({ item, onClose, onSave }: DetailPengajuanProps)
               <div className="flex items-center gap-2 ml-auto">
                 <button
                   onClick={onClose}
-                  className="h-9 px-4 rounded-xl text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors"
+                  className="h-9 px-4 rounded-[4px] text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors"
                 >
                   Batal
                 </button>
@@ -514,7 +514,7 @@ export function DetailPengajuan({ item, onClose, onSave }: DetailPengajuanProps)
                   onClick={handleSubmit}
                   disabled={!canSubmit}
                   className={cn(
-                    "h-9 px-5 rounded-xl text-sm font-semibold transition-colors",
+                    "h-9 px-5 rounded-[4px] text-sm font-semibold transition-colors",
                     canSubmit
                       ? "bg-emerald-600 text-white hover:bg-emerald-700"
                       : "bg-gray-200 text-gray-400 cursor-not-allowed"

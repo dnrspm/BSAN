@@ -155,7 +155,7 @@ function TextInput({
       onChange={(e) => onChange?.(e.target.value)}
       placeholder={placeholder}
       disabled={disabled}
-      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
+      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
     />
   )
 }
@@ -175,7 +175,7 @@ function SelectInput({
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         disabled={disabled}
-        className="w-full h-9 pl-3 pr-8 text-sm border border-gray-300 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700 disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
+        className="w-full h-9 pl-3 pr-8 text-sm border border-gray-300 rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700 disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
       >
         {placeholder && <option value="" disabled>{placeholder}</option>}
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
@@ -191,8 +191,8 @@ function SelectInput({
 
 function SectionCard({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
-      <div className="flex items-center gap-2.5 px-5 py-4 bg-gray-50 border-b border-gray-200 rounded-t-xl">
+    <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm">
+      <div className="flex items-center gap-2.5 px-5 py-4 bg-[#F9F9F9] border-b border-gray-200 rounded-t-xl">
         <span className="text-gray-900 flex-shrink-0">{icon}</span>
         <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
       </div>
@@ -203,23 +203,23 @@ function SectionCard({ icon, title, children }: { icon: React.ReactNode; title: 
 
 function StatusBadge({ status }: { status: StatusKegiatan }) {
   if (status === "terealisasi") return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
-      <CheckCircle className="w-3 h-3" /> Terealisasi
+    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-emerald-300 text-emerald-950">
+      Terealisasi
     </span>
   )
   if (status === "selesai") return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-      <CheckCircle className="w-3 h-3" /> Selesai
+    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-emerald-300 text-emerald-950">
+      Selesai
     </span>
   )
   if (status === "berlangsung") return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-      <PlayCircle className="w-3 h-3" /> Berlangsung
+    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-sky-200 text-sky-950">
+      Berlangsung
     </span>
   )
   return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
-      <Clock className="w-3 h-3" /> Terjadwal
+    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold bg-amber-200 text-amber-950">
+      Terjadwal
     </span>
   )
 }
@@ -408,9 +408,9 @@ function TambahKegiatanInner() {
   // Success screen
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F9F9F9] flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 text-center max-w-sm w-full">
-          <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 flex items-center justify-center mx-auto mb-4">
             <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
@@ -442,7 +442,7 @@ function TambahKegiatanInner() {
   const pageSubtitle = isView ? "Informasi lengkap kegiatan" : isEdit ? "Perbarui informasi kegiatan" : "Lengkapi semua informasi yang diperlukan"
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F9F9F9]">
       {/* Sticky top bar */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
@@ -454,7 +454,7 @@ function TambahKegiatanInner() {
                 router.back()
               }
             }}
-            className="p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition"
+            className="p-2 rounded-[4px] text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition"
             aria-label="Kembali"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -472,7 +472,7 @@ function TambahKegiatanInner() {
           {isView && form.status === "selesai" && !isRealizing && (
             <button
               onClick={() => { setIsRealizing(true); setRealizeCatatan("") }}
-              className="flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white bg-green-600 hover:bg-green-700 transition shrink-0"
+              className="flex items-center gap-1.5 h-9 px-4 rounded-[4px] text-sm font-semibold text-white bg-green-600 hover:bg-green-700 transition shrink-0"
             >
               <FileCheck className="w-4 h-4" /> Laporkan Realisasi
             </button>
@@ -483,7 +483,7 @@ function TambahKegiatanInner() {
       {/* Banner realisasi */}
       {isRealizing && (
         <div className="max-w-2xl mx-auto px-4 pt-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-xl px-5 py-3.5 flex items-start gap-3">
+          <div className="bg-blue-50 border border-blue-200 rounded-[4px] px-5 py-3.5 flex items-start gap-3">
             <FileCheck className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
             <p className="text-sm text-blue-800">
               Silakan sesuaikan detail kegiatan dengan realisasi di lapangan. Nama kegiatan dan deskripsi tidak dapat diubah.
@@ -515,7 +515,7 @@ function TambahKegiatanInner() {
                 placeholder="Jelaskan tujuan dan hasil kegiatan..."
                 rows={4}
                 disabled={isReadOnly}
-                className="p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
+                className="p-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
               />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -547,8 +547,8 @@ function TambahKegiatanInner() {
                 const Icon = getPenyelenggaraIcon(p)
                 const colors = getPenyelenggaraColors(p)
                 return (
-                  <div key={p} className="flex items-center gap-2 py-1.5 px-2 bg-gray-50 rounded-lg">
-                    <div className={`w-8 h-8 rounded-full ${colors.bg} flex items-center justify-center flex-shrink-0`}>
+                  <div key={p} className="flex items-center gap-2 py-1.5 px-2 bg-[#F9F9F9] rounded-[4px]">
+                    <div className={`w-8 h-8 flex items-center justify-center flex-shrink-0`}>
                       <Icon className={`w-4 h-4 ${colors.text}`} />
                     </div>
                     <span className="text-sm font-medium text-gray-700">{p}</span>
@@ -566,7 +566,7 @@ function TambahKegiatanInner() {
                   onBlur={() => setTimeout(() => setShowTagDropdown(false), 200)}
                   onClick={() => setShowTagDropdown(true)}
                   placeholder="Tambah Penyelenggara"
-                  className="w-full h-9 px-3 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 {showTagDropdown && filteredTagOptions.length > 0 && (
                   <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
@@ -589,8 +589,8 @@ function TambahKegiatanInner() {
                     const Icon = getPenyelenggaraIcon(p)
                     const colors = getPenyelenggaraColors(p)
                     return (
-                      <div key={p} className="flex items-center gap-2 py-1.5 px-2 bg-gray-50 rounded-lg">
-                        <div className={`w-8 h-8 rounded-full ${colors.bg} flex items-center justify-center flex-shrink-0`}>
+                      <div key={p} className="flex items-center gap-2 py-1.5 px-2 bg-[#F9F9F9] rounded-[4px]">
+                        <div className={`w-8 h-8 flex items-center justify-center flex-shrink-0`}>
                           <Icon className={`w-4 h-4 ${colors.text}`} />
                         </div>
                         <span className="text-sm font-medium text-gray-700 flex-1">{p}</span>
@@ -611,7 +611,7 @@ function TambahKegiatanInner() {
           {isFormDisabled ? (
             <div className="flex flex-col gap-2">
               {form.peserta.length > 0 ? form.peserta.map((p, i) => (
-                <div key={i} className="flex items-center gap-3 py-2 px-3 bg-gray-50 rounded-lg">
+                <div key={i} className="flex items-center gap-3 py-2 px-3 bg-[#F9F9F9] rounded-[4px]">
                   <span className="text-sm font-medium text-gray-700 min-w-[100px]">{p.kategori}</span>
                   <span className="text-sm text-gray-500">: {p.jumlah} orang</span>
                 </div>
@@ -653,7 +653,7 @@ function TambahKegiatanInner() {
                             set("peserta", next)
                           }}
                           placeholder="Tulis kategori..."
-                          className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
                       )}
                     </div>
@@ -667,14 +667,14 @@ function TambahKegiatanInner() {
                         set("peserta", next)
                       }}
                       placeholder="Jumlah"
-                      className="w-24 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-24 h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                     <span className="text-sm text-gray-500 whitespace-nowrap">orang</span>
                     {i > 0 && (
                       <button
                         type="button"
                         onClick={() => set("peserta", form.peserta.filter((_, idx) => idx !== i))}
-                        className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition"
+                        className="p-1.5 hover:bg-red-50 rounded-[4px] text-red-400 hover:text-red-600 transition"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -685,7 +685,7 @@ function TambahKegiatanInner() {
               <button
                 type="button"
                 onClick={() => set("peserta", [...form.peserta, { kategori: "", jumlah: "" }])}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
               >
                 <Plus className="w-3.5 h-3.5" /> Tambah Kategori
               </button>
@@ -698,7 +698,7 @@ function TambahKegiatanInner() {
           {isFormDisabled ? (
             <div className="flex flex-col gap-2">
               {Array.isArray(form.publikasiLinks) && form.publikasiLinks.length > 0 ? form.publikasiLinks.map((p, i) => (
-                <div key={i} className="flex items-center gap-3 py-2 px-3 bg-gray-50 rounded-lg">
+                <div key={i} className="flex items-center gap-3 py-2 px-3 bg-[#F9F9F9] rounded-[4px]">
                   <span className="text-xs font-medium text-gray-700 min-w-[90px]">{p.jenisMedia || "-"}</span>
                   <span className="text-xs text-blue-600 truncate">{p.url || "-"}</span>
                 </div>
@@ -729,13 +729,13 @@ function TambahKegiatanInner() {
                         set("publikasiLinks", next)
                       }}
                       placeholder="https://..."
-                      className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                     {i > 0 && (
                       <button
                         type="button"
                         onClick={() => set("publikasiLinks", form.publikasiLinks.filter((_, idx) => idx !== i))}
-                        className="p-1.5 hover:bg-red-50 rounded-lg text-red-400 hover:text-red-600 transition"
+                        className="p-1.5 hover:bg-red-50 rounded-[4px] text-red-400 hover:text-red-600 transition"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -746,7 +746,7 @@ function TambahKegiatanInner() {
               <button
                 type="button"
                 onClick={() => set("publikasiLinks", [...form.publikasiLinks, { url: "", jenisMedia: "" }])}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2 transition w-full justify-center"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
               >
                 <Plus className="w-3.5 h-3.5" /> Tambah Link Publikasi
               </button>
@@ -912,21 +912,21 @@ function TambahKegiatanInner() {
               <p className="text-xs text-gray-500">Tentukan siapa yang dapat melihat informasi kegiatan ini.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {([
-                  { value: "publik" as const, label: "Publik", desc: "Dapat diakses oleh publik tanpa masuk ke portal", icon: <Users className="w-4 h-4" />, color: "border-green-400 bg-green-50", iconBg: "bg-green-100 text-green-700" },
-                  { value: "terbatas" as const, label: "Terbatas", desc: "Hanya dapat diakses oleh pengguna yang masuk ke portal", icon: <Users className="w-4 h-4" />, color: "border-amber-400 bg-amber-50", iconBg: "bg-amber-100 text-amber-700" },
+                  { value: "publik" as const, label: "Publik", desc: "Dapat diakses oleh publik tanpa masuk ke portal", icon: <Users className="w-4 h-4" />, color: "border-green-400 bg-green-50", iconBg: "text-green-700" },
+                  { value: "terbatas" as const, label: "Terbatas", desc: "Hanya dapat diakses oleh pengguna yang masuk ke portal", icon: <Users className="w-4 h-4" />, color: "border-amber-400 bg-amber-50", iconBg: "text-amber-700" },
                 ]).map((opt) => (
                   <button
                     key={opt.value}
                     type="button"
                     onClick={() => { if (!isFormDisabled) set("aksesInfo", opt.value) }}
                     disabled={isFormDisabled}
-                    className={`flex items-start gap-3 p-4 rounded-xl border-2 text-left transition disabled:cursor-default ${
+                    className={`flex items-start gap-3 p-4 rounded-[4px] border-2 text-left transition disabled:cursor-default ${
                       form.aksesInfo === opt.value
                         ? opt.color
                         : "border-gray-200 bg-white hover:border-gray-300 disabled:hover:border-gray-200"
                     }`}
                   >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${opt.iconBg}`}>
+                    <div className={`w-8 h-8 flex items-center justify-center flex-shrink-0 ${opt.iconBg}`}>
                       <Users className="w-4 h-4" />
                     </div>
                     <div>
@@ -950,7 +950,7 @@ function TambahKegiatanInner() {
                 onChange={(e) => setRealizeCatatan(e.target.value)}
                 placeholder="Tambahkan catatan jika ada hal yang perlu disampaikan..."
                 rows={3}
-                className="p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
+                className="p-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
               />
             </div>
           </SectionCard>
@@ -961,13 +961,13 @@ function TambahKegiatanInner() {
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => setIsRealizing(false)}
-              className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition"
+              className="flex-1 py-2.5 rounded-[4px] border border-gray-300 text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition"
             >
               Batal
             </button>
             <button
               onClick={handleRealize}
-              className="flex-1 py-2.5 rounded-lg bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700 transition"
+              className="flex-1 py-2.5 rounded-[4px] bg-emerald-600 text-white font-medium text-sm hover:bg-emerald-700 transition"
             >
               Simpan Laporan Realisasi
             </button>
@@ -984,14 +984,14 @@ function TambahKegiatanInner() {
                   router.back()
                 }
               }}
-              className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition"
+              className="flex-1 py-2.5 rounded-[4px] border border-gray-300 text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition"
             >
               Batal
             </button>
             <button
               onClick={handleSubmit}
               disabled={!canSubmit}
-              className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              className="flex-1 py-2.5 rounded-[4px] bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               {isEdit ? "Simpan Pengubahan" : "Simpan Kegiatan"}
             </button>
@@ -1002,7 +1002,7 @@ function TambahKegiatanInner() {
           <div className="flex gap-3 pt-2 pb-4">
             <a
               href={`/tambah-kegiatan?edit=${viewId}`}
-              className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-gray-50 transition text-center"
+              className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition text-center"
             >
               Edit
             </a>
@@ -1026,7 +1026,7 @@ function TambahKegiatanInner() {
                   router.back()
                 }
               }}
-              className="flex-1 py-2.5 rounded-lg border border-red-300 text-red-600 font-medium text-sm hover:bg-red-50 transition"
+              className="flex-1 py-2.5 rounded-[4px] border border-red-300 text-red-600 font-medium text-sm hover:bg-red-50 transition"
             >
               Hapus
             </button>
