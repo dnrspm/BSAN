@@ -111,7 +111,7 @@ function DetailModal({ row, onClose }: { row: ProvinsiRow; onClose: () => void }
                 href={`/sk/${pokja.skFileName}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-sm text-blue-600 hover:bg-blue-50 hover:border-blue-200 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#808489] text-sm text-blue-600 hover:bg-blue-50 hover:border-blue-200 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -133,7 +133,7 @@ function DetailModal({ row, onClose }: { row: ProvinsiRow; onClose: () => void }
                   <span>{pokja.members.length} Pengurus</span>
                 </div>
               </div>
-              <div className="border border-slate-100 rounded-[4px] overflow-hidden">
+              <div className="border border-[#D9DBDD] rounded-[4px] overflow-hidden">
                 <table className="w-full text-sm">
                   <thead className="bg-[#F1F1F1]">
                     <tr>
@@ -143,7 +143,7 @@ function DetailModal({ row, onClose }: { row: ProvinsiRow; onClose: () => void }
                   </thead>
                   <tbody>
                     {pokja.members.map((m, i) => (
-                      <tr key={i} className="border-t border-slate-100">
+                      <tr key={i} className="border-t border-[#D9DBDD]">
                         <td className="px-4 py-2.5 text-slate-900 text-xs font-medium">
                           {m.jabatan.startsWith("Bidang") ? `Anggota ${m.jabatan}` : m.jabatan}
                         </td>
@@ -352,64 +352,56 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
               Update terakhir: {new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })} | {new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
             </p>
           </div>
-          <div className="bg-white rounded-[4px] border border-slate-100 shadow-sm overflow-hidden">
-            <div className="px-5 pt-5 pb-4 space-y-4 border-b border-slate-200">
-              <div className="flex items-baseline justify-between gap-3">
-                <h2 className="text-base font-semibold text-slate-900">Data Kelompok Kerja</h2>
-                <p className="text-sm text-slate-500 tabular-nums">{filtered.length.toLocaleString("id-ID")} kelompok kerja</p>
-              </div>
-
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]">
-                <div className="relative sm:col-span-2 lg:col-span-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                  <input
-                    type="search"
-                    placeholder="Cari wilayah kelompok kerja"
-                    value={search}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    className="w-full h-10 pl-9 pr-3 text-sm border border-slate-200 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={openWilayahModal}
-                    className="h-10 min-w-0 flex-1 px-3 text-sm border border-slate-200 rounded-[4px] bg-white text-slate-700 hover:bg-[#F9F9F9] transition-colors flex items-center gap-2"
-                  >
-                    <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
-                    <span className="flex-1 truncate text-left">{wilayahLabel}</span>
-                    <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
-                  </button>
-                  {wilayahFilter !== "all" && (
-                    <button
-                      onClick={() => { setWilayahFilter("all"); setPage(1); router.push("/kelompok-kerja") }}
-                      className="h-10 px-3 text-sm text-slate-500 hover:text-slate-800 border border-slate-200 rounded-[4px] bg-white hover:bg-[#F9F9F9] transition-colors shrink-0"
-                    >
-                      Reset
-                    </button>
-                  )}
-                </div>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => { setStatusFilter(e.target.value as typeof statusFilter); setPage(1) }}
-                  aria-label="Filter status"
-                  className="h-10 w-full px-3 text-sm border border-slate-200 rounded-[4px] bg-white text-slate-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
-                >
-                  <option value="Semua">Semua Status</option>
-                  <option value="Aktif">Aktif</option>
-                  <option value="Belum Dibentuk">Belum Dibentuk</option>
-                </select>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={exportCSV}
-                  className="h-10 gap-1.5 rounded-[4px] border-slate-200"
-                >
-                  <Download className="w-4 h-4" />
-                  Ekspor Excel
-                </Button>
-              </div>
+          <div className="flex flex-wrap items-center gap-2 [&>*]:w-full [&>*]:shrink-0 sm:[&>*]:w-[180px]">
+            <div className="relative flex-1 min-w-[240px] sm:w-auto!">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              <input
+                type="search"
+                placeholder="Cari wilayah kelompok kerja"
+                value={search}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              />
             </div>
-
+            <div className="flex gap-2 sm:w-[260px]!">
+              <button
+                onClick={openWilayahModal}
+                className="h-10 min-w-0 flex-1 px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-slate-700 hover:bg-[#F9F9F9] transition-colors flex items-center gap-2"
+              >
+                <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+                <span className="flex-1 truncate text-left">{wilayahLabel}</span>
+                <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+              </button>
+              {wilayahFilter !== "all" && (
+                <button
+                  onClick={() => { setWilayahFilter("all"); setPage(1); router.push("/kelompok-kerja") }}
+                  className="h-10 px-3 text-sm text-slate-500 hover:text-slate-800 border border-[#808489] rounded-[4px] bg-white hover:bg-[#F9F9F9] transition-colors shrink-0"
+                >
+                  Reset
+                </button>
+              )}
+            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) => { setStatusFilter(e.target.value as typeof statusFilter); setPage(1) }}
+              aria-label="Filter status"
+              className="h-10 w-full px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-slate-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+            >
+              <option value="Semua">Semua Status</option>
+              <option value="Aktif">Aktif</option>
+              <option value="Belum Dibentuk">Belum Dibentuk</option>
+            </select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportCSV}
+              className="h-10 gap-1.5 rounded-[4px] border-[#808489]"
+            >
+              <Download className="w-4 h-4" />
+              Ekspor Excel
+            </Button>
+          </div>
+          <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
             <Table className="text-sm table-fixed w-full">
               <TableHeader>
                 <TableRow className="bg-[#F1F1F1] hover:bg-[#F1F1F1]">
@@ -445,7 +437,7 @@ export function DataPublikContent({ showBackButton = false, heroTitle, heroSubti
                               variant="outline"
                               size="sm"
                               onClick={() => setSelectedRow(row)}
-                              className="h-8 text-xs rounded-[4px] border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] hover:text-gray-700"
+                              className="h-8 text-xs rounded-[4px] border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] hover:text-gray-700"
                             >
                               Cek Detail
                             </Button>

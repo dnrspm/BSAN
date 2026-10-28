@@ -162,7 +162,7 @@ export function BpmpPokjaView({ pokjaList, provinsi, kabKotaList }: BpmpPokjaVie
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Informasi Dasar</p>
                   </div>
-                  <div className="rounded-[4px] border border-gray-200 p-4 grid grid-cols-2 gap-4">
+                  <div className="rounded-[4px] border border-[#D9DBDD] p-4 grid grid-cols-2 gap-4">
                     <ReviewRow label="Wilayah" value={detailPokja.nama} />
                     <ReviewRow label="Nomor Kanal Pengaduan" value={detailPokja.data?.nomorKanal || "-"} />
                   </div>
@@ -172,7 +172,7 @@ export function BpmpPokjaView({ pokjaList, provinsi, kabKotaList }: BpmpPokjaVie
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Dokumen SK</p>
                   </div>
-                  <div className="rounded-[4px] border border-gray-200 p-4 grid grid-cols-2 gap-4">
+                  <div className="rounded-[4px] border border-[#D9DBDD] p-4 grid grid-cols-2 gap-4">
                     <ReviewRow label="Nomor SK" value={detailPokja.data?.sk?.nomorSK || "-"} />
                     <ReviewRow label="Tanggal SK" value={detailPokja.data?.sk?.tanggalSK ? formatDate(detailPokja.data.sk.tanggalSK) : "-"} />
                     <ReviewRow label="Periode" value={
@@ -187,9 +187,9 @@ export function BpmpPokjaView({ pokjaList, provinsi, kabKotaList }: BpmpPokjaVie
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Susunan Pengurus</p>
                   </div>
-                  <div className="rounded-[4px] border border-gray-200 overflow-hidden">
+                  <div className="rounded-[4px] border border-[#D9DBDD] overflow-hidden">
                     <table className="w-full text-sm">
-                      <thead className="bg-[#F1F1F1] border-b border-gray-200">
+                      <thead className="bg-[#F1F1F1] border-b border-[#D9DBDD]">
                         <tr>
                           <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500">Jabatan pada Instansi</th>
                           <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500">Nama</th>
@@ -198,7 +198,7 @@ export function BpmpPokjaView({ pokjaList, provinsi, kabKotaList }: BpmpPokjaVie
                           <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500">Instansi</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-100">
+                      <tbody className="divide-y divide-[#D9DBDD]">
                         {PIMPINAN_ROLES.map((r) => {
                           const m = members?.[r.key]
                           const isEmpty = !m?.nama
@@ -231,7 +231,7 @@ export function BpmpPokjaView({ pokjaList, provinsi, kabKotaList }: BpmpPokjaVie
                 </div>
 
                 {detailPokja.validasiLog && detailPokja.validasiLog.length > 0 && (
-                  <div className="bg-white rounded-[4px] border border-gray-200 overflow-hidden">
+                  <div className="bg-white rounded-[4px] border border-[#D9DBDD] overflow-hidden">
                     <div className="px-4 py-3 border-b border-gray-100 bg-[#F9F9F9] flex items-center gap-2">
                       <FileText className="w-4 h-4 text-gray-500" />
                       <p className="text-sm font-bold text-gray-800">Riwayat Aktivitas</p>
@@ -287,45 +287,39 @@ export function BpmpPokjaView({ pokjaList, provinsi, kabKotaList }: BpmpPokjaVie
         )
       })()}
 
-      <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm overflow-hidden">
-        <div className="px-5 pt-5 pb-4 space-y-4">
-          <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-base font-semibold text-gray-900">Daftar Kelompok Kerja</h2>
-            <p className="text-sm text-gray-500 tabular-nums">{filtered.length.toLocaleString("id-ID")} kelompok kerja</p>
-          </div>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-            <div className="relative sm:col-span-2 lg:col-span-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Cari wilayah"
-                className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-              />
-            </div>
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value as PokjaStatus | "semua")}
-              aria-label="Filter status"
-              className="h-10 w-full px-3 text-sm border border-gray-300 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-            >
-              {STATUS_FILTER_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-          </div>
+      <div className="mt-8 flex flex-wrap items-center gap-2 [&>*]:w-full [&>*]:shrink-0 sm:[&>*]:w-[180px]">
+        <div className="relative flex-1 min-w-[240px] sm:w-auto!">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari wilayah"
+            className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          />
         </div>
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value as PokjaStatus | "semua")}
+          aria-label="Filter status"
+          className="h-10 w-full px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        >
+          {STATUS_FILTER_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      </div>
+      <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400 border-t border-gray-200">
+          <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400">
             <Search className="w-8 h-8" />
             <p className="text-sm">Tidak ada Kelompok Kerja ditemukan</p>
           </div>
         ) : (
-          <div className="overflow-x-auto border-t border-gray-200">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 bg-[#F1F1F1]">
+              <tr className="border-b border-[#D9DBDD] bg-[#F1F1F1]">
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500">Wilayah</th>
                 <th className="text-left px-3 py-3 text-xs font-semibold text-gray-500 hidden sm:table-cell">Tanggal Diverifikasi</th>
                 <th className="text-left px-3 py-3 text-xs font-semibold text-gray-500 hidden md:table-cell">Tanggal SK Selesai</th>
@@ -333,7 +327,7 @@ export function BpmpPokjaView({ pokjaList, provinsi, kabKotaList }: BpmpPokjaVie
                 <th className="px-3 py-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-[#D9DBDD]">
               {filtered.map((p) => {
                 const cfg = STATUS_CONFIG[p.effectiveStatus]
                 const region = p.data?.region ?? p.nama
@@ -372,7 +366,7 @@ export function BpmpPokjaView({ pokjaList, provinsi, kabKotaList }: BpmpPokjaVie
                     <td className="px-3 py-3.5 text-right">
                       <button
                         onClick={() => setDetailPokja(p)}
-                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
+                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                       >
                         Cek Detail
                       </button>

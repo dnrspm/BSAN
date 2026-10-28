@@ -90,7 +90,7 @@ export default function DaftarDrafPage() {
 
         {/* Empty state */}
         {drafts.length === 0 ? (
-          <div className="bg-white rounded-[4px] border border-gray-200 p-12 flex flex-col items-center text-center">
+          <div className="bg-white rounded-[4px] border border-[#D9DBDD] p-12 flex flex-col items-center text-center">
             <div className="w-16 h-16 flex items-center justify-center mb-4">
               <FileText className="w-8 h-8 text-gray-400" />
             </div>
@@ -107,10 +107,10 @@ export default function DaftarDrafPage() {
             </button>
           </div>
         ) : (
-          <div className="bg-white rounded-[4px] border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-[4px] border border-[#D9DBDD] overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200 bg-[#F1F1F1]">
+                <tr className="border-b border-[#D9DBDD] bg-[#F1F1F1]">
                   <th className="text-left text-xs font-semibold text-gray-500 px-4 py-3">Nama Draf</th>
                   <th className="text-left text-xs font-semibold text-gray-500 px-4 py-3">Wilayah</th>
                   <th className="text-left text-xs font-semibold text-gray-500 px-4 py-3">Terakhir Diedit</th>
@@ -119,7 +119,7 @@ export default function DaftarDrafPage() {
               </thead>
               <tbody>
                 {drafts.map((draft) => (
-                  <tr key={draft.id} className="border-b border-gray-100 last:border-0 hover:bg-[#F9F9F9]">
+                  <tr key={draft.id} className="border-b border-[#D9DBDD] last:border-0 hover:bg-[#F9F9F9]">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <FileText className="w-4 h-4 text-yellow-500" />
@@ -136,13 +136,13 @@ export default function DaftarDrafPage() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => router.push(`/buat-pokja?draftId=${draft.id}`)}
-                          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
+                          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                         >
                           Lanjutkan
                         </button>
                         <button
                           onClick={() => handleDelete(draft.id)}
-                          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-red-600 hover:bg-red-50 transition-colors whitespace-nowrap"
+                          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-red-600 bg-white text-red-600 hover:bg-red-50 transition-colors whitespace-nowrap"
                         >
                           Hapus
                         </button>
@@ -159,7 +159,7 @@ export default function DaftarDrafPage() {
         {drafts.length > 0 && (
           <button
             onClick={() => router.push("/buat-pokja")}
-            className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 border-2 border-dashed border-gray-300 rounded-[4px] text-sm font-medium text-gray-500 hover:border-blue-400 hover:text-blue-600 transition"
+            className="mt-6 flex items-center justify-center gap-2 w-full py-2.5 border-2 border-dashed border-[#808489] rounded-[4px] text-sm font-medium text-gray-500 hover:border-blue-400 hover:text-blue-600 transition"
           >
             <Plus className="w-4 h-4" />
             Buat Draf Baru

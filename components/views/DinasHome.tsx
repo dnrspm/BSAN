@@ -60,7 +60,7 @@ function ViewBtn({ label, onClick }: { label: string; onClick?: () => void }) {
 function MiniCalendar() {
   const weekDays = ["M", "S", "S", "R", "K", "J", "S"]
   return (
-    <div className="p-3 border border-gray-100 rounded-[4px]">
+    <div className="p-3 border border-[#D9DBDD] rounded-[4px]">
       <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Juni 2025</p>
       <div className="grid grid-cols-7 gap-1 text-center">
         {weekDays.map((d, i) => (
@@ -277,7 +277,7 @@ export function DashboardView({
                   {/* Detail Grid - selalu tampil semua placeholders */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Ketua Kelompok Kerja */}
-                    <div className="bg-white/60 rounded-[4px] p-3 border border-gray-200">
+                    <div className="bg-white/60 rounded-[4px] p-3 border border-[#D9DBDD]">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Ketua Kelompok Kerja</p>
                       {ketua?.nama ? (
                         <>
@@ -290,13 +290,13 @@ export function DashboardView({
                     </div>
 
                     {/* Jumlah Anggota */}
-                    <div className="bg-white/60 rounded-[4px] p-3 border border-gray-200">
+                    <div className="bg-white/60 rounded-[4px] p-3 border border-[#D9DBDD]">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Jumlah Angggota</p>
                       <p className="text-sm font-bold text-gray-900">{memberCount > 0 ? `${memberCount} Orang` : "0"}</p>
                     </div>
 
                     {/* Nomor SK */}
-                    <div className="bg-white/60 rounded-[4px] p-3 border border-gray-200">
+                    <div className="bg-white/60 rounded-[4px] p-3 border border-[#D9DBDD]">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Nomor SK</p>
                       {sk?.nomorSK ? (
                         <>
@@ -309,7 +309,7 @@ export function DashboardView({
                     </div>
 
                     {/* Kanal Pengaduan */}
-                    <div className="bg-white/60 rounded-[4px] p-3 border border-gray-200">
+                    <div className="bg-white/60 rounded-[4px] p-3 border border-[#D9DBDD]">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Kanal Pengaduan</p>
                       {kanal ? (
                         <a 
@@ -388,7 +388,7 @@ export function DashboardView({
                       <button
                         type="button"
                         onClick={() => onPerbaikiPokja?.(pokja)}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-[4px] border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-[#F9F9F9] transition-colors"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-[4px] border border-[#808489] bg-white text-sm font-medium text-gray-700 hover:bg-[#F9F9F9] transition-colors"
                       >
                         Ubah Kelompok Kerja
                       </button>
@@ -457,17 +457,17 @@ export function DashboardView({
               ))}
             </div>
           </div>
-          <div className="rounded-[4px] border border-gray-100 overflow-hidden">
+          <div className="rounded-[4px] border border-[#D9DBDD] overflow-hidden">
             <div className="max-h-64 overflow-y-auto">
               <table className="w-full text-xs">
                 <thead>
-                  <tr className="border-b border-gray-100 sticky top-0 bg-[#F1F1F1]">
+                  <tr className="border-b border-[#D9DBDD] sticky top-0 bg-[#F1F1F1]">
                     <th className="text-left px-3 py-2 font-semibold text-gray-600">Nama</th>
                     <th className="text-left px-3 py-2 font-semibold text-gray-600">Jenis</th>
                     <th className="text-left px-3 py-2 font-semibold text-gray-600">Kontak</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-[#D9DBDD]">
                   {pending > 0 && (
                     <tr>
                       <td colSpan={3} className="px-3 py-2.5">
@@ -522,13 +522,13 @@ export function DashboardView({
         <div className="px-5 py-4 overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-gray-100 bg-[#F1F1F1]">
+              <tr className="border-b border-[#D9DBDD] bg-[#F1F1F1]">
                 <th className="text-left px-3 py-2 font-semibold text-gray-600">Waktu</th>
                 <th className="text-left px-3 py-2 font-semibold text-gray-600">Pengguna</th>
                 <th className="text-left px-3 py-2 font-semibold text-gray-600">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-[#D9DBDD]">
               {[
                 { waktu: "12:45", user: "Admin Dinas", aksi: "Verifikasi Sumber Dukungan" },
                 { waktu: "11:30", user: "Admin Sekolah", aksi: "Unggah Dokumen Kelompok Kerja" },

@@ -68,7 +68,7 @@ function Rekomendasi({ indikator, buka, onToggle }: { indikator: Indikator; buka
 // Skor ada di ringkasan atas; kartu ini hanya memuat rincian (subindikator dan rekomendasi).
 function IndikatorCard({ indikator, selaras, terendah, rekomendasiBuka = false, onToggleRekomendasi }: { indikator: Indikator; selaras?: boolean; terendah?: boolean; rekomendasiBuka?: boolean; onToggleRekomendasi?: () => void }) {
   return (
-    <article className={cn("rounded-[4px] border border-gray-200 bg-white p-5 flex flex-col", terendah && "overflow-hidden", selaras && "md:grid md:grid-rows-subgrid md:row-span-3 md:gap-y-0")}>
+    <article className={cn("rounded-[4px] border border-[#D9DBDD] bg-white p-5 flex flex-col", terendah && "overflow-hidden", selaras && "md:grid md:grid-rows-subgrid md:row-span-3 md:gap-y-0")}>
       {terendah && (
         <div className="-mx-5 -mt-5 mb-4 flex items-center gap-1.5 border-b border-gray-200 bg-[#F9F9F9] px-5 py-2 text-xs font-medium text-gray-700">
           <CircleAlert className="w-3.5 h-3.5" />
@@ -129,10 +129,10 @@ export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {
 
         <section>
           <div className="grid gap-4 lg:grid-cols-[18rem_1fr]">
-            <div className="flex flex-col gap-3 rounded-[4px] border border-gray-200 bg-white p-5">
+            <div className="flex flex-col gap-3 rounded-[4px] border border-[#D9DBDD] bg-white p-5">
               <p className="text-lg font-semibold text-gray-900 leading-snug">Skor Indeks BSAN {tahun}</p>
 
-              <div className="flex flex-1 flex-col justify-center rounded-[4px] border border-gray-100 bg-[#F9F9F9] p-4">
+              <div className="flex flex-1 flex-col justify-center rounded-[4px] border border-[#D9DBDD] bg-[#F9F9F9] p-4">
                 <p className="flex items-baseline gap-2">
                   <span className="text-6xl font-bold tabular-nums leading-none text-gray-900">{fmt(total)}</span>
                   <span className="text-lg text-gray-500">/ 10</span>
@@ -164,7 +164,7 @@ export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {
               </div>
             </div>
 
-            <div className="rounded-[4px] border border-gray-200 bg-white p-5">
+            <div className="rounded-[4px] border border-[#D9DBDD] bg-white p-5">
               <div className="mb-4 flex items-center gap-1.5">
                 <h2 className="text-base font-semibold text-gray-900">4 Indikator Penilaian</h2>
                 <Tooltip>
@@ -183,7 +183,7 @@ export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 {data.map((i) => (
-                  <div key={i.id} className="rounded-[4px] border border-gray-100 bg-[#F9F9F9] p-4">
+                  <div key={i.id} className="rounded-[4px] border border-[#D9DBDD] bg-[#F9F9F9] p-4">
                     <p className="text-base font-semibold text-gray-900 leading-snug min-h-[2.75rem]">{i.nama}</p>
                     <p className="mt-2 text-3xl font-bold tabular-nums text-gray-900">
                       {fmt(i.skor)}

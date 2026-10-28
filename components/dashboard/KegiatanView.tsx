@@ -136,41 +136,35 @@ export function KegiatanView() {
         </a>
       </div>
 
-      <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm overflow-hidden">
-        <div className="px-5 pt-5 pb-4 space-y-4">
-          <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-base font-semibold text-gray-900">Daftar Kegiatan</h2>
-            <p className="text-sm text-gray-500 tabular-nums">{filtered.length.toLocaleString("id-ID")} kegiatan</p>
-          </div>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-            <div className="relative sm:col-span-2 lg:col-span-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Cari nama kegiatan, penyelenggara, atau lokasi"
-                className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-              />
-            </div>
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value as "semua" | StatusKegiatan)}
-              aria-label="Filter status"
-              className="h-10 w-full px-3 text-sm border border-gray-300 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-            >
-              <option value="semua">Semua Status</option>
-              <option value="menunggu">Terjadwal</option>
-              <option value="berlangsung">Berlangsung</option>
-              <option value="selesai">Selesai</option>
-              <option value="terealisasi">Terealisasi</option>
-            </select>
-          </div>
+      <div className="flex flex-wrap items-center gap-2 [&>*]:w-full [&>*]:shrink-0 sm:[&>*]:w-[180px]">
+        <div className="relative flex-1 min-w-[240px] sm:w-auto!">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari nama kegiatan, penyelenggara, atau lokasi"
+            className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          />
         </div>
-        <div className="overflow-x-auto border-t border-gray-200">
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value as "semua" | StatusKegiatan)}
+          aria-label="Filter status"
+          className="h-10 w-full px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        >
+          <option value="semua">Semua Status</option>
+          <option value="menunggu">Terjadwal</option>
+          <option value="berlangsung">Berlangsung</option>
+          <option value="selesai">Selesai</option>
+          <option value="terealisasi">Terealisasi</option>
+        </select>
+      </div>
+      <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#F1F1F1] border-b border-gray-200 text-left">
+              <tr className="bg-[#F1F1F1] border-b border-[#D9DBDD] text-left">
                 <th className="px-4 py-3 text-xs font-semibold text-gray-500">Nama Kegiatan</th>
                 <th className="px-4 py-3 text-xs font-semibold text-gray-500">Penyelenggara</th>
                 <th className="px-4 py-3 text-xs font-semibold text-gray-500">Waktu</th>
@@ -179,7 +173,7 @@ export function KegiatanView() {
                 <th className="px-4 py-3 text-xs font-semibold text-gray-500 text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-[#D9DBDD]">
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">
@@ -223,7 +217,7 @@ export function KegiatanView() {
                     <td className="px-4 py-3.5 text-right">
                       <a
                         href={`/tambah-kegiatan?view=${item.id}`}
-                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
+                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                       >
                         Cek Detail
                       </a>

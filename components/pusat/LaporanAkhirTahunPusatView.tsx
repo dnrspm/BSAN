@@ -236,7 +236,7 @@ function FormModal({
               value={judul}
               onChange={(e) => setJudul(e.target.value)}
               placeholder="Contoh: Formulir Evaluasi Tahun 2025"
-              className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              className="w-full h-9 px-3 mt-1 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
           </div>
 
@@ -247,7 +247,7 @@ function FormModal({
               onChange={(e) => setDeskripsi(e.target.value)}
               placeholder="Deskripsi periode (opsional)"
               rows={3}
-              className="w-full px-3 py-2 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
+              className="w-full px-3 py-2 mt-1 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-none"
             />
           </div>
 
@@ -258,7 +258,7 @@ function FormModal({
                 type="date"
                 value={periodeAwal}
                 onChange={(e) => setPeriodeAwal(e.target.value)}
-                className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full h-9 px-3 mt-1 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
             <div>
@@ -267,7 +267,7 @@ function FormModal({
                 type="date"
                 value={periodeAkhir}
                 onChange={(e) => setPeriodeAkhir(e.target.value)}
-                className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full h-9 px-3 mt-1 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
           </div>
@@ -290,7 +290,7 @@ function FormModal({
                       setGoogleFormUrls((prev) => ({ ...prev, [field.key]: e.target.value }))
                     }
                     placeholder="https://docs.google.com/forms/d/..."
-                    className="w-full h-9 px-3 mt-1 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full h-9 px-3 mt-1 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   />
                 </div>
               ))}
@@ -370,7 +370,7 @@ function DetailModal({ item, onClose, onEdit, onDelete, isReadOnly }: { item: La
               <Link2 className="w-3.5 h-3.5" />
               <p className="text-sm font-medium uppercase tracking-wide">Google Form per Jenjang</p>
             </div>
-            <div className="rounded-[4px] border border-gray-100 divide-y divide-gray-100">
+            <div className="rounded-[4px] border border-[#D9DBDD] divide-y divide-gray-100">
               {JENJANG_FIELDS.map((field) => {
                 const url = item.googleFormUrls?.[field.key]
                 return (
@@ -672,11 +672,11 @@ export function LaporanAkhirTahunPusatView({
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[800px]">
               <thead>
-                <tr className="bg-[#F1F1F1] border-b border-gray-200 text-left">
+                <tr className="bg-[#F1F1F1] border-b border-[#D9DBDD] text-left">
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500">Judul</th>
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500">Deskripsi</th>
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500">Jadwal Pengisian Formulir</th>
@@ -687,7 +687,7 @@ export function LaporanAkhirTahunPusatView({
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-[#D9DBDD]">
                 {list.map((item) => (
                   <tr key={item.id} className="hover:bg-[#F9F9F9] transition-colors">
                     <td className="px-4 py-3.5 font-semibold text-gray-900">
@@ -734,13 +734,13 @@ export function LaporanAkhirTahunPusatView({
                               setEditingItem(item)
                               setShowForm(true)
                             }}
-                            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
+                            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => setDeleteTarget(item)}
-                            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-red-600 hover:bg-red-50 transition-colors whitespace-nowrap"
+                            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-red-600 bg-white text-red-600 hover:bg-red-50 transition-colors whitespace-nowrap"
                           >
                             Hapus
                           </button>
@@ -802,7 +802,7 @@ export function LaporanAkhirTahunPusatView({
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
-                className="px-4 py-2 text-sm font-medium rounded-[4px] border border-gray-300 text-gray-700 hover:bg-[#F9F9F9]"
+                className="px-4 py-2 text-sm font-medium rounded-[4px] border border-[#808489] text-gray-700 hover:bg-[#F9F9F9]"
               >
                 Batal
               </button>

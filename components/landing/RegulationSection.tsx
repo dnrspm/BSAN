@@ -53,7 +53,7 @@ export function RegulationSection() {
             </p>
 
             <div className="mt-8 flex flex-col gap-3">
-              <div className="flex items-center gap-4 p-4 rounded-[4px] border border-slate-100 bg-[#F9F9F9] hover:border-blue-100 transition-colors">
+              <div className="flex items-center gap-4 p-4 rounded-[4px] border border-[#D9DBDD] bg-[#F9F9F9] hover:border-blue-100 transition-colors">
                 <div className="w-10 h-10 flex items-center justify-center shrink-0">
                   <FileText className="w-5 h-5 text-blue-600" />
                 </div>
@@ -70,7 +70,7 @@ export function RegulationSection() {
                 </Button>
               </div>
 
-              <div className="flex items-center gap-4 p-4 rounded-[4px] border border-slate-100 bg-[#F9F9F9] hover:border-blue-100 transition-colors">
+              <div className="flex items-center gap-4 p-4 rounded-[4px] border border-[#D9DBDD] bg-[#F9F9F9] hover:border-blue-100 transition-colors">
                 <div className="w-10 h-10 flex items-center justify-center shrink-0">
                   <FileText className="w-5 h-5 text-slate-600" />
                 </div>
@@ -81,7 +81,7 @@ export function RegulationSection() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="shrink-0 gap-1.5 border-slate-200"
+                  className="shrink-0 gap-1.5 border-[#808489]"
                 >
                   <Download className="w-3.5 h-3.5" />
                   Unduh
@@ -90,7 +90,7 @@ export function RegulationSection() {
             </div>
           </div>
 
-          <div className="border border-slate-100 rounded-[4px] overflow-hidden shadow-sm">
+          <div className="border border-[#D9DBDD] rounded-[4px] overflow-hidden shadow-sm">
             <Accordion type="single" collapsible className="w-full">
               {regulations.map((item) => (
                 <AccordionItem key={item.id} value={item.id} className="px-6">

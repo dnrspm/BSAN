@@ -78,7 +78,7 @@ function NotifModal({
 
         {/* Email preview */}
         <div className="px-6 py-5 space-y-4">
-          <div className="rounded-[4px] border border-gray-200 bg-[#F9F9F9] p-4 text-sm text-gray-700 space-y-3">
+          <div className="rounded-[4px] border border-[#D9DBDD] bg-[#F9F9F9] p-4 text-sm text-gray-700 space-y-3">
             <div className="flex items-center gap-2 text-xs text-gray-400">
               <Mail className="w-3.5 h-3.5" />
               <span>Notifikasi email telah dikirimkan ke:</span>
@@ -186,7 +186,7 @@ function MemberRow({
                 "h-7 px-2.5 rounded-[4px] text-xs font-medium transition-colors border",
                 state.action === "approved"
                   ? "bg-emerald-600 border-emerald-600 text-white"
-                  : "bg-white border-gray-300 text-gray-600 hover:border-emerald-500 hover:text-emerald-600"
+                  : "bg-white border-[#808489] text-gray-600 hover:border-emerald-500 hover:text-emerald-600"
               )}
             >
               Terima
@@ -197,7 +197,7 @@ function MemberRow({
                 "h-7 px-2.5 rounded-[4px] text-xs font-medium transition-colors border",
                 state.action === "declined"
                   ? "bg-red-600 border-red-600 text-white"
-                  : "bg-white border-gray-300 text-gray-600 hover:border-red-400 hover:text-red-600"
+                  : "bg-white border-[#808489] text-gray-600 hover:border-red-400 hover:text-red-600"
               )}
             >
               Tolak
@@ -257,7 +257,7 @@ function MemberRow({
                 value={state.alasan}
                 onChange={(e) => onChange({ ...state, alasan: e.target.value })}
                 placeholder="Tuliskan alasan penolakan anggota ini..."
-                className="w-full text-xs border border-red-300 rounded-[4px] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 resize-none"
+                className="bg-white w-full text-xs border border-red-300 rounded-[4px] px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 resize-none"
               />
             </div>
           )}
@@ -399,7 +399,7 @@ export function DetailPengajuan({ item, onClose, onSave }: DetailPengajuanProps)
             {/* Informasi Dokumen */}
             <section>
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Informasi Dokumen SK</h3>
-              <div className="rounded-[4px] border border-gray-200 bg-white p-4 grid grid-cols-2 gap-4">
+              <div className="rounded-[4px] border border-[#D9DBDD] bg-white p-4 grid grid-cols-2 gap-4">
                 <div className="flex items-start gap-2">
                   <Hash className="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" />
                   <div>
@@ -506,7 +506,7 @@ export function DetailPengajuan({ item, onClose, onSave }: DetailPengajuanProps)
               <div className="flex items-center gap-2 ml-auto">
                 <button
                   onClick={onClose}
-                  className="h-9 px-4 rounded-[4px] text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-100 transition-colors"
+                  className="h-9 px-4 rounded-[4px] text-sm font-medium border border-[#808489] text-gray-600 hover:bg-gray-100 transition-colors"
                 >
                   Batal
                 </button>

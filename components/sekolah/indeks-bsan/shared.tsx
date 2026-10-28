@@ -168,7 +168,7 @@ export function TahunSelect({ tahun, onChange, className }: { tahun: number; onC
         <select
           value={tahun}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="appearance-none rounded-[4px] border border-gray-300 bg-white pl-3 pr-9 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="appearance-none rounded-[4px] border border-[#808489] bg-white pl-3 pr-9 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
           {TAHUN_OPSI.map((y) => (
             <option key={y} value={y}>
@@ -226,7 +226,7 @@ export function EksporExcelButton({ tahun, data }: { tahun: number; data: Indika
     <button
       type="button"
       onClick={ekspor}
-      className="flex h-9 items-center gap-1.5 rounded-[4px] border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 transition hover:bg-[#F9F9F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+      className="flex h-9 items-center gap-1.5 rounded-[4px] border border-[#808489] bg-white px-4 text-sm font-medium text-gray-700 transition hover:bg-[#F9F9F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
     >
       <Download className="h-4 w-4" /> Ekspor Excel
     </button>

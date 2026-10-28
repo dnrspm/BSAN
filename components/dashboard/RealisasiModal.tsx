@@ -58,7 +58,7 @@ export function RealisasiModal({ kegiatan, onClose, onSave }: RealisasiModalProp
               value={jumlahPeserta}
               onChange={(e) => setJumlahPeserta(e.target.value)}
               placeholder="Masukkan jumlah peserta"
-              className="w-full px-3 py-2 border border-gray-200 rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="bg-white w-full px-3 py-2 border border-[#808489] rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             />
           </div>
 
@@ -70,7 +70,7 @@ export function RealisasiModal({ kegiatan, onClose, onSave }: RealisasiModalProp
               type="date"
               value={tanggalRealisasi}
               onChange={(e) => setTanggalRealisasi(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="bg-white w-full px-3 py-2 border border-[#808489] rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             />
           </div>
 
@@ -83,7 +83,7 @@ export function RealisasiModal({ kegiatan, onClose, onSave }: RealisasiModalProp
               value={linkDokumentasi}
               onChange={(e) => setLinkDokumentasi(e.target.value)}
               placeholder="https://..."
-              className="w-full px-3 py-2 border border-gray-200 rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="bg-white w-full px-3 py-2 border border-[#808489] rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             />
           </div>
 
@@ -96,7 +96,7 @@ export function RealisasiModal({ kegiatan, onClose, onSave }: RealisasiModalProp
               onChange={(e) => setCatatan(e.target.value)}
               placeholder="Tambahkan catatan jika diperlukan..."
               rows={3}
-              className="w-full px-3 py-2 border border-gray-200 rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
+              className="bg-white w-full px-3 py-2 border border-[#808489] rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
             />
           </div>
         </form>

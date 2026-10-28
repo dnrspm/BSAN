@@ -200,7 +200,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
 
 
       {/* Sumber Dukungan */}
-      <div className="rounded-[4px] border border-gray-200 bg-white overflow-hidden">
+      <div className="rounded-[4px] border border-[#D9DBDD] bg-white overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
           <h3 className="text-sm font-semibold text-gray-800">Sumber Dukungan</h3>
           {onViewSumberRujukan && (
@@ -231,15 +231,15 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
               ))}
             </div>
           </div>
-          <div className="rounded-[4px] border border-gray-100 overflow-hidden">
+          <div className="rounded-[4px] border border-[#D9DBDD] overflow-hidden">
             <div className="max-h-64 overflow-y-auto">
               <table className="w-full text-xs">
-                <thead><tr className="border-b border-gray-100 bg-[#F1F1F1]">
+                <thead><tr className="border-b border-[#D9DBDD] bg-[#F1F1F1]">
                   <th className="text-left px-3 py-2 font-semibold text-gray-600">Nama</th>
                   <th className="text-left px-3 py-2 font-semibold text-gray-600">Jenis</th>
                   <th className="text-left px-3 py-2 font-semibold text-gray-600">Kontak</th>
                 </tr></thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-[#D9DBDD]">
                   {[{nama:"Klinik Sehat",jenis:"Kesehatan",kontak:"0812"},{nama:"Psikolog Dina",jenis:"Konseling",kontak:"0813"}].map((item,i)=>(
                     <tr key={i} className="hover:bg-[#F9F9F9]">
                       <td className="px-3 py-2.5 text-gray-800 font-medium">{item.nama}</td>
@@ -255,7 +255,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
       </div>
 
       {/* Kegiatan */}
-      <div className="rounded-[4px] border border-gray-200 bg-white overflow-hidden">
+      <div className="rounded-[4px] border border-[#D9DBDD] bg-white overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
           <h3 className="text-sm font-semibold text-gray-800">Kegiatan</h3>
           {onViewActivities && (
@@ -265,7 +265,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
           )}
         </div>
         <div className="px-5 py-4 grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <div className="p-3 border border-gray-100 rounded-[4px]">
+          <div className="p-3 border border-[#D9DBDD] rounded-[4px]">
             <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Juni 2025</p>
             <div className="grid grid-cols-7 gap-1 text-center">
               {["M","S","S","R","K","J","S"].map((d,i)=><p key={i} className="text-xs font-medium text-gray-400">{d}</p>)}
@@ -275,7 +275,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
           <div className="space-y-2">
             <p className="text-xs font-semibold text-gray-600 uppercase">Kegiatan Mendatang</p>
             {[{tanggal:"14 Jun",judul:"Pelatihan"},{tanggal:"17 Jun",judul:"Verifikasi"},{tanggal:"21 Jun",judul:"Rapat"}].map((k,i)=>(
-              <div key={i} className="p-2.5 rounded-[4px] bg-[#F9F9F9] border border-gray-100">
+              <div key={i} className="p-2.5 rounded-[4px] bg-[#F9F9F9] border border-[#D9DBDD]">
                 <p className="text-xs font-medium text-gray-700">{k.judul}</p>
                 <p className="text-xs text-gray-500">{k.tanggal}</p>
               </div>

@@ -137,7 +137,7 @@ function TextInput({ value, onChange, placeholder, type = "text", disabled }: {
       onChange={(e) => onChange?.(e.target.value)}
       placeholder={placeholder}
       disabled={disabled}
-      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
+      className="w-full h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
     />
   )
 }
@@ -155,7 +155,7 @@ function SelectInput({ value, onChange, options, placeholder, disabled }: {
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         disabled={disabled}
-        className="w-full h-9 pl-3 pr-8 text-sm border border-gray-300 rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700 disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
+        className="w-full h-9 pl-3 pr-8 text-sm border border-[#808489] rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700 disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
       >
         {placeholder && <option value="" disabled>{placeholder}</option>}
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
@@ -169,7 +169,7 @@ function SelectInput({ value, onChange, options, placeholder, disabled }: {
 
 function SectionCard({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
       <div className="flex items-center gap-2.5 px-5 py-4 bg-[#F9F9F9] border-b border-gray-200">
         <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center text-blue-700 flex-shrink-0">
           {icon}
@@ -1069,7 +1069,7 @@ function RujukanFormInner() {
                         set("kontak", updated)
                       }}
                       placeholder="08xxxxxxxxxx"
-                      className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white"
+                      className="flex-1 h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white"
                     />
                     {/* Tipe select */}
                     <select
@@ -1080,7 +1080,7 @@ function RujukanFormInner() {
                         )
                         set("kontak", updated)
                       }}
-                      className="w-36 h-9 px-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 cursor-pointer"
+                      className="w-36 h-9 px-2 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 cursor-pointer"
                     >
                       <option value="call_center">Call Center</option>
                       <option value="nomor_pribadi">Nomor Pribadi</option>
@@ -1090,7 +1090,7 @@ function RujukanFormInner() {
                       <button
                         type="button"
                         onClick={() => set("kontak", form.kontak.filter((_, idx) => idx !== i))}
-                        className="h-9 w-9 flex items-center justify-center rounded-[4px] border border-gray-200 text-gray-400 hover:border-red-200 hover:text-red-500 hover:bg-red-50 transition flex-shrink-0"
+                        className="h-9 w-9 flex items-center justify-center rounded-[4px] border border-[#808489] text-gray-400 hover:border-red-200 hover:text-red-500 hover:bg-red-50 transition flex-shrink-0"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1105,7 +1105,7 @@ function RujukanFormInner() {
               <button
                 type="button"
                 onClick={() => set("kontak", [...form.kontak, { nomor: "", tipe: "call_center" }])}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-[#808489] hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
               >
                 <Plus className="w-3.5 h-3.5" /> Tambah Kontak
               </button>
@@ -1122,7 +1122,7 @@ function RujukanFormInner() {
                   onChange={(e) => set("website", e.target.value)}
                   placeholder="https://www.instansi.go.id"
                   disabled={isReadOnly}
-                  className={`w-full h-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-white disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default ${isReadOnly ? "pl-3" : "pl-9"}`}
+                  className={`w-full h-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-white disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default ${isReadOnly ? "pl-3" : "pl-9"}`}
                 />
               </div>
             </div>
@@ -1142,7 +1142,7 @@ function RujukanFormInner() {
                   type="button"
                   onClick={() => { if (!isReadOnly) set("aksesInfo", opt.value) }}
                   disabled={isReadOnly}
-                  className={`flex items-start gap-3 p-4 rounded-[4px] border-2 text-left transition disabled:cursor-default ${form.aksesInfo === opt.value ? opt.color : "border-gray-200 bg-white hover:border-gray-300 disabled:hover:border-gray-200"}`}
+                  className={`flex items-start gap-3 p-4 rounded-[4px] border-2 text-left transition disabled:cursor-default ${form.aksesInfo === opt.value ? opt.color : "border-[#808489] bg-white hover:border-gray-300 disabled:hover:border-gray-200"}`}
                 >
                   <div className={`w-8 h-8 flex items-center justify-center flex-shrink-0 ${opt.iconBg}`}>{opt.icon}</div>
                   <div>
@@ -1382,7 +1382,7 @@ function RujukanFormInner() {
               <button
                 type="button"
                 onClick={() => router.push(getRujukanFormExitHref())}
-                className="flex-1 py-2.5 rounded-[4px] border border-gray-300 text-sm font-semibold text-gray-700 bg-white hover:bg-[#F9F9F9] transition"
+                className="flex-1 py-2.5 rounded-[4px] border border-[#808489] text-sm font-semibold text-gray-700 bg-white hover:bg-[#F9F9F9] transition"
               >
                 Batal
               </button>
@@ -1429,7 +1429,7 @@ function RujukanFormInner() {
                   value={ajukanAlasan}
                   onChange={(e) => setAjukanAlasan(e.target.value)}
                   placeholder="Jelaskan alasan pengubahan data..."
-                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-[#808489] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   rows={4}
                 />
               </div>
@@ -1511,7 +1511,7 @@ function RujukanFormInner() {
                   value={nonaktifAlasan}
                   onChange={(e) => setNonaktifAlasan(e.target.value)}
                   placeholder="Jelaskan alasan penonaktifan..."
-                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-[#808489] focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                   rows={4}
                 />
               </div>
@@ -1559,7 +1559,7 @@ function RujukanFormInner() {
                   value={pulihkanAlasan}
                   onChange={(e) => setPulihkanAlasan(e.target.value)}
                   placeholder="Jelaskan alasan pemulihan..."
-                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-[#808489] focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
                   rows={4}
                 />
               </div>
@@ -1617,7 +1617,7 @@ function RujukanFormInner() {
                   value={perbaikanCatatan}
                   onChange={(e) => setPerbaikanCatatan(e.target.value)}
                   placeholder="Jelaskan alasan penolakan..."
-                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-[#808489] focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                   rows={4}
                 />
               </div>
@@ -1689,7 +1689,7 @@ function RujukanFormInner() {
                   value={reportAlasan}
                   onChange={(e) => setReportAlasan(e.target.value)}
                   placeholder={reportJenis === "penonaktifan" ? "Jelaskan alasan penonaktifan..." : "Jelaskan data yang perlu diperbaiki..."}
-                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-[#808489] focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                   rows={3}
                 />
               </div>
@@ -1737,7 +1737,7 @@ function RujukanFormInner() {
                   value={deleteAlasan}
                   onChange={(e) => setDeleteAlasan(e.target.value)}
                   placeholder="Contoh: Data tidak valid atau sudah tidak beroperasi..."
-                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-[#808489] focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                   rows={3}
                 />
               </div>

@@ -108,11 +108,11 @@ export function ActivitiesView() {
         </a>
       </div>
 
-      <div className="rounded-[4px] border border-gray-200 overflow-hidden bg-white shadow-sm">
+      <div className="rounded-[4px] border border-[#D9DBDD] overflow-hidden bg-white shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="bg-[#F1F1F1] border-b border-gray-200 text-left">
+              <tr className="bg-[#F1F1F1] border-b border-[#D9DBDD] text-left">
                 <th className="px-4 py-3 text-xs font-semibold text-gray-500">Nama Activities</th>
                 <th className="px-4 py-3 text-xs font-semibold text-gray-500">Penyelenggara</th>
                 <th className="px-4 py-3 text-xs font-semibold text-gray-500">Waktu</th>
@@ -121,7 +121,7 @@ export function ActivitiesView() {
                 <th className="px-4 py-3 text-xs font-semibold text-gray-500 text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-[#D9DBDD]">
               {list.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">
@@ -144,7 +144,7 @@ export function ActivitiesView() {
                       <div className="flex items-center justify-end gap-2">
                         <a
                           href={`/tambah-kegaitan?view=${item.id}`}
-                          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
+                          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                         >
                           Cek Detail
                         </a>
@@ -156,7 +156,7 @@ export function ActivitiesView() {
                           ) : (
                             <button
                               onClick={() => setSelectedRealisasi(item)}
-                              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
+                              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                             >
                               Lapor Realisasi
                             </button>

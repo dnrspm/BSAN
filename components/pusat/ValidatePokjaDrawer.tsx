@@ -41,7 +41,7 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
 function ReviewMemberCard({ label, member }: { label: string; member: MemberField }) {
   const isEmpty = !member.nama && !member.email && !member.noWhatsapp
   return (
-    <div className="rounded-[4px] border border-gray-200 overflow-hidden">
+    <div className="rounded-[4px] border border-[#D9DBDD] overflow-hidden">
       <div className="px-3 py-2 bg-[#F9F9F9] border-b border-gray-200 flex items-center gap-2">
         <User className="w-3.5 h-3.5 text-blue-600" />
         <span className="text-xs font-semibold text-gray-700">{label}</span>
@@ -114,7 +114,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Informasi Dasar</p>
             </div>
-            <div className="rounded-[4px] border border-gray-200 p-4 grid grid-cols-2 gap-4">
+            <div className="rounded-[4px] border border-[#D9DBDD] p-4 grid grid-cols-2 gap-4">
               <ReviewRow label="Wilayah" value={pokja.nama} />
               <ReviewRow label="Nomor Kanal Pengaduan" value={pokja.data?.nomorKanal || "-"} />
             </div>
@@ -125,7 +125,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Dokumen SK</p>
             </div>
-            <div className="rounded-[4px] border border-gray-200 p-4 grid grid-cols-2 gap-4">
+            <div className="rounded-[4px] border border-[#D9DBDD] p-4 grid grid-cols-2 gap-4">
               <ReviewRow label="Nomor SK" value={pokja.data?.sk?.nomorSK || "-"} />
               <ReviewRow label="Tanggal SK" value={pokja.data?.sk?.tanggalSK ? formatDate(pokja.data.sk.tanggalSK) : "-"} />
               <ReviewRow label="Periode" value={
@@ -141,9 +141,9 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Susunan Pengurus</p>
             </div>
-            <div className="rounded-[4px] border border-gray-200 overflow-hidden">
+            <div className="rounded-[4px] border border-[#D9DBDD] overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-[#F1F1F1] border-b border-gray-200">
+                <thead className="bg-[#F1F1F1] border-b border-[#D9DBDD]">
                   <tr>
                     <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500">Jabatan pada Instansi</th>
                     <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500">Nama</th>
@@ -152,7 +152,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
                     <th className="text-left px-4 py-2 text-xs font-semibold text-gray-500">Instansi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-[#D9DBDD]">
                   {PIMPINAN_ROLES.map((r) => {
                     const m = members?.[r.key]
                     const isEmpty = !m?.nama
@@ -185,7 +185,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
           </div>
 
           {/* Riwayat Aktivitas */}
-          <div className="bg-white rounded-[4px] border border-gray-200 overflow-hidden">
+          <div className="bg-white rounded-[4px] border border-[#D9DBDD] overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-100 bg-[#F9F9F9] flex items-center gap-2">
               <FileText className="w-4 h-4 text-gray-500" />
               <p className="text-sm font-bold text-gray-800">Riwayat Aktivitas</p>
@@ -250,7 +250,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
                 value={rejectAlasan}
                 onChange={(e) => setRejectAlasan(e.target.value)}
                 placeholder="Masukkan alasan penolakan..."
-                className="w-full px-3 py-2 text-sm border border-red-200 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="bg-white w-full px-3 py-2 text-sm border border-red-200 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-red-500"
                 rows={3}
               />
             </div>
@@ -293,7 +293,7 @@ export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDra
                     setShowRejectForm(false)
                     setRejectAlasan("")
                   }}
-                  className="flex-1 py-2.5 rounded-[4px] text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="flex-1 py-2.5 rounded-[4px] text-sm font-medium border border-[#808489] text-gray-700 hover:bg-gray-100 transition-colors"
                 >
                   Batal
                 </button>

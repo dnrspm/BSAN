@@ -62,7 +62,7 @@ function MemberSection({
   bidangDisabled?: boolean
 }) {
   return (
-    <div className="rounded-[4px] border border-gray-200 bg-white overflow-hidden">
+    <div className="rounded-[4px] border border-[#D9DBDD] bg-white overflow-hidden">
       <div className="flex items-center gap-2 px-4 py-3 bg-[#F9F9F9] border-b border-gray-200">
         <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
           <User className="w-3.5 h-3.5 text-blue-700" />
@@ -88,7 +88,7 @@ function MemberSection({
               <select
                 value={value.jenisKelamin}
                 onChange={(e) => onChange("jenisKelamin", e.target.value)}
-                className="w-full h-9 pl-3 pr-8 text-sm border border-gray-300 rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
+                className="w-full h-9 pl-3 pr-8 text-sm border border-[#808489] rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
               >
                 <option value="" disabled>Pilih jenis kelamin</option>
                 <option value="Laki-Laki">Laki-Laki</option>
@@ -122,7 +122,7 @@ function MemberSection({
                 value={value.noWhatsapp}
                 onChange={(e) => onChange("noWhatsapp", e.target.value.replace(/\D/g, ""))}
                 placeholder="08xxxxxxxxxx"
-                className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                className="bg-white w-full h-9 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               />
             </div>
           </div>
@@ -199,7 +199,7 @@ function InputField({
           onChange={(e) => onChange?.(e.target.value)}
           placeholder={placeholder}
           className={`w-full h-9 ${icon ? "pl-9" : "pl-3"} pr-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition
-            ${readOnly ? "bg-[#F9F9F9] border-gray-200 text-gray-600 cursor-default" : "bg-white border-gray-300 text-gray-800"}`}
+            ${readOnly ? "bg-white border-[#808489] text-gray-600 cursor-default" : "bg-white border-[#808489] text-gray-800"}`}
         />
       </div>
     </div>
@@ -299,7 +299,7 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
 function ReviewMemberCard({ label, member }: { label: string; member: MemberField }) {
   const isEmpty = !member.nama && !member.email && !member.noWhatsapp
   return (
-    <div className="rounded-[4px] border border-gray-200 overflow-hidden">
+    <div className="rounded-[4px] border border-[#D9DBDD] overflow-hidden">
       <div className="px-3 py-2 bg-[#F9F9F9] border-b border-gray-200 flex items-center gap-2">
         <User className="w-3.5 h-3.5 text-blue-600" />
         <span className="text-xs font-semibold text-gray-700">{label}</span>
@@ -538,7 +538,7 @@ export function FormPokja({ region, onClose, onSubmit }: FormPokjaProps) {
                 <h3 className="text-sm font-bold text-gray-900">Informasi Dasar</h3>
                 <p className="text-xs text-gray-500 mt-0.5">Isi informasi umum Kelompok Kerja yang akan dibentuk.</p>
               </div>
-              <div className="rounded-[4px] border border-gray-200 bg-white p-5 space-y-4">
+              <div className="rounded-[4px] border border-[#D9DBDD] bg-white p-5 space-y-4">
                 <InputField
 label="Wilayah / Nama Kelompok Kerja"
                   value={region}
@@ -561,7 +561,7 @@ label="Wilayah / Nama Kelompok Kerja"
                         value={kanalPengaduan}
                         onChange={(e) => setKanalPengaduan(e.target.value.replace(/\D/g, ""))}
                         placeholder="Contoh: 08123456789"
-                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                        className="bg-white w-full h-9 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                       />
                     </div>
                   </div>
@@ -603,7 +603,7 @@ label="Wilayah / Nama Kelompok Kerja"
                 <button
                   type="button"
                   onClick={() => excelInputRef.current?.click()}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-700 bg-white hover:bg-[#F9F9F9] px-3 py-2 rounded-[4px] transition border border-gray-300"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-700 bg-white hover:bg-[#F9F9F9] px-3 py-2 rounded-[4px] transition border border-[#808489]"
                 >
                   <Upload className="w-3.5 h-3.5" />
                   Unggah Data Excel
@@ -716,7 +716,7 @@ label="Wilayah / Nama Kelompok Kerja"
                   <button
                     type="button"
                     onClick={addAdditionalMember}
-                    className="flex items-center justify-center gap-2 w-full py-2.5 mt-2 rounded-[4px] border-2 border-dashed border-gray-300 text-sm font-medium text-gray-500 hover:border-blue-400 hover:text-blue-600 transition"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 mt-2 rounded-[4px] border-2 border-dashed border-[#808489] text-sm font-medium text-gray-500 hover:border-blue-400 hover:text-blue-600 transition"
                   >
                     <Plus className="w-4 h-4" />
                     Tambah Anggota
@@ -733,7 +733,7 @@ label="Wilayah / Nama Kelompok Kerja"
                 <h3 className="text-sm font-bold text-gray-900">Dokumen SK</h3>
                 <p className="text-xs text-gray-500 mt-0.5">Unggah Surat Keputusan (SK) dan isi detail dokumennya.</p>
               </div>
-              <div className="rounded-[4px] border border-gray-200 bg-white p-5 space-y-5">
+              <div className="rounded-[4px] border border-[#D9DBDD] bg-white p-5 space-y-5">
                 <FileUploadField
                   value={skFile}
                   onChange={(f) => { setSkFile(f); if (f) setFileError("") }}
@@ -751,7 +751,7 @@ label="Wilayah / Nama Kelompok Kerja"
                         value={skDetail.nomorSK}
                         onChange={(e) => setSkDetail((p) => ({ ...p, nomorSK: e.target.value }))}
                         placeholder="Contoh: 123/SK/2024"
-                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                        className="bg-white w-full h-9 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                       />
                     </div>
                   </div>
@@ -765,7 +765,7 @@ label="Wilayah / Nama Kelompok Kerja"
                         type="date"
                         value={skDetail.tanggalSK}
                         onChange={(e) => setSkDetail((p) => ({ ...p, tanggalSK: e.target.value }))}
-                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
+                        className="bg-white w-full h-9 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
                       />
                     </div>
                   </div>
@@ -779,7 +779,7 @@ label="Wilayah / Nama Kelompok Kerja"
                         type="date"
                         value={skDetail.periodeMulai}
                         onChange={(e) => setSkDetail((p) => ({ ...p, periodeMulai: e.target.value }))}
-                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
+                        className="bg-white w-full h-9 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
                       />
                     </div>
                   </div>
@@ -793,7 +793,7 @@ label="Wilayah / Nama Kelompok Kerja"
                         type="date"
                         value={skDetail.periodeSelesai}
                         onChange={(e) => setSkDetail((p) => ({ ...p, periodeSelesai: e.target.value }))}
-                        className="w-full h-9 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
+                        className="bg-white w-full h-9 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700"
                       />
                     </div>
                   </div>
@@ -811,7 +811,7 @@ label="Wilayah / Nama Kelompok Kerja"
               </div>
 
               {/* Informasi Dasar */}
-              <div className="rounded-[4px] border border-gray-200 bg-white overflow-hidden">
+              <div className="rounded-[4px] border border-[#D9DBDD] bg-white overflow-hidden">
                 <div className="flex items-center gap-2 px-4 py-3 bg-[#F9F9F9] border-b border-gray-200">
                   <Building2 className="w-3.5 h-3.5 text-blue-600" />
                   <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Informasi Dasar</span>
@@ -830,7 +830,7 @@ label="Wilayah / Nama Kelompok Kerja"
               </div>
 
               {/* Susunan Pengurus */}
-              <div className="rounded-[4px] border border-gray-200 bg-white overflow-hidden">
+              <div className="rounded-[4px] border border-[#D9DBDD] bg-white overflow-hidden">
                 <div className="flex items-center gap-2 px-4 py-3 bg-[#F9F9F9] border-b border-gray-200">
                   <User className="w-3.5 h-3.5 text-blue-600" />
                   <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Susunan Pengurus</span>
@@ -855,7 +855,7 @@ label="Wilayah / Nama Kelompok Kerja"
               </div>
 
               {/* Dokumen SK */}
-              <div className="rounded-[4px] border border-gray-200 bg-white overflow-hidden">
+              <div className="rounded-[4px] border border-[#D9DBDD] bg-white overflow-hidden">
                 <div className="flex items-center gap-2 px-4 py-3 bg-[#F9F9F9] border-b border-gray-200">
                   <FileText className="w-3.5 h-3.5 text-blue-600" />
                   <span className="text-xs font-bold text-gray-700 uppercase tracking-wide">Dokumen SK</span>

@@ -56,7 +56,7 @@ function SectionCard({
   children: React.ReactNode
 }) {
   return (
-    <section className="rounded-[4px] border border-gray-200 bg-white p-5">
+    <section className="rounded-[4px] border border-[#D9DBDD] bg-white p-5">
       <h2 className="text-sm font-bold text-gray-900">{title}</h2>
       {deskripsi && <p className="text-xs text-gray-500 mt-0.5">{deskripsi}</p>}
       <div className="mt-4">{children}</div>
@@ -323,10 +323,10 @@ export default function BeriAksesPage() {
               }}
               placeholder="nama@instansi.go.id"
               aria-invalid={formatSalah}
-              className={`w-full h-10 pl-9 pr-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 ${
+              className={`bg-white w-full h-10 pl-9 pr-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 ${
                 formatSalah
                   ? "border-red-300 focus:ring-red-500 focus:border-red-500"
-                  : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                  : "border-[#808489] focus:ring-blue-500 focus:border-blue-500"
               }`}
             />
           </div>
@@ -346,7 +346,7 @@ export default function BeriAksesPage() {
           )}
 
           {saran.length > 0 && (
-            <div className="mt-2 w-full border border-gray-200 rounded-[4px] overflow-hidden max-h-80 overflow-y-auto">
+            <div className="mt-2 w-full border border-[#D9DBDD] rounded-[4px] overflow-hidden max-h-80 overflow-y-auto">
               {saran.map((k) => (
                 <button
                   key={k.email}
@@ -393,7 +393,7 @@ export default function BeriAksesPage() {
                   <button
                     type="button"
                     onClick={bukaManual}
-                    className="mt-2.5 inline-flex items-center gap-1.5 h-9 px-3 rounded-[4px] border border-gray-300 bg-white text-gray-900 text-xs font-medium hover:border-gray-400 hover:bg-[#F9F9F9] transition"
+                    className="mt-2.5 inline-flex items-center gap-1.5 h-9 px-3 rounded-[4px] border border-[#808489] bg-white text-gray-900 text-xs font-medium hover:border-gray-400 hover:bg-[#F9F9F9] transition"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     Daftarkan Pengguna
@@ -406,7 +406,7 @@ export default function BeriAksesPage() {
 
         <SectionCard title={`Pengguna Dipilih (${terpilih.length})`}>
           {terpilih.length > 0 ? (
-            <div className="border border-gray-200 rounded-[4px]">
+            <div className="border border-[#D9DBDD] rounded-[4px]">
               {terpilih.map((t) => (
                 <div
                   key={t.email}
@@ -444,7 +444,7 @@ export default function BeriAksesPage() {
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-end gap-2">
           <button
             onClick={() => router.push(URL_KEMBALI)}
-            className="px-4 py-2 text-sm font-medium rounded-[4px] border border-gray-300 text-gray-700 hover:bg-[#F9F9F9]"
+            className="px-4 py-2 text-sm font-medium rounded-[4px] border border-[#808489] text-gray-700 hover:bg-[#F9F9F9]"
           >
             Batal
           </button>
@@ -507,7 +507,7 @@ export default function BeriAksesPage() {
                       className={`h-10 px-2 rounded-[4px] border text-sm font-medium transition truncate ${
                         manualPeran === p
                           ? "border-blue-600 bg-blue-50 text-blue-600"
-                          : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
+                          : "border-[#808489] bg-white text-gray-600 hover:border-gray-400"
                       }`}
                     >
                       {PERAN_LABEL_SINGKAT[p]}
@@ -534,7 +534,7 @@ export default function BeriAksesPage() {
                         className={`h-10 rounded-[4px] border text-sm font-medium transition ${
                           manualTingkat === t
                             ? "border-blue-600 bg-blue-50 text-blue-600"
-                            : "border-gray-300 bg-white text-gray-600 hover:border-gray-400"
+                            : "border-[#808489] bg-white text-gray-600 hover:border-gray-400"
                         }`}
                       >
                         {TINGKAT_LABEL[t]}
@@ -551,7 +551,7 @@ export default function BeriAksesPage() {
                     <select
                       value={manualProvinsi}
                       onChange={(e) => { setManualProvinsi(e.target.value); setManualKabKota(""); setManualError("") }}
-                      className={`w-full h-10 px-2 mt-1 text-sm border border-gray-300 rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      className={`w-full h-10 px-2 mt-1 text-sm border border-[#808489] rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                         manualProvinsi ? "text-gray-900" : "text-gray-400"
                       }`}
                     >
@@ -568,7 +568,7 @@ export default function BeriAksesPage() {
                         value={manualKabKota}
                         onChange={(e) => { setManualKabKota(e.target.value); setManualError("") }}
                         disabled={!manualProvinsi}
-                        className={`w-full h-10 px-2 mt-1 text-sm border border-gray-300 rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                        className={`w-full h-10 px-2 mt-1 text-sm border border-[#808489] rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
                           manualKabKota ? "text-gray-900" : "text-gray-400"
                         }`}
                       >
@@ -598,13 +598,13 @@ export default function BeriAksesPage() {
                           value={email}
                           onChange={(e) => ubahEmailManual(i, e.target.value)}
                           placeholder="nama@instansi.go.id"
-                          className="flex-1 h-10 px-3 text-sm border border-gray-300 rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                          className="flex-1 h-10 px-3 text-sm border border-[#808489] rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                         />
                         {manualEmails.length > 1 && (
                           <button
                             type="button"
                             onClick={() => hapusBarisEmail(i)}
-                            className="h-10 w-10 flex items-center justify-center rounded-[4px] border border-gray-200 text-gray-400 hover:border-red-200 hover:text-red-500 hover:bg-red-50 transition flex-shrink-0"
+                            className="h-10 w-10 flex items-center justify-center rounded-[4px] border border-[#808489] text-gray-400 hover:border-red-200 hover:text-red-500 hover:bg-red-50 transition flex-shrink-0"
                             aria-label={`Hapus email baris ${i + 1}`}
                           >
                             <Trash2 className="w-4 h-4" />
@@ -616,7 +616,7 @@ export default function BeriAksesPage() {
                   <button
                     type="button"
                     onClick={tambahBarisEmail}
-                    className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
+                    className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-[#808489] hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
                   >
                     <Plus className="w-3.5 h-3.5" /> Tambah Email
                   </button>
@@ -630,7 +630,7 @@ export default function BeriAksesPage() {
                 <button
                   type="button"
                   onClick={tutupManual}
-                  className="px-3 h-9 text-xs font-medium rounded-[4px] border border-gray-300 text-gray-700 bg-white hover:bg-[#F9F9F9]"
+                  className="px-3 h-9 text-xs font-medium rounded-[4px] border border-[#808489] text-gray-700 bg-white hover:bg-[#F9F9F9]"
                 >
                   Batal
                 </button>

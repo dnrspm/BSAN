@@ -145,7 +145,7 @@ export function UsulInstansiForm({ wilayah }: UsulInstansiFormProps) {
               value={namaInstansi}
               onChange={(e) => setNamaInstansi(e.target.value)}
               placeholder="Contoh: Pusat Layanan Anak Terpadu"
-              className="w-full pl-9 pr-3 py-2.5 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="bg-white w-full pl-9 pr-3 py-2.5 text-sm rounded-[4px] border border-[#808489] focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
         </div>
@@ -158,7 +158,7 @@ export function UsulInstansiForm({ wilayah }: UsulInstansiFormProps) {
             id="kategori"
             value={kategori}
             onChange={(e) => setKategori(e.target.value as KategoriDukungan)}
-            className="mt-1 w-full rounded-[4px] border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+            className="mt-1 w-full rounded-[4px] border border-[#808489] px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
           >
             {KATEGORI_OPTIONS.map((k) => (
               <option key={k} value={k}>
@@ -179,7 +179,7 @@ export function UsulInstansiForm({ wilayah }: UsulInstansiFormProps) {
             value={alamat}
             onChange={(e) => setAlamat(e.target.value)}
             placeholder="Jalan, kelurahan, kecamatan"
-            className="mt-1 w-full rounded-[4px] border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="bg-white mt-1 w-full rounded-[4px] border border-[#808489] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
 
@@ -195,7 +195,7 @@ export function UsulInstansiForm({ wilayah }: UsulInstansiFormProps) {
               value={nomorKontak}
               onChange={(e) => setNomorKontak(e.target.value)}
               placeholder="Contoh: 0651xxxxxx"
-              className="w-full pl-9 pr-3 py-2.5 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="bg-white w-full pl-9 pr-3 py-2.5 text-sm rounded-[4px] border border-[#808489] focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
         </div>
@@ -210,7 +210,7 @@ export function UsulInstansiForm({ wilayah }: UsulInstansiFormProps) {
             value={keterangan}
             onChange={(e) => setKeterangan(e.target.value)}
             placeholder="Jelaskan kebutuhan sekolah terkait layanan ini"
-            className="mt-1 w-full rounded-[4px] border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="bg-white mt-1 w-full rounded-[4px] border border-[#808489] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
 

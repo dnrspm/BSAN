@@ -166,24 +166,17 @@ function PokjaDetailDrawer({ pokja, onClose }: { pokja: PokjaItem; onClose: () =
           )}
 
           {/* Members table */}
-          <div className="bg-white rounded-[4px] border border-gray-200 overflow-hidden">
-            <div className="px-5 pt-5 pb-4 space-y-4 border-b border-gray-200">
-              <div className="flex items-baseline justify-between gap-3">
-                <h3 className="text-base font-semibold text-gray-900">Daftar Anggota</h3>
-                <p className="text-sm text-gray-500 tabular-nums">{rows.length} anggota</p>
-              </div>
-              <div className="relative sm:max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                <input
-                  type="search"
-                  value={search}
-                  onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-                  placeholder="Cari nama, posisi"
-                  className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                />
-              </div>
-            </div>
-
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+              placeholder="Cari nama, posisi"
+              className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            />
+          </div>
+          <div className="bg-white rounded-[4px] border border-[#D9DBDD] overflow-hidden">
             {rows.length === 0 ? (
               <div className="flex flex-col items-center py-10 text-center text-gray-400">
                 <Users className="w-7 h-7 mb-2" />
@@ -193,7 +186,7 @@ function PokjaDetailDrawer({ pokja, onClose }: { pokja: PokjaItem; onClose: () =
               <>
                 <div className="overflow-x-auto">
                   <table className="min-w-full text-sm text-left">
-                    <thead className="bg-[#F1F1F1] border-b border-gray-100">
+                    <thead className="bg-[#F1F1F1] border-b border-[#D9DBDD]">
                       <tr>
                         {["Posisi / Peran", "Nama", "Email", "Jenis Kelamin", "Nomor HP", "Instansi"].map((col) => (
                           <th key={col} className="px-4 py-3 text-xs font-semibold text-gray-500 whitespace-nowrap">
@@ -202,7 +195,7 @@ function PokjaDetailDrawer({ pokja, onClose }: { pokja: PokjaItem; onClose: () =
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-[#D9DBDD]">
                       {paginated.length > 0 ? paginated.map((row) => (
                         <tr key={row.key} className="hover:bg-[#F9F9F9] transition-colors">
                           <td className="px-4 py-3 whitespace-nowrap">
@@ -294,12 +287,26 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
         )}
       </div>
 
-      <div className="bg-white rounded-[4px] border border-gray-100 overflow-hidden">
+      {/* Pencarian di luar kartu tabel (hanya untuk daftar kelompok kerja) */}
+      {activePokjaList.length > 0 && !pokja && (
+        <div className="relative w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari nama kelompok kerja, ketua, SK"
+            className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          />
+        </div>
+      )}
+
+      <div className="bg-white rounded-[4px] border border-[#D9DBDD] overflow-hidden">
         {activePokjaList.length === 0 ? (
           <EmptyStatePokja onBuatPokja={onBuatPokja} />
         ) : pokja ? (
           /* Detail view untuk admin dinas yang punya 1 pokja */
-          <div className="p-6 space-y-6 rounded-[4px] border border-gray-100 bg-white">
+          <div className="p-6 space-y-6 rounded-[4px] border border-[#D9DBDD] bg-white">
             {/* Header pokja */}
             <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4 pb-5 border-b border-gray-100">
               <div className="flex-1">
@@ -327,7 +334,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                 <button
                   type="button"
                   onClick={() => onPerbaikiPokja?.(pokja)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-[4px] border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-[#F9F9F9] transition-colors flex-shrink-0"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-[4px] border border-[#808489] bg-white text-sm font-medium text-gray-700 hover:bg-[#F9F9F9] transition-colors flex-shrink-0"
                 >
                   <Pencil className="w-4 h-4" />
                   Edit Kelompok Kerja
@@ -464,24 +471,17 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
             })()}
 
             {/* Daftar Anggota */}
-            <div className="bg-white rounded-[4px] border border-gray-200 overflow-hidden">
-              <div className="px-5 pt-5 pb-4 space-y-4 border-b border-gray-200">
-                <div className="flex items-baseline justify-between gap-3">
-                  <h3 className="text-base font-semibold text-gray-900">Daftar Anggota Kelompok Kerja</h3>
-                  <p className="text-sm text-gray-500 tabular-nums">{pokja.data?.members ? toTableRows(pokja.data.members).length : 0} anggota</p>
-                </div>
-                <div className="relative sm:max-w-sm">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                  <input
-                    type="search"
-                    value={search}
-                    onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-                    placeholder="Cari nama, posisi"
-                    className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                  />
-                </div>
-              </div>
-
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+                placeholder="Cari nama, posisi"
+                className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              />
+            </div>
+            <div className="bg-white rounded-[4px] border border-[#D9DBDD] overflow-hidden">
               {(() => {
                 const rows = toTableRows(pokja.data?.members)
                 const filteredRows = rows.filter((r) =>
@@ -501,7 +501,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                   <>
                     <div className="overflow-x-auto">
                       <table className="min-w-full text-sm text-left">
-                        <thead className="bg-[#F1F1F1] border-b border-gray-100">
+                        <thead className="bg-[#F1F1F1] border-b border-[#D9DBDD]">
                           <tr>
                             {["Posisi / Peran", "Nama", "Email", "Jenis Kelamin", "Nomor HP", "Instansi"].map((col) => (
                               <th key={col} className="px-4 py-3 text-xs font-semibold text-gray-500 whitespace-nowrap">
@@ -510,7 +510,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                             ))}
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-[#D9DBDD]">
                           {paginatedRows.length > 0 ? paginatedRows.map((row) => (
                             <tr key={row.key} className="hover:bg-[#F9F9F9] transition-colors">
                               <td className="px-4 py-3 whitespace-nowrap">
@@ -550,7 +550,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
             </div>
 
             {/* Riwayat Aktivitas */}
-            <div className="bg-white rounded-[4px] border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-[4px] border border-[#D9DBDD] overflow-hidden">
               <div className="px-5 py-4 border-b border-gray-100 bg-[#F9F9F9] flex items-center gap-2">
                 <FileText className="w-4 h-4 text-gray-500" />
                 <h3 className="text-base font-bold text-gray-800">Riwayat Aktivitas</h3>
@@ -607,28 +607,10 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
           </div>
         ) : (
           <>
-            {/* Judul, jumlah data, dan pencarian */}
-            <div className="px-5 pt-5 pb-4 space-y-4 border-b border-gray-200">
-              <div className="flex items-baseline justify-between gap-3">
-                <h3 className="text-base font-semibold text-gray-900">Daftar Kelompok Kerja</h3>
-                <p className="text-sm text-gray-500 tabular-nums">{pokjaList.length.toLocaleString("id-ID")} kelompok kerja</p>
-              </div>
-              <div className="relative sm:max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                <input
-                  type="search"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Cari nama kelompok kerja, ketua, SK"
-                  className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                />
-              </div>
-            </div>
-
             {/* Table */}
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm text-left">
-                <thead className="bg-[#F1F1F1] border-b border-gray-100">
+                <thead className="bg-[#F1F1F1] border-b border-[#D9DBDD]">
                   <tr>
                     {["No", "Nama Kelompok Kerja", "Wilayah", "Jumlah Anggota", "Ketua Kelompok Kerja", "Nomor SK", "Kontak Kelompok Kerja", "Status", "Aksi"].map((col) => (
                       <th key={col} className="px-4 py-3 text-xs font-semibold text-gray-500 whitespace-nowrap">
@@ -637,7 +619,7 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-[#D9DBDD]">
                   {filtered.length > 0 ? filtered.map((pokja, idx) => {
                     const cfg = STATUS_CONFIG[pokja.status]
                     const safeData = pokja.data ?? null
@@ -732,14 +714,14 @@ export function DataPokjaView({ pokjaList, onBuatPokja, onContinueDraft, isAdmin
                           {isAdminPusat && pokja.status === "masih-diverifikasi" ? (
                             <button
                               onClick={() => onValidatePusat?.(pokja)}
-                              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
+                              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                             >
                               Cek Detail
                             </button>
                           ) : (
                             <button
                               onClick={() => setDetailPokja(pokja)}
-                              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
+                              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                             >
                               Cek Detail
                             </button>

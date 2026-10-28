@@ -40,9 +40,9 @@ export function Input({
   }
 
   const stateStyles = cn({
-    "border-gray-300": !isInvalid && !disabled,
+    "border-[#808489]": !isInvalid && !disabled,
     "border-red-500 text-red-600 focus:ring-red-500 focus:border-red-500": isInvalid,
-    "bg-[#F9F9F9] text-gray-500 border-gray-200 cursor-not-allowed": disabled,
+    "bg-white text-gray-500 border-[#808489] cursor-not-allowed": disabled,
   })
 
   const characterCount = showCounter && maxLength ? `${String(value ?? "").length}/${maxLength}` : null
@@ -51,7 +51,7 @@ export function Input({
     <div className="w-full space-y-1">
       <div className="relative flex rounded-[4px] shadow-sm">
         {leftAddon && (
-          <span className="inline-flex items-center px-3 rounded-l-[4px] border border-r-0 border-gray-300 bg-[#F9F9F9] text-gray-500 text-sm">
+          <span className="inline-flex items-center px-3 rounded-l-[4px] border border-r-0 border-[#808489] bg-[#F9F9F9] text-gray-500 text-sm">
             {leftAddon}
           </span>
         )}
@@ -85,7 +85,7 @@ export function Input({
           )}
         </div>
         {rightAddon && (
-          <span className="inline-flex items-center px-3 rounded-r-[4px] border border-l-0 border-gray-300 bg-[#F9F9F9] text-gray-500 text-sm">
+          <span className="inline-flex items-center px-3 rounded-r-[4px] border border-l-0 border-[#808489] bg-[#F9F9F9] text-gray-500 text-sm">
             {rightAddon}
           </span>
         )}

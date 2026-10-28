@@ -779,7 +779,7 @@ function DetailPanel({
                   value={revisionNotes}
                   onChange={(e) => setRevisionNotes(e.target.value)}
                   placeholder="Contoh: Mohon lengkapi alamat lengkap dan nomor call center..."
-                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-[#808489] focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white"
                   rows={4}
                 />
               </div>
@@ -826,7 +826,7 @@ function DetailPanel({
                   value={nonaktifNotes}
                   onChange={(e) => setNonaktifNotes(e.target.value)}
                   placeholder="Contoh: Data tidak valid atau sudah tidak beroperasi..."
-                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-[#808489] focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                   rows={4}
                 />
               </div>
@@ -1367,11 +1367,11 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
               <button
                 type="button"
                 onClick={downloadTemplate}
-                className="flex items-center gap-1.5 h-9 px-4 rounded-[4px] text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-[#F9F9F9] transition"
+                className="flex items-center gap-1.5 h-9 px-4 rounded-[4px] text-sm font-medium text-gray-700 bg-white border border-[#808489] hover:bg-[#F9F9F9] transition"
               >
                 <FileSpreadsheet className="w-4 h-4" /> Template
               </button>
-              <label className="flex items-center gap-1.5 h-9 px-4 rounded-[4px] text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-[#F9F9F9] transition cursor-pointer">
+              <label className="flex items-center gap-1.5 h-9 px-4 rounded-[4px] text-sm font-medium text-gray-700 bg-white border border-[#808489] hover:bg-[#F9F9F9] transition cursor-pointer">
                 <Upload className="w-4 h-4" /> Import
                 <input type="file" accept=".csv,.xlsx,.xls" onChange={importExcel} className="hidden" />
               </label>
@@ -1412,7 +1412,7 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
           )}
           <button
             onClick={() => setShowWilayahModal(true)}
-            className="bg-white hover:bg-[#F9F9F9] text-gray-700 border border-gray-300 font-medium text-sm px-2.5 py-1 rounded-[4px] transition"
+            className="bg-white hover:bg-[#F9F9F9] text-gray-700 border border-[#808489] font-medium text-sm px-2.5 py-1 rounded-[4px] transition"
           >
             Ganti
           </button>
@@ -1435,7 +1435,7 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
           const cfg = KATEGORI_CONFIG[key]
           const count = filtered.filter((i) => i.kategoriBentukDukungan === key && i.status !== "nonaktif").length
           return (
-            <div key={key} className="bg-white rounded-[4px] border border-gray-200 p-4 shadow-sm">
+            <div key={key} className="bg-white rounded-[4px] border border-[#D9DBDD] p-4 shadow-sm">
               <div className="flex items-center gap-2">
                 <span className={`flex shrink-0 ${cfg.color} [&_svg]:w-6 [&_svg]:h-6`}>{cfg.icon}</span>
                 <p className="text-xl font-bold leading-none text-gray-900">{count}</p>
@@ -1448,83 +1448,75 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
       )}
 
       {/* Tabel: judul dan jumlah data di atas, lalu filter dengan pencarian di awal */}
-      <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm overflow-hidden">
-        <div className="px-5 pt-5 pb-4 space-y-4">
-          <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-base font-semibold text-gray-900">Daftar Sumber Dukungan</h2>
-            <p className="text-sm text-gray-500 tabular-nums">{totalRows.toLocaleString("id-ID")} sumber dukungan</p>
-          </div>
-
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_repeat(4,minmax(0,1fr))_auto]">
-            <div className="relative sm:col-span-2 lg:col-span-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Cari nama instansi atau kota"
-                className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-              />
-            </div>
-            <div className="flex h-10 items-center gap-1.5 rounded-[4px] border border-gray-300 px-3 bg-white">
-              <ArrowUpDown className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-              <select
-                value={sortMode}
-                onChange={(e) => setSortMode(e.target.value as SortMode)}
-                aria-label="Urutkan"
-                className="w-full text-sm focus:outline-none bg-transparent text-gray-700"
-              >
-                <option value="terbaru">Terbaru</option>
-                <option value="nama_az">Nama A–Z</option>
-              </select>
-            </div>
-            <Select value={filterKategori} onValueChange={(v) => setFilterKategori(v as KategoriDukungan | "semua")}>
-              <SelectTrigger className="w-full h-10 rounded-[4px] border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                <SelectValue placeholder="Semua Kategori" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="semua">Semua Kategori</SelectItem>
-                {(Object.keys(KATEGORI_CONFIG) as KategoriDukungan[]).map((k) => (
-                  <SelectItem key={k} value={k}>{k}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as StatusRujukan | "semua")}>
-              <SelectTrigger className="w-full h-10 rounded-[4px] border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                <SelectValue placeholder="Semua Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="semua">Semua Status</SelectItem>
-                <SelectItem value="terverifikasi">Terverifikasi</SelectItem>
-                <SelectItem value="menunggu">Perlu Verifikasi</SelectItem>
-                <SelectItem value="nonaktif">Nonaktif</SelectItem>
-                <SelectItem value="butuh_perbaikan">Ditolak</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filterPenyedia} onValueChange={(v) => setFilterPenyedia(v as KategoriPenyedia | "semua")}>
-              <SelectTrigger className="w-full h-10 rounded-[4px] border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                <SelectValue placeholder="Semua Penyedia" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="semua">Semua Penyedia</SelectItem>
-                {(["Pemerintah Pusat", "Pemerintah Daerah", "Swasta", "OMS", "Lainnya"] as KategoriPenyedia[]).map((p) => (
-                  <SelectItem key={p} value={p}>{p}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <button
-              type="button"
-              onClick={exportToCSV}
-              disabled={filtered.length === 0}
-              className="flex items-center justify-center gap-1.5 h-10 px-4 rounded-[4px] text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-[#F9F9F9] transition disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
-            >
-              <Download className="w-4 h-4" /> Ekspor CSV
-            </button>
-          </div>
+      <div className={`${showStats ? "mt-8 " : ""}flex flex-wrap items-center gap-2 [&>*]:w-full [&>*]:shrink-0 sm:[&>*]:w-[180px]`}>
+        <div className="relative flex-1 min-w-[240px] sm:w-auto!">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari nama instansi atau kota"
+            className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          />
         </div>
-
+        <div className="flex h-10 items-center gap-1.5 rounded-[4px] border border-[#808489] px-3 bg-white">
+          <ArrowUpDown className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+          <select
+            value={sortMode}
+            onChange={(e) => setSortMode(e.target.value as SortMode)}
+            aria-label="Urutkan"
+            className="w-full text-sm focus:outline-none bg-white text-gray-700"
+          >
+            <option value="terbaru">Terbaru</option>
+            <option value="nama_az">Nama A–Z</option>
+          </select>
+        </div>
+        <Select value={filterKategori} onValueChange={(v) => setFilterKategori(v as KategoriDukungan | "semua")}>
+          <SelectTrigger className="w-full h-10 rounded-[4px] border border-[#808489] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+            <SelectValue placeholder="Semua Kategori" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="semua">Semua Kategori</SelectItem>
+            {(Object.keys(KATEGORI_CONFIG) as KategoriDukungan[]).map((k) => (
+              <SelectItem key={k} value={k}>{k}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as StatusRujukan | "semua")}>
+          <SelectTrigger className="w-full h-10 rounded-[4px] border border-[#808489] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+            <SelectValue placeholder="Semua Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="semua">Semua Status</SelectItem>
+            <SelectItem value="terverifikasi">Terverifikasi</SelectItem>
+            <SelectItem value="menunggu">Perlu Verifikasi</SelectItem>
+            <SelectItem value="nonaktif">Nonaktif</SelectItem>
+            <SelectItem value="butuh_perbaikan">Ditolak</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={filterPenyedia} onValueChange={(v) => setFilterPenyedia(v as KategoriPenyedia | "semua")}>
+          <SelectTrigger className="w-full h-10 rounded-[4px] border border-[#808489] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+            <SelectValue placeholder="Semua Penyedia" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="semua">Semua Penyedia</SelectItem>
+            {(["Pemerintah Pusat", "Pemerintah Daerah", "Swasta", "OMS", "Lainnya"] as KategoriPenyedia[]).map((p) => (
+              <SelectItem key={p} value={p}>{p}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <button
+          type="button"
+          onClick={exportToCSV}
+          disabled={filtered.length === 0}
+          className="sm:w-auto! flex items-center justify-center gap-1.5 h-10 px-4 rounded-[4px] text-sm font-medium text-gray-700 bg-white border border-[#808489] hover:bg-[#F9F9F9] transition disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+        >
+          <Download className="w-4 h-4" /> Ekspor CSV
+        </button>
+      </div>
+      <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
         {totalRows === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-1 text-center border-t border-gray-200">
+          <div className="flex flex-col items-center justify-center py-16 gap-1 text-center">
             <p className="font-semibold text-gray-700 text-sm">Data Tidak Tersedia</p>
             <p className="text-gray-500 text-sm">Coba ubah filter atau kata kunci pencarian.</p>
           </div>
@@ -1534,7 +1526,7 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[700px]">
               <thead>
-                <tr className="bg-[#F1F1F1] border-b border-gray-200 text-left">
+                <tr className="bg-[#F1F1F1] border-b border-[#D9DBDD] text-left">
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500">Nama Instansi</th>
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500">Wilayah</th>
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500">Log Terakhir</th>
@@ -1542,7 +1534,7 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
                   <th className="px-4 py-3 text-xs font-semibold text-gray-500 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-[#D9DBDD]">
                 {paginatedData.map((item) => {
                   const kategoriCfg = KATEGORI_CONFIG[item.kategoriBentukDukungan]
                   const penyediaCfg = item.kategoriPenyedia ? PENYEDIA_CONFIG[item.kategoriPenyedia] : null
@@ -1579,7 +1571,7 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
                       <td className="px-4 py-3.5 text-right">
                         <a
                           href={`/sumber-rujukan/form?view=${item.id}`}
-                          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
+                          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                         >
                           Cek Detail
                         </a>

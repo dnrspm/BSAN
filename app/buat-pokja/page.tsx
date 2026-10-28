@@ -72,7 +72,7 @@ function InputField({
         placeholder={placeholder}
         className={cn(
           "h-9 px-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
-          hasError ? "border-red-400 bg-red-50" : "border-gray-300"
+          hasError ? "border-red-400 bg-red-50" : "border-[#808489]"
         )}
       />
     </div>
@@ -88,7 +88,7 @@ function MemberSection({ label, value, onChange, isCollapsed, onToggleCollapse, 
 }) {
   const hasErr = showErrors && !(value.nama && value.email && value.noWhatsapp && value.jenisKelamin && value.instansi)
   return (
-    <div className={cn("rounded-[4px] border bg-white overflow-hidden", hasErr ? "border-red-300" : "border-gray-200")}>
+    <div className={cn("rounded-[4px] border bg-white overflow-hidden", hasErr ? "border-red-300" : "border-[#D9DBDD]")}>
       <div
         className="flex items-center justify-between px-4 py-3 bg-[#F9F9F9] border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition"
         onClick={onToggleCollapse}
@@ -119,7 +119,7 @@ function MemberSection({ label, value, onChange, isCollapsed, onToggleCollapse, 
               onChange={(e) => onChange("jenisKelamin", e.target.value)}
               className={cn(
                 "w-full h-9 pl-3 pr-8 text-sm border rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700",
-                showErrors && !value.jenisKelamin ? "border-red-400 bg-red-50" : "border-gray-300"
+                showErrors && !value.jenisKelamin ? "border-red-400 bg-red-50" : "border-[#808489]"
               )}
             >
               <option value="" disabled>Pilih jenis kelamin</option>
@@ -142,7 +142,7 @@ function MemberSection({ label, value, onChange, isCollapsed, onToggleCollapse, 
               placeholder="08xxxxxxxxxx"
               className={cn(
                 "w-full h-9 pl-9 pr-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
-                showErrors && !value.noWhatsapp ? "border-red-400 bg-red-50" : "border-gray-300"
+                showErrors && !value.noWhatsapp ? "border-red-400 bg-red-50" : "border-[#808489]"
               )}
             />
           </div>
@@ -164,7 +164,7 @@ function MandatoryMemberSection({ label, value, onChange, bidangValue, isCollaps
 }) {
   const hasErr = showErrors && !(value.nama && value.email && value.noWhatsapp && value.jenisKelamin && value.instansi)
   return (
-    <div className={cn("rounded-[4px] border bg-white overflow-hidden", hasErr ? "border-red-300" : "border-gray-200")}>
+    <div className={cn("rounded-[4px] border bg-white overflow-hidden", hasErr ? "border-red-300" : "border-[#D9DBDD]")}>
       <div
         className="flex items-center justify-between px-4 py-3 bg-[#F9F9F9] border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition"
         onClick={onToggleCollapse}
@@ -195,7 +195,7 @@ function MandatoryMemberSection({ label, value, onChange, bidangValue, isCollaps
               onChange={(e) => onChange("jenisKelamin", e.target.value)}
               className={cn(
                 "w-full h-9 pl-3 pr-8 text-sm border rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700",
-                showErrors && !value.jenisKelamin ? "border-red-400 bg-red-50" : "border-gray-300"
+                showErrors && !value.jenisKelamin ? "border-red-400 bg-red-50" : "border-[#808489]"
               )}
             >
               <option value="" disabled>Pilih jenis kelamin</option>
@@ -218,7 +218,7 @@ function MandatoryMemberSection({ label, value, onChange, bidangValue, isCollaps
               placeholder="08xxxxxxxxxx"
               className={cn(
                 "w-full h-9 pl-9 pr-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
-                showErrors && !value.noWhatsapp ? "border-red-400 bg-red-50" : "border-gray-300"
+                showErrors && !value.noWhatsapp ? "border-red-400 bg-red-50" : "border-[#808489]"
               )}
             />
           </div>
@@ -264,7 +264,7 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
 function ReviewMemberCard({ label, member }: { label: string; member: MemberField }) {
   const isEmpty = !member.nama && !member.email && !member.noWhatsapp
   return (
-    <div className="rounded-[4px] border border-gray-200 overflow-hidden">
+    <div className="rounded-[4px] border border-[#D9DBDD] overflow-hidden">
       <div className="px-3 py-2 bg-[#F9F9F9] border-b border-gray-200 flex items-center gap-2 mt-2 mb-4">
         <User className="w-3.5 h-3.5 text-blue-600" />
         <span className="text-xs font-semibold text-gray-700">{label}</span>
@@ -413,23 +413,23 @@ function ReviewTable({ members, anggotaList, onEdit, onDelete, onResetMember }: 
   )
 
   return (
-    <div ref={scrollRef} className="overflow-x-auto border border-gray-200 rounded-[4px]">
+    <div ref={scrollRef} className="overflow-x-auto border border-[#D9DBDD] rounded-[4px]">
       <table className="w-full text-sm border-separate border-spacing-0">
         <thead className="bg-[#F1F1F1]">
           <tr>
-            <th className="w-10 px-2 py-3 text-center font-semibold text-gray-500 whitespace-nowrap bg-[#F1F1F1] sticky left-0 z-20 border-b border-gray-200">No</th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap bg-[#F1F1F1] border-b border-gray-200 sticky z-20" style={{ left: "2.5rem" }}>
+            <th className="w-10 px-2 py-3 text-center font-semibold text-gray-500 whitespace-nowrap bg-[#F1F1F1] sticky left-0 z-20 border-b border-[#D9DBDD]">No</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap bg-[#F1F1F1] border-b border-[#D9DBDD] sticky z-20" style={{ left: "2.5rem" }}>
               Nama *
               <Cue />
             </th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap bg-[#F1F1F1] border-b border-gray-200">Jabatan Kelompok Kerja *</th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-gray-200">Jenis Kelamin *</th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-gray-200">Instansi *</th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-gray-200">Jabatan Instansi *</th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-gray-200">Email *</th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-gray-200">No. HP *</th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-gray-200">Status</th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-gray-200">Aksi</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap bg-[#F1F1F1] border-b border-[#D9DBDD]">Jabatan Kelompok Kerja *</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-[#D9DBDD]">Jenis Kelamin *</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-[#D9DBDD]">Instansi *</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-[#D9DBDD]">Jabatan Instansi *</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-[#D9DBDD]">Email *</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-[#D9DBDD]">No. HP *</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-[#D9DBDD]">Status</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-600 whitespace-nowrap border-b border-[#D9DBDD]">Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -438,11 +438,11 @@ function ReviewTable({ members, anggotaList, onEdit, onDelete, onResetMember }: 
             if (isCategoryRow) {
               return (
                 <tr key={idx} className="bg-[#F9F9F9]">
-                  <td colSpan={2} className="px-4 py-2 text-sm font-semibold text-gray-400 uppercase tracking-widest bg-[#F9F9F9] sticky left-0 z-20 border-b border-gray-100 min-w-[280px]">
+                  <td colSpan={2} className="px-4 py-2 text-sm font-semibold text-gray-400 uppercase tracking-widest bg-[#F9F9F9] sticky left-0 z-20 border-b border-[#D9DBDD] min-w-[280px]">
                     {row.kategori}
                     <Cue />
                   </td>
-                  <td colSpan={8} className="px-4 py-2 bg-[#F9F9F9] border-b border-gray-100"></td>
+                  <td colSpan={8} className="px-4 py-2 bg-[#F9F9F9] border-b border-[#D9DBDD]"></td>
                 </tr>
               )
             }
@@ -451,7 +451,7 @@ function ReviewTable({ members, anggotaList, onEdit, onDelete, onResetMember }: 
                 <td
                   colSpan={2}
                   className={cn(
-                    "whitespace-nowrap sticky left-0 z-20 border-b border-gray-100",
+                    "whitespace-nowrap sticky left-0 z-20 border-b border-[#D9DBDD]",
                     (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "bg-red-50" : "bg-white"
                   )}
                 >
@@ -465,13 +465,13 @@ function ReviewTable({ members, anggotaList, onEdit, onDelete, onResetMember }: 
                   </div>
                   <Cue />
                 </td>
-                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-gray-100", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "text-red-600 bg-red-50" : "text-gray-500 bg-white")}>{row.kategori}</td>
-                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-gray-100", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "text-red-600 bg-red-50" : "text-gray-500 bg-white")}>{row.jenisKelamin}</td>
-                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-gray-100", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "text-red-600 bg-red-50" : "text-gray-500 bg-white")}>{row.instansi}</td>
-                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-gray-100", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "text-red-600 bg-red-50" : "text-gray-500 bg-white")}>{row.jabatan}</td>
-                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-gray-100", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "text-red-600 bg-red-50" : "text-gray-500 bg-white")}><EmailCell email={row.email} /></td>
-                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-gray-100", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "text-red-600 bg-red-50" : "text-gray-500 bg-white")}>{row.noHp}</td>
-                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-gray-100", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "bg-red-50" : "bg-white")}>
+                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-[#D9DBDD]", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "text-red-600 bg-red-50" : "text-gray-500 bg-white")}>{row.kategori}</td>
+                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-[#D9DBDD]", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "text-red-600 bg-red-50" : "text-gray-500 bg-white")}>{row.jenisKelamin}</td>
+                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-[#D9DBDD]", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "text-red-600 bg-red-50" : "text-gray-500 bg-white")}>{row.instansi}</td>
+                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-[#D9DBDD]", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "text-red-600 bg-red-50" : "text-gray-500 bg-white")}>{row.jabatan}</td>
+                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-[#D9DBDD]", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "text-red-600 bg-red-50" : "text-gray-500 bg-white")}><EmailCell email={row.email} /></td>
+                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-[#D9DBDD]", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "text-red-600 bg-red-50" : "text-gray-500 bg-white")}>{row.noHp}</td>
+                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-[#D9DBDD]", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "bg-red-50" : "bg-white")}>
                   {row.status && (
                     <span className={cn(
                       "px-2.5 py-0.5 rounded-full whitespace-nowrap text-[13px] font-semibold",
@@ -483,7 +483,7 @@ function ReviewTable({ members, anggotaList, onEdit, onDelete, onResetMember }: 
                     </span>
                   )}
                 </td>
-                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-gray-100", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "bg-red-50" : "bg-white")}>
+                <td className={cn("px-4 py-3 whitespace-nowrap border-b border-[#D9DBDD]", (row.status === "Belum diisi" || row.status === "Tidak Lengkap") ? "bg-red-50" : "bg-white")}>
                   <div className="flex items-center gap-2 mt-2 mb-4">
                     {!row.isCategory && (
                       <button 
@@ -494,7 +494,7 @@ function ReviewTable({ members, anggotaList, onEdit, onDelete, onResetMember }: 
                             onEdit(row.roleKey)
                           }
                         }} 
-                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
+                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                       >
                         Ubah
                       </button>
@@ -508,7 +508,7 @@ function ReviewTable({ members, anggotaList, onEdit, onDelete, onResetMember }: 
                             onResetMember(row.roleKey)
                           }
                         }} 
-                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-red-600 hover:bg-red-50 transition-colors whitespace-nowrap"
+                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-red-600 bg-white text-red-600 hover:bg-red-50 transition-colors whitespace-nowrap"
                       >
                         Hapus
                       </button>
@@ -725,7 +725,7 @@ const AnggotaRow = ({ a, rowKey, label }: { a: AnggotaItem; rowKey: string; labe
 
   return (
     <div className="flex flex-col gap-4 mt-2 mb-4">
-      <div className="rounded-[4px] border border-gray-200 overflow-hidden">
+      <div className="rounded-[4px] border border-[#D9DBDD] overflow-hidden">
         <SectionHeader title="Pimpinan" />
         <div className="divide-y divide-gray-200">
           {PIMPINAN_ROLES.map((r, i) => <MemberRow key={r.key} rowKey={r.key} label={r.label} m={members[r.key]} variant={i === 0 ? "default" : i === 1 ? "kecil" : "compact"} />)}
@@ -735,7 +735,7 @@ const AnggotaRow = ({ a, rowKey, label }: { a: AnggotaItem; rowKey: string; labe
       {BIDANG_ROLES.map(r => {
         const extras = anggotaList.filter(a => a.bidang === r.label)
         return (
-          <div key={r.key} className="rounded-[4px] border border-gray-200 overflow-hidden">
+          <div key={r.key} className="rounded-[4px] border border-[#D9DBDD] overflow-hidden">
             <SectionHeader title={r.label} />
             <div className="divide-y divide-gray-200">
               <MemberRow rowKey={r.key} label="Koordinator Bidang" m={members[r.key]} />
@@ -749,7 +749,7 @@ const AnggotaRow = ({ a, rowKey, label }: { a: AnggotaItem; rowKey: string; labe
       })}
 
       {lainnyaAnggota.length > 0 && (
-        <div className="rounded-[4px] border border-gray-200 overflow-hidden">
+        <div className="rounded-[4px] border border-[#D9DBDD] overflow-hidden">
           <SectionHeader title="Lainnya" />
           <div className="divide-y divide-gray-200">
             {lainnyaAnggota.map(a => {
@@ -1261,7 +1261,7 @@ export default function BuatPokjaPage() {
         </button>
         <button
           onClick={() => setFlowSteps(flowSteps === 3 ? 4 : 3)}
-          className={cn("px-4 mt-2 mb-4 border rounded-[4px] transition shadow-sm", flowSteps === 4 ? "bg-blue-600 text-white border-blue-600" : "text-gray-500 bg-white border-gray-200 hover:bg-gray-100")}
+          className={cn("px-4 mt-2 mb-4 border rounded-[4px] transition shadow-sm", flowSteps === 4 ? "bg-blue-600 text-white border-blue-600" : "text-gray-500 bg-white border-[#808489] hover:bg-gray-100")}
           title={flowSteps === 3 ? "3 Langkah (klik untuk 4)" : "4 Langkah (klik untuk 3)"}
         >
           {flowSteps === 3 ? <ToggleLeft className="w-4 h-4" /> : <ToggleRight className="w-4 h-4" />}
@@ -1304,7 +1304,7 @@ export default function BuatPokjaPage() {
         </div>
 
         {/* Step content */}
-        <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
           {/* Step header */}
           <div 
             className={cn("px-6 py-5 border-b border-gray-100 bg-[#F9F9F9]", step === 2 && "flex items-center justify-between cursor-pointer hover:bg-gray-100 transition")}
@@ -1373,22 +1373,22 @@ export default function BuatPokjaPage() {
                       <label className="text-xs font-semibold text-gray-600">Nomor SK <span className="text-red-500">*</span></label>
                       <input type="text" value={skDetail.nomorSK} onChange={(e) => setSkDetail((p) => ({ ...p, nomorSK: e.target.value }))}
                         placeholder="Contoh: 421/001/SK/2025"
-                        className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                        className="bg-white h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-semibold text-gray-600">Tanggal SK <span className="text-red-500">*</span></label>
                       <input type="date" value={skDetail.tanggalSK} onChange={(e) => setSkDetail((p) => ({ ...p, tanggalSK: e.target.value }))}
-                        className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                        className="bg-white h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-semibold text-gray-600">Tanggal Mulai <span className="text-red-500">*</span></label>
                       <input type="date" value={skDetail.periodeMulai} onChange={(e) => setSkDetail((p) => ({ ...p, periodeMulai: e.target.value }))}
-                        className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                        className="bg-white h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-semibold text-gray-600">Tanggal Selesai <span className="text-red-500">*</span></label>
                       <input type="date" value={skDetail.periodeSelesai} onChange={(e) => setSkDetail((p) => ({ ...p, periodeSelesai: e.target.value }))}
-                        className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                        className="bg-white h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                     </div>
                   </div>
                 </div>
@@ -1515,7 +1515,7 @@ export default function BuatPokjaPage() {
                     const isCollapsed = collapsedAnggota.has(index)
                     const anggotaHasErr = step2Errors && !(anggota.bidang && anggota.nama && anggota.jenisKelamin && anggota.email && anggota.noWhatsapp && anggota.instansi)
                     return (
-                    <div key={index} className={cn("rounded-[4px] border bg-white overflow-hidden", anggotaHasErr ? "border-red-300" : "border-gray-200")}>
+                    <div key={index} className={cn("rounded-[4px] border bg-white overflow-hidden", anggotaHasErr ? "border-red-300" : "border-[#D9DBDD]")}>
                       <div
                         className="flex items-center justify-between px-4 py-3 bg-[#F9F9F9] border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition"
                         onClick={() => toggleCollapse(index)}
@@ -1535,7 +1535,7 @@ export default function BuatPokjaPage() {
                                 onChange={(e) => updateAnggota(index, "bidang", e.target.value)}
                                 className={cn(
                                   "w-full h-8 pl-3 pr-8 text-xs border rounded-[4px] appearance-none transition text-gray-700 bg-white",
-                                  step2Errors && !anggota.bidang ? "border-red-400 bg-red-50" : "border-gray-300"
+                                  step2Errors && !anggota.bidang ? "border-red-400 bg-red-50" : "border-[#808489]"
                                 )}
                               >
                                 <option value="">Pilih bidang</option>
@@ -1591,7 +1591,7 @@ export default function BuatPokjaPage() {
                                 onChange={(e) => updateAnggota(index, "jenisKelamin", e.target.value)}
                                 className={cn(
                                   "w-full h-9 pl-3 pr-8 text-sm border rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
-                                  step2Errors && !anggota.jenisKelamin ? "border-red-400 bg-red-50 text-gray-400" : anggota.jenisKelamin ? "border-gray-300 text-gray-700" : "border-gray-300 text-gray-400"
+                                  step2Errors && !anggota.jenisKelamin ? "border-red-400 bg-red-50 text-gray-400" : anggota.jenisKelamin ? "border-[#808489] text-gray-700" : "border-[#808489] text-gray-400"
                                 )}
                               >
                                 <option value="" disabled>Pilih jenis kelamin</option>
@@ -1638,7 +1638,7 @@ export default function BuatPokjaPage() {
                                 placeholder="08xxxxxxxxxx"
                                 className={cn(
                                   "w-full h-9 pl-9 pr-3 text-sm border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition",
-                                  step2Errors && !anggota.noWhatsapp ? "border-red-400 bg-red-50" : "border-gray-300"
+                                  step2Errors && !anggota.noWhatsapp ? "border-red-400 bg-red-50" : "border-[#808489]"
                                 )}
                               />
                             </div>
@@ -1652,7 +1652,7 @@ export default function BuatPokjaPage() {
                   <button
                     onClick={addAnggota}
                     type="button"
-                    className="flex items-center justify-center gapx-4 mt-2 mb-4 w-full py-2.5 mt-2 border-2 border-dashed border-gray-300 rounded-[4px] text-sm font-medium text-gray-500 hover:border-blue-400 hover:text-blue-600 transition"
+                    className="flex items-center justify-center gapx-4 mt-2 mb-4 w-full py-2.5 mt-2 border-2 border-dashed border-[#808489] rounded-[4px] text-sm font-medium text-gray-500 hover:border-blue-400 hover:text-blue-600 transition"
                   >
                     <Plus className="w-4 h-4" /> Tambah Anggota
                   </button>
@@ -1669,22 +1669,22 @@ export default function BuatPokjaPage() {
                     <label className="text-xs font-semibold text-gray-600">Nomor SK <span className="text-red-500">*</span></label>
                     <input type="text" value={skDetail.nomorSK} onChange={(e) => setSkDetail((p) => ({ ...p, nomorSK: e.target.value }))}
                       placeholder="Contoh: 421/001/SK/2025"
-                      className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                      className="bg-white h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-gray-600">Tanggal SK <span className="text-red-500">*</span></label>
                     <input type="date" value={skDetail.tanggalSK} onChange={(e) => setSkDetail((p) => ({ ...p, tanggalSK: e.target.value }))}
-                      className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                      className="bg-white h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-gray-600">Tanggal Mulai <span className="text-red-500">*</span></label>
                     <input type="date" value={skDetail.periodeMulai} onChange={(e) => setSkDetail((p) => ({ ...p, periodeMulai: e.target.value }))}
-                      className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                      className="bg-white h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-semibold text-gray-600">Tanggal Selesai <span className="text-red-500">*</span></label>
                     <input type="date" value={skDetail.periodeSelesai} onChange={(e) => setSkDetail((p) => ({ ...p, periodeSelesai: e.target.value }))}
-                      className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                      className="bg-white h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                   </div>
                 </div>
               </div>
@@ -1701,7 +1701,7 @@ export default function BuatPokjaPage() {
                     </p>
                     <button onClick={() => setStep(1)} className="text-xs text-blue-600 hover:underline flex items-center gap-1"><Eye className="w-3 h-3" /> Ubah</button>
                   </div>
-                  <div className="rounded-[4px] border border-gray-200 p-4">
+                  <div className="rounded-[4px] border border-[#D9DBDD] p-4">
                     <table className="w-full">
                       <tbody>
                         <ReviewTableRow label="Wilayah" value={REGION} />
@@ -1745,7 +1745,7 @@ export default function BuatPokjaPage() {
                       <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Dokumen SK</p>
                       <button onClick={() => setStep(3)} className="text-xs text-blue-600 hover:underline flex items-center gap-1"><Eye className="w-3 h-3" /> Ubah</button>
                     </div>
-                    <div className="rounded-[4px] border border-gray-200 p-4">
+                    <div className="rounded-[4px] border border-[#D9DBDD] p-4">
                       <table className="w-full">
                         <tbody>
                           <ReviewTableRow label="File SK" value={skFile?.name ?? "-"} />
@@ -1770,7 +1770,7 @@ export default function BuatPokjaPage() {
                       onChange={(e) => setDeskripsiPerbaikan(e.target.value)}
                       placeholder="Contoh: Memperbarui nomor SK, mengganti anggota koordinator, dan memperpanjang periode berlaku..."
                       rows={4}
-                      className="w-full rounded-[4px] border border-gray-300 px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      className="bg-white w-full rounded-[4px] border border-[#808489] px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                     />
                   </div>
                 )}
@@ -1783,7 +1783,7 @@ export default function BuatPokjaPage() {
 
             {/* Persetujuan */}
             {((flowSteps === 3 && step === 3) || (flowSteps === 4 && step === 4)) && (
-              <div className="rounded-[4px] border border-gray-200 bg-white p-4 shadow-sm">
+              <div className="rounded-[4px] border border-[#D9DBDD] bg-white p-4 shadow-sm">
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -1906,7 +1906,7 @@ export default function BuatPokjaPage() {
 
             <div className="flex items-center justify-between pb-8">
           {step > 1 ? (
-            <button onClick={handleBack} className="flex items-center gap-2 mt-2 mb-4 px-4 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-[4px] hover:bg-gray-100 transition">
+            <button onClick={handleBack} className="flex items-center gap-2 mt-2 mb-4 px-4 py-2 text-sm font-medium text-gray-600 border border-[#808489] rounded-[4px] hover:bg-gray-100 transition">
               <ChevronLeft className="w-4 h-4" /> Sebelumnya
             </button>
           ) : <div />}

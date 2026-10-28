@@ -149,44 +149,36 @@ export function KegiatanContent({ hideHeroPrefix = false }: KegiatanContentProps
               Update terakhir: {new Date().toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })} | {new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
             </p>
           </div>
-          <div className="bg-white rounded-[4px] border border-slate-100 shadow-sm overflow-hidden">
-            <div className="px-5 pt-5 pb-4 space-y-4 border-b border-slate-200">
-              <div className="flex items-baseline justify-between gap-3">
-                <h2 className="text-base font-semibold text-slate-900">Data Kegiatan BSAN</h2>
-                <p className="text-sm text-slate-500 tabular-nums">{filtered.length.toLocaleString("id-ID")} kegiatan</p>
-              </div>
-
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_repeat(2,minmax(0,1fr))]">
-                <div className="relative sm:col-span-2 lg:col-span-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                  <input
-                    type="search"
-                    placeholder="Cari kegiatan"
-                    value={search}
-                    onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-                    className="w-full h-10 pl-9 pr-3 text-sm border border-slate-200 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  />
-                </div>
-                <button
-                  onClick={() => { setModalPendingProvince(selectedProvince); setModalPendingKota(selectedProvince ? selectedKota : null); setModalBrowseProvince(selectedProvince || null); setShowWilayahModal(true) }}
-                  className="h-10 min-w-0 px-3 text-sm border border-slate-200 rounded-[4px] bg-white text-slate-700 hover:bg-[#F9F9F9] transition-colors flex items-center gap-2"
-                >
-                  <span className="flex-1 truncate text-left">
-                    {selectedKota ? `${selectedKota}, ${selectedProvince}` : selectedProvince || "Seluruh Indonesia"}
-                  </span>
-                  <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
-                </button>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-                  aria-label="Filter status"
-                  className="h-10 w-full px-3 text-sm border border-slate-200 rounded-[4px] bg-white text-slate-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
-                >
-                  {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s === "Semua" ? "Semua Status" : s}</option>)}
-                </select>
-              </div>
+          <div className="flex flex-wrap items-center gap-2 [&>*]:w-full [&>*]:shrink-0 sm:[&>*]:w-[180px]">
+            <div className="relative flex-1 min-w-[240px] sm:w-auto!">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              <input
+                type="search"
+                placeholder="Cari kegiatan"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+                className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              />
             </div>
-
+            <button
+              onClick={() => { setModalPendingProvince(selectedProvince); setModalPendingKota(selectedProvince ? selectedKota : null); setModalBrowseProvince(selectedProvince || null); setShowWilayahModal(true) }}
+              className="h-10 min-w-0 px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-slate-700 hover:bg-[#F9F9F9] transition-colors flex items-center gap-2"
+            >
+              <span className="flex-1 truncate text-left">
+                {selectedKota ? `${selectedKota}, ${selectedProvince}` : selectedProvince || "Seluruh Indonesia"}
+              </span>
+              <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+            </button>
+            <select
+              value={statusFilter}
+              onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
+              aria-label="Filter status"
+              className="h-10 w-full px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-slate-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+            >
+              {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s === "Semua" ? "Semua Status" : s}</option>)}
+            </select>
+          </div>
+          <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow className="bg-[#F1F1F1] hover:bg-[#F1F1F1]">
@@ -276,7 +268,7 @@ export function KegiatanContent({ hideHeroPrefix = false }: KegiatanContentProps
                     <TableCell className="text-right pr-5">
                       <span
                         onClick={(e) => { e.stopPropagation(); setDetailKegiatan(row) }}
-                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap cursor-pointer"
+                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap cursor-pointer"
                       >
                         Cek Detail
                       </span>

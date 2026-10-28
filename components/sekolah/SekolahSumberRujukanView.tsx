@@ -766,7 +766,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
           )}
           <button
             onClick={() => setShowWilayahModal(true)}
-            className="bg-white hover:bg-[#F9F9F9] text-gray-700 border border-gray-300 font-medium text-sm px-2.5 py-1 rounded-[4px] transition"
+            className="bg-white hover:bg-[#F9F9F9] text-gray-700 border border-[#808489] font-medium text-sm px-2.5 py-1 rounded-[4px] transition"
           >
             Ganti
           </button>
@@ -788,7 +788,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
           {stats.byKategori.filter(k => k.count > 0).map((k) => {
             const cfg = KATEGORI_CONFIG[k.label]
             return (
-              <div key={k.label} className="bg-white rounded-[4px] border border-gray-200 p-4 shadow-sm">
+              <div key={k.label} className="bg-white rounded-[4px] border border-[#D9DBDD] p-4 shadow-sm">
                 <div className="flex items-center gap-2">
                   <span className={`flex shrink-0 ${cfg.color} [&_svg]:w-6 [&_svg]:h-6`}>{cfg.icon}</span>
                   <p className="text-xl font-bold leading-none text-gray-900">{k.count}</p>
@@ -800,88 +800,82 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
         </div>
       )}
 
-      <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm overflow-hidden">
-        <div className="px-5 pt-5 pb-4 space-y-4">
-          <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-base font-semibold text-gray-900">Daftar Sumber Dukungan</h2>
-            <p className="text-sm text-gray-500 tabular-nums">{totalRows.toLocaleString("id-ID")} sumber dukungan</p>
-          </div>
-          <div className="flex items-center gap-1 bg-[#F9F9F9] rounded-[4px] p-1 w-fit">
-            {([
-              { value: "semua", label: "Semua" },
-              { value: "usulan_saya", label: "Usulan Saya" },
-              { value: "dilaporkan", label: "Pernah Dilaporkan" },
-            ] as { value: MyViewFilter; label: string }[]).map((tab) => (
-              <button
-                key={tab.value}
-                onClick={() => setMyView(tab.value)}
-                className={`px-3 py-1.5 rounded-[4px] text-sm font-medium transition-all ${
-                  myView === tab.value
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))_auto]">
-            <div className="relative sm:col-span-2 lg:col-span-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Cari nama instansi atau kota"
-                className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-              />
-            </div>
-            <div className="flex h-10 items-center gap-1.5 rounded-[4px] border border-gray-300 px-3 bg-white">
-              <ArrowUpDown className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-              <select
-                value={sortMode}
-                onChange={(e) => setSortMode(e.target.value as SortMode)}
-                aria-label="Urutkan"
-                className="w-full text-sm focus:outline-none bg-transparent text-gray-700"
-              >
-                <option value="terbaru">Terbaru</option>
-                <option value="nama_az">Nama A–Z</option>
-              </select>
-            </div>
-            <select
-              value={filterKategori}
-              onChange={(e) => setFilterKategori(e.target.value as KategoriDukungan | "semua")}
-              aria-label="Filter kategori"
-              className="h-10 w-full px-3 text-sm border border-gray-300 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-            >
-              <option value="semua">Semua Kategori</option>
-              {(Object.keys(KATEGORI_CONFIG) as KategoriDukungan[]).map((k) => (
-                <option key={k} value={k}>{k}</option>
-              ))}
-            </select>
-            <select
-              value={filterPenyedia}
-              onChange={(e) => setFilterPenyedia(e.target.value as KategoriPenyedia | "semua")}
-              aria-label="Filter penyedia"
-              className="h-10 w-full px-3 text-sm border border-gray-300 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-            >
-              <option value="semua">Semua Penyedia</option>
-              {(["Pemerintah Pusat", "Pemerintah Daerah", "Swasta", "OMS", "Lainnya"] as KategoriPenyedia[]).map((p) => (
-                <option key={p} value={p}>{p}</option>
-              ))}
-            </select>
-            <button
-              type="button"
-              onClick={downloadCsv}
-              disabled={filtered.length === 0}
-              className="flex items-center justify-center gap-1.5 h-10 px-4 rounded-[4px] text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-[#F9F9F9] transition disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
-            >
-              <Download className="w-4 h-4" /> Ekspor CSV
-            </button>
-          </div>
+      <div className={`flex items-center gap-1 bg-[#F9F9F9] rounded-[4px] p-1 w-fit ${showStats ? "mt-8" : ""}`}>
+        {([
+          { value: "semua", label: "Semua" },
+          { value: "usulan_saya", label: "Usulan Saya" },
+          { value: "dilaporkan", label: "Pernah Dilaporkan" },
+        ] as { value: MyViewFilter; label: string }[]).map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => setMyView(tab.value)}
+            className={`px-3 py-1.5 rounded-[4px] text-sm font-medium transition-all ${
+              myView === tab.value
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-2 [&>*]:w-full [&>*]:shrink-0 sm:[&>*]:w-[180px]">
+        <div className="relative flex-1 min-w-[240px] sm:w-auto!">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari nama instansi atau kota"
+            className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          />
         </div>
+        <div className="flex h-10 items-center gap-1.5 rounded-[4px] border border-[#808489] px-3 bg-white">
+          <ArrowUpDown className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+          <select
+            value={sortMode}
+            onChange={(e) => setSortMode(e.target.value as SortMode)}
+            aria-label="Urutkan"
+            className="w-full text-sm focus:outline-none bg-white text-gray-700"
+          >
+            <option value="terbaru">Terbaru</option>
+            <option value="nama_az">Nama A–Z</option>
+          </select>
+        </div>
+        <select
+          value={filterKategori}
+          onChange={(e) => setFilterKategori(e.target.value as KategoriDukungan | "semua")}
+          aria-label="Filter kategori"
+          className="h-10 w-full px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        >
+          <option value="semua">Semua Kategori</option>
+          {(Object.keys(KATEGORI_CONFIG) as KategoriDukungan[]).map((k) => (
+            <option key={k} value={k}>{k}</option>
+          ))}
+        </select>
+        <select
+          value={filterPenyedia}
+          onChange={(e) => setFilterPenyedia(e.target.value as KategoriPenyedia | "semua")}
+          aria-label="Filter penyedia"
+          className="h-10 w-full px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        >
+          <option value="semua">Semua Penyedia</option>
+          {(["Pemerintah Pusat", "Pemerintah Daerah", "Swasta", "OMS", "Lainnya"] as KategoriPenyedia[]).map((p) => (
+            <option key={p} value={p}>{p}</option>
+          ))}
+        </select>
+        <button
+          type="button"
+          onClick={downloadCsv}
+          disabled={filtered.length === 0}
+          className="sm:w-auto! flex items-center justify-center gap-1.5 h-10 px-4 rounded-[4px] text-sm font-medium text-gray-700 bg-white border border-[#808489] hover:bg-[#F9F9F9] transition disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+        >
+          <Download className="w-4 h-4" /> Ekspor CSV
+        </button>
+      </div>
+      <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
         {totalRows === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-1 text-center border-t border-gray-200">
+          <div className="flex flex-col items-center justify-center py-16 gap-1 text-center">
             <p className="font-semibold text-gray-700 text-sm">Tidak ada sumber dukungan</p>
             <p className="text-gray-500 text-sm">Coba ubah filter atau kata kunci pencarian.</p>
           </div>
@@ -891,7 +885,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[640px]">
                 <thead>
-                  <tr className="bg-[#F1F1F1] border-b border-gray-200 text-left">
+                  <tr className="bg-[#F1F1F1] border-b border-[#D9DBDD] text-left">
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500">Nama Instansi</th>
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500">Wilayah</th>
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500">Kategori</th>
@@ -899,7 +893,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                     <th className="px-4 py-3 text-xs font-semibold text-gray-500 text-right">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-[#D9DBDD]">
                   {paginatedData.map((item) => {
                     const kategoriCfg = KATEGORI_CONFIG[item.kategoriBentukDukungan]
                     return (
@@ -934,7 +928,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                         <td className="px-4 py-3.5 text-right">
                           <a
                             href={`/sumber-rujukan/form?view=${item.id}`}
-                            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
+                            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-medium border border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] transition-colors whitespace-nowrap"
                           >
                             Cek Detail
                           </a>
@@ -1123,7 +1117,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                   value={reportAlasan}
                   onChange={(e) => setReportAlasan(e.target.value)}
                   placeholder={reportJenis === "penonaktifan" ? "Jelaskan alasan penonaktifan..." : "Jelaskan data yang perlu diperbaiki..."}
-                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-[#808489] focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                   rows={3}
                 />
               </div>
@@ -1172,7 +1166,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                   value={usulNonaktifAlasan}
                   onChange={(e) => setUsulNonaktifAlasan(e.target.value)}
                   placeholder="Jelaskan alasan mengapa sumber dukungan ini perlu dinonaktifkan..."
-                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-[#808489] focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                   rows={3}
                 />
               </div>
@@ -1221,7 +1215,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                   value={pulihkanAlasan}
                   onChange={(e) => setPulihkanAlasan(e.target.value)}
                   placeholder="Jelaskan alasan mengapa sumber dukungan ini perlu dipulihkan..."
-                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                  className="w-full px-3 py-2 text-sm rounded-[4px] border border-[#808489] focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
                   rows={3}
                 />
               </div>
@@ -1281,7 +1275,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                       onChange={(e) => setFormNama(e.target.value)}
                       placeholder="Nama instansi atau layanan"
                       required
-                      className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="bg-white w-full mt-1 px-3 py-2 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1290,7 +1284,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                       <select
                         value={formKategori}
                         onChange={(e) => setFormKategori(e.target.value as KategoriDukungan)}
-                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                        className="w-full mt-1 px-3 py-2 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
                       >
                         {(Object.keys(KATEGORI_CONFIG) as KategoriDukungan[]).map((k) => (
                           <option key={k} value={k}>{k}</option>
@@ -1302,7 +1296,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                       <select
                         value={formPenyedia}
                         onChange={(e) => setFormPenyedia(e.target.value as KategoriPenyedia)}
-                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                        className="w-full mt-1 px-3 py-2 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
                       >
                         {(["Pemerintah Pusat", "Pemerintah Daerah", "Swasta", "OMS", "Lainnya"] as KategoriPenyedia[]).map((p) => (
                           <option key={p} value={p}>{p}</option>
@@ -1323,7 +1317,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                       value={formNamaJalan}
                       onChange={(e) => setFormNamaJalan(e.target.value)}
                       placeholder="Nama jalan, nomor,(rt/rw), dll"
-                      className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="bg-white w-full mt-1 px-3 py-2 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1334,7 +1328,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                         value={formKecamatan}
                         onChange={(e) => setFormKecamatan(e.target.value)}
                         placeholder="Nama kecamatan"
-                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="bg-white w-full mt-1 px-3 py-2 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
                     <div>
@@ -1344,7 +1338,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                         value={formKelurahan}
                         onChange={(e) => setFormKelurahan(e.target.value)}
                         placeholder="Nama kelurahan/desa"
-                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="bg-white w-full mt-1 px-3 py-2 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
                   </div>
@@ -1356,7 +1350,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                         value={formNamaJalan}
                         onChange={(e) => setFormNamaJalan(e.target.value)}
                         placeholder="Nama jalan"
-                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="bg-white w-full mt-1 px-3 py-2 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
                     <div>
@@ -1366,7 +1360,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                         value={formNomorJalan}
                         onChange={(e) => setFormNomorJalan(e.target.value)}
                         placeholder="Nomor"
-                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="bg-white w-full mt-1 px-3 py-2 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
                   </div>
@@ -1378,7 +1372,7 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                         value={formKodePos}
                         onChange={(e) => setFormKodePos(e.target.value)}
                         placeholder="Kode pos"
-                        className="w-full mt-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="bg-white w-full mt-1 px-3 py-2 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
                     <div className="rounded-[4px] bg-blue-50 border border-blue-100 px-3 py-2.5 space-y-1">
@@ -1403,12 +1397,12 @@ export function SekolahSumberRujukanView({ wilayah }: SekolahSumberRujukanViewPr
                           value={k.nomor}
                           onChange={(e) => updateKontak(i, "nomor", e.target.value)}
                           placeholder="08xxxxxxxxxx"
-                          className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          className="bg-white flex-1 px-3 py-2 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         />
                         <select
                           value={k.tipe}
                           onChange={(e) => updateKontak(i, "tipe", e.target.value)}
-                          className="w-36 px-2 py-2 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                          className="w-36 px-2 py-2 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
                         >
                           <option value="call_center">Call Center</option>
                           <option value="nomor_pribadi">Nomor Pribadi</option>

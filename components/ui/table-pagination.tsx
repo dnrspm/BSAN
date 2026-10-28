@@ -37,7 +37,7 @@ export function TablePagination({ total, halaman, perHalaman, onHalaman, onPerHa
   const opsi = opsiPerHalaman.includes(perHalaman) ? opsiPerHalaman : [...opsiPerHalaman, perHalaman].sort((a, b) => a - b)
 
   return (
-    <div className={cn("flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-3 border-t border-gray-200 bg-[#F9F9F9]", className)}>
+    <div className={cn("flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-3 border-t border-[#D9DBDD] bg-[#F9F9F9]", className)}>
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500 tabular-nums">
         <span>
           Menampilkan {mulai + 1} - {Math.min(mulai + perHalaman, total)} dari {total.toLocaleString("id-ID")} {satuan}
@@ -50,7 +50,7 @@ export function TablePagination({ total, halaman, perHalaman, onHalaman, onPerHa
                 value={perHalaman}
                 onChange={(e) => onPerHalaman(Number(e.target.value))}
                 aria-label="Jumlah data per halaman"
-                className="h-8 appearance-none rounded-[4px] border border-gray-300 bg-white pl-3 pr-8 text-sm text-gray-700 cursor-pointer hover:bg-[#F9F9F9] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                className="h-8 appearance-none rounded-[4px] border border-[#808489] bg-white pl-3 pr-8 text-sm text-gray-700 cursor-pointer hover:bg-[#F9F9F9] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               >
                 {opsi.map((n) => (
                   <option key={n} value={n}>{n}</option>

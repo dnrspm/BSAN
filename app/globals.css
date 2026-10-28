@@ -122,6 +122,12 @@
 }
 
 @layer base {
+  /* Field selalu berlatar putih, bukan mengikuti latar halaman. */
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):not([type='file']),
+  textarea,
+  select {
+    background-color: #fff;
+  }
   * {
     @apply border-border outline-ring/50;
   }
@@ -151,3 +157,4 @@ select:not([multiple]):not([size]):not(.appearance-none) {
   background-size: 1rem 1rem;
   padding-right: 2.25rem;
 }
+

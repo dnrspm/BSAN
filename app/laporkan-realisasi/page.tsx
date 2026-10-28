@@ -76,7 +76,7 @@ function fmtDate(d: string) {
 // ---------------------------------------------------------------------------
 function SectionCard({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm">
+    <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm">
       <div className="flex items-center gap-2.5 px-5 py-4 bg-[#F9F9F9] border-b border-gray-200 rounded-t-xl">
         <span className="text-gray-900 flex-shrink-0">{icon}</span>
         <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
@@ -95,7 +95,7 @@ function SesuaiToggle({ value, onChange }: { value: boolean | null; onChange: (v
         className={`flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-semibold border transition ${
           value === true
             ? "bg-emerald-600 border-emerald-600 text-white"
-            : "bg-white border-gray-300 text-gray-600 hover:border-emerald-400 hover:text-emerald-600"
+            : "bg-white border-[#808489] text-gray-600 hover:border-emerald-400 hover:text-emerald-600"
         }`}
       >
         <CheckCircle className="w-3.5 h-3.5" /> Sesuai
@@ -106,7 +106,7 @@ function SesuaiToggle({ value, onChange }: { value: boolean | null; onChange: (v
         className={`flex items-center gap-1.5 h-8 px-3 rounded-[4px] text-xs font-semibold border transition ${
           value === false
             ? "bg-red-500 border-red-500 text-white"
-            : "bg-white border-gray-300 text-gray-600 hover:border-red-400 hover:text-red-500"
+            : "bg-white border-[#808489] text-gray-600 hover:border-red-400 hover:text-red-500"
         }`}
       >
         <XCircle className="w-3.5 h-3.5" /> Tidak Sesuai
@@ -319,7 +319,7 @@ function LaporkanRealisasiInner() {
                     type="date"
                     value={aktualTanggalMulai}
                     onChange={(e) => setAktualTanggalMulai(e.target.value)}
-                    className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="bg-white h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
                 <div className="flex flex-col gap-1">
@@ -328,7 +328,7 @@ function LaporkanRealisasiInner() {
                     type="date"
                     value={aktualTanggalSelesai}
                     onChange={(e) => setAktualTanggalSelesai(e.target.value)}
-                    className="h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="bg-white h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -365,7 +365,7 @@ function LaporkanRealisasiInner() {
                     onBlur={() => setTimeout(() => setShowTagDropdown(false), 200)}
                     onClick={() => setShowTagDropdown(true)}
                     placeholder="Tambah penyelenggara aktual"
-                    className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full h-9 px-3 text-sm border border-[#808489] rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                   {showTagDropdown && filteredOptions.length > 0 && (
                     <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-40 overflow-y-auto">
@@ -426,7 +426,7 @@ function LaporkanRealisasiInner() {
                 value={aktualLokasi}
                 onChange={(e) => setAktualLokasi(e.target.value)}
                 placeholder="Lokasi aktual pelaksanaan"
-                className="mt-2 w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="bg-white mt-2 w-full h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           )}
@@ -469,7 +469,7 @@ function LaporkanRealisasiInner() {
                         setAktualPeserta(next)
                       }}
                       placeholder="Kategori"
-                      className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="bg-white flex-1 h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                     <input
                       type="number"
@@ -481,7 +481,7 @@ function LaporkanRealisasiInner() {
                         setAktualPeserta(next)
                       }}
                       placeholder="Jumlah"
-                      className="w-24 h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="bg-white w-24 h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                     <span className="text-sm text-gray-500 whitespace-nowrap">orang</span>
                     <button
@@ -517,7 +517,7 @@ function LaporkanRealisasiInner() {
                 value={linkDokumentasi}
                 onChange={(e) => setLinkDokumentasi(e.target.value)}
                 placeholder="https://drive.google.com/..."
-                className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                className="bg-white w-full h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -527,7 +527,7 @@ function LaporkanRealisasiInner() {
                 onChange={(e) => setCatatan(e.target.value)}
                 placeholder="Tambahkan catatan jika ada hal yang perlu disampaikan..."
                 rows={3}
-                className="p-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
+                className="bg-white p-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
               />
             </div>
           </div>
@@ -538,7 +538,7 @@ function LaporkanRealisasiInner() {
           <button
             type="button"
             onClick={goBack}
-            className="flex-1 py-2.5 rounded-[4px] border border-gray-300 text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition"
+            className="flex-1 py-2.5 rounded-[4px] border border-[#808489] text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition"
           >
             Batal
           </button>

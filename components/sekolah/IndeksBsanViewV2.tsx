@@ -43,7 +43,7 @@ export function IndeksBsanViewV2({ judul = "Indeks BSAN" }: { judul?: string } =
       </div>
 
       <div>
-        <section className="relative z-10 rounded-[4px] border border-gray-200 bg-white">
+        <section className="relative z-10 rounded-[4px] border border-[#D9DBDD] bg-white">
           <h2 className="border-b border-gray-200 px-6 py-4 text-lg font-semibold leading-snug text-gray-900">Skor Indeks BSAN {tahun}</h2>
           <div className="md:grid md:grid-cols-[30fr_35fr_35fr]">
             <div className="p-6">
@@ -118,7 +118,7 @@ export function IndeksBsanViewV2({ judul = "Indeks BSAN" }: { judul?: string } =
         </div>
         <div className="space-y-6">
           {urut.map((i) => (
-            <article key={i.id} id={`indikator-${i.id}`} className="scroll-mt-[4.5rem] overflow-hidden rounded-[4px] border border-gray-200 bg-white">
+            <article key={i.id} id={`indikator-${i.id}`} className="scroll-mt-[4.5rem] overflow-hidden rounded-[4px] border border-[#D9DBDD] bg-white">
               <div className="flex items-center gap-2 border-b border-gray-200 bg-white px-5 py-4">
                 <h3 className="text-lg font-semibold leading-snug text-gray-900">{i.nama}</h3>
                 <Tooltip>

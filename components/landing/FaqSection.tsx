@@ -60,7 +60,7 @@ export function FaqSection() {
           </p>
         </div>
 
-        <div className="bg-white rounded-[4px] border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
           <Accordion type="single" collapsible>
             {faqs.map((faq) => (
               <AccordionItem key={faq.id} value={faq.id} className="px-6">

@@ -64,7 +64,7 @@ export function WilayahFilter({
           <button
             type="button"
             onClick={bukaModal}
-            className="bg-white hover:bg-[#F9F9F9] text-gray-700 border border-gray-300 font-medium text-sm px-2.5 py-1 rounded-[4px] transition"
+            className="bg-white hover:bg-[#F9F9F9] text-gray-700 border border-[#808489] font-medium text-sm px-2.5 py-1 rounded-[4px] transition"
           >
             Ganti
           </button>
@@ -73,7 +73,7 @@ export function WilayahFilter({
       <button
         type="button"
         onClick={bukaModal}
-        className="w-full h-10 px-3 flex items-center gap-2 text-sm border border-gray-300 rounded-[4px] bg-white text-gray-700 hover:bg-[#F9F9F9] focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+        className="w-full h-10 px-3 flex items-center gap-2 text-sm border border-[#808489] rounded-[4px] bg-white text-gray-700 hover:bg-[#F9F9F9] focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
       >
         <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
         <span className="flex-1 truncate text-left">{terbatas ? nilai.kabKota ?? "Semua kab/kota" : labelWilayah(nilai)}</span>

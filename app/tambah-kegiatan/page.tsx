@@ -155,7 +155,7 @@ function TextInput({
       onChange={(e) => onChange?.(e.target.value)}
       placeholder={placeholder}
       disabled={disabled}
-      className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
+      className="w-full h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition bg-white disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
     />
   )
 }
@@ -175,7 +175,7 @@ function SelectInput({
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         disabled={disabled}
-        className="w-full h-9 pl-3 pr-8 text-sm border border-gray-300 rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700 disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
+        className="w-full h-9 pl-3 pr-8 text-sm border border-[#808489] rounded-[4px] appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-gray-700 disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
       >
         {placeholder && <option value="" disabled>{placeholder}</option>}
         {options.map((o) => <option key={o} value={o}>{o}</option>)}
@@ -191,7 +191,7 @@ function SelectInput({
 
 function SectionCard({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-[4px] border border-gray-200 shadow-sm">
+    <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm">
       <div className="flex items-center gap-2.5 px-5 py-4 bg-[#F9F9F9] border-b border-gray-200 rounded-t-xl">
         <span className="text-gray-900 flex-shrink-0">{icon}</span>
         <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
@@ -515,7 +515,7 @@ function TambahKegiatanInner() {
                 placeholder="Jelaskan tujuan dan hasil kegiatan..."
                 rows={4}
                 disabled={isReadOnly}
-                className="p-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
+                className="bg-white p-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none disabled:bg-gray-50 disabled:text-gray-600 disabled:cursor-default"
               />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -566,7 +566,7 @@ function TambahKegiatanInner() {
                   onBlur={() => setTimeout(() => setShowTagDropdown(false), 200)}
                   onClick={() => setShowTagDropdown(true)}
                   placeholder="Tambah Penyelenggara"
-                  className="w-full h-9 px-3 text-sm border border-gray-300 rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full h-9 px-3 text-sm border border-[#808489] rounded-[4px] bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 {showTagDropdown && filteredTagOptions.length > 0 && (
                   <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
@@ -653,7 +653,7 @@ function TambahKegiatanInner() {
                             set("peserta", next)
                           }}
                           placeholder="Tulis kategori..."
-                          className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          className="bg-white flex-1 h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         />
                       )}
                     </div>
@@ -667,7 +667,7 @@ function TambahKegiatanInner() {
                         set("peserta", next)
                       }}
                       placeholder="Jumlah"
-                      className="w-24 h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="bg-white w-24 h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                     <span className="text-sm text-gray-500 whitespace-nowrap">orang</span>
                     {i > 0 && (
@@ -685,7 +685,7 @@ function TambahKegiatanInner() {
               <button
                 type="button"
                 onClick={() => set("peserta", [...form.peserta, { kategori: "", jumlah: "" }])}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-[#808489] hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
               >
                 <Plus className="w-3.5 h-3.5" /> Tambah Kategori
               </button>
@@ -729,7 +729,7 @@ function TambahKegiatanInner() {
                         set("publikasiLinks", next)
                       }}
                       placeholder="https://..."
-                      className="flex-1 h-9 px-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="bg-white flex-1 h-9 px-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                     {i > 0 && (
                       <button
@@ -746,7 +746,7 @@ function TambahKegiatanInner() {
               <button
                 type="button"
                 onClick={() => set("publikasiLinks", [...form.publikasiLinks, { url: "", jenisMedia: "" }])}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-gray-300 hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 border border-dashed border-[#808489] hover:border-gray-400 rounded-[4px] px-3 py-2 transition w-full justify-center"
               >
                 <Plus className="w-3.5 h-3.5" /> Tambah Link Publikasi
               </button>
@@ -923,7 +923,7 @@ function TambahKegiatanInner() {
                     className={`flex items-start gap-3 p-4 rounded-[4px] border-2 text-left transition disabled:cursor-default ${
                       form.aksesInfo === opt.value
                         ? opt.color
-                        : "border-gray-200 bg-white hover:border-gray-300 disabled:hover:border-gray-200"
+                        : "border-[#808489] bg-white hover:border-gray-300 disabled:hover:border-gray-200"
                     }`}
                   >
                     <div className={`w-8 h-8 flex items-center justify-center flex-shrink-0 ${opt.iconBg}`}>
@@ -950,7 +950,7 @@ function TambahKegiatanInner() {
                 onChange={(e) => setRealizeCatatan(e.target.value)}
                 placeholder="Tambahkan catatan jika ada hal yang perlu disampaikan..."
                 rows={3}
-                className="p-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
+                className="bg-white p-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
               />
             </div>
           </SectionCard>
@@ -961,7 +961,7 @@ function TambahKegiatanInner() {
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => setIsRealizing(false)}
-              className="flex-1 py-2.5 rounded-[4px] border border-gray-300 text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition"
+              className="flex-1 py-2.5 rounded-[4px] border border-[#808489] text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition"
             >
               Batal
             </button>
@@ -984,7 +984,7 @@ function TambahKegiatanInner() {
                   router.back()
                 }
               }}
-              className="flex-1 py-2.5 rounded-[4px] border border-gray-300 text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition"
+              className="flex-1 py-2.5 rounded-[4px] border border-[#808489] text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition"
             >
               Batal
             </button>
@@ -1002,7 +1002,7 @@ function TambahKegiatanInner() {
           <div className="flex gap-3 pt-2 pb-4">
             <a
               href={`/tambah-kegiatan?edit=${viewId}`}
-              className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition text-center"
+              className="flex-1 py-2.5 rounded-lg border border-[#808489] text-gray-700 font-medium text-sm hover:bg-[#F9F9F9] transition text-center"
             >
               Edit
             </a>

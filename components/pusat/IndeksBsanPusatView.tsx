@@ -111,7 +111,7 @@ function FilterSelect(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
     <div className="relative">
       <select
         {...props}
-        className="w-full h-10 appearance-none pl-3 pr-9 text-sm border border-gray-300 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+        className="w-full h-10 appearance-none pl-3 pr-9 text-sm border border-[#808489] rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
       />
       <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
     </div>
@@ -282,7 +282,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
         </>
       )}
 
-      <section className="rounded-[4px] border border-gray-300 bg-white overflow-x-auto">
+      <section className="rounded-[4px] border border-[#D9DBDD] bg-white overflow-x-auto">
         {/* Kolom label dan "Semua" terkunci saat digeser; kolom jenjang berukuran sama. */}
         <table className="w-full min-w-[960px] table-fixed text-sm border-separate border-spacing-0">
           <colgroup>
@@ -294,12 +294,12 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
           </colgroup>
           <thead>
             <tr className="text-xs font-semibold text-gray-600">
-              <th className="sticky left-0 z-20 bg-[#F1F1F1] border-b border-r border-gray-300 px-4 py-3" />
-              <th className="sticky left-48 z-20 bg-[#F1F1F1] border-b border-r border-gray-300 px-3 py-3 text-center">Semua</th>
+              <th className="sticky left-0 z-20 bg-[#F1F1F1] border-b border-r border-[#D9DBDD] px-4 py-3" />
+              <th className="sticky left-48 z-20 bg-[#F1F1F1] border-b border-r border-[#D9DBDD] px-3 py-3 text-center">Semua</th>
               {ringkasan.perJenjang.map((j, n, arr) => (
                 <th
                   key={j.jenjang}
-                  className={cn("bg-[#F1F1F1] border-b border-gray-300 px-2 py-3 text-center leading-tight", n < arr.length - 1 && "border-r")}
+                  className={cn("bg-[#F1F1F1] border-b border-[#D9DBDD] px-2 py-3 text-center leading-tight", n < arr.length - 1 && "border-r")}
                 >
                   {j.jenjang}
                 </th>
@@ -308,7 +308,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
           </thead>
           <tbody>
             <tr>
-              <th scope="row" className="sticky left-0 z-10 bg-white border-b border-r border-gray-300 px-4 py-4 text-left font-bold text-gray-900">
+              <th scope="row" className="sticky left-0 z-10 bg-white border-b border-r border-[#D9DBDD] px-4 py-4 text-left font-bold text-gray-900">
                 <span className="inline-flex items-center gap-1.5">
                   Rerata Indeks BSAN
                   <Tooltip>
@@ -328,7 +328,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                   </Tooltip>
                 </span>
               </th>
-              <td className="sticky left-48 z-10 bg-[#F9F9F9] border-b border-r border-gray-300 px-3 py-4 text-center">
+              <td className="sticky left-48 z-10 bg-[#F9F9F9] border-b border-r border-[#D9DBDD] px-3 py-4 text-center">
                 <div className="flex flex-col items-center gap-1.5">
                   <span className={cn("text-3xl font-bold tabular-nums leading-none", ringkasan.rerata !== null ? "text-gray-900" : "text-gray-400")}>
                     {fmt(ringkasan.rerata ?? 0)}
@@ -340,7 +340,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                 <td
                   key={j.jenjang}
                   className={cn(
-                    "border-b border-gray-300 px-3 py-4 text-center text-base font-semibold tabular-nums",
+                    "border-b border-[#D9DBDD] px-3 py-4 text-center text-base font-semibold tabular-nums",
                     n < arr.length - 1 && "border-r",
                     j.rerata !== null ? "text-gray-900" : "text-gray-300"
                   )}
@@ -350,17 +350,17 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
               ))}
             </tr>
             <tr>
-              <th scope="row" className="sticky left-0 z-10 bg-white border-r border-gray-300 px-4 py-4 text-left font-bold text-gray-900">
+              <th scope="row" className="sticky left-0 z-10 bg-white border-r border-[#D9DBDD] px-4 py-4 text-left font-bold text-gray-900">
                 Sudah mengikuti evaluasi BSAN
               </th>
-              <td className="sticky left-48 z-10 bg-[#F9F9F9] border-r border-gray-300 px-3 py-4 text-center tabular-nums">
+              <td className="sticky left-48 z-10 bg-[#F9F9F9] border-r border-[#D9DBDD] px-3 py-4 text-center tabular-nums">
                 <p className="text-3xl font-bold leading-none text-gray-900">{persen(ringkasan.sudah, ringkasan.total)}</p>
                 <p className="mt-1.5 text-xs text-gray-500 whitespace-nowrap">
                   {ringkasan.sudah.toLocaleString("id-ID")} / {ringkasan.total.toLocaleString("id-ID")}
                 </p>
               </td>
               {ringkasan.perJenjang.map((j, n, arr) => (
-                <td key={j.jenjang} className={cn("px-3 py-4 text-center tabular-nums border-gray-300", n < arr.length - 1 && "border-r")}>
+                <td key={j.jenjang} className={cn("px-3 py-4 text-center tabular-nums border-[#D9DBDD]", n < arr.length - 1 && "border-r")}>
                   <p className="text-base font-semibold text-gray-900">{persen(j.sudah, j.total)}</p>
                   <p className="mt-1 text-xs text-gray-500 whitespace-nowrap">
                     {j.sudah} / {j.total}
@@ -372,50 +372,39 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
         </table>
       </section>
 
-      <div className="rounded-[4px] border border-gray-200 bg-white overflow-hidden">
-        <div className="px-5 pt-5 pb-4 space-y-4">
-          <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-base font-semibold text-gray-900">Daftar Skor {hanyaSekolah ? "Sekolah" : "Instansi"}</h2>
-            <p className="text-sm text-gray-500 tabular-nums">
-              {terfilter.length.toLocaleString("id-ID")}
-              {terfilter.length !== dataWilayah.length ? ` dari ${dataWilayah.length.toLocaleString("id-ID")}` : ""} {sebutan}
-            </p>
-          </div>
-
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_repeat(2,minmax(0,1fr))]">
-            <div className="relative sm:col-span-2 lg:col-span-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              <input
-                type="search"
-                value={cari}
-                onChange={(e) => ubah(setCari)(e.target.value)}
-                placeholder={`Cari nama ${sebutan} atau NPSN`}
-                className="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-              />
-            </div>
-            <FilterSelect value={jenjang} onChange={(e) => ubah(setJenjang)(e.target.value as Jenjang | "semua")} aria-label="Filter jenjang">
-              <option value="semua">Semua Jenjang</option>
-              {jenjangList.map((j) => (
-                <option key={j} value={j}>{j}</option>
-              ))}
-            </FilterSelect>
-            <FilterSelect value={kategori} onChange={(e) => ubah(setKategori)(e.target.value as Kategori | "belum" | "semua")} aria-label="Filter kategori">
-              <option value="semua">Semua Kategori</option>
-              <option value="Tinggi">Tinggi</option>
-              <option value="Sedang">Sedang</option>
-              <option value="Rendah">Rendah</option>
-              <option value="belum">Belum Tersedia</option>
-            </FilterSelect>
-          </div>
+      <div className="mt-8 flex flex-wrap items-center gap-2 [&>*]:w-full [&>*]:shrink-0 sm:[&>*]:w-[180px]">
+        <div className="relative flex-1 min-w-[240px] sm:w-auto!">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <input
+            type="search"
+            value={cari}
+            onChange={(e) => ubah(setCari)(e.target.value)}
+            placeholder={`Cari nama ${sebutan} atau NPSN`}
+            className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          />
         </div>
-
+        <FilterSelect value={jenjang} onChange={(e) => ubah(setJenjang)(e.target.value as Jenjang | "semua")} aria-label="Filter jenjang">
+          <option value="semua">Semua Jenjang</option>
+          {jenjangList.map((j) => (
+            <option key={j} value={j}>{j}</option>
+          ))}
+        </FilterSelect>
+        <FilterSelect value={kategori} onChange={(e) => ubah(setKategori)(e.target.value as Kategori | "belum" | "semua")} aria-label="Filter kategori">
+          <option value="semua">Semua Kategori</option>
+          <option value="Tinggi">Tinggi</option>
+          <option value="Sedang">Sedang</option>
+          <option value="Rendah">Rendah</option>
+          <option value="belum">Belum Tersedia</option>
+        </FilterSelect>
+      </div>
+      <div className="rounded-[4px] border border-[#D9DBDD] bg-white overflow-hidden">
         {terfilter.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400 border-t border-gray-200">
+          <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400">
             <Search className="w-8 h-8" />
             <p className="text-sm">Tidak ada data ditemukan</p>
           </div>
         ) : (
-          <div className="overflow-x-auto border-t border-gray-200">
+          <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[920px] table-fixed">
               <colgroup>
                 <col className="w-14" />
@@ -427,7 +416,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                 <col className="w-[13%]" />
               </colgroup>
               <thead>
-                <tr className="bg-[#F1F1F1] border-b border-gray-200 text-left text-xs font-semibold text-gray-500">
+                <tr className="bg-[#F1F1F1] border-b border-[#D9DBDD] text-left text-xs font-semibold text-gray-500">
                   <th className="pl-5 pr-2 py-3 text-center">No</th>
                   {kepalaUrut("nama", <>Nama {hanyaSekolah ? "Sekolah" : "Instansi"}</>)}
                   {kepalaUrut("npsn", "NPSN")}
@@ -437,7 +426,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                   {kepalaUrut("skor", "Indeks", true)}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-[#D9DBDD]">
                 {baris.map((s, n) => (
                   <tr key={s.id} className="hover:bg-[#F9F9F9] transition-colors">
                     <td className="pl-5 pr-2 py-3.5 text-center text-gray-400 tabular-nums">{mulai + n + 1}</td>

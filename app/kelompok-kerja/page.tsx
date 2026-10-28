@@ -20,7 +20,7 @@ function DataPublikContentFallback() {
         </div>
       </div>
       <div className="max-w-6xl mx-auto px-4 pb-16">
-        <div className="bg-white rounded-[4px] border border-slate-100 shadow-sm p-8 flex items-center justify-center min-h-[400px]">
+        <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm p-8 flex items-center justify-center min-h-[400px]">
           <div className="animate-pulse flex flex-col items-center gap-3">
             <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
             <p className="text-sm text-slate-500">Memuat data...</p>

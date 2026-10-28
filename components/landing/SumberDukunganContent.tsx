@@ -152,89 +152,80 @@ export function SumberDukunganContent({ hideHeroPrefix = false }: SumberDukungan
             </p>
           </div>
           {/* Table card */}
-          <div className="bg-white rounded-[4px] border border-slate-100 shadow-sm overflow-hidden">
-            {/* Judul dan jumlah data, lalu filter dengan pencarian di awal */}
-            <div className="px-5 pt-5 pb-4 space-y-4">
-              <div className="flex items-baseline justify-between gap-3">
-                <h2 className="text-base font-semibold text-slate-900">Data Sumber Dukungan</h2>
-                <p className="text-sm text-slate-500 tabular-nums">{filtered.length.toLocaleString("id-ID")} sumber dukungan</p>
-              </div>
-
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))]">
-                <div className="relative sm:col-span-2 lg:col-span-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                  <input
-                    type="search"
-                    placeholder="Cari instansi atau kota"
-                    value={search}
-                    onChange={handleSearchChange}
-                    className="w-full h-10 pl-9 pr-3 text-sm border border-slate-200 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={openWilayahModal}
-                    className="h-10 min-w-0 flex-1 px-3 text-sm border border-slate-200 rounded-[4px] bg-white text-slate-700 hover:bg-[#F9F9F9] transition-colors flex items-center gap-2"
-                  >
-                    <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
-                    <span className="flex-1 truncate text-left">{wilayahLabel}</span>
-                    <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
-                  </button>
-                  {(filterWilayah !== null || filterPenyedia !== "Pemerintah Pusat" || showAllData) ? (
-                    <button
-                      onClick={() => { setFilterWilayah(null); setShowAllData(false); setFilterPenyedia("Pemerintah Pusat"); setPage(1) }}
-                      className="h-10 px-3 text-sm text-slate-500 hover:text-slate-800 border border-slate-200 rounded-[4px] bg-white hover:bg-[#F9F9F9] transition-colors shrink-0"
-                    >
-                      Reset
-                    </button>
-                  ) : null}
-                </div>
-                <select
-                  value={filterKategori}
-                  onChange={(e) => { setFilterKategori(e.target.value as KategoriDukungan | "semua"); setPage(1) }}
-                  aria-label="Filter kategori"
-                  className="h-10 w-full px-3 text-sm border border-slate-200 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                >
-                  <option value="semua">Semua Kategori</option>
-                  {KATEGORI_KEYS.map((k) => <option key={k} value={k}>{k}</option>)}
-                </select>
-                <select
-                  value={filterPenyedia}
-                  onChange={(e) => { setFilterPenyedia(e.target.value as KategoriPenyedia | "semua"); setPage(1) }}
-                  aria-label="Filter penyedia"
-                  className="h-10 w-full px-3 text-sm border border-slate-200 rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                >
-                  <option value="semua">Semua Penyedia</option>
-                  {PENYEDIA_OPTIONS.map((p) => <option key={p} value={p}>{p}</option>)}
-                </select>
-              </div>
+          <div className="flex flex-wrap items-center gap-2 [&>*]:w-full [&>*]:shrink-0 sm:[&>*]:w-[180px]">
+            <div className="relative flex-1 min-w-[240px] sm:w-auto!">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              <input
+                type="search"
+                placeholder="Cari instansi atau kota"
+                value={search}
+                onChange={handleSearchChange}
+                className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              />
             </div>
-
+            <div className="flex gap-2 sm:w-[260px]!">
+              <button
+                onClick={openWilayahModal}
+                className="h-10 min-w-0 flex-1 px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-slate-700 hover:bg-[#F9F9F9] transition-colors flex items-center gap-2"
+              >
+                <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+                <span className="flex-1 truncate text-left">{wilayahLabel}</span>
+                <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+              </button>
+              {(filterWilayah !== null || filterPenyedia !== "Pemerintah Pusat" || showAllData) ? (
+                <button
+                  onClick={() => { setFilterWilayah(null); setShowAllData(false); setFilterPenyedia("Pemerintah Pusat"); setPage(1) }}
+                  className="h-10 px-3 text-sm text-slate-500 hover:text-slate-800 border border-[#808489] rounded-[4px] bg-white hover:bg-[#F9F9F9] transition-colors shrink-0"
+                >
+                  Reset
+                </button>
+              ) : null}
+            </div>
+            <select
+              value={filterKategori}
+              onChange={(e) => { setFilterKategori(e.target.value as KategoriDukungan | "semua"); setPage(1) }}
+              aria-label="Filter kategori"
+              className="h-10 w-full px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            >
+              <option value="semua">Semua Kategori</option>
+              {KATEGORI_KEYS.map((k) => <option key={k} value={k}>{k}</option>)}
+            </select>
+            <select
+              value={filterPenyedia}
+              onChange={(e) => { setFilterPenyedia(e.target.value as KategoriPenyedia | "semua"); setPage(1) }}
+              aria-label="Filter penyedia"
+              className="h-10 w-full px-3 text-sm border border-[#808489] rounded-[4px] bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            >
+              <option value="semua">Semua Penyedia</option>
+              {PENYEDIA_OPTIONS.map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
+          </div>
+          <div className="bg-white rounded-[4px] border border-[#D9DBDD] shadow-sm overflow-hidden">
             {/* Table */}
             {filtered.length === 0 ? (
-              <div className="p-10 text-center border-t border-gray-200">
+              <div className="p-10 text-center">
                 <p className="font-semibold text-gray-700 text-sm">Tidak ada sumber dukungan ditemukan</p>
                 <p className="text-gray-500 text-xs mt-1">Coba ubah filter, wilayah, atau kata kunci pencarian.</p>
               </div>
             ) : (
               <>
-                <div className="overflow-x-auto border-t border-gray-200">
+                <div className="overflow-x-auto">
                   <table className="w-full text-sm min-w-[640px]">
                     <thead>
-                      <tr className="bg-[#F1F1F1] border-b border-gray-200 text-left">
+                      <tr className="bg-[#F1F1F1] border-b border-[#D9DBDD] text-left">
                         <th className="px-4 py-3 text-xs font-semibold text-gray-500">Nama Instansi</th>
                         <th className="px-4 py-3 text-xs font-semibold text-gray-500">Wilayah</th>
                         <th className="px-4 py-3 text-xs font-semibold text-gray-500">Kategori Dukungan</th>
                         <th className="px-4 py-3 text-xs font-semibold text-gray-500" />
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-[#D9DBDD]">
                       {paged.map((item, idx) => {
                         const kategoriCfg = KATEGORI_CONFIG[item.kategoriBentukDukungan]
                         const penyediaCfg = item.kategoriPenyedia ? PENYEDIA_CONFIG[item.kategoriPenyedia] : null
 const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Seluruh Indonesia") && (item.kabupatenKota === NASIONAL_WILAYAH || item.kabupatenKota === "Seluruh Indonesia")
                         return (
-                          <tr key={item.id} className={cn("hover:bg-[#F9F9F9] transition-colors border-b border-gray-200", isNasional && "bg-[#F9F9F9] border-l-4 border-l-yellow-500")}>
+                          <tr key={item.id} className={cn("hover:bg-[#F9F9F9] transition-colors border-b border-[#D9DBDD]", isNasional && "bg-[#F9F9F9] border-l-4 border-l-yellow-500")}>
                             <td className="px-4 py-3.5">
                               <p className="font-semibold text-gray-900 whitespace-nowrap">{item.namaInstansi}</p>
 
@@ -254,7 +245,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setSelectedItem(item)}
-                                className="h-8 text-xs rounded-[4px] border-gray-300 bg-white text-gray-700 hover:bg-[#F9F9F9] hover:text-gray-700"
+                                className="h-8 text-xs rounded-[4px] border-[#808489] bg-white text-gray-700 hover:bg-[#F9F9F9] hover:text-gray-700"
                               >
                                 Cek Detail
                               </Button>
@@ -342,7 +333,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                         href={selectedItem.tautanGoogleMaps}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 text-xs font-medium hover:bg-[#F9F9F9] transition-colors"
+                        className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#808489] text-slate-700 text-xs font-medium hover:bg-[#F9F9F9] transition-colors"
                       >
                         <MapPin className="w-3.5 h-3.5" />
                         Lihat Peta
@@ -361,7 +352,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                           selectedItem.alamatProvinsi ?? (selectedItem.provinsi !== "Seluruh Indonesia" ? selectedItem.provinsi : null),
                         ].filter(Boolean).join(", ")}
                       </p>
-                      <div className="rounded-[4px] border border-slate-200 overflow-hidden h-48">
+                      <div className="rounded-[4px] border border-[#D9DBDD] overflow-hidden h-48">
                         <iframe
                           src={`https://maps.google.com/maps?q=${encodeURIComponent([
                             selectedItem.namaJalan,
@@ -406,7 +397,7 @@ const isNasional = (item.provinsi === NASIONAL_WILAYAH || item.provinsi === "Sel
                     )
 
                     return (
-                        <div className={`grid grid-cols-1 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 rounded-[4px] ${total > 1 ? "border border-slate-200" : ""} sm:grid-cols-[repeat(auto-fit,minmax(0,1fr))]`}>
+                        <div className={`grid grid-cols-1 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 rounded-[4px] ${total > 1 ? "border border-[#D9DBDD]" : ""} sm:grid-cols-[repeat(auto-fit,minmax(0,1fr))]`}>
                           {selectedItem.nomorCallCenter && renderCard("Call Center", selectedItem.nomorCallCenter, true)}
                           {selectedItem.nomorCallCenter2 && renderCard("Call Center 2", selectedItem.nomorCallCenter2)}
                           {selectedItem.nomorPribadi && renderCard("Penanggung Jawab", selectedItem.nomorPribadi)}
