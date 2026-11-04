@@ -45,7 +45,7 @@ export const PERAN_PUSAT_SUBJUDUL: Record<PeranPusat, string> = {
  */
 export const WARNA_SIDEBAR_PUSAT: Record<PeranPusat, { bg: string; border: string }> = {
   adminPusat: { bg: "bg-slate-900", border: "border-slate-700" },
-  adminKementerian: { bg: "bg-teal-900", border: "border-teal-700" },
+  adminKementerian: { bg: "bg-[#5B1229]", border: "border-[#7D2A45]" },
   pimpinan: { bg: "bg-indigo-950", border: "border-indigo-800" },
 }
 
