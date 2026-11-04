@@ -1,4 +1,5 @@
 "use client"
+import { bolehValidasiPokja } from "@/lib/peran-pusat"
 import { useState } from "react"
 import {
   X,
@@ -69,7 +70,7 @@ function formatDate(dateStr: string): string {
 }
 
 export function ValidatePokjaDrawer({ pokja, onClose, onSave }: ValidatePokjaDrawerProps) {
-  const isReadOnly = pokja.status !== "masih-diverifikasi"
+  const isReadOnly = pokja.status !== "masih-diverifikasi" || !bolehValidasiPokja()
   
   const members = pokja.data?.members as Members
   const [showRejectForm, setShowRejectForm] = useState(false)

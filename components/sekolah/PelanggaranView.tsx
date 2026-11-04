@@ -1800,12 +1800,12 @@ export function PelanggaranView({ readOnly, editId, wilayahScope }: { readOnly?:
   }, [])
 
   useEffect(() => {
-    if (!editId || list.length === 0) return
+    if (!editId || list.length === 0 || readOnly) return
     const found = list.find((i) => i.id === editId)
     if (found) {
       window.location.href = `/tambah-pelanggaran?edit=${editId}`
     }
-  }, [editId, list])
+  }, [editId, list, readOnly])
 
   const kategoriOptions = useMemo(() => {
     const cats = new Set<string>()

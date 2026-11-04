@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { DEFAULT_DINAS_NAMA, getDinasNamaForLogs, readAuthSession } from "@/lib/auth-session"
+import { bolehUbahModul } from "@/lib/peran-pusat"
 import { RUJUKAN_LOG, dinasLog, formatLogTerakhirDisplay, getStatusAfterRestore } from "@/lib/rujukan-logs"
 import { KAB_KOTA_BY_PROVINSI } from "@/data/kabKotaData"
 import { TablePagination } from "@/components/ui/table-pagination"
@@ -491,7 +492,9 @@ function DetailPanel({
   onTolakPenonaktifan,
   onTolakLaporan,
   onTolakPemulihan,
+  readOnly = false,
 }: {
+  readOnly?: boolean
   item: SumberRujukan
   dinasNamaForLog: string
   onClose: () => void
@@ -643,7 +646,8 @@ function DetailPanel({
             </div>
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons — disembunyikan untuk peran hanya-lihat */}
+          {!readOnly && (
           <div className="border-t border-gray-200 pt-4 mt-4">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Aksi</p>
             <div className="flex flex-col gap-2 w-full">
@@ -743,6 +747,7 @@ function DetailPanel({
               )}
             </div>
           </div>
+          )}
         </div>
       </div>
 
@@ -882,6 +887,8 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
   const myKabupatenKota = wilayahDinas?.kabupatenKota ?? "Banda Aceh"
   const auth = readAuthSession()
   const isPusat = auth?.role === "pusat"
+  // Admin Kementerian dan Pimpinan Nasional hanya boleh melihat Sumber Dukungan.
+  const bolehUbah = bolehUbahModul("sumberDukungan")
   const isBpmp = !!bpmpProvinsi
 
   const [list, setList] = useState<SumberRujukan[]>(SEED)
@@ -1362,7 +1369,7 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           {/* Template & Import - only for Admin Pusat */}
-          {isPusat && (
+          {isPusat && bolehUbah && (
             <>
               <button
                 type="button"
@@ -1379,12 +1386,14 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
             </>
           )}
           {/* Add New - Primary Action */}
-          <button
-            onClick={() => router.push("/sumber-rujukan/form")}
-            className="flex items-center gap-1.5 h-9 px-4 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
-          >
-            <Plus className="w-4 h-4" /> Tambah
-          </button>
+          {bolehUbah && (
+            <button
+              onClick={() => router.push("/sumber-rujukan/form")}
+              className="flex items-center gap-1.5 h-9 px-4 rounded-[4px] text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
+            >
+              <Plus className="w-4 h-4" /> Tambah
+            </button>
+          )}
         </div>
       </div>
 
@@ -1611,6 +1620,7 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
           onTolakPenonaktifan={handleTolakPenonaktifan}
           onTolakLaporan={handleTolakLaporan}
           onTolakPemulihan={handleTolakPemulihan}
+          readOnly={!bolehUbah}
         />
       )}
 

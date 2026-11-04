@@ -1,5 +1,6 @@
 "use client"
 
+import { bolehUbahModul } from "@/lib/peran-pusat"
 import { useEffect, useState, useMemo } from "react"
 import {
   FileText,
@@ -507,7 +508,7 @@ function FormLinksModal({ item, onClose }: { item: LaporanItem; onClose: () => v
 export function LaporanAkhirTahunPusatView({
   wilayahProvinsi,
 }: { wilayahProvinsi?: string } = {}) {
-  const isReadOnly = wilayahProvinsi !== undefined
+  const isReadOnly = wilayahProvinsi !== undefined || !bolehUbahModul("formEvaluasi")
   const [list, setList] = useState<LaporanItem[]>([])
   const [selected, setSelected] = useState<LaporanItem | null>(null)
   const [linksItem, setLinksItem] = useState<LaporanItem | null>(null)
@@ -638,7 +639,9 @@ export function LaporanAkhirTahunPusatView({
           </div>
           <p className="text-xs text-gray-500 mt-0.5">
             {isReadOnly
-              ? `Pantau pengumpulan formulir di wilayah kewenangan Anda (${wilayahProvinsi})`
+              ? wilayahProvinsi !== undefined
+                ? `Pantau pengumpulan formulir di wilayah kewenangan Anda (${wilayahProvinsi})`
+                : "Pantau formulir evaluasi dan pengumpulan isian sekolah di seluruh daerah"
               : "Kelola formulir evaluasi dan pantau pengumpulan isian sekolah"}
           </p>
         </div>

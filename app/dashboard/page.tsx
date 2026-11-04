@@ -12,6 +12,7 @@ import { KegiatanView } from "@/components/dashboard/KegiatanView"
 import { LaporanAkhirTahunView } from "@/components/laporan/LaporanAkhirTahunView"
 
 import { SidebarPusat, PusatMenu } from "@/components/pusat/SidebarPusat"
+import { bolehUbahModul, hakModul } from "@/lib/peran-pusat"
 import { IndeksBsanPusatView } from "@/components/pusat/IndeksBsanPusatView"
 import { IndeksBsanDinasView } from "@/components/dashboard/IndeksBsanDinasView"
 import { HeaderPusat } from "@/components/pusat/HeaderPusat"
@@ -215,6 +216,7 @@ function DashboardPageInner() {
   // Handle ?menu= URL param for pusat
   useEffect(() => {
     const menuParam = searchParams.get("menu") as PusatMenu | null
+    if (menuParam === "pengguna" && hakModul("aksesPengguna") === "none") return
     if (menuParam === "pelanggaran" || menuParam === "pengguna" || menuParam === "indeks-bsan") {
       setPusatMenu(menuParam)
     }
@@ -588,10 +590,10 @@ function DashboardPageInner() {
               )}
               {pusatMenu === "sumber-rujukan" && <SumberRujukanView />}
               {pusatMenu === "k" && < KegiatanView />}
-              {pusatMenu === "pelanggaran" && <PelanggaranView editId={searchParams.get("edit") ?? undefined} />}
+              {pusatMenu === "pelanggaran" && <PelanggaranView readOnly={!bolehUbahModul("inputKasus")} editId={searchParams.get("edit") ?? undefined} />}
               {pusatMenu === "laporan-akhir-tahun" && <LaporanAkhirTahunPusatView />}
               {pusatMenu === "indeks-bsan" && <IndeksBsanPusatView />}
-              {pusatMenu === "pengguna" && <ManajemenPenggunaView />}
+              {pusatMenu === "pengguna" && hakModul("aksesPengguna") !== "none" && <ManajemenPenggunaView />}
             </main>
           </div>
           {selectedPengajuan && (

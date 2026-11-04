@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { clearAuthAndRedirectToLogin } from "@/lib/logout"
+import { PERAN_PUSAT_LABEL, PERAN_PUSAT_SUBJUDUL, getPeranPusat, hakModul } from "@/lib/peran-pusat"
 
 export type PusatMenu = "dashboard" | "pokja" | "sumber-rujukan" | "kegiatan" | "laporan-akhir-tahun" | "indeks-bsan" | "pelanggaran" | "pengguna"
 
@@ -27,6 +28,9 @@ export function SidebarPusat({ activeMenu, onMenuChange }: SidebarPusatProps) {
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
   const logout = () => clearAuthAndRedirectToLogin(router)
+  const peran = getPeranPusat()
+  // Menu Akses Pengguna disembunyikan bagi peran tanpa akses (Admin Kementerian, Pimpinan).
+  const menuTampil = navItems.filter((item) => item.id !== "pengguna" || hakModul("aksesPengguna", peran) !== "none")
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -36,14 +40,14 @@ export function SidebarPusat({ activeMenu, onMenuChange }: SidebarPusatProps) {
           <GraduationCap className="w-5 h-5 text-white" />
         </div>
         <div className="min-w-0">
-          <p className="text-white font-semibold text-sm leading-tight truncate">Admin Pusat</p>
-          <p className="text-slate-200 text-xs leading-tight truncate">Puspeka</p>
+          <p className="text-white font-semibold text-sm leading-tight truncate">{PERAN_PUSAT_LABEL[peran]}</p>
+          <p className="text-slate-200 text-xs leading-tight truncate">{PERAN_PUSAT_SUBJUDUL[peran]}</p>
         </div>
       </div>
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1">
-        {navItems.map((item) => {
+        {menuTampil.map((item) => {
           const Icon = item.icon
           const isActive = activeMenu === item.id
           return (
@@ -92,7 +96,7 @@ export function SidebarPusat({ activeMenu, onMenuChange }: SidebarPusatProps) {
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-slate-900 flex items-center justify-between px-4 py-3 shadow">
         <div className="flex items-center gap-2">
           <GraduationCap className="w-5 h-5 text-white" />
-          <p className="text-white font-semibold text-sm">Admin Pusat</p>
+          <p className="text-white font-semibold text-sm">{PERAN_PUSAT_LABEL[peran]}</p>
         </div>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { ChevronDown, LogOut, RotateCcw, ShieldCheck } from "lucide-react"
 import { NotificationBell } from "@/components/ui/NotificationBell"
 import { clearAuthAndRedirectToLogin } from "@/lib/logout"
+import { PERAN_PUSAT_LABEL, getPeranPusat } from "@/lib/peran-pusat"
 
 export function HeaderPusat() {
   const router = useRouter()
@@ -42,7 +43,7 @@ export function HeaderPusat() {
             aria-haspopup="menu"
           >
             <ShieldCheck className="w-5 h-5 text-slate-700 flex-shrink-0" />
-            <span className="text-sm font-medium text-gray-700 hidden sm:block">Admin Pusat</span>
+            <span className="text-sm font-medium text-gray-700 hidden sm:block">{PERAN_PUSAT_LABEL[getPeranPusat()]}</span>
             <ChevronDown className={`w-3.5 h-3.5 text-gray-400 hidden sm:block transition ${open ? "rotate-180" : ""}`} />
           </button>
 

@@ -1,5 +1,6 @@
 "use client"
 
+import { bolehUbahModul } from "@/lib/peran-pusat"
 import { useEffect, useState, useMemo, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import {
@@ -654,6 +655,8 @@ function TambahPelanggaranInner() {
   const isView = !!viewId
 
   const [role, setRole] = useState("")
+  // Pimpinan Nasional hanya melihat kasus; Admin Pusat & Admin Kementerian boleh mengelola.
+  const [bolehKelolaKasus, setBolehKelolaKasus] = useState(true)
 
   // View mode state
   const [item, setItem] = useState<(PelanggaranItem & { logStatus?: { status: StatusPelanggaran; keterangan: string; waktu: string }[] }) | null>(null)
@@ -712,6 +715,12 @@ function TambahPelanggaranInner() {
       const authRaw = localStorage.getItem("auth")
       if (authRaw) setRole(JSON.parse(authRaw).role)
     } catch {}
+    const boleh = bolehUbahModul("inputKasus")
+    setBolehKelolaKasus(boleh)
+    // Peran hanya-lihat tidak boleh membuka form buat/ubah lewat URL langsung.
+    if (!boleh && (searchParams.has("create") || searchParams.get("edit"))) {
+      window.location.href = "/dashboard?menu=pelanggaran"
+    }
   }, [])
 
   // BPMP: set wilayah ke provinsi scope-nya secara otomatis (field provinsi disembunyikan)
@@ -1153,7 +1162,7 @@ function TambahPelanggaranInner() {
           </div>
         </div>
 
-        {item.dihapus && (role === "pusat" || role === "bpmp") && (
+        {item.dihapus && bolehKelolaKasus && (role === "pusat" || role === "bpmp") && (
           <div className="max-w-2xl mx-auto px-4 pt-4">
             <div className="bg-red-50 border border-red-200 rounded-[4px] p-5">
               <div className="flex items-start gap-3">
@@ -1481,7 +1490,7 @@ function TambahPelanggaranInner() {
           </div>
         )}
 
-        {!item.dihapus && (role === "dinas" || role === "pusat" || role === "bpmp") && (
+        {!item.dihapus && bolehKelolaKasus && (role === "dinas" || role === "pusat" || role === "bpmp") && (
           <div className="max-w-2xl mx-auto px-4 pb-8 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               {(role === "pusat" || role === "bpmp") && (

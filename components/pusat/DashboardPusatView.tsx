@@ -1,4 +1,5 @@
 "use client"
+import { PERAN_PUSAT_LABEL, getPeranPusat } from "@/lib/peran-pusat"
 import { ClipboardList, CheckCircle2, XCircle, Clock, MapPin, Users, Plus, ChevronRight, AlertTriangle, Building2, MapPinned, TrendingUp } from "lucide-react"
 import { PieChart, Pie, Cell } from "recharts"
 import type { PokjaItem } from "@/types/pokja"
@@ -125,7 +126,7 @@ export function DashboardPusatView({ pokjaList, onValidatePusat, onViewSumberRuj
     <div className="space-y-6">
       {/* Title */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dasbor Admin Pusat</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Dasbor {PERAN_PUSAT_LABEL[getPeranPusat()]}</h1>
         <p className="text-sm text-gray-500 mt-1">Pantau status pembentukan Kelompok Kerja di seluruh Indonesia</p>
       </div>
 

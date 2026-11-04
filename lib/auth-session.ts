@@ -1,5 +1,8 @@
 export type AuthRole = "dinas" | "pusat" | "sekolah" | "bpmp"
 
+/** Peran tingkat pusat; hanya terisi bila role === "pusat". */
+export type PeranPusatSesi = "adminPusat" | "adminKementerian" | "pimpinan"
+
 /** Nama instansi dinas untuk teks log, mis. "Dinas Pendidikan Provinsi Aceh". */
 export const DEFAULT_DINAS_NAMA = "Dinas Pendidikan Provinsi Aceh"
 
@@ -14,6 +17,8 @@ export type AuthSession = {
   namaBPMP?: string
   /** Diset saat login BPMP: provinsi yang menjadi wewenang BPMP. */
   provinsiBPMP?: string
+  /** Diset saat login tingkat pusat; kosong dianggap Admin Pusat. */
+  peranPusat?: PeranPusatSesi
 }
 
 export function readAuthSession(): AuthSession | null {
@@ -32,6 +37,12 @@ export function readAuthSession(): AuthSession | null {
       namaDinas: typeof p.namaDinas === "string" ? p.namaDinas : undefined,
       namaBPMP: typeof p.namaBPMP === "string" ? p.namaBPMP : undefined,
       provinsiBPMP: typeof p.provinsiBPMP === "string" ? p.provinsiBPMP : undefined,
+      peranPusat:
+        role === "pusat" && (p.peranPusat === "adminKementerian" || p.peranPusat === "pimpinan")
+          ? p.peranPusat
+          : role === "pusat"
+            ? "adminPusat"
+            : undefined,
     }
   } catch {
     return null

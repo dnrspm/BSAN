@@ -21,6 +21,8 @@ type KolomUrut = "email" | "peran" | "wilayah" | "diperbarui"
 /** Warna badge per peran agar barisnya cepat dibedakan sekilas. */
 const PERAN_BADGE: Record<PeranPengguna, string> = {
   adminPusat: "bg-purple-200 text-purple-950",
+  adminKementerian: "bg-emerald-200 text-emerald-950",
+  pimpinan: "bg-rose-200 text-rose-950",
   bpmp: "bg-amber-200 text-amber-950",
   dinas: "bg-sky-200 text-sky-950",
 }

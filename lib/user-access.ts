@@ -9,11 +9,11 @@ import { readAuthSession } from "@/lib/auth-session"
 export type AksesModul = "sumberDukungan" | "pelanggaran"
 export type AksesAksi = "buat" | "edit" | "hapus"
 
-/** "nasional" hanya dipakai peran Admin Pusat yang cakupannya seluruh Indonesia. */
+/** "nasional" dipakai peran tingkat pusat (Admin Pusat, Admin Kementerian, Pimpinan Nasional) yang cakupannya seluruh Indonesia. */
 export type TingkatWilayah = "nasional" | "provinsi" | "kabkota"
 
 /** Peran yang boleh diberi akses lewat halaman Akses Pengguna. */
-export type PeranPengguna = "adminPusat" | "bpmp" | "dinas"
+export type PeranPengguna = "adminPusat" | "adminKementerian" | "pimpinan" | "bpmp" | "dinas"
 
 export type AksesPengguna = Record<AksesModul, Record<AksesAksi, boolean>>
 
@@ -38,6 +38,8 @@ export interface PenggunaAkses {
 
 export const PERAN_LABEL: Record<PeranPengguna, string> = {
   adminPusat: "Admin Pusat",
+  adminKementerian: "Admin Kementerian",
+  pimpinan: "Pimpinan Nasional",
   bpmp: "BPMP",
   dinas: "Admin Dinas Pendidikan",
 }
@@ -45,11 +47,18 @@ export const PERAN_LABEL: Record<PeranPengguna, string> = {
 /** Versi pendek untuk badge tabel dan tombol pilihan yang ruangnya sempit. */
 export const PERAN_LABEL_SINGKAT: Record<PeranPengguna, string> = {
   adminPusat: "Admin Pusat",
+  adminKementerian: "Admin Kementerian",
+  pimpinan: "Pimpinan",
   bpmp: "BPMP",
   dinas: "Dinas",
 }
 
-export const PERAN_LIST: PeranPengguna[] = ["adminPusat", "bpmp", "dinas"]
+export const PERAN_LIST: PeranPengguna[] = ["adminPusat", "adminKementerian", "pimpinan", "bpmp", "dinas"]
+
+/** Peran tingkat pusat: cakupan seluruh Indonesia, tanpa pilihan wilayah. */
+export function peranTingkatPusat(peran: PeranPengguna): boolean {
+  return peran === "adminPusat" || peran === "adminKementerian" || peran === "pimpinan"
+}
 
 /**
  * Tingkat wilayah kewenangan yang boleh dipilih per peran saat input manual:
@@ -58,6 +67,8 @@ export const PERAN_LIST: PeranPengguna[] = ["adminPusat", "bpmp", "dinas"]
  */
 export const TINGKAT_PER_PERAN: Record<PeranPengguna, TingkatWilayah[]> = {
   adminPusat: ["nasional"],
+  adminKementerian: ["nasional"],
+  pimpinan: ["nasional"],
   bpmp: ["provinsi"],
   dinas: ["provinsi", "kabkota"],
 }
@@ -69,6 +80,8 @@ export const TINGKAT_LABEL: Record<TingkatWilayah, string> = {
 }
 
 const INSTANSI_PUSAT = "Puspeka Kemendikdasmen"
+const INSTANSI_KEMENTERIAN = "Kementerian/Lembaga Mitra"
+const INSTANSI_PIMPINAN = "Pimpinan Nasional"
 
 /** Nama instansi bawaan untuk pengguna yang diinput manual, mengikuti perannya. */
 export function instansiPeran(
@@ -78,6 +91,8 @@ export function instansiPeran(
   kabKota: string
 ): string {
   if (peran === "adminPusat") return INSTANSI_PUSAT
+  if (peran === "adminKementerian") return INSTANSI_KEMENTERIAN
+  if (peran === "pimpinan") return INSTANSI_PIMPINAN
   if (peran === "bpmp") return `BPMP Provinsi ${provinsi}`
   return tingkat === "kabkota"
     ? `Dinas Pendidikan Kab/Kota ${kabKota}`
@@ -100,7 +115,7 @@ export const AKSI_LIST: AksesAksi[] = ["buat", "edit", "hapus"]
 
 export const STORAGE_KEY = "penggunaAkses"
 /** Dinaikkan tiap struktur data berubah; data tersimpan versi lama dibuang. */
-export const STORAGE_VERSI = 11
+export const STORAGE_VERSI = 12
 
 /** Semua hak (buat, ubah, hapus) di kedua modul — akses penuh. */
 export function aksesPenuh(): AksesPengguna {
@@ -108,6 +123,21 @@ export function aksesPenuh(): AksesPengguna {
     sumberDukungan: { buat: true, edit: true, hapus: true },
     pelanggaran: { buat: true, edit: true, hapus: true },
   }
+}
+
+/**
+ * Hak awal saat akun baru diberi akses, mengikuti perannya: Admin Kementerian
+ * hanya mengelola Kasus Pelanggaran, Pimpinan Nasional hanya memantau.
+ */
+export function aksesAwalPeran(peran: PeranPengguna): AksesPengguna {
+  if (peran === "pimpinan") return emptyAkses()
+  if (peran === "adminKementerian") {
+    return {
+      sumberDukungan: { buat: false, edit: false, hapus: false },
+      pelanggaran: { buat: true, edit: true, hapus: true },
+    }
+  }
+  return aksesPenuh()
 }
 
 export function emptyAkses(): AksesPengguna {
@@ -142,6 +172,26 @@ export const DEFAULT_PENGGUNA: PenggunaAkses[] = [
     tingkatWilayah: "nasional", provinsi: "", kabKota: "",
     status: "aktif", akses: aksesPenuh(),
     diperbaruiPada: "2026-02-11T10:25:00", diperbaruiOleh: "dimas@puspeka.kemdikbud.go.id",
+  },
+
+  // Admin Kementerian — setingkat Puspeka, dari kementerian lain
+  {
+    id: "k1", email: "anita@kemenpppa.go.id",
+    peran: "adminKementerian",
+    instansi: INSTANSI_KEMENTERIAN,
+    tingkatWilayah: "nasional", provinsi: "", kabKota: "",
+    status: "aktif", akses: { sumberDukungan: { buat: false, edit: false, hapus: false }, pelanggaran: { buat: true, edit: true, hapus: true } },
+    diperbaruiPada: "2026-03-30T10:00:00", diperbaruiOleh: "rani@puspeka.kemdikbud.go.id",
+  },
+
+  // Pimpinan Nasional — hanya memantau
+  {
+    id: "n1", email: "pimpinan@setneg.go.id",
+    peran: "pimpinan",
+    instansi: INSTANSI_PIMPINAN,
+    tingkatWilayah: "nasional", provinsi: "", kabKota: "",
+    status: "aktif", akses: emptyAkses(),
+    diperbaruiPada: "2026-03-30T10:15:00", diperbaruiOleh: "rani@puspeka.kemdikbud.go.id",
   },
 
   // BPMP — tingkat provinsi
@@ -304,6 +354,7 @@ export function labelJabatan(k: {
   peran?: PeranPengguna | null
 }): string {
   if (k.peran === "dinas") return `Admin ${k.instansi}`
+  if (k.peran === "adminKementerian" || k.peran === "pimpinan") return PERAN_LABEL[k.peran]
   if (k.peran === "adminPusat" || k.peran === "bpmp") {
     const label = PERAN_LABEL[k.peran]
     // Instansi BPMP sudah memuat kata "BPMP", jadi tidak perlu diawali lagi.
@@ -327,6 +378,14 @@ const K = (email: string, instansi: string, provinsi: string, kabKota = ""): Kan
 /** Kandidat admin pusat — cakupannya nasional, tidak terikat wilayah. */
 const KP = (email: string): KandidatPengguna => ({
   email, instansi: INSTANSI_PUSAT, jabatan: PERAN_LABEL.adminPusat, peran: "adminPusat",
+  tingkatWilayah: "nasional", provinsi: "", kabKota: "",
+})
+
+/** Kandidat Admin Kementerian / Pimpinan Nasional — cakupan nasional. */
+const KN = (email: string, peran: "adminKementerian" | "pimpinan"): KandidatPengguna => ({
+  email,
+  instansi: peran === "adminKementerian" ? INSTANSI_KEMENTERIAN : INSTANSI_PIMPINAN,
+  jabatan: PERAN_LABEL[peran], peran,
   tingkatWilayah: "nasional", provinsi: "", kabKota: "",
 })
 
@@ -354,6 +413,11 @@ export const KANDIDAT_PENGGUNA: KandidatPengguna[] = [
   KP("rani@puspeka.kemdikbud.go.id"),
   KP("dimas@puspeka.kemdikbud.go.id"),
   KP("wahyu@puspeka.kemdikbud.go.id"),
+
+  // Admin Kementerian & Pimpinan Nasional — cakupan nasional
+  KN("anita@kemenpppa.go.id", "adminKementerian"),
+  KN("rizky@kemenag.go.id", "adminKementerian"),
+  KN("pimpinan@setneg.go.id", "pimpinan"),
 
   // BPMP — tingkat provinsi
   KB("nadia@bpmpjabar.kemdikbud.go.id", "Jawa Barat"),
@@ -453,9 +517,11 @@ function normalizePengguna(raw: unknown): PenggunaAkses | null {
   const p = raw as Record<string, unknown>
   if (typeof p.id !== "string" || typeof p.email !== "string") return null
   const peran: PeranPengguna =
-    p.peran === "adminPusat" || p.peran === "bpmp" ? p.peran : "dinas"
+    p.peran === "adminPusat" || p.peran === "adminKementerian" || p.peran === "pimpinan" || p.peran === "bpmp"
+      ? p.peran
+      : "dinas"
   const tingkatWilayah: TingkatWilayah =
-    peran === "adminPusat"
+    peranTingkatPusat(peran)
       ? "nasional"
       : peran === "bpmp"
         ? "provinsi"

@@ -1,5 +1,6 @@
 "use client"
 
+import { hakModul } from "@/lib/peran-pusat"
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { AlertCircle, ArrowLeft, Info, Mail, Plus, Trash2, UserPlus, X } from "lucide-react"
@@ -9,7 +10,7 @@ import {
   PERAN_LIST,
   TINGKAT_LABEL,
   TINGKAT_PER_PERAN,
-  aksesPenuh,
+  aksesAwalPeran,
   cariKandidatEmail,
   getAktorSaatIni,
   instansiPeran,
@@ -66,6 +67,11 @@ function SectionCard({
 
 export default function BeriAksesPage() {
   const router = useRouter()
+
+  // Hanya Admin Pusat yang mengelola akses pengguna.
+  useEffect(() => {
+    if (hakModul("aksesPengguna") !== "edit") router.replace("/dashboard")
+  }, [router])
 
   const [daftar, setDaftar] = useState<PenggunaAkses[]>([])
   const [terpilih, setTerpilih] = useState<PenggunaTerpilih[]>([])
@@ -156,7 +162,7 @@ export default function BeriAksesPage() {
 
   /**
    * Ganti peran: opsi wilayah mengikuti peran, jadi pilihan wilayah sebelumnya
-   * dibuang. Admin Pusat dan BPMP tingkatnya sudah pasti, langsung diisikan.
+   * dibuang. Peran tingkat pusat dan BPMP tingkatnya sudah pasti, langsung diisikan.
    */
   const pilihPeran = (peran: PeranPengguna) => {
     const tingkatOpsi = TINGKAT_PER_PERAN[peran]
@@ -261,8 +267,9 @@ export default function BeriAksesPage() {
       id: `u_${Date.now()}_${i}`,
       ...t,
       status: "aktif",
-      // Masuk daftar berarti dapat hak buat, ubah, dan hapus di kedua modul.
-      akses: aksesPenuh(),
+      // Hak awal mengikuti peran (Admin Kementerian hanya Kasus Pelanggaran,
+      // Pimpinan Nasional hanya memantau); lainnya dapat penuh.
+      akses: aksesAwalPeran(t.peran),
       ...jejak,
     }))
     savePenggunaAkses([...daftar, ...baru])
@@ -296,7 +303,7 @@ export default function BeriAksesPage() {
         <div className="flex items-start gap-2 rounded-[4px] border border-blue-200 bg-blue-50 px-3 py-2.5">
           <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-blue-800">
-            Akses berlaku untuk Admin Pusat, BPMP, dan Admin Dinas Pendidikan yang terdaftar. Jika
+            Akses berlaku untuk Admin Pusat, Admin Kementerian, Pimpinan Nasional, BPMP, dan Admin Dinas Pendidikan yang terdaftar. Jika
             belum terdaftar, silakan daftarkan secara mandiri melalui form yang tersedia di halaman ini.
           </p>
         </div>
@@ -498,7 +505,7 @@ export default function BeriAksesPage() {
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
               <div>
                 <label className="text-xs font-medium text-gray-700">Peran</label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-1">
                   {PERAN_LIST.map((p) => (
                     <button
                       key={p}
