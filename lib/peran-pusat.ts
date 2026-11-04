@@ -39,6 +39,16 @@ export const PERAN_PUSAT_SUBJUDUL: Record<PeranPusat, string> = {
   pimpinan: "Pemantauan Nasional",
 }
 
+/**
+ * Warna sidebar per peran agar tiap peran langsung dikenali. Admin Pusat tetap
+ * slate; berbeda dari dinas (biru) dan BPMP (marun).
+ */
+export const WARNA_SIDEBAR_PUSAT: Record<PeranPusat, { bg: string; border: string }> = {
+  adminPusat: { bg: "bg-slate-900", border: "border-slate-700" },
+  adminKementerian: { bg: "bg-teal-900", border: "border-teal-700" },
+  pimpinan: { bg: "bg-indigo-950", border: "border-indigo-800" },
+}
+
 export const HAK_PERAN_PUSAT: Record<PeranPusat, Record<ModulPusat, HakModul>> = {
   adminPusat: {
     pendaftaranPokja: "view",

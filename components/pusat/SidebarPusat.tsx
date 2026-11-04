@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { clearAuthAndRedirectToLogin } from "@/lib/logout"
-import { PERAN_PUSAT_LABEL, PERAN_PUSAT_SUBJUDUL, getPeranPusat, hakModul } from "@/lib/peran-pusat"
+import { PERAN_PUSAT_LABEL, PERAN_PUSAT_SUBJUDUL, WARNA_SIDEBAR_PUSAT, getPeranPusat, hakModul } from "@/lib/peran-pusat"
 
 export type PusatMenu = "dashboard" | "pokja" | "sumber-rujukan" | "kegiatan" | "laporan-akhir-tahun" | "indeks-bsan" | "pelanggaran" | "pengguna"
 
@@ -29,13 +29,14 @@ export function SidebarPusat({ activeMenu, onMenuChange }: SidebarPusatProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const logout = () => clearAuthAndRedirectToLogin(router)
   const peran = getPeranPusat()
+  const warna = WARNA_SIDEBAR_PUSAT[peran]
   // Menu Akses Pengguna disembunyikan bagi peran tanpa akses (Admin Kementerian, Pimpinan).
   const menuTampil = navItems.filter((item) => item.id !== "pengguna" || hakModul("aksesPengguna", peran) !== "none")
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Brand */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-700">
+      <div className={`flex items-center gap-3 px-5 py-5 border-b ${warna.border}`}>
         <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
           <GraduationCap className="w-5 h-5 text-white" />
         </div>
@@ -72,7 +73,7 @@ export function SidebarPusat({ activeMenu, onMenuChange }: SidebarPusatProps) {
       </nav>
 
       {/* Logout */}
-      <div className="px-3 py-4 border-t border-slate-700">
+      <div className={`px-3 py-4 border-t ${warna.border}`}>
         <button
           type="button"
           onClick={logout}
@@ -88,12 +89,12 @@ export function SidebarPusat({ activeMenu, onMenuChange }: SidebarPusatProps) {
   return (
     <>
       {/* Desktop */}
-      <aside className="hidden md:flex flex-col w-60 flex-shrink-0 bg-slate-900 sticky top-0 h-screen overflow-y-auto">
+      <aside className={`hidden md:flex flex-col w-60 flex-shrink-0 ${warna.bg} sticky top-0 h-screen overflow-y-auto`}>
         <SidebarContent />
       </aside>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-slate-900 flex items-center justify-between px-4 py-3 shadow">
+      <div className={`md:hidden fixed top-0 left-0 right-0 z-40 ${warna.bg} flex items-center justify-between px-4 py-3 shadow`}>
         <div className="flex items-center gap-2">
           <GraduationCap className="w-5 h-5 text-white" />
           <p className="text-white font-semibold text-sm">{PERAN_PUSAT_LABEL[peran]}</p>
@@ -110,7 +111,7 @@ export function SidebarPusat({ activeMenu, onMenuChange }: SidebarPusatProps) {
       {/* Mobile drawer */}
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-30 flex">
-          <div className="w-64 bg-slate-900 flex flex-col pt-16">
+          <div className={`w-64 ${warna.bg} flex flex-col pt-16`}>
             <SidebarContent />
           </div>
           <div className="flex-1 bg-black/40" onClick={() => setMobileOpen(false)} />
