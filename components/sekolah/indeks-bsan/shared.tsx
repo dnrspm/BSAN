@@ -160,6 +160,18 @@ export function Selisih({ skor, sebelumnya, tahunSebelumnya, className }: { skor
 export const rata2 = (list: Indikator[]) => Math.round((list.reduce((s, i) => s + i.skor, 0) / list.length) * 10) / 10
 
 
+/** Waktu pembaruan terakhir data Indeks BSAN (demo: tanggal tetap). */
+export const TERAKHIR_DIPERBARUI = "5 November 2026, 08.00 WIB"
+
+/** Ditaruh satu baris dengan deskripsi judul, dipisah spasi. */
+export function LastUpdate({ className }: { className?: string }) {
+  return (
+    <span className={cn("whitespace-nowrap", className)}>
+      Terakhir diperbarui: <span className="font-semibold">{TERAKHIR_DIPERBARUI}</span>
+    </span>
+  )
+}
+
 export function TahunSelect({ tahun, onChange, className }: { tahun: number; onChange: (t: number) => void; className?: string }) {
   return (
     <label className={cn("flex items-center gap-2 text-sm text-gray-600", className)}>

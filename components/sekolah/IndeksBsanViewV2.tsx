@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Check, ChevronDown, ChevronRight, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { EksporExcelButton, Selisih, TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, nilaiSubindikator, tingkat, useDataTahun } from "./indeks-bsan/shared"
+import { EksporExcelButton, LastUpdate, Selisih, TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, nilaiSubindikator, tingkat, useDataTahun } from "./indeks-bsan/shared"
 
 const KATEGORI = [
   { label: "Tinggi", rentang: "≥ 8,0", contoh: 8 },
@@ -34,7 +34,7 @@ export function IndeksBsanViewV2({ judul = "Indeks BSAN" }: { judul?: string } =
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-semibold text-gray-900">{judul}</h1>
-          <p className="mt-1 text-sm text-gray-500">Gambaran penerapan Budaya Sekolah Aman dan Nyaman, dinilai dari 4 indikator dengan skala 0–10.</p>
+          <p className="mt-1 text-sm text-gray-500">Gambaran penerapan Budaya Sekolah Aman dan Nyaman, dinilai dari 4 indikator dengan skala 0–10. <LastUpdate /></p>
         </div>
         <div className="flex items-center gap-3">
           <TahunSelect tahun={tahun} onChange={setTahun} />

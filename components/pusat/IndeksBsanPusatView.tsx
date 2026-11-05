@@ -8,7 +8,7 @@ import { SELURUH_INDONESIA, WilayahFilter, type WilayahPilihan } from "@/compone
 import { JENJANG_FIELDS } from "@/components/pusat/LaporanAkhirTahunPusatView"
 import { TablePagination } from "@/components/ui/table-pagination"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, tingkat } from "@/components/sekolah/indeks-bsan/shared"
+import { LastUpdate, TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, tingkat } from "@/components/sekolah/indeks-bsan/shared"
 
 type Jenjang = string
 type Kategori = "Tinggi" | "Sedang" | "Rendah"
@@ -263,7 +263,8 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
               ? `Skor Indeks BSAN ${hanyaSekolah ? "satuan pendidikan" : "satuan pendidikan dan dinas"} di ${wilayahKabKota}, ${wilayahProvinsi}.`
               : terbatas
                 ? `Skor Indeks BSAN satuan pendidikan dan dinas di wilayah kewenangan Anda (${wilayahProvinsi}).`
-                : "Skor Indeks BSAN seluruh satuan pendidikan dan dinas."}
+                : "Skor Indeks BSAN seluruh satuan pendidikan dan dinas."}{" "}
+            <LastUpdate />
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
