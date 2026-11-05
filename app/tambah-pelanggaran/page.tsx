@@ -2136,8 +2136,8 @@ function TambahPelanggaranInner() {
                       next[i] = { ...next[i], keterangan: e.target.value }
                       setForm((prev) => ({ ...prev, kronologi: next }))
                     }}
-                    placeholder="Deskripsikan kejadian pada waktu yang sudah dipilih, termasuk dampak yang terjadi pada terduga korban dan terduga pelaku."
-                    rows={3}
+                    placeholder="Deskripsikan lebih detail terkait siapa yang terlibat, kapan, dimana, dan bagaimana pelanggaran ini terjadi. Jelaskan latar belakang terduga korban dan pelaku (kondisi sosial ekonomi) serta dampak pelanggaran bagi terduga korban dan pelaku."
+                    rows={6}
                     className="w-full px-3 py-2 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white resize-y"
                   />
                 </div>
