@@ -30,7 +30,7 @@ export function SidebarPusat({ activeMenu, onMenuChange }: SidebarPusatProps) {
   const logout = () => clearAuthAndRedirectToLogin(router)
   const peran = getPeranPusat()
   const warna = WARNA_SIDEBAR_PUSAT[peran]
-  // Menu Akses Pengguna disembunyikan bagi peran tanpa akses (Admin Kementerian, Pimpinan).
+  // Menu Akses Pengguna disembunyikan bagi peran tanpa akses (Admin Internal, Admin Nasional).
   const menuTampil = navItems.filter((item) => item.id !== "pengguna" || hakModul("aksesPengguna", peran) !== "none")
 
   const SidebarContent = () => (

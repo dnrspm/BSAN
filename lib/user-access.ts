@@ -9,7 +9,7 @@ import { readAuthSession } from "@/lib/auth-session"
 export type AksesModul = "sumberDukungan" | "pelanggaran"
 export type AksesAksi = "buat" | "edit" | "hapus"
 
-/** "nasional" dipakai peran tingkat pusat (Admin Pusat, Admin Kementerian, Pimpinan Nasional) yang cakupannya seluruh Indonesia. */
+/** "nasional" dipakai peran tingkat pusat (Admin Pusat, Admin Internal, Admin Nasional) yang cakupannya seluruh Indonesia. */
 export type TingkatWilayah = "nasional" | "provinsi" | "kabkota"
 
 /** Peran yang boleh diberi akses lewat halaman Akses Pengguna. */
@@ -38,8 +38,8 @@ export interface PenggunaAkses {
 
 export const PERAN_LABEL: Record<PeranPengguna, string> = {
   adminPusat: "Admin Pusat",
-  adminKementerian: "Admin Kementerian",
-  pimpinan: "Pimpinan Nasional",
+  adminKementerian: "Admin Internal",
+  pimpinan: "Admin Nasional",
   bpmp: "BPMP",
   dinas: "Admin Dinas Pendidikan",
 }
@@ -47,8 +47,8 @@ export const PERAN_LABEL: Record<PeranPengguna, string> = {
 /** Versi pendek untuk badge tabel dan tombol pilihan yang ruangnya sempit. */
 export const PERAN_LABEL_SINGKAT: Record<PeranPengguna, string> = {
   adminPusat: "Admin Pusat",
-  adminKementerian: "Admin Kementerian",
-  pimpinan: "Pimpinan",
+  adminKementerian: "Admin Internal",
+  pimpinan: "Admin Nasional",
   bpmp: "BPMP",
   dinas: "Dinas",
 }
@@ -81,7 +81,7 @@ export const TINGKAT_LABEL: Record<TingkatWilayah, string> = {
 
 const INSTANSI_PUSAT = "Puspeka Kemendikdasmen"
 const INSTANSI_KEMENTERIAN = "Kementerian/Lembaga Mitra"
-const INSTANSI_PIMPINAN = "Pimpinan Nasional"
+const INSTANSI_PIMPINAN = "Admin Nasional"
 
 /** Nama instansi bawaan untuk pengguna yang diinput manual, mengikuti perannya. */
 export function instansiPeran(
@@ -126,8 +126,8 @@ export function aksesPenuh(): AksesPengguna {
 }
 
 /**
- * Hak awal saat akun baru diberi akses, mengikuti perannya: Admin Kementerian
- * hanya mengelola Kasus Pelanggaran, Pimpinan Nasional hanya memantau.
+ * Hak awal saat akun baru diberi akses, mengikuti perannya: Admin Internal
+ * hanya mengelola Kasus Pelanggaran, Admin Nasional hanya memantau.
  */
 export function aksesAwalPeran(peran: PeranPengguna): AksesPengguna {
   if (peran === "pimpinan") return emptyAkses()
@@ -174,7 +174,7 @@ export const DEFAULT_PENGGUNA: PenggunaAkses[] = [
     diperbaruiPada: "2026-02-11T10:25:00", diperbaruiOleh: "dimas@puspeka.kemdikbud.go.id",
   },
 
-  // Admin Kementerian — setingkat Puspeka, dari kementerian lain
+  // Admin Internal — setingkat Puspeka, dari kementerian lain
   {
     id: "k1", email: "anita@kemenpppa.go.id",
     peran: "adminKementerian",
@@ -184,7 +184,7 @@ export const DEFAULT_PENGGUNA: PenggunaAkses[] = [
     diperbaruiPada: "2026-03-30T10:00:00", diperbaruiOleh: "rani@puspeka.kemdikbud.go.id",
   },
 
-  // Pimpinan Nasional — hanya memantau
+  // Admin Nasional — hanya memantau
   {
     id: "n1", email: "pimpinan@setneg.go.id",
     peran: "pimpinan",
@@ -381,7 +381,7 @@ const KP = (email: string): KandidatPengguna => ({
   tingkatWilayah: "nasional", provinsi: "", kabKota: "",
 })
 
-/** Kandidat Admin Kementerian / Pimpinan Nasional — cakupan nasional. */
+/** Kandidat Admin Internal / Admin Nasional — cakupan nasional. */
 const KN = (email: string, peran: "adminKementerian" | "pimpinan"): KandidatPengguna => ({
   email,
   instansi: peran === "adminKementerian" ? INSTANSI_KEMENTERIAN : INSTANSI_PIMPINAN,
@@ -414,7 +414,7 @@ export const KANDIDAT_PENGGUNA: KandidatPengguna[] = [
   KP("dimas@puspeka.kemdikbud.go.id"),
   KP("wahyu@puspeka.kemdikbud.go.id"),
 
-  // Admin Kementerian & Pimpinan Nasional — cakupan nasional
+  // Admin Internal & Admin Nasional — cakupan nasional
   KN("anita@kemenpppa.go.id", "adminKementerian"),
   KN("rizky@kemenag.go.id", "adminKementerian"),
   KN("pimpinan@setneg.go.id", "pimpinan"),

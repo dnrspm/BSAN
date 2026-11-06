@@ -887,7 +887,7 @@ export function SumberRujukanView({ wilayahDinas, forBpmp }: { wilayahDinas?: { 
   const myKabupatenKota = wilayahDinas?.kabupatenKota ?? "Banda Aceh"
   const auth = readAuthSession()
   const isPusat = auth?.role === "pusat"
-  // Admin Kementerian dan Pimpinan Nasional hanya boleh melihat Sumber Dukungan.
+  // Admin Internal dan Admin Nasional hanya boleh melihat Sumber Dukungan.
   const bolehUbah = bolehUbahModul("sumberDukungan")
   const isBpmp = !!bpmpProvinsi
 

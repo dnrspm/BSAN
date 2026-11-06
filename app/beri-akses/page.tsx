@@ -267,8 +267,8 @@ export default function BeriAksesPage() {
       id: `u_${Date.now()}_${i}`,
       ...t,
       status: "aktif",
-      // Hak awal mengikuti peran (Admin Kementerian hanya Kasus Pelanggaran,
-      // Pimpinan Nasional hanya memantau); lainnya dapat penuh.
+      // Hak awal mengikuti peran (Admin Internal hanya Kasus Pelanggaran,
+      // Admin Nasional hanya memantau); lainnya dapat penuh.
       akses: aksesAwalPeran(t.peran),
       ...jejak,
     }))
@@ -303,7 +303,7 @@ export default function BeriAksesPage() {
         <div className="flex items-start gap-2 rounded-[4px] border border-blue-200 bg-blue-50 px-3 py-2.5">
           <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-blue-800">
-            Akses berlaku untuk Admin Pusat, Admin Kementerian, Pimpinan Nasional, BPMP, dan Admin Dinas Pendidikan yang terdaftar. Jika
+            Akses berlaku untuk Admin Pusat, Admin Internal, Admin Nasional, BPMP, dan Admin Dinas Pendidikan yang terdaftar. Jika
             belum terdaftar, silakan daftarkan secara mandiri melalui form yang tersedia di halaman ini.
           </p>
         </div>

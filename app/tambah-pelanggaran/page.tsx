@@ -655,7 +655,7 @@ function TambahPelanggaranInner() {
   const isView = !!viewId
 
   const [role, setRole] = useState("")
-  // Pimpinan Nasional hanya melihat kasus; Admin Pusat & Admin Kementerian boleh mengelola.
+  // Admin Nasional hanya melihat kasus; Admin Pusat & Admin Internal boleh mengelola.
   const [bolehKelolaKasus, setBolehKelolaKasus] = useState(true)
 
   // View mode state

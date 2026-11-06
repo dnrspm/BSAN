@@ -28,8 +28,8 @@ export const PERAN_PUSAT_LIST: PeranPusat[] = ["adminPusat", "adminKementerian",
 
 export const PERAN_PUSAT_LABEL: Record<PeranPusat, string> = {
   adminPusat: "Admin Pusat",
-  adminKementerian: "Admin Kementerian",
-  pimpinan: "Pimpinan Nasional",
+  adminKementerian: "Admin Internal",
+  pimpinan: "Admin Nasional",
 }
 
 /** Keterangan instansi di bawah nama peran (sidebar). */
@@ -99,7 +99,7 @@ export function bolehUbahModul(modul: ModulPusat): boolean {
 
 /**
  * Validasi pengajuan Kelompok Kerja (terima/tolak) tetap hanya dilakukan Admin
- * Pusat; Admin Kementerian dan Pimpinan Nasional hanya melihat pendaftaran.
+ * Pusat; Admin Internal dan Admin Nasional hanya melihat pendaftaran.
  */
 export function bolehValidasiPokja(): boolean {
   const s = readAuthSession()
