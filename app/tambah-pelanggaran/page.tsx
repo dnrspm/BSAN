@@ -2128,6 +2128,7 @@ function TambahPelanggaranInner() {
                 </div>
                 <div className="mt-2 bg-[#F9F9F9] rounded-[4px] px-3 py-2">
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Keterangan <span className="text-red-500">*</span></label>
+                  <p className="text-xs text-gray-500 mb-1.5">Memuat detil informasi 1) siapa, kapan, di mana, dan bagaimana pelanggaran terjadi; 2) latar belakang sosial ekonomi korban dan pelaku yang terlibat; dan 3) dampak pelanggaran bagi setiap pihak.</p>
                   <textarea
                     required
                     value={entry.keterangan ?? ""}
