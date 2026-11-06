@@ -242,6 +242,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
     setHalaman(1)
   }
 
+  const tahunDiHeader = kabKotaTetap || hanyaSekolah
   const pilihTahun = <TahunSelect tahun={tahun} onChange={ubah(setTahun)} />
   const tombolEkspor = (
     <button
@@ -268,7 +269,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {kabKotaTetap && pilihTahun}
+          {tahunDiHeader && pilihTahun}
           {tombolEkspor}
         </div>
       </div>
@@ -278,7 +279,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
           <div className="border-t border-gray-200" />
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <WilayahFilter nilai={wilayah} onChange={ubah(setWilayah)} provinsiTetap={wilayahProvinsi} ringkas />
-            {pilihTahun}
+            {!tahunDiHeader && pilihTahun}
           </div>
         </>
       )}

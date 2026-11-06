@@ -7,7 +7,7 @@ import { SekolahHeader } from "@/components/sekolah/SekolahHeader"
 import { SekolahSumberRujukanView } from "@/components/sekolah/SekolahSumberRujukanView"
 import { KegiatanView } from "@/components/dashboard/KegiatanView"
 import { PelanggaranView } from "@/components/sekolah/PelanggaranView"
-import { IndeksBsanSwitch } from "@/components/sekolah/IndeksBsanSwitch"
+import { IndeksBsanView } from "@/components/sekolah/IndeksBsanView"
 import { LaporanAkhirTahunView } from "@/components/laporan/LaporanAkhirTahunView"
 import { clearAuthAndRedirectToLogin } from "@/lib/logout"
 
@@ -61,7 +61,7 @@ export function SekolahDashboard({ searchParams }: SekolahDashboardProps) {
           {menu === "kegiatan" && <KegiatanView />}
           {menu === "pelanggaran" && <PelanggaranView readOnly />}
           {menu === "laporan-akhir-tahun" && <LaporanAkhirTahunView role="sekolah" />}
-          {menu === "indeks-bsan" && <IndeksBsanSwitch />}
+          {menu === "indeks-bsan" && <IndeksBsanView />}
         </main>
       </div>
     </div>
