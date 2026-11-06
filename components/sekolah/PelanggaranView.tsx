@@ -1313,6 +1313,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                       {lokasiField}
                       <div className="flex-[2]">
                         <label className="block text-xs text-gray-700 mb-1">Keterangan</label>
+                        <p className="text-xs text-gray-500 mb-1.5">Memuat detil informasi 1) siapa, kapan, di mana, dan bagaimana pelanggaran terjadi; 2) latar belakang sosial ekonomi korban dan pelaku yang terlibat; dan 3) dampak pelanggaran bagi setiap pihak.</p>
                         <input
                           type="text"
                           value={entry.keterangan ?? ""}
@@ -1335,6 +1336,7 @@ function FormModal({ onClose, onSubmit, initialData, isIdealMode }: { onClose: (
                       </div>
                       <div className="mt-2 bg-[#F9F9F9] rounded-[4px] px-3 py-2">
                         <label className="block text-xs text-gray-700 mb-1">Keterangan</label>
+                        <p className="text-xs text-gray-500 mb-1.5">Memuat detil informasi 1) siapa, kapan, di mana, dan bagaimana pelanggaran terjadi; 2) latar belakang sosial ekonomi korban dan pelaku yang terlibat; dan 3) dampak pelanggaran bagi setiap pihak.</p>
                         <textarea
                           value={entry.keterangan ?? ""}
                           onChange={(e) => {
