@@ -16,8 +16,8 @@ Buka `http://localhost:3000`
 | Role | Username | Password |
 |------|----------|----------|
 | Admin Pusat | `admin.pusat` | `pusat123` |
-| Admin Kementerian | `admin.kementerian` | `kementerian123` |
-| Pimpinan Nasional | `pimpinan.nasional` | `pimpinan123` |
+| Admin Internal | `admin.internal` | `internal123` |
+| Admin Nasional | `admin.nasional` | `nasional123` |
 | Admin Dinas | `admin.dinas` | `dinas123` |
 | Admin Sekolah | `admin.sekolah` | `sekolah123` |
 

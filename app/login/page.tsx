@@ -15,8 +15,8 @@ const VALID_USERS: {
 }[] = [
   { username: "admin.dinas",    password: "dinas123",   role: "dinas",  provinsi: "Aceh" },
   { username: "admin.pusat",    password: "pusat123",   role: "pusat", peranPusat: "adminPusat" },
-  { username: "admin.kementerian", password: "kementerian123", role: "pusat", peranPusat: "adminKementerian" },
-  { username: "pimpinan.nasional", password: "pimpinan123", role: "pusat", peranPusat: "pimpinan" },
+  { username: "admin.internal", password: "internal123", role: "pusat", peranPusat: "adminKementerian" },
+  { username: "admin.nasional", password: "nasional123", role: "pusat", peranPusat: "pimpinan" },
   { username: "admin.sekolah",  password: "sekolah123", role: "sekolah" },
   { username: "bpmp.aceh",      password: "bpmp123",    role: "bpmp",   provinsi: "Aceh" },
   { username: "bpmp.jabar",     password: "bpmp123",    role: "bpmp",   provinsi: "Jawa Barat" },
