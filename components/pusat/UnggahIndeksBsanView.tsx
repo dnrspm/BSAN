@@ -124,15 +124,11 @@ function DaftarTahun({
     <>
       <div>
         <Jejak item={[{ label: "Indeks BSAN", onClick: onKembali }, { label: "Unggah Data" }]} />
-        <h1 className="text-xl font-bold text-gray-900">Unggah Data Indeks BSAN</h1>
-        <p className="mt-0.5 text-sm text-gray-500">Pilih tahun untuk melihat riwayat file yang diunggah atau mengunggah data baru.</p>
-      </div>
-
-      <div>
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold text-gray-900">
-            Tahun <span className="font-normal text-gray-400">({tahunList.length})</span>
-          </h2>
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-gray-900">Unggah Data Indeks BSAN</h1>
+            <p className="mt-0.5 text-sm text-gray-500">Pilih tahun untuk melihat riwayat file yang diunggah atau mengunggah data baru.</p>
+          </div>
           <button
             type="button"
             onClick={() => {
@@ -140,11 +136,17 @@ function DaftarTahun({
               setTambahBuka(true)
             }}
             disabled={tersedia.length === 0}
-            className={TOMBOL_UTAMA}
+            className={cn(TOMBOL_UTAMA, "shrink-0")}
           >
             <Plus className="h-4 w-4" /> Tambah Tahun
           </button>
         </div>
+      </div>
+
+      <div>
+        <h2 className="mb-3 text-sm font-semibold text-gray-900">
+          Riwayat Unggah per Tahun <span className="font-normal text-gray-400">({tahunList.length})</span>
+        </h2>
         <ul className="space-y-3">
           {tahunList.map((t) => {
             const file = daftar.filter((u) => u.tahun === t)
