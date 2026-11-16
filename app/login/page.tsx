@@ -11,9 +11,12 @@ const VALID_USERS: {
   password: string
   role: "dinas" | "pusat" | "sekolah" | "bpmp"
   provinsi?: string
+  /** Dinas: bila diisi, akun setingkat kab/kota; bila kosong, akun Dinas Provinsi. */
+  kabKota?: string
   peranPusat?: PeranPusatLogin
 }[] = [
-  { username: "admin.dinas",    password: "dinas123",   role: "dinas",  provinsi: "Aceh" },
+  { username: "admin.dinas",    password: "dinas123",   role: "dinas",  provinsi: "Aceh", kabKota: "Banda Aceh" },
+  { username: "admin.dinas.provinsi", password: "dinas123", role: "dinas", provinsi: "Aceh" },
   { username: "admin.pusat",    password: "pusat123",   role: "pusat", peranPusat: "adminPusat" },
   { username: "admin.internal", password: "internal123", role: "pusat", peranPusat: "adminKementerian" },
   { username: "admin.nasional", password: "nasional123", role: "pusat", peranPusat: "pimpinan" },
@@ -54,8 +57,8 @@ export default function LoginPage() {
             : user.role === "dinas"
               ? {
                   ...base,
-                  wilayah: "Aceh - Banda Aceh",
-                  namaDinas: "Dinas Pendidikan Provinsi Aceh",
+                  wilayah: user.kabKota ? `${user.provinsi} - ${user.kabKota}` : user.provinsi,
+                  namaDinas: user.kabKota ? `Dinas Pendidikan ${user.kabKota}` : `Dinas Pendidikan Provinsi ${user.provinsi}`,
                 }
               : user.role === "bpmp"
                 ? {
