@@ -32,8 +32,8 @@ export interface Unggahan {
   isiHasil?: string
 }
 
-/** Tahun yang dapat dikelola datanya, terbaru lebih dulu. */
-export const TAHUN_UNGGAH = [2027, 2026, 2025]
+/** Tahun yang dapat ditambahkan ke daftar unggah (2026 sampai 2035). */
+export const TAHUN_PILIHAN = Array.from({ length: 10 }, (_, i) => 2026 + i)
 
 export const TEMPLATE_CSV: Record<BagianUnggah, { nama: string; isi: string; kolomWajib: [string, string] }> = {
   sekolah: {
@@ -49,6 +49,7 @@ export const TEMPLATE_CSV: Record<BagianUnggah, { nama: string; isi: string; kol
 }
 
 const KUNCI = "unggah-indeks-bsan"
+const KUNCI_TAHUN = "unggah-indeks-bsan-tahun"
 
 type HasilProses = Required<Pick<Unggahan, "status" | "pesan" | "jumlahBaris" | "barisBerhasil" | "isiHasil">>
 
@@ -109,7 +110,6 @@ function seed(): Unggahan[] {
     buat("seed-2", 2026, "2026-11-04T16:20:00", "skor_bsan_sekolah_2026_revisi.csv", "npsn;nama_sekolah;skor\r\n10100001;SDN 1 Banda Aceh;8,2\r\n1010002;SMPN 2 Banda Aceh;6,4\r\n10100003;SMAN 3 Bireuen;11"),
     buat("seed-3", 2026, "2026-11-04T10:05:00", "data_sekolah_2026.csv", "nama_sekolah;nilai\r\nSDN 1 Banda Aceh;8,2"),
     buat("seed-5", 2026, "2026-11-03T14:10:00", "skor_bsan_dinas_2026.csv", "daerah;tingkat;skor\r\nAceh;Provinsi;6,9\r\nBanda Aceh;Kab/Kota;7,5\r\nBireuen;Kab/Kota;5,8", "dinas"),
-    buat("seed-4", 2025, "2025-11-10T09:30:00", "skor_bsan_sekolah_2025.csv", "npsn;nama_sekolah;skor\r\n10100001;SDN 1 Banda Aceh;7,6\r\n10100002;SMPN 2 Banda Aceh;5,9"),
   ]
 }
 
@@ -152,6 +152,31 @@ export function useUnggahan() {
   )
 
   return { daftar, tambah }
+}
+
+/** Tahun yang dibuka untuk unggah data; dimulai dari 2026 dan disimpan di localStorage (demo). Terbaru lebih dulu. */
+export function useTahunUnggah() {
+  const [tahun, setTahun] = useState<number[]>([TAHUN_PILIHAN[0]])
+  const siap = useRef(false)
+
+  useEffect(() => {
+    try {
+      const mentah = localStorage.getItem(KUNCI_TAHUN)
+      const tersimpan = mentah ? (JSON.parse(mentah) as number[]).filter((t) => TAHUN_PILIHAN.includes(t)) : []
+      if (tersimpan.length) setTahun([...new Set(tersimpan)].sort((a, b) => b - a))
+    } catch {}
+    siap.current = true
+  }, [])
+
+  useEffect(() => {
+    if (!siap.current) return
+    try {
+      localStorage.setItem(KUNCI_TAHUN, JSON.stringify(tahun))
+    } catch {}
+  }, [tahun])
+
+  const tambah = useCallback((t: number) => setTahun((d) => (d.includes(t) ? d : [...d, t].sort((a, b) => b - a))), [])
+  return { tahun, tambah }
 }
 
 /** "24/03/2025 11:12" */

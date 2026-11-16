@@ -1,11 +1,11 @@
 "use client"
 
 import { Fragment, useMemo, useRef, useState } from "react"
-import { AlertTriangle, CheckCircle2, ChevronRight, Download, Eye, FileSpreadsheet, FileText, Loader2, Search, Upload } from "lucide-react"
+import { AlertTriangle, CheckCircle2, ChevronRight, Download, Eye, FileSpreadsheet, FileText, Loader2, Plus, Search, Upload } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { readAuthSession } from "@/lib/auth-session"
 import {
-  BAGIAN_UNGGAH, formatWaktu, labelBagian, prosesCsv, TAHUN_UNGGAH, TEMPLATE_CSV, unduhCsv, useUnggahan,
+  BAGIAN_UNGGAH, formatWaktu, labelBagian, prosesCsv, TAHUN_PILIHAN, TEMPLATE_CSV, unduhCsv, useTahunUnggah, useUnggahan,
   type BagianUnggah, type StatusUnggah, type Unggahan,
 } from "@/lib/unggah-indeks-bsan"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
@@ -66,6 +66,7 @@ function Jejak({ item }: { item: { label: string; onClick?: () => void }[] }) {
  */
 export function UnggahIndeksBsanView({ onKembali }: { onKembali: () => void }) {
   const { daftar, tambah } = useUnggahan()
+  const { tahun: tahunList, tambah: tambahTahun } = useTahunUnggah()
   const [tahun, setTahun] = useState<number | null>(null)
   const [bagian, setBagian] = useState<BagianUnggah>("sekolah")
   const [unggahBuka, setUnggahBuka] = useState(false)
@@ -75,7 +76,7 @@ export function UnggahIndeksBsanView({ onKembali }: { onKembali: () => void }) {
   return (
     <div className="space-y-6">
       {tahun === null ? (
-        <DaftarTahun daftar={daftar} onKembali={onKembali} onPilih={setTahun} />
+        <DaftarTahun daftar={daftar} tahunList={tahunList} onTambahTahun={tambahTahun} onKembali={onKembali} onPilih={setTahun} />
       ) : (
         <DetailTahun
           tahun={tahun}
@@ -106,7 +107,19 @@ export function UnggahIndeksBsanView({ onKembali }: { onKembali: () => void }) {
   )
 }
 
-function DaftarTahun({ daftar, onKembali, onPilih }: { daftar: Unggahan[]; onKembali: () => void; onPilih: (t: number) => void }) {
+function DaftarTahun({
+  daftar, tahunList, onTambahTahun, onKembali, onPilih,
+}: {
+  daftar: Unggahan[]
+  tahunList: number[]
+  onTambahTahun: (t: number) => void
+  onKembali: () => void
+  onPilih: (t: number) => void
+}) {
+  const [tambahBuka, setTambahBuka] = useState(false)
+  const tersedia = TAHUN_PILIHAN.filter((t) => !tahunList.includes(t))
+  const [pilihan, setPilihan] = useState<number | "">("")
+
   return (
     <>
       <div>
@@ -116,11 +129,24 @@ function DaftarTahun({ daftar, onKembali, onPilih }: { daftar: Unggahan[]; onKem
       </div>
 
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">
-          Tahun <span className="font-normal text-gray-400">({TAHUN_UNGGAH.length})</span>
-        </h2>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="text-sm font-semibold text-gray-900">
+            Tahun <span className="font-normal text-gray-400">({tahunList.length})</span>
+          </h2>
+          <button
+            type="button"
+            onClick={() => {
+              setPilihan(tersedia[0] ?? "")
+              setTambahBuka(true)
+            }}
+            disabled={tersedia.length === 0}
+            className={TOMBOL_UTAMA}
+          >
+            <Plus className="h-4 w-4" /> Tambah Tahun
+          </button>
+        </div>
         <ul className="space-y-3">
-          {TAHUN_UNGGAH.map((t) => {
+          {tahunList.map((t) => {
             const file = daftar.filter((u) => u.tahun === t)
             const adaData = file.some((u) => u.status === "Berhasil")
             const terakhir = file.map((u) => u.waktu).sort().at(-1)
@@ -148,6 +174,43 @@ function DaftarTahun({ daftar, onKembali, onPilih }: { daftar: Unggahan[]; onKem
           })}
         </ul>
       </div>
+
+      <Dialog open={tambahBuka} onOpenChange={setTambahBuka}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Tambah Tahun</DialogTitle>
+            <DialogDescription>Pilih tahun data Indeks BSAN yang akan dibuka untuk unggah file.</DialogDescription>
+          </DialogHeader>
+          <label className="block text-sm text-gray-600">
+            Tahun
+            <select
+              value={pilihan}
+              onChange={(e) => setPilihan(Number(e.target.value))}
+              className="mt-1.5 h-10 w-full rounded-[4px] border border-[#808489] bg-white px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {tersedia.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+          </label>
+          <div className="flex items-center justify-end gap-2">
+            <button type="button" onClick={() => setTambahBuka(false)} className="rounded-[4px] border border-[#808489] px-4 py-2 text-sm font-medium text-gray-700 hover:bg-[#F9F9F9]">
+              Batal
+            </button>
+            <button
+              type="button"
+              disabled={pilihan === ""}
+              onClick={() => {
+                if (pilihan !== "") onTambahTahun(pilihan)
+                setTambahBuka(false)
+              }}
+              className={TOMBOL_UTAMA}
+            >
+              Tambah
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
