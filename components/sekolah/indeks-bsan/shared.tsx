@@ -194,17 +194,47 @@ export function TahunSelect({ tahun, onChange, className }: { tahun: number; onC
   )
 }
 
-/** Data lengkap satu tahun beserta pembanding tahun sebelumnya (jika ada). */
-export function useDataTahun(tahun: number) {
-  const data = indikatorTahun(tahun)
+const batas = (n: number, maks: number) => Math.min(maks, Math.max(0, n))
+
+/** Geser skor indikator dan subindikator agar rerata mendekati `target`; dipakai untuk menampilkan detail instansi tertentu (demo). */
+function sesuaikan(data: Indikator[], target: number): Indikator[] {
+  const d = target - rata2(data)
+  return data.map((i) => ({
+    ...i,
+    skor: batas(Math.round((i.skor + d) * 10) / 10, 10),
+    subindikator: i.subindikator.map((sub) => ({
+      ...sub,
+      skor: sub.satuan === "persen" ? batas(Math.round(sub.skor + d * 10), 100) : batas(Math.round((sub.skor + d) * 10) / 10, 10),
+    })),
+  }))
+}
+
+/**
+ * Data lengkap satu tahun beserta pembanding tahun sebelumnya (jika ada).
+ * `skorTahun` (opsional) memberi skor akhir instansi tertentu per tahun; tanpa itu dipakai data contoh sekolah sendiri.
+ * `total` bernilai null bila instansi belum mengikuti evaluasi pada tahun itu.
+ */
+export function useDataTahun(tahun: number, skorTahun?: (tahun: number) => number | null) {
   const tahunSebelumnya = tahun - 1
-  const dataSebelumnya = SKOR_TAHUN_LAIN[tahunSebelumnya] ? indikatorTahun(tahunSebelumnya) : null
+  const dasar = indikatorTahun(tahun)
+  const dasarSebelumnya = SKOR_TAHUN_LAIN[tahunSebelumnya] ? indikatorTahun(tahunSebelumnya) : null
+  if (!skorTahun) {
+    return {
+      data: dasar,
+      total: rata2(dasar) as number | null,
+      tahunSebelumnya,
+      dataSebelumnya: dasarSebelumnya,
+      totalSebelumnya: dasarSebelumnya ? rata2(dasarSebelumnya) : undefined,
+    }
+  }
+  const skor = skorTahun(tahun)
+  const skorSebelumnya = skorTahun(tahunSebelumnya)
   return {
-    data,
-    total: rata2(data),
+    data: skor === null ? dasar : sesuaikan(dasar, skor),
+    total: skor,
     tahunSebelumnya,
-    dataSebelumnya,
-    totalSebelumnya: dataSebelumnya ? rata2(dataSebelumnya) : undefined,
+    dataSebelumnya: dasarSebelumnya && skorSebelumnya !== null ? sesuaikan(dasarSebelumnya, skorSebelumnya) : null,
+    totalSebelumnya: skorSebelumnya ?? undefined,
   }
 }
 

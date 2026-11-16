@@ -8,13 +8,14 @@ import { SELURUH_INDONESIA, WilayahFilter, type WilayahPilihan } from "@/compone
 import { JENJANG_FIELDS } from "@/components/pusat/LaporanAkhirTahunPusatView"
 import { TablePagination } from "@/components/ui/table-pagination"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { IndeksBsanView, type DetailInstansi } from "@/components/sekolah/IndeksBsanView"
 import { LastUpdate, TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, tingkat } from "@/components/sekolah/indeks-bsan/shared"
 
 type Jenjang = string
 type Kategori = "Tinggi" | "Sedang" | "Rendah"
 type KolomUrut = "nama" | "npsn" | "jenjang" | "kabKota" | "kategori" | "skor"
 
-interface SekolahIndeks {
+export interface SekolahIndeks {
   id: number
   nama: string
   npsn: string
@@ -51,7 +52,7 @@ const SUDAH_MENGIKUTI: Record<number, number> = { 2026: 235, 2025: 180, 2024: 12
 // Data contoh deterministik: skor sekolah berasal dari Admin Pusat (0–10, satu desimal).
 // `provinsiTerbatas` (BPMP) membatasi data ke satu provinsi; `kabKotaTerbatas` (Dinas) ke satu kab/kota.
 // `hanyaSekolah` menyingkirkan baris dinas dari daftar.
-function buatData(tahun: number, provinsiTerbatas?: string, kabKotaTerbatas?: string, hanyaSekolah = false): SekolahIndeks[] {
+export function buatData(tahun: number, provinsiTerbatas?: string, kabKotaTerbatas?: string, hanyaSekolah = false): SekolahIndeks[] {
   const daftarWilayah =
     provinsiTerbatas === undefined
       ? WILAYAH_CONTOH
@@ -84,6 +85,15 @@ function buatData(tahun: number, provinsiTerbatas?: string, kabKotaTerbatas?: st
   })
 }
 
+/** Skor contoh dinas provinsi (deterministik per provinsi dan tahun); null bila belum mengikuti evaluasi. */
+export function skorProvinsi(tahun: number, provinsi: string): number | null {
+  let h = 0
+  for (const c of provinsi) h = (h * 31 + c.charCodeAt(0)) >>> 0
+  if (h % 6 === 0 || (tahun !== TAHUN_AKTIF && h % 4 === 0)) return null
+  const dasar = 5 + (h % 40) / 10
+  return Math.max(0, Math.round((dasar - 0.4 * (TAHUN_AKTIF - tahun)) * 10) / 10)
+}
+
 const persen = (sudah: number, total: number) => (total ? `${Math.round((sudah / total) * 100)}%` : "0%")
 
 const rata2 = (nilai: number[]) => (nilai.length ? Math.round((nilai.reduce((a, b) => a + b, 0) / nilai.length) * 10) / 10 : null)
@@ -106,7 +116,7 @@ function kategoriDari(skor: number): Kategori {
 }
 
 /** Select dengan panah buatan sendiri, agar panah tidak menempel di tepi kanan. */
-function FilterSelect(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
+export function FilterSelect(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <div className="relative">
       <select
@@ -126,13 +136,15 @@ interface IndeksBsanPusatViewProps {
   /** Hanya tampilkan satuan pendidikan, tanpa baris dinas. */
   hanyaSekolah?: boolean
   judul?: string
+  /** Bila diisi, baris dapat diklik untuk membuka detail skor instansi tersebut. */
+  onLihatDetail?: (detail: DetailInstansi) => void
 }
 
 /**
  * Tampilan Indeks BSAN seluruh instansi. Untuk Admin Pusat tanpa pembatasan; untuk BPMP dan Dinas
  * data dan pilihan wilayah dibatasi pada wilayah kewenangannya.
  */
-export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSekolah = false, judul = "Indeks BSAN" }: IndeksBsanPusatViewProps = {}) {
+export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSekolah = false, judul = "Indeks BSAN", onLihatDetail }: IndeksBsanPusatViewProps = {}) {
   const terbatas = wilayahProvinsi !== undefined
   const kabKotaTetap = terbatas && !!wilayahKabKota
   const jenjangList = hanyaSekolah ? JENJANG_SEKOLAH : JENJANG_LIST
@@ -145,6 +157,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
   const [urut, setUrut] = useState<{ kolom: KolomUrut; arah: "asc" | "desc" } | null>(null)
   const [halaman, setHalaman] = useState(1)
   const [perHalaman, setPerHalaman] = useState(10)
+  const [detail, setDetail] = useState<DetailInstansi | null>(null)
 
   const data = useMemo(() => buatData(tahun, wilayahProvinsi, wilayahKabKota, hanyaSekolah), [tahun, wilayahProvinsi, wilayahKabKota, hanyaSekolah])
 
@@ -232,6 +245,19 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
     )
   }
 
+  // Bila induk tidak menyediakan `onLihatDetail` (Admin Pusat, BPMP), detail dibuka di dalam tampilan ini sendiri.
+  const lihatDetail = onLihatDetail ?? setDetail
+  const bukaDetail = (s: SekolahIndeks) => {
+    window.scrollTo({ top: 0 })
+    lihatDetail({
+      nama: s.nama,
+      npsn: s.npsn !== "-" ? s.npsn : undefined,
+      kabKota: s.kabKota,
+      provinsi: s.provinsi,
+      skorTahun: (t) => buatData(t, wilayahProvinsi, wilayahKabKota, hanyaSekolah).find((x) => x.id === s.id)?.skor ?? null,
+    })
+  }
+
   const totalHalaman = Math.max(1, Math.ceil(terfilter.length / perHalaman))
   const halamanAktif = Math.min(halaman, totalHalaman)
   const mulai = (halamanAktif - 1) * perHalaman
@@ -255,7 +281,9 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
   )
 
   return (
-    <div className="space-y-6">
+    <>
+    {/* Daftar tetap dipasang (hanya disembunyikan) agar filter dan halamannya tidak hilang saat kembali dari detail. */}
+    <div className={cn("space-y-6", detail && "hidden")}>
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <h1 className="text-xl font-bold text-gray-900">{judul}</h1>
@@ -263,8 +291,8 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
             {kabKotaTetap
               ? `Skor Indeks BSAN ${hanyaSekolah ? "satuan pendidikan" : "satuan pendidikan dan dinas"} di ${wilayahKabKota}, ${wilayahProvinsi}.`
               : terbatas
-                ? `Skor Indeks BSAN satuan pendidikan dan dinas di wilayah kewenangan Anda (${wilayahProvinsi}).`
-                : "Skor Indeks BSAN seluruh satuan pendidikan dan dinas."}{" "}
+                ? `Skor Indeks BSAN ${hanyaSekolah ? "satuan pendidikan" : "satuan pendidikan dan dinas"} di wilayah kewenangan Anda (${wilayahProvinsi}).`
+                : `Skor Indeks BSAN seluruh ${hanyaSekolah ? "satuan pendidikan" : "satuan pendidikan dan dinas"}.`}{" "}
             <LastUpdate />
           </p>
         </div>
@@ -430,9 +458,20 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
               </thead>
               <tbody className="divide-y divide-[#D9DBDD]">
                 {baris.map((s, n) => (
-                  <tr key={s.id} className="hover:bg-[#F9F9F9] transition-colors">
+                  <tr key={s.id} onClick={() => bukaDetail(s)} className="cursor-pointer hover:bg-[#F9F9F9] transition-colors">
                     <td className="pl-5 pr-2 py-3.5 text-center text-gray-400 tabular-nums">{mulai + n + 1}</td>
-                    <td className="px-3 py-3.5 font-medium text-gray-900 truncate" title={s.nama}>{s.nama}</td>
+                    <td className="px-3 py-3.5 font-medium text-gray-900 truncate" title={s.nama}>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          bukaDetail(s)
+                        }}
+                        className="max-w-full truncate text-left hover:text-blue-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                      >
+                        {s.nama}
+                      </button>
+                    </td>
                     <td className="px-3 py-3.5 text-gray-600 tabular-nums">{s.npsn}</td>
                     <td className="px-3 py-3.5">
                       <span className="inline-flex rounded-full bg-[#efefef] px-2.5 py-0.5 text-[13px] font-semibold text-[#2f3031] whitespace-nowrap">{s.jenjang}</span>
@@ -461,5 +500,13 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
         />
       </div>
     </div>
+    {detail && !onLihatDetail && (
+      <IndeksBsanView
+        judul="Detail Indeks BSAN"
+        instansi={detail}
+        breadcrumb={[{ label: judul, onClick: () => setDetail(null) }, { label: detail.nama }]}
+      />
+    )}
+    </>
   )
 }

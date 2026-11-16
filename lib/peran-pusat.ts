@@ -56,7 +56,7 @@ export const HAK_PERAN_PUSAT: Record<PeranPusat, Record<ModulPusat, HakModul>> =
     inputKasus: "edit",
     aksesPengguna: "edit",
     formEvaluasi: "edit",
-    indeksBsan: "view",
+    indeksBsan: "edit",
   },
   pimpinan: {
     pendaftaranPokja: "view",

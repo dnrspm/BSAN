@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import { Check, ChevronDown, ChevronRight, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { AspekTambahan } from "./indeks-bsan/AspekTambahan"
-import { EksporExcelButton, LastUpdate, Selisih, TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, nilaiSubindikator, tingkat, useDataTahun } from "./indeks-bsan/shared"
+import { EksporExcelButton, LastUpdate, Selisih, TAHUN_AKTIF, TERAKHIR_DIPERBARUI, TahunSelect, TingkatChip, fmt, nilaiSubindikator, tingkat, useDataTahun } from "./indeks-bsan/shared"
 
 const KATEGORI = [
   { label: "Tinggi", rentang: "≥ 8,0", contoh: 8 },
@@ -21,10 +22,30 @@ const PESAN: Record<string, string> = {
 
 const LABEL = "text-xs font-semibold uppercase tracking-wide text-gray-500"
 
-export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {}) {
+/** Instansi lain yang detail skornya dibuka (mis. oleh admin dinas); `skorTahun` memberi skor akhirnya per tahun. */
+export interface DetailInstansi {
+  nama: string
+  /** NPSN; kosong untuk dinas. */
+  npsn?: string
+  kabKota?: string
+  provinsi?: string
+  skorTahun: (tahun: number) => number | null
+}
+
+interface IndeksBsanViewProps {
+  judul?: string
+  /** Bila diisi, tampilkan detail skor instansi ini, bukan skor akun yang login. */
+  instansi?: DetailInstansi
+  /** Jejak halaman di atas judul; item tanpa `onClick` adalah halaman aktif. */
+  breadcrumb?: { label: string; onClick?: () => void }[]
+}
+
+export function IndeksBsanView({ judul = "Indeks BSAN", instansi, breadcrumb }: IndeksBsanViewProps = {}) {
   const [tahun, setTahun] = useState(TAHUN_AKTIF)
   const [kategoriBuka, setKategoriBuka] = useState(false)
-  const { data, total, tahunSebelumnya, dataSebelumnya, totalSebelumnya } = useDataTahun(tahun)
+  const { data, total: skorAkhir, tahunSebelumnya, dataSebelumnya, totalSebelumnya } = useDataTahun(tahun, instansi?.skorTahun)
+  const belumMengikuti = skorAkhir === null
+  const total = skorAkhir ?? 0
   const urut = [...data].sort((a, b) => a.skor - b.skor)
   const keIndikator = (id: string) => document.getElementById(`indikator-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" })
 
@@ -34,14 +55,63 @@ export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {
     <div className="max-w-5xl mx-auto space-y-8">
       <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div className="min-w-0 flex-1">
-          <h1 className="text-xl font-semibold text-gray-900">{judul}</h1>
-          <p className="mt-1 text-sm text-gray-500">Gambaran penerapan Budaya Sekolah Aman dan Nyaman, dinilai dari 4 indikator dengan skala 0–10. <LastUpdate /></p>
+          {breadcrumb && (
+            <Breadcrumb className="mb-5">
+              <BreadcrumbList>
+                {breadcrumb.map((b, n) => (
+                  <Fragment key={b.label}>
+                    {n > 0 && <BreadcrumbSeparator />}
+                    <BreadcrumbItem>
+                      {b.onClick ? (
+                        <BreadcrumbLink asChild>
+                          <button type="button" onClick={b.onClick} className="hover:underline">{b.label}</button>
+                        </BreadcrumbLink>
+                      ) : (
+                        <BreadcrumbPage>{b.label}</BreadcrumbPage>
+                      )}
+                    </BreadcrumbItem>
+                  </Fragment>
+                ))}
+              </BreadcrumbList>
+            </Breadcrumb>
+          )}
+          <h1 className={cn("font-semibold text-gray-900", instansi ? "text-2xl font-bold" : "text-xl")}>{instansi?.nama ?? judul}</h1>
+          {instansi ? (
+            <dl className="mt-4 grid grid-cols-[max-content_1fr] gap-x-10 gap-y-2 text-sm">
+              {(
+                [
+                  instansi.npsn ? ["NPSN", instansi.npsn] : null,
+                  instansi.kabKota
+                    ? ["Kab/Kota, Provinsi", instansi.provinsi ? `${instansi.kabKota}, Prov. ${instansi.provinsi}` : instansi.kabKota]
+                    : instansi.provinsi
+                      ? ["Provinsi", instansi.provinsi]
+                      : null,
+                  ["Terakhir diperbarui", TERAKHIR_DIPERBARUI],
+                ].filter(Boolean) as [string, string][]
+              ).map(([label, nilai]) => (
+                <Fragment key={label}>
+                  <dt className="text-gray-500">{label}</dt>
+                  <dd className="font-semibold tabular-nums text-gray-900">{nilai}</dd>
+                </Fragment>
+              ))}
+            </dl>
+          ) : (
+            <p className="mt-1 text-sm text-gray-500">Gambaran penerapan Budaya Sekolah Aman dan Nyaman, dinilai dari 4 indikator dengan skala 0–10. <LastUpdate /></p>
+          )}
         </div>
         <div className="flex shrink-0 items-center gap-3">
           <TahunSelect tahun={tahun} onChange={setTahun} />
-          <EksporExcelButton tahun={tahun} data={data} />
+          {!belumMengikuti && <EksporExcelButton tahun={tahun} data={data} />}
         </div>
       </div>
+
+      {belumMengikuti ? (
+        <div className="rounded-[4px] border border-[#D9DBDD] bg-white px-6 py-16 text-center">
+          <p className="text-base font-semibold text-gray-900">Skor belum tersedia</p>
+          <p className="mt-1 text-sm text-gray-500">{instansi?.nama} belum mengikuti evaluasi BSAN pada tahun {tahun}.</p>
+        </div>
+      ) : (
+      <>
 
       <div>
         <section className="relative z-10 rounded-[4px] border border-[#D9DBDD] bg-white">
@@ -181,6 +251,8 @@ export function IndeksBsanView({ judul = "Indeks BSAN" }: { judul?: string } = {
       </section>
 
       <AspekTambahan />
+      </>
+      )}
     </div>
   )
 }

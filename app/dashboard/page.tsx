@@ -13,7 +13,7 @@ import { LaporanAkhirTahunView } from "@/components/laporan/LaporanAkhirTahunVie
 
 import { SidebarPusat, PusatMenu } from "@/components/pusat/SidebarPusat"
 import { bolehUbahModul, hakModul } from "@/lib/peran-pusat"
-import { IndeksBsanPusatView } from "@/components/pusat/IndeksBsanPusatView"
+import { IndeksBsanWilayahView } from "@/components/pusat/IndeksBsanWilayahView"
 import { IndeksBsanDinasView } from "@/components/dashboard/IndeksBsanDinasView"
 import { HeaderPusat } from "@/components/pusat/HeaderPusat"
 import { DashboardPusatView } from "@/components/pusat/DashboardPusatView"
@@ -592,7 +592,7 @@ function DashboardPageInner() {
               {pusatMenu === "k" && < KegiatanView />}
               {pusatMenu === "pelanggaran" && <PelanggaranView readOnly={!bolehUbahModul("inputKasus")} editId={searchParams.get("edit") ?? undefined} />}
               {pusatMenu === "laporan-akhir-tahun" && <LaporanAkhirTahunPusatView />}
-              {pusatMenu === "indeks-bsan" && <IndeksBsanPusatView />}
+              {pusatMenu === "indeks-bsan" && <IndeksBsanWilayahView bolehUnggah={bolehUbahModul("indeksBsan")} />}
               {pusatMenu === "pengguna" && hakModul("aksesPengguna") !== "none" && <ManajemenPenggunaView />}
             </main>
           </div>
@@ -639,7 +639,7 @@ function DashboardPageInner() {
               {bpmpMenu === "laporan-akhir-tahun" && (
                 <LaporanAkhirTahunPusatView wilayahProvinsi={bpmpProvinsi} />
               )}
-              {bpmpMenu === "indeks-bsan" && <IndeksBsanPusatView wilayahProvinsi={bpmpProvinsi} />}
+              {bpmpMenu === "indeks-bsan" && <IndeksBsanWilayahView provinsi={bpmpProvinsi} />}
             </main>
           </div>
         </div>
