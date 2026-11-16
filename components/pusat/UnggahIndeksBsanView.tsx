@@ -5,8 +5,8 @@ import { AlertTriangle, CheckCircle2, ChevronRight, Download, Eye, FileSpreadshe
 import { cn } from "@/lib/utils"
 import { readAuthSession } from "@/lib/auth-session"
 import {
-  formatWaktu, prosesCsv, TAHUN_UNGGAH, TEMPLATE_CSV, unduhCsv, useUnggahan,
-  type StatusUnggah, type Unggahan,
+  BAGIAN_UNGGAH, formatWaktu, labelBagian, prosesCsv, TAHUN_UNGGAH, TEMPLATE_CSV, unduhCsv, useUnggahan,
+  type BagianUnggah, type StatusUnggah, type Unggahan,
 } from "@/lib/unggah-indeks-bsan"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -67,6 +67,7 @@ function Jejak({ item }: { item: { label: string; onClick?: () => void }[] }) {
 export function UnggahIndeksBsanView({ onKembali }: { onKembali: () => void }) {
   const { daftar, tambah } = useUnggahan()
   const [tahun, setTahun] = useState<number | null>(null)
+  const [bagian, setBagian] = useState<BagianUnggah>("sekolah")
   const [unggahBuka, setUnggahBuka] = useState(false)
   const [detailId, setDetailId] = useState<string | null>(null)
   const detail = daftar.find((u) => u.id === detailId) ?? null
@@ -78,7 +79,9 @@ export function UnggahIndeksBsanView({ onKembali }: { onKembali: () => void }) {
       ) : (
         <DetailTahun
           tahun={tahun}
-          daftar={daftar.filter((u) => u.tahun === tahun && u.bagian === "sekolah")}
+          bagian={bagian}
+          onBagian={setBagian}
+          daftar={daftar.filter((u) => u.tahun === tahun && u.bagian === bagian)}
           onKembali={onKembali}
           onKeDaftar={() => setTahun(null)}
           onUnggah={() => setUnggahBuka(true)}
@@ -89,10 +92,11 @@ export function UnggahIndeksBsanView({ onKembali }: { onKembali: () => void }) {
       {tahun !== null && (
         <DialogUnggah
           tahun={tahun}
+          bagian={bagian}
           buka={unggahBuka}
           onTutup={() => setUnggahBuka(false)}
           onUnggah={(file, isi) => {
-            tambah({ tahun, bagian: "sekolah", namaFile: file.name, pengunggah: readAuthSession()?.username ?? "admin.pusat", isiAsli: isi })
+            tambah({ tahun, bagian, namaFile: file.name, pengunggah: readAuthSession()?.username ?? "admin.pusat", isiAsli: isi })
             setUnggahBuka(false)
           }}
         />
@@ -131,7 +135,9 @@ function DaftarTahun({ daftar, onKembali, onPilih }: { daftar: Unggahan[]; onKem
                     </span>
                   </div>
                   <p className="mt-1 text-sm text-gray-500">
-                    {file.length === 0 ? "Belum ada file yang diunggah." : `${file.length} file diunggah · terakhir ${formatWaktu(terakhir!)}`}
+                    {file.length === 0
+                      ? "Belum ada file yang diunggah."
+                      : `${BAGIAN_UNGGAH.map((b) => `${b.label}: ${file.filter((u) => u.bagian === b.id).length} file`).join(" · ")} · terakhir ${formatWaktu(terakhir!)}`}
                   </p>
                 </div>
                 <button type="button" onClick={() => onPilih(t)} className={TOMBOL_SEKUNDER}>
@@ -147,9 +153,11 @@ function DaftarTahun({ daftar, onKembali, onPilih }: { daftar: Unggahan[]; onKem
 }
 
 function DetailTahun({
-  tahun, daftar, onKembali, onKeDaftar, onUnggah, onDetail,
+  tahun, bagian, onBagian, daftar, onKembali, onKeDaftar, onUnggah, onDetail,
 }: {
   tahun: number
+  bagian: BagianUnggah
+  onBagian: (b: BagianUnggah) => void
   daftar: Unggahan[]
   onKembali: () => void
   onKeDaftar: () => void
@@ -179,14 +187,36 @@ function DetailTahun({
         <p className="mt-0.5 text-sm text-gray-500">Riwayat file yang diunggah untuk tahun {tahun}, lengkap dengan pengunggah dan hasil pemrosesannya.</p>
       </div>
 
+      <div role="tablist" className="flex gap-6 border-b border-gray-200">
+        {BAGIAN_UNGGAH.map((b) => (
+          <button
+            key={b.id}
+            type="button"
+            role="tab"
+            aria-selected={bagian === b.id}
+            onClick={() => {
+              onBagian(b.id)
+              setHalaman(1)
+              setCari("")
+            }}
+            className={cn(
+              "-mb-px border-b-2 pb-3 text-sm font-medium transition-colors",
+              bagian === b.id ? "border-blue-600 text-blue-700" : "border-transparent text-gray-500 hover:text-gray-800"
+            )}
+          >
+            {b.label}
+          </button>
+        ))}
+      </div>
+
       <section className="rounded-[4px] border border-[#D9DBDD] bg-white">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#D9DBDD] px-5 py-4">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">Sekolah</h2>
-            <p className="mt-0.5 text-sm text-gray-500">File CSV skor Indeks BSAN satuan pendidikan.</p>
+            <h2 className="text-base font-semibold text-gray-900">Data {labelBagian(bagian)}</h2>
+            <p className="mt-0.5 text-sm text-gray-500">{BAGIAN_UNGGAH.find((b) => b.id === bagian)?.deskripsi}</p>
           </div>
           <button type="button" onClick={onUnggah} className={TOMBOL_UTAMA}>
-            <Upload className="h-4 w-4" /> Unggah File
+            <Upload className="h-4 w-4" /> Unggah File {labelBagian(bagian)}
           </button>
         </div>
 
@@ -209,7 +239,7 @@ function DetailTahun({
         {terfilter.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 py-16 text-gray-400">
             <FileSpreadsheet className="h-8 w-8" />
-            <p className="text-sm">{daftar.length === 0 ? `Belum ada file yang diunggah untuk tahun ${tahun}.` : "Tidak ada file ditemukan"}</p>
+            <p className="text-sm">{daftar.length === 0 ? `Belum ada file data ${labelBagian(bagian).toLowerCase()} yang diunggah untuk tahun ${tahun}.` : "Tidak ada file ditemukan"}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -265,9 +295,10 @@ function DetailTahun({
 }
 
 function DialogUnggah({
-  tahun, buka, onTutup, onUnggah,
+  tahun, bagian, buka, onTutup, onUnggah,
 }: {
   tahun: number
+  bagian: BagianUnggah
   buka: boolean
   onTutup: () => void
   onUnggah: (file: File, isi: string) => void
@@ -315,15 +346,21 @@ function DialogUnggah({
     <Dialog open={buka} onOpenChange={(o) => !o && tutup()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Unggah Data Sekolah</DialogTitle>
-          <DialogDescription>File CSV ini akan dipakai sebagai skor Indeks BSAN sekolah untuk tahun yang dipilih.</DialogDescription>
+          <DialogTitle>Unggah Data {labelBagian(bagian)}</DialogTitle>
+          <DialogDescription>File CSV ini akan dipakai sebagai skor Indeks BSAN {labelBagian(bagian).toLowerCase()} untuk tahun yang dipilih.</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 text-sm">
-          <div className="flex items-center justify-between rounded-[4px] bg-[#F9F9F9] px-4 py-3">
-            <span className="text-gray-500">Tahun data</span>
-            <span className="font-semibold text-gray-900">{tahun}</span>
-          </div>
+          <dl className="grid grid-cols-2 gap-4 rounded-[4px] bg-[#F9F9F9] px-4 py-3">
+            <div>
+              <dt className="text-xs text-gray-500">Tahun data</dt>
+              <dd className="mt-0.5 font-semibold text-gray-900">{tahun}</dd>
+            </div>
+            <div>
+              <dt className="text-xs text-gray-500">Jenis data</dt>
+              <dd className="mt-0.5 font-semibold text-gray-900">{labelBagian(bagian)}</dd>
+            </div>
+          </dl>
 
           <div>
             <input ref={input} type="file" accept=".csv,text/csv" className="sr-only" onChange={(e) => pilih(e.target.files?.[0])} aria-label="Pilih file CSV" />
@@ -350,9 +387,9 @@ function DialogUnggah({
 
           <div className="flex items-start justify-between gap-3 text-xs text-gray-500">
             <p>
-              Kolom wajib: <span className="font-semibold text-gray-700">NPSN</span> dan <span className="font-semibold text-gray-700">skor</span> (angka 0–10).
+              Kolom wajib: <span className="font-semibold text-gray-700">{TEMPLATE_CSV[bagian].kolomWajib[0]}</span> dan <span className="font-semibold text-gray-700">skor</span> (angka 0–10).
             </p>
-            <button type="button" onClick={() => unduhCsv("template_indeks_bsan_sekolah.csv", TEMPLATE_CSV)} className="shrink-0 font-medium text-blue-600 hover:underline">
+            <button type="button" onClick={() => unduhCsv(TEMPLATE_CSV[bagian].nama, TEMPLATE_CSV[bagian].isi)} className="shrink-0 font-medium text-blue-600 hover:underline">
               Unduh template
             </button>
           </div>
@@ -410,7 +447,7 @@ function DialogDetail({ unggahan: u, onTutup }: { unggahan: Unggahan | null; onT
               <Baris label="Nama File">{u.namaFile}</Baris>
               <Baris label="Pengunggah">{u.pengunggah}</Baris>
               <Baris label="Tahun Data">{u.tahun}</Baris>
-              <Baris label="Bagian">Sekolah</Baris>
+              <Baris label="Jenis Data">{labelBagian(u.bagian)}</Baris>
             </div>
 
             <div className="border-t border-[#D9DBDD] pt-4">
@@ -447,7 +484,7 @@ function DialogDetail({ unggahan: u, onTutup }: { unggahan: Unggahan | null; onT
               <KartuFile
                 judul="File Setelah Diproses"
                 keterangan="File balikan sistem yang memuat status dan keterangan tiap baris."
-                onUnduh={() => unduhCsv(`hasil_${u.namaFile}`, u.isiHasil ?? prosesCsv(u.isiAsli).isiHasil)}
+                onUnduh={() => unduhCsv(`hasil_${u.namaFile}`, u.isiHasil ?? prosesCsv(u.isiAsli, u.bagian).isiHasil)}
                 nonaktif={u.status === "Diproses"}
               />
             </div>
