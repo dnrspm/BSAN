@@ -30,6 +30,7 @@ export function WilayahFilter({
   onChange,
   provinsiTetap,
   ringkas = false,
+  hanyaProvinsi = false,
 }: {
   nilai: WilayahPilihan
   onChange: (w: WilayahPilihan) => void
@@ -37,6 +38,8 @@ export function WilayahFilter({
   provinsiTetap?: string
   /** Pemicu berupa teks "Wilayah: … [Ganti]" (gaya menu Sumber Dukungan admin pusat), bukan tombol selebar kolom. */
   ringkas?: boolean
+  /** Pilihan berhenti di tingkat provinsi (tanpa kolom kab/kota), untuk daftar yang barisnya sudah per kab/kota. */
+  hanyaProvinsi?: boolean
 }) {
   const [buka, setBuka] = useState(false)
   const [draf, setDraf] = useState<WilayahPilihan>(nilai)
@@ -84,7 +87,7 @@ export function WilayahFilter({
       {buka && (
         <div role="dialog" aria-modal="true" aria-label="Filter Wilayah" className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50" onClick={() => setBuka(false)} />
-          <div className={cn("relative bg-white rounded-xl shadow-2xl w-full max-h-[80vh] flex flex-col", terbatas ? "max-w-md" : "max-w-2xl")}>
+          <div className={cn("relative bg-white rounded-xl shadow-2xl w-full max-h-[80vh] flex flex-col", terbatas || hanyaProvinsi ? "max-w-md" : "max-w-2xl")}>
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
               <h3 className="text-base font-bold text-gray-900">Filter Wilayah</h3>
               <button type="button" onClick={() => setBuka(false)} className="p-1 hover:bg-gray-100 rounded-[4px]" aria-label="Tutup">
@@ -116,7 +119,7 @@ export function WilayahFilter({
               </div>
             ) : (
             <div className="flex h-[420px] min-h-0">
-              <div className="w-1/2 border-r border-gray-100 overflow-y-auto p-2 space-y-0.5">
+              <div className={cn("overflow-y-auto p-2 space-y-0.5", hanyaProvinsi ? "w-full" : "w-1/2 border-r border-gray-100")}>
                 <button
                   type="button"
                   onClick={() => setDraf(SELURUH_INDONESIA)}
@@ -133,12 +136,12 @@ export function WilayahFilter({
                     className={cn(BARIS, "flex items-center justify-between", draf.provinsi === p ? AKTIF : "hover:bg-[#F9F9F9] text-gray-700")}
                   >
                     <span className="truncate">{p}</span>
-                    {draf.provinsi === p && <ChevronRight className="w-3.5 h-3.5 shrink-0 text-blue-500" />}
+                    {!hanyaProvinsi && draf.provinsi === p && <ChevronRight className="w-3.5 h-3.5 shrink-0 text-blue-500" />}
                   </button>
                 ))}
               </div>
 
-              <div className="w-1/2 overflow-y-auto bg-[#F9F9F9] p-2 space-y-0.5">
+              <div className={cn("w-1/2 overflow-y-auto bg-[#F9F9F9] p-2 space-y-0.5", hanyaProvinsi && "hidden")}>
                 {draf.provinsi ? (
                   <>
                     <p className="px-3 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wide">{draf.provinsi}</p>

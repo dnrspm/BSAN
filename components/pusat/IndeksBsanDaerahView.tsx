@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import { ArrowUp, Download, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { SELURUH_INDONESIA, WilayahFilter, type WilayahPilihan } from "@/components/filters/WilayahFilter"
 import { buatData, FilterSelect, skorProvinsi } from "@/components/pusat/IndeksBsanPusatView"
 import type { DetailInstansi } from "@/components/sekolah/IndeksBsanView"
 import { TablePagination } from "@/components/ui/table-pagination"
@@ -57,27 +58,31 @@ export function IndeksBsanDaerahView({ provinsi, sertakanProvinsi = false, judul
   const [tahun, setTahun] = useState(TAHUN_AKTIF)
   const [cari, setCari] = useState("")
   const [tingkatDaerah, setTingkatDaerah] = useState<Tingkat | "semua">("semua")
-  const [provinsiPilih, setProvinsiPilih] = useState("semua")
+  const [wilayah, setWilayah] = useState<WilayahPilihan>(provinsi ? { provinsi, kabKota: null } : SELURUH_INDONESIA)
   const [kategori, setKategori] = useState<Kategori | "belum" | "semua">("semua")
   const [urut, setUrut] = useState<{ kolom: KolomUrut; arah: "asc" | "desc" } | null>(null)
   const [halaman, setHalaman] = useState(1)
   const [perHalaman, setPerHalaman] = useState(10)
 
   const baris = useMemo(() => buatDaerah(tahun, provinsi, sertakanProvinsi), [tahun, provinsi, sertakanProvinsi])
-  const daftarProvinsi = useMemo(() => [...new Set(baris.map((b) => b.provinsi))], [baris])
   const adaDuaTingkat = sertakanProvinsi
 
+  // Filter wilayah berlaku untuk ringkasan maupun daftar (satu provinsi memuat baris provinsi dan kab/kota-nya).
+  const barisWilayah = useMemo(
+    () => baris.filter((b) => (!wilayah.provinsi || b.provinsi === wilayah.provinsi)),
+    [baris, wilayah]
+  )
+
   const ringkasan = useMemo(() => {
-    const skor = baris.flatMap((b) => (b.skor !== null ? [b.skor] : []))
-    return { rerata: rerata(skor), sudah: skor.length, total: baris.length }
-  }, [baris])
+    const skor = barisWilayah.flatMap((b) => (b.skor !== null ? [b.skor] : []))
+    return { rerata: rerata(skor), sudah: skor.length, total: barisWilayah.length }
+  }, [barisWilayah])
 
   const terfilter = useMemo(() => {
     const q = cari.trim().toLowerCase()
-    const hasil = baris.filter((b) => {
+    const hasil = barisWilayah.filter((b) => {
       if (q && !b.nama.toLowerCase().includes(q)) return false
       if (tingkatDaerah !== "semua" && b.tingkat !== tingkatDaerah) return false
-      if (provinsiPilih !== "semua" && b.provinsi !== provinsiPilih) return false
       if (kategori === "belum" && b.skor !== null) return false
       if (kategori !== "semua" && kategori !== "belum" && (b.skor === null || tingkat(b.skor).label !== kategori)) return false
       return true
@@ -91,14 +96,14 @@ export function IndeksBsanDaerahView({ provinsi, sertakanProvinsi = false, judul
       if (b.skor === null) return -1
       return (a.skor - b.skor) * kali
     })
-  }, [baris, cari, tingkatDaerah, provinsiPilih, kategori, urut])
+  }, [barisWilayah, cari, tingkatDaerah, kategori, urut])
 
   /** CSV bertitik koma (sep=;) agar langsung terbuka rapi di Excel; isinya mengikuti tahun terpilih. */
   const eksporExcel = () => {
     const sel = (v: string) => `"${v.replace(/"/g, '""')}"`
     const rows = [
       ["Tahun", "Daerah", "Tingkat", "Provinsi", "Skor Indeks BSAN Dinas", "Kategori", "Status Evaluasi"],
-      ...baris.map((b) => [
+      ...barisWilayah.map((b) => [
         String(tahun), b.nama, b.tingkat, b.provinsi,
         b.skor !== null ? fmt(b.skor) : "-", b.skor !== null ? tingkat(b.skor).label : "-", b.skor !== null ? "Sudah" : "Belum",
       ]),
@@ -169,11 +174,24 @@ export function IndeksBsanDaerahView({ provinsi, sertakanProvinsi = false, judul
           <button
             type="button"
             onClick={eksporExcel}
-            className="flex h-9 items-center gap-1.5 rounded-[4px] bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+            className="flex h-9 items-center gap-1.5 rounded-[4px] bg-gray-900 px-4 text-sm font-semibold text-white transition hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
           >
             <Download className="h-4 w-4" /> Ekspor Excel
           </button>
         </div>
+      </div>
+
+      <div className="border-t border-gray-200" />
+      <div>
+        {/* Baris tabel sudah per kab/kota, jadi filter berhenti di provinsi; provinsi yang terkunci (BPMP, Dinas Provinsi) tak perlu filter. */}
+        {provinsi ? (
+          <div className="flex items-center gap-2">
+            <span className="text-gray-500 text-lg">Wilayah:</span>
+            <span className="font-bold text-gray-900 text-lg">{provinsi}</span>
+          </div>
+        ) : (
+          <WilayahFilter nilai={wilayah} onChange={ubah(setWilayah)} hanyaProvinsi ringkas />
+        )}
       </div>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -213,14 +231,6 @@ export function IndeksBsanDaerahView({ provinsi, sertakanProvinsi = false, judul
             <option value="semua">Semua Tingkat</option>
             <option value="Provinsi">Provinsi</option>
             <option value="Kab/Kota">Kab/Kota</option>
-          </FilterSelect>
-        )}
-        {tampilProvinsi && (
-          <FilterSelect value={provinsiPilih} onChange={(e) => ubah(setProvinsiPilih)(e.target.value)} aria-label="Filter provinsi">
-            <option value="semua">Semua Provinsi</option>
-            {daftarProvinsi.map((p) => (
-              <option key={p} value={p}>{p}</option>
-            ))}
           </FilterSelect>
         )}
         <FilterSelect value={kategori} onChange={(e) => ubah(setKategori)(e.target.value as Kategori | "belum" | "semua")} aria-label="Filter kategori">
