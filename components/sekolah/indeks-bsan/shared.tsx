@@ -285,7 +285,7 @@ export function EksporExcelButton({ tahun, data }: { tahun: number; data: Indika
     <button
       type="button"
       onClick={ekspor}
-      className="flex h-9 items-center gap-1.5 rounded-[4px] bg-gray-900 px-4 text-sm font-semibold text-white transition hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
+      className="flex h-9 items-center gap-1.5 rounded-[4px] bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
     >
       <Download className="h-4 w-4" /> Ekspor Excel
     </button>
