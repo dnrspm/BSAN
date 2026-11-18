@@ -5,6 +5,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { clearAuthAndRedirectToLogin } from "@/lib/logout"
 import { readAuthSession } from "@/lib/auth-session"
+import { MenuIndeksAccordion } from "@/components/dashboard/SubMenuIndeks"
 
 export type BpmpMenu = "pokja" | "sumber-dukungan" | "input-kasus" | "laporan-akhir-tahun" | "indeks-bsan"
 
@@ -28,6 +29,11 @@ export function SidebarBpmp({ activeMenu, onMenuChange }: SidebarBpmpProps) {
 
   const namaBPMP = readAuthSession()?.namaBPMP?.replace(/^BPMP\s+/i, "")
 
+  const subMenuIndeks = [
+    { id: "sekolah", label: "Sekolah" },
+    { id: "daerah", label: "Provinsi dan Kab/Kota" },
+  ]
+
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       <div className="flex items-center gap-3 px-5 py-5 border-b border-[#4D090B]">
@@ -46,6 +52,20 @@ export function SidebarBpmp({ activeMenu, onMenuChange }: SidebarBpmpProps) {
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive = activeMenu === item.id
+          if (item.id === "indeks-bsan") {
+            return (
+              <MenuIndeksAccordion
+                key={item.id}
+                icon={Icon}
+                label={item.label}
+                menuAktif={isActive}
+                item={subMenuIndeks}
+                kelasBaris="w-full flex items-center gap-3 px-3 py-2.5 rounded-[4px] text-sm font-medium transition-colors"
+                teksNonaktif="text-[#F5C6C3]"
+                onPilih={() => setMobileOpen(false)}
+              />
+            )
+          }
           return (
             <button
               key={item.id}
@@ -53,6 +73,7 @@ export function SidebarBpmp({ activeMenu, onMenuChange }: SidebarBpmpProps) {
                 onMenuChange(item.id)
                 setMobileOpen(false)
               }}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-[4px] text-sm font-medium transition-colors",
                 isActive

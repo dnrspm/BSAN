@@ -168,6 +168,8 @@ const MOCK_POKJA_LIST: PokjaItem[] = [
   B("p38", "Provinsi Sumatera Utara"),
 ]
 
+const MENU_PUSAT: string[] = ["dashboard", "pokja", "sumber-rujukan", "k", "kegiatan", "pelanggaran", "laporan-akhir-tahun", "indeks-bsan", "pengguna"]
+
 function DashboardPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -213,11 +215,27 @@ function DashboardPageInner() {
     }
   }, [searchParams])
 
+  // Menu Admin Pusat ikut tercatat di URL agar tombol Back, refresh, dan tautan kembali ke menu yang sama.
+  const gantiMenuPusat = (menu: PusatMenu) => {
+    setPusatMenu(menu)
+    router.push(`/dashboard?menu=${menu}`, { scroll: false })
+  }
+
+  // Menu Admin Dinas dan BPMP juga tercatat di URL, sama seperti Admin Pusat.
+  const gantiMenuDinas = (menu: DinaMenu) => {
+    setDinasMenu(menu)
+    router.push(`/dashboard?menu=${menu}`, { scroll: false })
+  }
+  const gantiMenuBpmp = (menu: BpmpMenu) => {
+    setBpmpMenu(menu)
+    router.push(`/dashboard?menu=${menu}`, { scroll: false })
+  }
+
   // Handle ?menu= URL param for pusat
   useEffect(() => {
     const menuParam = searchParams.get("menu") as PusatMenu | null
     if (menuParam === "pengguna" && hakModul("aksesPengguna") === "none") return
-    if (menuParam === "pelanggaran" || menuParam === "pengguna" || menuParam === "indeks-bsan") {
+    if (menuParam && MENU_PUSAT.includes(menuParam)) {
       setPusatMenu(menuParam)
     }
   }, [searchParams])
@@ -528,7 +546,7 @@ function DashboardPageInner() {
     <>
       {role === "dinas" && (
         <div className="min-h-screen bg-[#F9F9F9] flex">
-          <Sidebar activeMenu={dinasMenu} onMenuChange={setDinasMenu} />
+          <Sidebar activeMenu={dinasMenu} onMenuChange={gantiMenuDinas} />
           <div className="flex-1 flex flex-col min-w-0">
             <Header />
             <main className="flex-1 p-4 md:p-6 overflow-auto">
@@ -565,7 +583,7 @@ function DashboardPageInner() {
 
       {role === "pusat" && (
         <div className="min-h-screen bg-[#F9F9F9] flex">
-          <SidebarPusat activeMenu={pusatMenu} onMenuChange={setPusatMenu} />
+          <SidebarPusat activeMenu={pusatMenu} onMenuChange={gantiMenuPusat} />
           <div className="flex-1 flex flex-col min-w-0">
             <div className="md:hidden h-14" aria-hidden="true" />
             <HeaderPusat />
@@ -618,7 +636,7 @@ function DashboardPageInner() {
 
       {role === "bpmp" && (
         <div className="min-h-screen bg-[#F9F9F9] flex">
-          <SidebarBpmp activeMenu={bpmpMenu} onMenuChange={setBpmpMenu} />
+          <SidebarBpmp activeMenu={bpmpMenu} onMenuChange={gantiMenuBpmp} />
           <div className="flex-1 flex flex-col min-w-0">
             <div className="md:hidden h-14" aria-hidden="true" />
             <HeaderBpmp />

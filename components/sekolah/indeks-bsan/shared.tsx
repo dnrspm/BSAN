@@ -245,6 +245,23 @@ export function nilaiSubindikator(s: Subindikator) {
     : { teks: fmt(s.skor), skor10: s.skor }
 }
 
+/** Tombol aksi "Cek Detail" di akhir baris tabel (tanpa ikon); dipakai seragam di semua tabel Indeks BSAN dan riwayat Unggah Data. */
+export function TombolDetail({ onClick, nama }: { onClick: () => void; nama: string }) {
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation()
+        onClick()
+      }}
+      aria-label={`Cek detail ${nama}`}
+      className="inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-[4px] border border-[#808489] bg-white px-3 text-xs font-medium text-gray-700 transition-colors hover:bg-[#F9F9F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+    >
+      Cek Detail
+    </button>
+  )
+}
+
 const sel = (v: string) => `"${v.replace(/"/g, '""')}"`
 
 /** Tombol ekspor: CSV bertitik koma (sep=;) agar langsung terbuka rapi di Excel dengan pengaturan regional Indonesia. */

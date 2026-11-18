@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 /** Jenis data yang diunggah: skor satuan pendidikan atau skor dinas (provinsi dan kab/kota). */
 export type BagianUnggah = "sekolah" | "dinas"
@@ -49,7 +49,6 @@ export const TEMPLATE_CSV: Record<BagianUnggah, { nama: string; isi: string; kol
 }
 
 const KUNCI = "unggah-indeks-bsan"
-const KUNCI_TAHUN = "unggah-indeks-bsan-tahun"
 
 type HasilProses = Required<Pick<Unggahan, "status" | "pesan" | "jumlahBaris" | "barisBerhasil" | "isiHasil">>
 
@@ -77,7 +76,7 @@ export function prosesCsv(isi: string, bagian: BagianUnggah = "sekolah"): HasilP
   }
 
   const data = baris.slice(1)
-  if (data.length === 0) return gagal("File hanya berisi judul kolom, tidak ada data ${bagian}.")
+  if (data.length === 0) return gagal("File hanya berisi judul kolom, tidak ada baris data.")
 
   let berhasil = 0
   const hasil = data.map((l) => {
@@ -116,7 +115,8 @@ function seed(): Unggahan[] {
 /** Riwayat unggahan, disimpan di localStorage (demo) agar tidak hilang saat berpindah menu. */
 export function useUnggahan() {
   const [daftar, setDaftar] = useState<Unggahan[]>(seed)
-  const siap = useRef(false)
+  // Simpan baru boleh jalan setelah data tersimpan selesai dimuat; bila tidak, seed menimpa localStorage.
+  const [siap, setSiap] = useState(false)
 
   const selesaikan = useCallback((id: string) => {
     setDaftar((d) => d.map((u) => (u.id === id && u.status === "Diproses" ? { ...u, ...prosesCsv(u.isiAsli, u.bagian) } : u)))
@@ -132,15 +132,15 @@ export function useUnggahan() {
         tersimpan.filter((u) => u.status === "Diproses").forEach((u) => setTimeout(() => selesaikan(u.id), 800))
       }
     } catch {}
-    siap.current = true
+    setSiap(true)
   }, [selesaikan])
 
   useEffect(() => {
-    if (!siap.current) return
+    if (!siap) return
     try {
       localStorage.setItem(KUNCI, JSON.stringify(daftar))
     } catch {}
-  }, [daftar])
+  }, [daftar, siap])
 
   const tambah = useCallback(
     (data: Pick<Unggahan, "tahun" | "bagian" | "namaFile" | "pengunggah" | "isiAsli">) => {
@@ -152,31 +152,6 @@ export function useUnggahan() {
   )
 
   return { daftar, tambah }
-}
-
-/** Tahun yang dibuka untuk unggah data; dimulai dari 2026 dan disimpan di localStorage (demo). Terbaru lebih dulu. */
-export function useTahunUnggah() {
-  const [tahun, setTahun] = useState<number[]>([TAHUN_PILIHAN[0]])
-  const siap = useRef(false)
-
-  useEffect(() => {
-    try {
-      const mentah = localStorage.getItem(KUNCI_TAHUN)
-      const tersimpan = mentah ? (JSON.parse(mentah) as number[]).filter((t) => TAHUN_PILIHAN.includes(t)) : []
-      if (tersimpan.length) setTahun([...new Set(tersimpan)].sort((a, b) => b - a))
-    } catch {}
-    siap.current = true
-  }, [])
-
-  useEffect(() => {
-    if (!siap.current) return
-    try {
-      localStorage.setItem(KUNCI_TAHUN, JSON.stringify(tahun))
-    } catch {}
-  }, [tahun])
-
-  const tambah = useCallback((t: number) => setTahun((d) => (d.includes(t) ? d : [...d, t].sort((a, b) => b - a))), [])
-  return { tahun, tambah }
 }
 
 /** "24/03/2025 11:12" */

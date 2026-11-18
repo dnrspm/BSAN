@@ -5,6 +5,8 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { clearAuthAndRedirectToLogin } from "@/lib/logout"
 import { readAuthSession } from "@/lib/auth-session"
+import { bacaWilayahDinas } from "@/lib/wilayah-dinas"
+import { MenuIndeksAccordion } from "@/components/dashboard/SubMenuIndeks"
 
 type ActiveMenu = "dashboard" | "data-pokja" | "sumber-rujukan" | "kegiatan" | "pelanggaran" | "laporan-akhir-tahun" | "indeks-bsan"
 
@@ -55,15 +57,24 @@ export function Sidebar({ activeMenu, onMenuChange }: SidebarProps) {
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [namaDinas, setNamaDinas] = useState<string | null>(null)
+  const [dinasKabKota, setDinasKabKota] = useState(false)
   const logout = () => clearAuthAndRedirectToLogin(router)
 
   useEffect(() => {
+    setDinasKabKota(!!bacaWilayahDinas().kabKota)
     const session = readAuthSession()
     if (session?.namaDinas) {
       const stripped = session.namaDinas.replace(/^dinas\s+pendidikan\s+/i, "").trim()
       setNamaDinas(stripped || session.namaDinas)
     }
   }, [])
+
+  // Layar Indeks BSAN dinas; skor kab/kota hanya untuk Dinas Provinsi.
+  const subMenuIndeks = [
+    { id: "dinas", label: "Indeks Dinas" },
+    ...(dinasKabKota ? [] : [{ id: "kabkota", label: "Kab/Kota di Wilayah" }]),
+    { id: "sekolah", label: "Sekolah di Wilayah" },
+  ]
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -85,6 +96,20 @@ export function Sidebar({ activeMenu, onMenuChange }: SidebarProps) {
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive = activeMenu === item.id
+          if (item.id === "indeks-bsan") {
+            return (
+              <MenuIndeksAccordion
+                key={item.id}
+                icon={Icon}
+                label={item.label}
+                menuAktif={isActive}
+                item={subMenuIndeks}
+                kelasBaris="w-full flex items-center gap-3 px-3 py-2.5 rounded-[4px] text-sm font-medium transition-colors"
+                teksNonaktif="text-blue-100"
+                onPilih={() => setMobileOpen(false)}
+              />
+            )
+          }
           return (
             <button
               key={item.id}
@@ -92,6 +117,7 @@ export function Sidebar({ activeMenu, onMenuChange }: SidebarProps) {
                 onMenuChange(item.id)
                 setMobileOpen(false)
               }}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-[4px] text-sm font-medium transition-colors",
                 isActive

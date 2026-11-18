@@ -3,8 +3,9 @@ import { LayoutDashboard, Users, LogOut, GraduationCap, BookOpenCheck, CalendarD
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { MenuIndeksAccordion } from "@/components/dashboard/SubMenuIndeks"
 import { clearAuthAndRedirectToLogin } from "@/lib/logout"
-import { PERAN_PUSAT_LABEL, PERAN_PUSAT_SUBJUDUL, WARNA_SIDEBAR_PUSAT, getPeranPusat, hakModul } from "@/lib/peran-pusat"
+import { PERAN_PUSAT_LABEL, PERAN_PUSAT_SUBJUDUL, WARNA_SIDEBAR_PUSAT, bolehUbahModul, getPeranPusat, hakModul } from "@/lib/peran-pusat"
 
 export type PusatMenu = "dashboard" | "pokja" | "sumber-rujukan" | "kegiatan" | "laporan-akhir-tahun" | "indeks-bsan" | "pelanggaran" | "pengguna"
 
@@ -33,6 +34,13 @@ export function SidebarPusat({ activeMenu, onMenuChange }: SidebarPusatProps) {
   // Menu Akses Pengguna disembunyikan bagi peran tanpa akses (Admin Internal, Admin Nasional).
   const menuTampil = navItems.filter((item) => item.id !== "pengguna" || hakModul("aksesPengguna", peran) !== "none")
 
+  // Layar Indeks BSAN dipilih lewat submenu; Unggah Data hanya untuk peran yang boleh mengubah.
+  const subMenuIndeks = [
+    { id: "sekolah", label: "Sekolah" },
+    { id: "daerah", label: "Provinsi dan Kab/Kota" },
+    ...(bolehUbahModul("indeksBsan") ? [{ id: "unggah", label: "Unggah Data" }] : []),
+  ]
+
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Brand */}
@@ -51,6 +59,20 @@ export function SidebarPusat({ activeMenu, onMenuChange }: SidebarPusatProps) {
         {menuTampil.map((item) => {
           const Icon = item.icon
           const isActive = activeMenu === item.id
+          if (item.id === "indeks-bsan") {
+            return (
+              <MenuIndeksAccordion
+                key={item.id}
+                icon={Icon}
+                label={item.label}
+                menuAktif={isActive}
+                item={subMenuIndeks}
+                kelasBaris="w-full flex items-center gap-3 px-3 py-2.5 rounded-[4px] text-sm font-medium transition-colors"
+                teksNonaktif="text-slate-100"
+                onPilih={() => setMobileOpen(false)}
+              />
+            )
+          }
           return (
             <button
               key={item.id}
@@ -58,6 +80,7 @@ export function SidebarPusat({ activeMenu, onMenuChange }: SidebarPusatProps) {
                 onMenuChange(item.id)
                 setMobileOpen(false)
               }}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-[4px] text-sm font-medium transition-colors",
                 isActive

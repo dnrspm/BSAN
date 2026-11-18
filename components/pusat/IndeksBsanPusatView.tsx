@@ -9,7 +9,7 @@ import { JENJANG_FIELDS } from "@/components/pusat/LaporanAkhirTahunPusatView"
 import { TablePagination } from "@/components/ui/table-pagination"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { IndeksBsanView, type DetailInstansi } from "@/components/sekolah/IndeksBsanView"
-import { LastUpdate, TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, tingkat } from "@/components/sekolah/indeks-bsan/shared"
+import { LastUpdate, TAHUN_AKTIF, TahunSelect, TingkatChip, TombolDetail, fmt, tingkat } from "@/components/sekolah/indeks-bsan/shared"
 
 type Jenjang = string
 type Kategori = "Tinggi" | "Sedang" | "Rendah"
@@ -274,7 +274,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
     <button
       type="button"
       onClick={eksporExcel}
-      className="flex h-9 items-center gap-1.5 rounded-[4px] bg-gray-900 px-4 text-sm font-semibold text-white transition hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
+      className="flex h-9 items-center gap-1.5 rounded-[4px] bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
     >
       <Download className="h-4 w-4" /> Ekspor Excel
     </button>
@@ -438,12 +438,13 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
             <table className="w-full text-sm min-w-[920px] table-fixed">
               <colgroup>
                 <col className="w-14" />
-                <col className="w-[30%]" />
-                <col className="w-[13%]" />
-                <col className="w-[11%]" />
-                <col className="w-[20%]" />
-                <col className="w-[13%]" />
-                <col className="w-[13%]" />
+                <col className="w-[26%]" />
+                <col className="w-[12%]" />
+                <col className="w-[10%]" />
+                <col className="w-[18%]" />
+                <col className="w-[12%]" />
+                <col className="w-[10%]" />
+                <col className="w-[12%]" />
               </colgroup>
               <thead>
                 <tr className="bg-[#F1F1F1] border-b border-[#D9DBDD] text-left text-xs font-semibold text-gray-500">
@@ -454,6 +455,7 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                   {kepalaUrut("kabKota", "Kabupaten/Kota")}
                   {kepalaUrut("kategori", "Kategori")}
                   {kepalaUrut("skor", "Indeks", true)}
+                  <th className="px-3 py-3" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#D9DBDD]">
@@ -480,6 +482,9 @@ export function IndeksBsanPusatView({ wilayahProvinsi, wilayahKabKota, hanyaSeko
                     <td className="px-3 py-3.5">{s.skor !== null ? <TingkatChip skor={s.skor} solid /> : <span className="text-gray-300">-</span>}</td>
                     <td className={cn("px-3 py-3.5 text-center font-semibold tabular-nums", s.skor !== null ? "text-gray-900" : "text-gray-300")}>
                       {s.skor !== null ? fmt(s.skor) : "-"}
+                    </td>
+                    <td className="px-3 py-3.5 text-right">
+                      <TombolDetail nama={s.nama} onClick={() => bukaDetail(s)} />
                     </td>
                   </tr>
                 ))}

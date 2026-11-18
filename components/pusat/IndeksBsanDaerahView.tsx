@@ -7,7 +7,7 @@ import { SELURUH_INDONESIA, WilayahFilter, type WilayahPilihan } from "@/compone
 import { buatData, FilterSelect, skorProvinsi } from "@/components/pusat/IndeksBsanPusatView"
 import type { DetailInstansi } from "@/components/sekolah/IndeksBsanView"
 import { TablePagination } from "@/components/ui/table-pagination"
-import { LastUpdate, TAHUN_AKTIF, TahunSelect, TingkatChip, fmt, tingkat } from "@/components/sekolah/indeks-bsan/shared"
+import { LastUpdate, TAHUN_AKTIF, TahunSelect, TingkatChip, TombolDetail, fmt, tingkat } from "@/components/sekolah/indeks-bsan/shared"
 
 type KolomUrut = "nama" | "tingkat" | "provinsi" | "kategori" | "skor"
 type Kategori = "Tinggi" | "Sedang" | "Rendah"
@@ -174,7 +174,7 @@ export function IndeksBsanDaerahView({ provinsi, sertakanProvinsi = false, judul
           <button
             type="button"
             onClick={eksporExcel}
-            className="flex h-9 items-center gap-1.5 rounded-[4px] bg-gray-900 px-4 text-sm font-semibold text-white transition hover:bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
+            className="flex h-9 items-center gap-1.5 rounded-[4px] bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
           >
             <Download className="h-4 w-4" /> Ekspor Excel
           </button>
@@ -250,14 +250,15 @@ export function IndeksBsanDaerahView({ provinsi, sertakanProvinsi = false, judul
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm min-w-[720px] table-fixed">
+            <table className="w-full text-sm min-w-[800px] table-fixed">
               <colgroup>
                 <col className="w-14" />
-                <col className="w-[30%]" />
-                {adaDuaTingkat && <col className="w-[14%]" />}
-                {tampilProvinsi && <col className="w-[22%]" />}
+                <col className="w-[26%]" />
+                {adaDuaTingkat && <col className="w-[13%]" />}
+                {tampilProvinsi && <col className="w-[20%]" />}
                 <col />
-                <col className="w-[14%]" />
+                <col className="w-[12%]" />
+                {onLihatDetail && <col className="w-[11%]" />}
               </colgroup>
               <thead>
                 <tr className="bg-[#F1F1F1] border-b border-[#D9DBDD] text-left text-xs font-semibold text-gray-500">
@@ -267,6 +268,7 @@ export function IndeksBsanDaerahView({ provinsi, sertakanProvinsi = false, judul
                   {tampilProvinsi && kepala("provinsi", "Provinsi")}
                   {kepala("kategori", "Kategori")}
                   {kepala("skor", "Indeks", true)}
+                  {onLihatDetail && <th className="px-3 py-3" />}
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#D9DBDD]">
@@ -303,6 +305,11 @@ export function IndeksBsanDaerahView({ provinsi, sertakanProvinsi = false, judul
                     <td className={cn("px-3 py-3.5 text-center font-semibold tabular-nums", b.skor !== null ? "text-gray-900" : "text-gray-300")}>
                       {b.skor !== null ? fmt(b.skor) : "-"}
                     </td>
+                    {onLihatDetail && (
+                      <td className="px-3 py-3.5 text-right">
+                        <TombolDetail nama={b.nama} onClick={() => bukaDetail(b)} />
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
