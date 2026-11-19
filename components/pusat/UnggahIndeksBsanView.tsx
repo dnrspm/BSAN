@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useRef, useState } from "react"
-import { AlertTriangle, CheckCircle2, Download, FileSpreadsheet, Loader2, Search, Upload } from "lucide-react"
+import { AlertTriangle, CheckCircle2, ChevronDown, Download, FileSpreadsheet, Loader2, Search, Upload } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { readAuthSession } from "@/lib/auth-session"
 import {
@@ -12,7 +12,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { FilterSelect } from "@/components/pusat/IndeksBsanPusatView"
 import { TombolDetail } from "@/components/sekolah/indeks-bsan/shared"
-import { TablePagination } from "@/components/ui/table-pagination"
 
 const BADGE: Record<StatusUnggah, string> = {
   Berhasil: "bg-emerald-300 text-emerald-950",
@@ -113,8 +112,6 @@ function RiwayatUnggah({
   const [cari, setCari] = useState("")
   const [tahun, setTahun] = useState<number | "">("")
   const [bagian, setBagian] = useState<BagianUnggah | "">("")
-  const [halaman, setHalaman] = useState(1)
-  const [perHalaman, setPerHalaman] = useState(10)
 
   const tahunAda = useMemo(() => [...new Set(daftar.map((u) => u.tahun))].sort((a, b) => b - a), [daftar])
 
@@ -123,12 +120,15 @@ function RiwayatUnggah({
     return daftar
       .filter((u) => (tahun === "" || u.tahun === tahun) && (bagian === "" || u.bagian === bagian))
       .filter((u) => !q || u.namaFile.toLowerCase().includes(q) || u.pengunggah.toLowerCase().includes(q))
-      .sort((a, b) => b.waktu.localeCompare(a.waktu))
+      .sort((a, b) => b.tahun - a.tahun || b.waktu.localeCompare(a.waktu))
   }, [daftar, cari, tahun, bagian])
 
-  const totalHalaman = Math.max(1, Math.ceil(terfilter.length / perHalaman))
-  const halamanAktif = Math.min(halaman, totalHalaman)
-  const mulai = (halamanAktif - 1) * perHalaman
+  const kelompok = useMemo(() => {
+    const m = new Map<number, Unggahan[]>()
+    for (const u of terfilter) m.set(u.tahun, [...(m.get(u.tahun) ?? []), u])
+    return [...m.entries()]
+  }, [terfilter])
+
 
   return (
     <>
@@ -141,7 +141,6 @@ function RiwayatUnggah({
             value={cari}
             onChange={(e) => {
               setCari(e.target.value)
-              setHalaman(1)
             }}
             placeholder="Cari nama file atau pengunggah"
             className="bg-white w-full h-10 pl-9 pr-3 text-sm border border-[#808489] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
@@ -152,7 +151,6 @@ function RiwayatUnggah({
           value={tahun}
           onChange={(e) => {
             setTahun(e.target.value === "" ? "" : Number(e.target.value))
-            setHalaman(1)
           }}
         >
           <option value="">Semua Tahun</option>
@@ -165,7 +163,6 @@ function RiwayatUnggah({
           value={bagian}
           onChange={(e) => {
             setBagian(e.target.value as BagianUnggah | "")
-            setHalaman(1)
           }}
         >
           <option value="">Semua Jenis Data</option>
@@ -175,66 +172,90 @@ function RiwayatUnggah({
         </FilterSelect>
       </div>
 
-    <section className="rounded-[4px] border border-[#D9DBDD] bg-white">
       {terfilter.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 py-16 text-gray-400">
-          <FileSpreadsheet className="h-8 w-8" />
-          <p className="text-sm">{daftar.length === 0 ? "Belum ada file yang diunggah." : "Tidak ada file ditemukan"}</p>
-        </div>
+        <section className="rounded-[4px] border border-[#D9DBDD] bg-white">
+          <div className="flex flex-col items-center justify-center gap-3 py-16 text-gray-400">
+            <FileSpreadsheet className="h-8 w-8" />
+            <p className="text-sm">{daftar.length === 0 ? "Belum ada file yang diunggah." : "Tidak ada file ditemukan"}</p>
+          </div>
+        </section>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[960px] table-fixed text-sm">
-            <colgroup>
-              <col className="w-[12%]" />
-              <col className="w-[7%]" />
-              <col className="w-[14%]" />
-              <col />
-              <col className="w-[11%]" />
-              <col className="w-[14%]" />
-              <col className="w-[11%]" />
-            </colgroup>
-            <thead>
-              <tr className="border-b border-[#D9DBDD] bg-[#F1F1F1] text-left text-xs font-semibold uppercase text-gray-500">
-                <th className="px-5 py-3">Waktu Unggah</th>
-                <th className="px-3 py-3">Tahun</th>
-                <th className="px-3 py-3">Jenis Data</th>
-                <th className="px-3 py-3">Nama File</th>
-                <th className="px-3 py-3">Pengunggah</th>
-                <th className="px-3 py-3">Status</th>
-                <th className="px-3 py-3" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#D9DBDD]">
-              {terfilter.slice(mulai, mulai + perHalaman).map((u) => (
-                <tr key={u.id} className="transition-colors hover:bg-[#F9F9F9]">
-                  <td className="px-5 py-3.5 tabular-nums text-gray-600">{formatWaktu(u.waktu)}</td>
-                  <td className="px-3 py-3.5 tabular-nums text-gray-900">{u.tahun}</td>
-                  <td className="truncate px-3 py-3.5 text-gray-600" title={labelBagian(u.bagian)}>{labelBagian(u.bagian)}</td>
-                  <td className="truncate px-3 py-3.5 font-medium text-gray-900" title={u.namaFile}>{u.namaFile}</td>
-                  <td className="truncate px-3 py-3.5 text-gray-600" title={u.pengunggah}>{u.pengunggah}</td>
-                  <td className="px-3 py-3.5"><StatusBadge status={u.status} /></td>
-                  <td className="px-3 py-3.5 text-right">
-                    <TombolDetail nama={u.namaFile} onClick={() => onDetail(u.id)} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-4">
+          {kelompok.map(([th, baris], i) => (
+            <KelompokTahun key={th} tahun={th} baris={baris} onDetail={onDetail} awalBuka={i === 0} />
+          ))}
         </div>
       )}
-
-      <TablePagination
-        total={terfilter.length}
-        halaman={halamanAktif}
-        perHalaman={perHalaman}
-        onHalaman={setHalaman}
-        onPerHalaman={(n) => {
-          setPerHalaman(n)
-          setHalaman(1)
-        }}
-      />
-    </section>
     </>
+  )
+}
+
+function KelompokTahun({
+  tahun, baris, onDetail, awalBuka,
+}: {
+  tahun: number
+  baris: Unggahan[]
+  onDetail: (id: string) => void
+  awalBuka: boolean
+}) {
+  const [buka, setBuka] = useState(awalBuka)
+
+  return (
+    <section className="rounded-[4px] border border-[#D9DBDD] bg-white">
+      <button
+        type="button"
+        onClick={() => setBuka((b) => !b)}
+        aria-expanded={buka}
+        className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
+      >
+        <span className="flex items-baseline gap-2">
+          <h2 className="text-base font-bold text-gray-900">Tahun {tahun}</h2>
+          <span className="text-sm text-gray-500">{baris.length} file</span>
+        </span>
+        <ChevronDown className={cn("h-5 w-5 text-gray-500 transition-transform", buka && "rotate-180")} />
+      </button>
+
+      {buka && (
+        <div className="border-t border-[#D9DBDD]">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[900px] table-fixed text-sm">
+              <colgroup>
+                <col className="w-[14%]" />
+                <col className="w-[14%]" />
+                <col />
+                <col className="w-[12%]" />
+                <col className="w-[14%]" />
+                <col className="w-[11%]" />
+              </colgroup>
+              <thead>
+                <tr className="border-b border-[#D9DBDD] bg-[#F1F1F1] text-left text-xs font-semibold uppercase text-gray-500">
+                  <th className="px-5 py-3">Waktu Unggah</th>
+                  <th className="px-3 py-3">Jenis Data</th>
+                  <th className="px-3 py-3">Nama File</th>
+                  <th className="px-3 py-3">Pengunggah</th>
+                  <th className="px-3 py-3">Status</th>
+                  <th className="px-3 py-3" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#D9DBDD]">
+                {baris.map((u) => (
+                  <tr key={u.id} className="transition-colors hover:bg-[#F9F9F9]">
+                    <td className="px-5 py-3.5 tabular-nums text-gray-600">{formatWaktu(u.waktu)}</td>
+                    <td className="truncate px-3 py-3.5 text-gray-600" title={labelBagian(u.bagian)}>{labelBagian(u.bagian)}</td>
+                    <td className="truncate px-3 py-3.5 font-medium text-gray-900" title={u.namaFile}>{u.namaFile}</td>
+                    <td className="truncate px-3 py-3.5 text-gray-600" title={u.pengunggah}>{u.pengunggah}</td>
+                    <td className="px-3 py-3.5"><StatusBadge status={u.status} /></td>
+                    <td className="px-3 py-3.5 text-right">
+                      <TombolDetail nama={u.namaFile} onClick={() => onDetail(u.id)} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </section>
   )
 }
 

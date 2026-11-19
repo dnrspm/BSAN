@@ -32,8 +32,8 @@ export interface Unggahan {
   isiHasil?: string
 }
 
-/** Tahun yang dapat ditambahkan ke daftar unggah (2026 sampai 2035). */
-export const TAHUN_PILIHAN = Array.from({ length: 10 }, (_, i) => 2026 + i)
+/** Tahun yang dapat ditambahkan ke daftar unggah (2025 sampai 2035). */
+export const TAHUN_PILIHAN = Array.from({ length: 11 }, (_, i) => 2025 + i)
 
 export const TEMPLATE_CSV: Record<BagianUnggah, { nama: string; isi: string; kolomWajib: [string, string] }> = {
   sekolah: {
@@ -109,6 +109,9 @@ function seed(): Unggahan[] {
     buat("seed-2", 2026, "2026-11-04T16:20:00", "skor_bsan_sekolah_2026_revisi.csv", "npsn;nama_sekolah;skor\r\n10100001;SDN 1 Banda Aceh;8,2\r\n1010002;SMPN 2 Banda Aceh;6,4\r\n10100003;SMAN 3 Bireuen;11"),
     buat("seed-3", 2026, "2026-11-04T10:05:00", "data_sekolah_2026.csv", "nama_sekolah;nilai\r\nSDN 1 Banda Aceh;8,2"),
     buat("seed-5", 2026, "2026-11-03T14:10:00", "skor_bsan_dinas_2026.csv", "daerah;tingkat;skor\r\nAceh;Provinsi;6,9\r\nBanda Aceh;Kab/Kota;7,5\r\nBireuen;Kab/Kota;5,8", "dinas"),
+    buat("seed-6", 2025, "2025-11-12T09:30:00", "skor_bsan_sekolah_2025.csv", "npsn;nama_sekolah;skor\r\n10100001;SDN 1 Banda Aceh;7,6\r\n10100002;SMPN 2 Banda Aceh;6,1\r\n10100003;SMAN 3 Bireuen;5,4\r\n10100004;SDN 4 Sabang;6,9"),
+    buat("seed-7", 2025, "2025-11-12T09:45:00", "skor_bsan_dinas_2025.csv", "daerah;tingkat;skor\r\nAceh;Provinsi;6,5\r\nBanda Aceh;Kab/Kota;7,1\r\nBireuen;Kab/Kota;5,3", "dinas"),
+    buat("seed-8", 2025, "2025-11-10T13:15:00", "skor_bsan_sekolah_2025_draf.csv", "npsn;nama_sekolah;skor\r\n10100001;SDN 1 Banda Aceh;7,6\r\n1010002;SMPN 2 Banda Aceh;6,1\r\n10100003;SMAN 3 Bireuen;12"),
   ]
 }
 
@@ -127,7 +130,9 @@ export function useUnggahan() {
       const mentah = localStorage.getItem(KUNCI)
       if (mentah) {
         const tersimpan = JSON.parse(mentah) as Unggahan[]
-        setDaftar(tersimpan)
+        // Data contoh yang belum ada di penyimpanan (misalnya tahun baru) ikut ditambahkan.
+        const ada = new Set(tersimpan.map((u) => u.id))
+        setDaftar([...tersimpan, ...seed().filter((u) => !ada.has(u.id))])
         // Unggahan yang masih "Diproses" saat halaman ditinggalkan diselesaikan sekarang.
         tersimpan.filter((u) => u.status === "Diproses").forEach((u) => setTimeout(() => selesaikan(u.id), 800))
       }
