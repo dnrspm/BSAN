@@ -34,11 +34,11 @@ export function SidebarPusat({ activeMenu, onMenuChange }: SidebarPusatProps) {
   // Menu Akses Pengguna disembunyikan bagi peran tanpa akses (Admin Internal, Admin Nasional).
   const menuTampil = navItems.filter((item) => item.id !== "pengguna" || hakModul("aksesPengguna", peran) !== "none")
 
-  // Layar Indeks BSAN dipilih lewat submenu; Unggah Data hanya untuk peran yang boleh mengubah.
+  // Layar Indeks BSAN dipilih lewat submenu; Metadata & Unggah Data hanya untuk peran yang boleh mengubah.
   const subMenuIndeks = [
     { id: "sekolah", label: "Sekolah" },
     { id: "daerah", label: "Provinsi dan Kab/Kota" },
-    ...(bolehUbahModul("indeksBsan") ? [{ id: "unggah", label: "Unggah Data" }] : []),
+    ...(bolehUbahModul("indeksBsan") ? [{ id: "unggah", label: "Metadata & Unggah Data" }] : []),
   ]
 
   const SidebarContent = () => (

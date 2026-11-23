@@ -106,3 +106,16 @@ tapi tiap pokja bisa dengan cepat melihat yang relevan dengan wilayahnya.
 | `components/views/DinasHome.tsx` | Beranda admin dinas |
 | `lib/auth-session.ts` | Session helper, getDinasNamaForLogs() |
 | `lib/rujukan-logs.ts` | Log helpers untuk sumber dukungan |
+
+---
+
+## Fitur: Metadata & Unggah Data Indeks BSAN (Admin Pusat)
+
+Menggantikan halaman "Unggah Data" (CSV). Rute: `/dashboard?menu=indeks-bsan&halaman=unggah`. Acuan: prototipe produk "Prototipe Metadata dan Unggah Data Indeks BSAN" (v3, 20 Nov 2026).
+
+- **Metadata** = kerangka Indeks BSAN per tahun dan per jenis (Sekolah/Dinas): indikator, subindikator, aspek tambahan, dokumen, tipe nilai (skala/persen/ya-tidak), rentang, kategori + warna. Kode otomatis `[S|D][IB|I|SI|AT|IAT|DOK]-NNNN-YYYY`.
+- **Kategori** harus menutup seluruh rentang tanpa celah dan tanpa tumpang tindih (ketelitian 1 desimal), dicek di `periksaCakupan`.
+- **Alur**: buat metadata (boleh salin dari jenis lain / tahun lalu) → metadata lengkap → unduh template `.xlsx` → unggah `.xlsx` terisi.
+- **Kunci**: metadata belum lengkap mengunci template dan unggah; ada file jenis itu berstatus Berhasil/Diproses mengunci metadata (file Gagal tidak mengunci). Menghapus file memakai peringatan; nilai lama dipulihkan bila baris file yang dihapus sebelumnya menimpa file lama.
+- **Kode**: `lib/metadata-bsan.ts` (model, validasi, penyimpanan localStorage `metadata-bsan-v1`), `lib/metadata-bsan-excel.ts` (buat template dan baca file terisi dengan `exceljs`), UI di `components/pusat/MetadataUnggahView.tsx` dan `components/pusat/metadata/`.
+- Demo: data hanya di localStorage; dashboard lain belum membaca hasil unggahan.
