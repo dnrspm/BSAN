@@ -49,10 +49,17 @@ export const INDIKATOR: Indikator[] = [
       { nama: "Persentase Murid Melaksanakan CKG", skor: 58, satuan: "persen" },
       { nama: "Kelayakan sarana dan prasarana sekolah", skor: 7.0 },
       { nama: "Ketersediaan protokol keselamatan dan tanggap darurat", skor: 6.4 },
+      // Data contoh tambahan untuk menguji tampilan saat subindikator dan rekomendasi banyak.
+      { nama: "Ketersediaan toilet dan air bersih yang layak", skor: 6.8 },
+      { nama: "Persentase murid mengikuti kegiatan jasmani rutin", skor: 72, satuan: "persen" },
+      { nama: "Pengelolaan kantin sehat dan makanan bergizi", skor: 5.9 },
     ],
     rekomendasi: [
       "Tingkatkan cakupan Cek Kesehatan Gratis (CKG) hingga seluruh murid terlayani.",
       "Lakukan simulasi tanggap darurat minimal dua kali dalam setahun.",
+      "Perbaiki fasilitas toilet dan air bersih berdasarkan hasil pemeriksaan berkala.",
+      "Tinjau menu kantin bersama dinas kesehatan agar sesuai prinsip gizi seimbang.",
+      "Jadwalkan kegiatan jasmani rutin yang dapat diikuti seluruh murid.",
     ],
   },
   {
@@ -65,11 +72,21 @@ export const INDIKATOR: Indikator[] = [
       { nama: "Ketersediaan layanan konseling", skor: 5.5 },
       { nama: "Penanganan kasus perundungan dan kekerasan", skor: 4.0 },
       { nama: "Iklim sekolah yang inklusif terhadap keberagaman", skor: 4.6 },
+      // Data contoh tambahan untuk menguji tampilan saat subindikator dan rekomendasi banyak.
+      { nama: "Ketersediaan guru bimbingan dan konseling yang terlatih", skor: 3.4 },
+      { nama: "Persentase murid yang mengetahui kanal pelaporan", skor: 46, satuan: "persen" },
+      { nama: "Keterlibatan orang tua dalam program sekolah", skor: 5.2 },
+      { nama: "Kegiatan penguatan karakter dan empati", skor: 6.1 },
+      { nama: "Ketersediaan ruang aman dan nyaman bagi murid", skor: 3.8 },
+      { nama: "Persentase pendidik mengikuti pelatihan kesejahteraan psikologis", skor: 52, satuan: "persen" },
     ],
     rekomendasi: [
       "Aktifkan layanan konseling dengan jadwal yang jelas dan mudah diakses murid.",
       "Perkuat Tim Pencegahan dan Penanganan Kekerasan (TPPK) serta alur pelaporannya.",
       "Adakan program penguatan toleransi dan keberagaman bagi murid dan pendidik.",
+      "Libatkan orang tua dalam kegiatan sekolah melalui pertemuan rutin dan kanal komunikasi yang terbuka.",
+      "Latih guru dan tenaga kependidikan mengenali tanda awal masalah psikologis pada murid.",
+      "Sediakan ruang aman yang dapat dipakai murid untuk menenangkan diri dan berkonsultasi.",
     ],
   },
   {
@@ -114,7 +131,11 @@ export function indikatorTahun(tahun: number): Indikator[] {
   return INDIKATOR.map((i, idx) => ({
     ...i,
     skor: data[idx].skor,
-    subindikator: i.subindikator.map((sub, j) => ({ ...sub, skor: sub.satuan === "persen" ? Math.round(data[idx].sub[j] * 10) : data[idx].sub[j] })),
+    subindikator: i.subindikator.map((sub, j) => {
+      // Subindikator yang belum punya nilai tahun itu (data contoh tambahan): turunkan dari skor indikator secara tetap.
+      const nilai = data[idx].sub[j] ?? Math.max(0, Math.min(10, Math.round((data[idx].skor + (((j * 7) % 5) - 2) * 0.4) * 10) / 10))
+      return { ...sub, skor: sub.satuan === "persen" ? Math.round(nilai * 10) : nilai }
+    }),
   }))
 }
 
@@ -149,7 +170,9 @@ export function Selisih({ skor, sebelumnya, tahunSebelumnya, className }: { skor
   return (
     <p className={cn("text-sm leading-snug text-gray-500", className)}>
       <Icon className={cn("mr-1 inline-block w-4 h-4 align-text-bottom", warna)} />
-      <span className={cn("font-medium", warna)}>{d === 0 ? "Sama dengan" : `${d > 0 ? "Naik" : "Turun"} ${fmt(Math.abs(d))} dari`}</span>{" "}
+      {/* Hanya "Naik 0,4" / "Turun 0,4" yang berwarna; kata "dari" dan tahun pembanding tetap abu-abu. */}
+      <span className={cn("font-medium", warna)}>{d === 0 ? "Sama dengan" : `${d > 0 ? "Naik" : "Turun"} ${fmt(Math.abs(d))}`}</span>
+      {d !== 0 && " dari"}{" "}
       <span>
         {tahunSebelumnya} ({fmt(sebelumnya)})
       </span>

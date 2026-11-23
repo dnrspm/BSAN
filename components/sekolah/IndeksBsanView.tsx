@@ -1,11 +1,12 @@
 "use client"
 
 import { Fragment, useState } from "react"
-import { Check, ChevronDown, ChevronRight, Info } from "lucide-react"
+import { Check, ChevronDown, ChevronRight, ChevronUp, ExternalLink, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { AspekTambahan } from "./indeks-bsan/AspekTambahan"
+import { DaftarTerpotong } from "./indeks-bsan/DaftarTerpotong"
 import { UnduhDokumen } from "./indeks-bsan/UnduhDokumen"
 import type { IdentitasDokumen } from "@/lib/metadata-bsan"
 import { LastUpdate, Selisih, TAHUN_AKTIF, TERAKHIR_DIPERBARUI, TahunSelect, TingkatChip, fmt, nilaiSubindikator, tingkat, useDataTahun } from "./indeks-bsan/shared"
@@ -22,7 +23,19 @@ const PESAN: Record<string, string> = {
   Rendah: "Prioritaskan perbaikan indikator dengan skor terendah, mulai dari subindikator yang nilainya paling rendah.",
 }
 
+const PENJELASAN_BSAN =
+  "Budaya Sekolah Aman dan Nyaman (BSAN) adalah program Kementerian Pendidikan untuk menciptakan lingkungan sekolah yang aman, nyaman, dan bebas dari kekerasan, mencakup aspek fisik, psikologis, spiritual, dan sosiokultural. Indeks BSAN menggambarkan penerapannya, dinilai dari 4 indikator dengan skala 0–10."
+
 const LABEL = "text-xs font-semibold uppercase tracking-wide text-gray-500"
+
+/** Lebar kolom kartu skor di atas dan kartu tiap indikator dibuat sama (26 : 40 : 34) agar garis kolomnya lurus. */
+const KOLOM_GRID = "md:grid-cols-[26fr_40fr_34fr]"
+
+/** Alamat halaman glosarium (situs lain, dibuka di tab baru). TODO: ganti dengan alamat resmi dari tim produk. */
+const URL_GLOSARIUM = "#"
+
+/** Tinggi daftar subindikator dan rekomendasi saat tertutup; sama di semua kartu. */
+const TINGGI_DAFTAR = "14rem"
 
 /** Instansi lain yang detail skornya dibuka (mis. oleh admin dinas); `skorTahun` memberi skor akhirnya per tahun. */
 export interface DetailInstansi {
@@ -51,6 +64,11 @@ interface IndeksBsanViewProps {
 export function IndeksBsanView({ judul = "Indeks BSAN", instansi, breadcrumb }: IndeksBsanViewProps = {}) {
   const [tahun, setTahun] = useState(TAHUN_AKTIF)
   const [kategoriBuka, setKategoriBuka] = useState(false)
+  /** Kartu yang daftarnya dibuka penuh. */
+  const [terbuka, setTerbuka] = useState<Record<string, boolean>>({})
+  /** Kolom (`<id>:sub`, `<id>:rek`) yang isinya melebihi tinggi tertutup; hasil ukur DaftarTerpotong. */
+  const [terpotong, setTerpotong] = useState<Record<string, boolean>>({})
+  const ukur = (kunci: string) => (v: boolean) => setTerpotong((t) => (t[kunci] === v ? t : { ...t, [kunci]: v }))
   const { data, total: skorAkhir, tahunSebelumnya, dataSebelumnya, totalSebelumnya } = useDataTahun(tahun, instansi?.skorTahun)
   const belumMengikuti = skorAkhir === null
   const total = skorAkhir ?? 0
@@ -123,8 +141,22 @@ export function IndeksBsanView({ judul = "Indeks BSAN", instansi, breadcrumb }: 
 
       <div>
         <section className="relative z-10 rounded-[4px] border border-[#D9DBDD] bg-white">
-          <h2 className="border-b border-gray-200 px-6 py-4 text-lg font-semibold leading-snug text-gray-900">Skor Indeks BSAN {tahun}</h2>
-          <div className="md:grid md:grid-cols-[30fr_35fr_35fr]">
+          <div className="flex items-center gap-2 border-b border-gray-200 px-6 py-4">
+            <h2 className="text-lg font-semibold leading-snug text-gray-900">Skor Indeks BSAN {tahun}</h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Penjelasan Indeks BSAN"
+                  className="shrink-0 rounded-full text-gray-400 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                >
+                  <Info className="h-4 w-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs leading-relaxed">{PENJELASAN_BSAN}</TooltipContent>
+            </Tooltip>
+          </div>
+          <div className={cn("md:grid", KOLOM_GRID)}>
             <div className="p-6">
               <p className={LABEL}>Skor Akhir</p>
               <p className="mt-3 flex items-baseline gap-2">
@@ -196,7 +228,12 @@ export function IndeksBsanView({ judul = "Indeks BSAN", instansi, breadcrumb }: 
           <p className="mt-1.5 text-sm text-gray-500">Subindikator dan rekomendasi perbaikan tiap indikator, diurutkan dari skor terendah.</p>
         </div>
         <div className="space-y-6">
-          {urut.map((i) => (
+          {urut.map((i) => {
+            const buka = !!terbuka[i.id]
+            const bisaLipat = !!(terpotong[`${i.id}:sub`] || terpotong[`${i.id}:rek`])
+            // Subindikator diurutkan dari nilai terendah, seperti indikator di halaman ini, agar yang paling lemah selalu terlihat.
+            const subUrut = [...i.subindikator].sort((a, b) => nilaiSubindikator(a).skor10 - nilaiSubindikator(b).skor10)
+            return (
             <article key={i.id} id={`indikator-${i.id}`} className="scroll-mt-[4.5rem] overflow-hidden rounded-[4px] border border-[#D9DBDD] bg-white">
               <div className="flex items-center gap-2 border-b border-gray-200 bg-white px-5 py-4">
                 <h3 className="text-lg font-semibold leading-snug text-gray-900">{i.nama}</h3>
@@ -213,8 +250,8 @@ export function IndeksBsanView({ judul = "Indeks BSAN", instansi, breadcrumb }: 
                   <TooltipContent className="max-w-xs leading-relaxed">{i.deskripsi}</TooltipContent>
                 </Tooltip>
               </div>
-              <div className="grid md:grid-cols-[30fr_35fr_35fr] md:divide-x md:divide-gray-200 max-md:divide-y max-md:divide-gray-200">
-                <div className="p-5">
+              <div className={cn("grid max-md:divide-y max-md:divide-gray-200", KOLOM_GRID)}>
+                <div className="p-5 md:row-span-2">
                   <p className={LABEL}>Skor</p>
                   <p className="mt-3 text-4xl font-bold tabular-nums leading-none text-gray-900">
                     {fmt(i.skor)}
@@ -226,41 +263,78 @@ export function IndeksBsanView({ judul = "Indeks BSAN", instansi, breadcrumb }: 
                   </div>
                 </div>
 
-                <div className="p-5">
-                  <p className={LABEL}>Subindikator</p>
-                  <ul className="mt-2 divide-y divide-gray-100">
-                    {i.subindikator.map((sub) => (
-                      <li key={sub.nama} className="py-2.5 text-sm">
-                        <p className="text-gray-700">{sub.nama}</p>
-                        <p className="mt-0.5 font-semibold tabular-nums text-gray-900">
-                          {nilaiSubindikator(sub).teks}
-                          <span className="font-normal text-gray-400"> / {sub.satuan === "persen" ? "100%" : "10"}</span>
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="p-5 md:border-l md:border-gray-200">
+                  <div className="flex items-baseline justify-between gap-4">
+                    <p className={LABEL}>Subindikator</p>
+                    <p className={cn(LABEL, "w-24 shrink-0 text-right")}>Nilai</p>
+                  </div>
+                  <div className="mt-2">
+                    <DaftarTerpotong buka={buka} tinggi={TINGGI_DAFTAR} onUkur={ukur(`${i.id}:sub`)} ukuranKey={subUrut.map((x) => x.nama).join("|")} className="divide-y divide-gray-100">
+                      {subUrut.map((sub) => (
+                        <li key={sub.nama} className="flex items-baseline justify-between gap-4 py-2.5 text-sm">
+                          <span data-teks className="min-w-0 text-gray-700">{sub.nama}</span>
+                          {/* Dua kolom (nama | nilai) dengan lebar tetap tanpa garis pemisah; isi kolom nilai rata kanan. */}
+                          <span className="w-24 shrink-0 text-right tabular-nums">
+                            <span className="font-semibold text-gray-900">{nilaiSubindikator(sub).teks}</span>
+                            <span className="text-gray-400"> / {sub.satuan === "persen" ? "100%" : "10"}</span>
+                          </span>
+                        </li>
+                      ))}
+                    </DaftarTerpotong>
+                  </div>
                 </div>
 
-                <div className="p-5">
+                <div className="p-5 md:border-l md:border-gray-200">
                   <p className={LABEL}>Rekomendasi perbaikan</p>
-                  <ul className="mt-3 space-y-2 text-sm text-gray-600">
-                    {i.rekomendasi.map((r) => (
-                      <li key={r} className="flex gap-2">
-                        <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600" />
-                        <span>{r}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="mt-2">
+                    <DaftarTerpotong buka={buka} tinggi={TINGGI_DAFTAR} onUkur={ukur(`${i.id}:rek`)} ukuranKey={i.rekomendasi.join("|")} className="space-y-2 pt-0.5 text-sm text-gray-600">
+                      {i.rekomendasi.map((r) => (
+                        <li key={r} className="flex gap-2">
+                          <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600" />
+                          <span data-teks className="min-w-0">{r.replace(/\.$/, "")}<span data-titik>{r.endsWith(".") ? "." : ""}</span></span>
+                        </li>
+                      ))}
+                    </DaftarTerpotong>
+                  </div>
+                </div>
+                {/* Sel gabungan di bawah kolom Subindikator dan Rekomendasi. Selalu ada di semua kartu (kosong bila tidak perlu tombol) agar tinggi kartu seragam. */}
+                <div className={cn("md:col-span-2 md:col-start-2 md:border-l md:border-gray-200", !(bisaLipat || buka) && "max-md:hidden")}>
+                  <div className={cn("flex min-h-12 items-center px-5 py-3", (bisaLipat || buka) && "border-t border-gray-200")}>
+                    {(bisaLipat || buka) && (
+                      <button
+                        type="button"
+                        onClick={() => setTerbuka((t) => ({ ...t, [i.id]: !buka }))}
+                        aria-expanded={buka}
+                        className="inline-flex items-center gap-1 rounded-[2px] text-sm font-semibold text-blue-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                      >
+                        {buka ? <>Tampilkan lebih sedikit <ChevronUp className="h-4 w-4" aria-hidden="true" /></> : <>Lihat semua subindikator dan rekomendasi <ChevronDown className="h-4 w-4" aria-hidden="true" /></>}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </article>
-          ))}
+            )
+          })}
         </div>
       </section>
 
       <AspekTambahan />
       </>
       )}
+
+      <p className="border-t border-gray-200 pt-6 text-sm text-gray-600">
+        Informasi selengkapnya bisa merujuk pada glosarium.{" "}
+        <a
+          href={URL_GLOSARIUM}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Klik di sini untuk membuka glosarium di tab baru"
+          className="inline-flex items-center gap-1 rounded-[2px] font-semibold text-blue-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        >
+          Klik di sini <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+        </a>
+      </p>
     </div>
   )
 }
