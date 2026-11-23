@@ -8,6 +8,7 @@ import {
   JENIS, daftarKode, formatWaktu, labelJenis, lengkap,
   type FileData, type Jenis, type Metadata,
 } from "@/lib/metadata-bsan"
+import { deteksiJenis } from "@/lib/metadata-bsan-excel"
 import { KOLOM, LencanaStatus, TOMBOL_MERAH, TOMBOL_PUTIH, TOMBOL_TAUTAN, TOMBOL_UTAMA } from "@/components/pusat/metadata/gaya"
 
 const ukuran = (b: number) => (b < 1024 * 1024 ? `${Math.max(1, Math.round(b / 1024))} KB` : `${(b / 1024 / 1024).toFixed(1)} MB`)
@@ -95,21 +96,37 @@ export function DialogUnggah({
   onUnggah: (jenis: Jenis, file: File) => Promise<void>
   onTemplate: (jenis: Jenis) => void
 }) {
-  const [jenis, setJenis] = useState<Jenis>(lengkap(meta.sekolah) ? "sekolah" : "dinas")
+  // Jenis data ditentukan oleh dokumen yang dipilih, bukan dipilih manual, lalu terkunci mengikuti dokumen itu.
+  const [jenis, setJenis] = useState<Jenis | null>(null)
   const [file, setFile] = useState<File | null>(null)
   const [galat, setGalat] = useState("")
+  const [membaca, setMembaca] = useState(false)
   const [proses, setProses] = useState(false)
   const input = useRef<HTMLInputElement>(null)
 
-  const pilih = (f: File | undefined) => {
+  const tolak = (pesan: string) => {
+    setFile(null)
+    setJenis(null)
+    setGalat(pesan)
+  }
+  const pilih = async (f: File | undefined) => {
     setGalat("")
-    if (!f) return setFile(null)
-    if (!f.name.toLowerCase().endsWith(".xlsx")) { setFile(null); return setGalat("Format file harus .xlsx. Gunakan template yang diunduh dari halaman ini.") }
-    if (f.size > 10 * 1024 * 1024) { setFile(null); return setGalat("Ukuran file maksimal 10 MB.") }
-    setFile(f)
+    if (!f) { setFile(null); return setJenis(null) }
+    if (!f.name.toLowerCase().endsWith(".xlsx")) return tolak("Format file harus .xlsx. Gunakan template yang diunduh dari halaman ini.")
+    if (f.size > 10 * 1024 * 1024) return tolak("Ukuran file maksimal 10 MB.")
+    setMembaca(true)
+    try {
+      const j = await deteksiJenis(f)
+      if (!j) return tolak("Jenis data tidak dikenali. Gunakan template Sekolah atau Dinas yang diunduh dari halaman ini.")
+      if (!lengkap(meta[j])) return tolak(`File ini berisi data ${labelJenis(j)}, tetapi metadata ${labelJenis(j)} ${tahun} belum lengkap.`)
+      setJenis(j)
+      setFile(f)
+    } finally {
+      setMembaca(false)
+    }
   }
   const kirim = async () => {
-    if (!file) return
+    if (!file || !jenis) return
     setProses(true)
     try {
       await onUnggah(jenis, file)
@@ -118,43 +135,30 @@ export function DialogUnggah({
       setProses(false)
     }
   }
+  const siap = JENIS.filter((j) => lengkap(meta[j.id]))
 
   return (
-    <Kerangka judul="Unggah Data Indeks BSAN" deskripsi="Pilih jenis data, lalu unggah template yang sudah diisi." onTutup={onTutup}>
+    <Kerangka judul="Unggah Data Indeks BSAN" deskripsi="Unggah template yang sudah diisi. Jenis data dibaca dari file." onTutup={onTutup}>
       <div className="space-y-4 text-sm">
-        <div className="rounded-[4px] bg-[#F9F9F9] px-3 py-2.5 text-[13px] text-gray-500">Tahun data <b className="font-semibold text-gray-900">{tahun}</b></div>
-
-        <fieldset>
-          <legend className="text-gray-600">Jenis data</legend>
-          <div className="mt-1.5 grid grid-cols-2 gap-2">
-            {JENIS.map((j) => {
-              const siap = lengkap(meta[j.id])
-              return (
-                <label
-                  key={j.id}
-                  title={siap ? undefined : `Lengkapi metadata ${j.label} dulu`}
-                  className={cn(
-                    "flex items-center gap-2 rounded-[4px] border px-3 py-2.5 font-medium transition-colors focus-within:ring-2 focus-within:ring-blue-500",
-                    jenis === j.id ? "border-blue-600 bg-blue-50 text-blue-800" : "border-[#808489] text-gray-700",
-                    siap ? "cursor-pointer hover:bg-[#F9F9F9]" : "cursor-not-allowed opacity-50"
-                  )}
-                >
-                  <input type="radio" name="jenis-data" value={j.id} checked={jenis === j.id} disabled={!siap} onChange={() => setJenis(j.id)} className="accent-blue-600" />
-                  {j.label}
-                  {!siap && <Lock className="h-3.5 w-3.5" aria-hidden="true" />}
-                </label>
-              )
-            })}
-          </div>
-        </fieldset>
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-[4px] bg-[#F9F9F9] px-3 py-2.5 text-[13px] text-gray-500">
+          <span>Tahun data <b className="font-semibold text-gray-900">{tahun}</b></span>
+          <span className="inline-flex items-center gap-1.5">
+            Jenis data
+            {jenis ? (
+              <b className="inline-flex items-center gap-1 font-semibold text-gray-900"><Lock className="h-3 w-3" aria-hidden="true" /> {labelJenis(jenis)}</b>
+            ) : (
+              <span className="text-gray-500">ditentukan dari file</span>
+            )}
+          </span>
+        </div>
 
         <div>
-          <input ref={input} type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" className="sr-only" aria-label="Pilih file template" onChange={(e) => pilih(e.target.files?.[0])} />
+          <input ref={input} type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" className="sr-only" aria-label="Pilih file template" onChange={(e) => { void pilih(e.target.files?.[0]); e.target.value = "" }} />
           <button
-            type="button" onClick={() => input.current?.click()}
+            type="button" onClick={() => input.current?.click()} disabled={membaca}
             className="flex w-full flex-col items-center gap-1.5 rounded-[4px] border border-dashed border-[#808489] bg-white px-4 py-7 text-center transition hover:bg-[#F9F9F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           >
-            {file ? <FileSpreadsheet className="h-6 w-6 text-emerald-600" /> : <Upload className="h-6 w-6 text-gray-400" />}
+            {membaca ? <Loader2 className="h-6 w-6 animate-spin text-gray-400" /> : file ? <FileSpreadsheet className="h-6 w-6 text-emerald-600" /> : <Upload className="h-6 w-6 text-gray-400" />}
             {file ? (
               <>
                 <span className="font-medium text-gray-900">{file.name}</span>
@@ -162,7 +166,7 @@ export function DialogUnggah({
               </>
             ) : (
               <>
-                <span className="font-medium text-gray-900">Pilih file template yang sudah diisi</span>
+                <span className="font-medium text-gray-900">{membaca ? "Membaca file" : "Pilih file template yang sudah diisi"}</span>
                 <span className="text-xs text-gray-500">.xlsx · maksimal 10 MB</span>
               </>
             )}
@@ -170,13 +174,15 @@ export function DialogUnggah({
           {galat && <p className="mt-2 text-xs font-medium text-red-600" role="alert">{galat}</p>}
         </div>
 
-        <div className="flex justify-end">
-          <button type="button" onClick={() => onTemplate(jenis)} className={TOMBOL_TAUTAN}><Download className="h-3.5 w-3.5" /> Unduh template</button>
+        <div className="flex flex-wrap justify-end gap-x-4 gap-y-1">
+          {siap.map((j) => (
+            <button key={j.id} type="button" onClick={() => onTemplate(j.id)} className={TOMBOL_TAUTAN}><Download className="h-3.5 w-3.5" /> Unduh template {j.label}</button>
+          ))}
         </div>
       </div>
       <Aksi>
         <button type="button" onClick={onTutup} className={TOMBOL_PUTIH}>Batal</button>
-        <button type="button" onClick={kirim} disabled={!file || proses} className={TOMBOL_UTAMA}>
+        <button type="button" onClick={kirim} disabled={!file || !jenis || membaca || proses} className={TOMBOL_UTAMA}>
           {proses && <Loader2 className="h-4 w-4 animate-spin" />} Unggah
         </button>
       </Aksi>

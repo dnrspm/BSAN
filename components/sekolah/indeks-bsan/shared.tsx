@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowDown, ArrowUp, ChevronDown, Download, Lightbulb, Minus, ShieldCheck, Heart, Smartphone, HandHeart } from "lucide-react"
+import { ArrowDown, ArrowUp, ChevronDown, Lightbulb, Minus, ShieldCheck, Heart, Smartphone, HandHeart } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export interface Subindikator {
@@ -258,36 +258,6 @@ export function TombolDetail({ onClick, nama }: { onClick: () => void; nama: str
       className="inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-[4px] border border-[#808489] bg-white px-3 text-xs font-medium text-gray-700 transition-colors hover:bg-[#F9F9F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
     >
       Cek Detail
-    </button>
-  )
-}
-
-const sel = (v: string) => `"${v.replace(/"/g, '""')}"`
-
-/** Tombol ekspor: CSV bertitik koma (sep=;) agar langsung terbuka rapi di Excel dengan pengaturan regional Indonesia. */
-export function EksporExcelButton({ tahun, data }: { tahun: number; data: Indikator[] }) {
-  const ekspor = () => {
-    const baris = [
-      ["Tahun", "Indikator", "Skor Indikator", "Kategori", "Subindikator", "Nilai Subindikator", "Rekomendasi Perbaikan"],
-      ...[...data]
-        .sort((a, b) => a.skor - b.skor)
-        .flatMap((i) => i.subindikator.map((sub, idx) => [String(tahun), i.nama, fmt(i.skor), tingkat(i.skor).label, sub.nama, nilaiSubindikator(sub).teks, idx === 0 ? i.rekomendasi.join(" | ") : ""])),
-    ]
-    const isi = ["sep=;", ...baris.map((b) => b.map(sel).join(";"))].join("\r\n")
-    const url = URL.createObjectURL(new Blob(["\uFEFF" + isi], { type: "text/csv;charset=utf-8" }))
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `indeks-bsan-${tahun}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
-  return (
-    <button
-      type="button"
-      onClick={ekspor}
-      className="flex h-9 items-center gap-1.5 rounded-[4px] bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-    >
-      <Download className="h-4 w-4" /> Ekspor Excel
     </button>
   )
 }

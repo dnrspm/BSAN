@@ -1,7 +1,7 @@
 "use client"
 
 import type { Cell, CellValue } from "exceljs"
-import { LABEL_NILAI, angka, daftarKode, labelJenis, type Jenis, type Metadata, type StatusFile } from "@/lib/metadata-bsan"
+import { LABEL_NILAI, angka, daftarKode, labelJenis, type Jenis, type LinkDokumen, type Metadata, type StatusFile } from "@/lib/metadata-bsan"
 
 const BARIS_DATA = 1000
 const BIRU_TUA = "FF1F4E78"
@@ -153,7 +153,12 @@ export interface HasilBaca {
   jumlahBaris: number
   pesan: string
   galat: string[]
+  /** Link dokumen yang dibaca dari baris kode dokumen. */
+  dokumen: LinkDokumen[]
 }
+
+/** Batas link dokumen yang disimpan per file pada versi demo (penyimpanan browser terbatas). */
+const MAKS_LINK = 5000
 
 function teks(v: CellValue): string {
   if (v == null) return ""
@@ -168,7 +173,28 @@ function teks(v: CellValue): string {
 }
 const nilaiSel = (c: Cell) => teks(c.value)
 
-const gagal = (pesan: string, galat: string[] = [], jumlahBaris = 0): HasilBaca => ({ status: "Gagal", n: 0, jumlahBaris, pesan, galat })
+const gagal = (pesan: string, galat: string[] = [], jumlahBaris = 0): HasilBaca => ({ status: "Gagal", n: 0, jumlahBaris, pesan, galat, dokumen: [] })
+
+/** Kenali jenis data (Sekolah/Dinas) dari isi file: nama sheet Data atau kolom judulnya. */
+export async function deteksiJenis(file: File): Promise<Jenis | null> {
+  const Workbook = await muatWorkbook()
+  const wb = new Workbook()
+  try {
+    await wb.xlsx.load(await file.arrayBuffer())
+  } catch {
+    return null
+  }
+  const ws = wb.worksheets.find((w) => w.name.toLowerCase().startsWith("data"))
+  if (!ws) return null
+  const nama = ws.name.toLowerCase()
+  if (nama.includes("sekolah")) return "sekolah"
+  if (nama.includes("dinas")) return "dinas"
+  const kolom = new Set<string>()
+  ws.getRow(1).eachCell((c) => kolom.add(nilaiSel(c).toLowerCase()))
+  if (kolom.has("npsn")) return "sekolah"
+  if (kolom.has("level") && kolom.has("kode_wilayah")) return "dinas"
+  return null
+}
 
 /** Baca dan periksa template Excel yang sudah diisi terhadap metadata tahun dan jenis yang dipilih. */
 export async function bacaDataXlsx(file: File, m: Metadata, jenis: Jenis): Promise<HasilBaca> {
@@ -192,6 +218,7 @@ export async function bacaDataXlsx(file: File, m: Metadata, jenis: Jenis): Promi
   const ambil = (r: number, k: string) => (idx.has(k) ? nilaiSel(ws.getCell(r, idx.get(k)!)) : "")
   const galat: string[] = []
   const lihat = new Set<string>()
+  const dokumen: LinkDokumen[] = []
   let jumlah = 0
   let ok = 0
   for (let r = 2; r <= ws.rowCount; r++) {
@@ -217,23 +244,30 @@ export async function bacaDataXlsx(file: File, m: Metadata, jenis: Jenis): Promi
         const v = angka(nil)
         if (v == null) { tambah(`nilai “${nil}” bukan angka`); continue }
         if (it.nilai === "boolean" ? v !== 0 && v !== 1 : v < it.min || v > it.max) {
-          tambah(`nilai ${nil} di luar rentang ${it.nilai === "boolean" ? "1 / 0" : `${it.min}–${it.max}`} untuk ${kode}`)
+          tambah(`nilai ${nil} di luar rentang ${it.nilai === "boolean" ? "1 / 0" : `${it.min} sampai ${it.max}`} untuk ${kode}`)
           continue
         }
       }
     }
     lihat.add(kunci)
     ok++
+    if (it.nilai === "link" && nil !== "") {
+      dokumen.push({ id: satuan, nama: ambil(r, jenis === "sekolah" ? "nama_sekolah" : "nama_daerah"), level: jenis === "dinas" ? ambil(r, "level") : undefined, kode, url: nil })
+    }
   }
 
   if (jumlah === 0) return gagal("Tidak ada baris data. Isi minimal satu baris pada sheet Data.")
   if (ok === 0) return gagal(`Tidak ada baris yang dapat diproses dari ${jumlah} baris. Periksa daftar galat, lalu unggah ulang.`, galat.slice(0, 50), jumlah)
   const sisa = jumlah - ok
+  const terpotong = dokumen.length > MAKS_LINK
   return {
     status: "Berhasil",
     n: ok,
     jumlahBaris: jumlah,
-    pesan: sisa === 0 ? `Semua ${jumlah} baris berhasil diproses.` : `${ok} dari ${jumlah} baris berhasil diproses; ${sisa} baris gagal dan perlu diperbaiki.`,
+    pesan:
+      (sisa === 0 ? `Semua ${jumlah} baris berhasil diproses.` : `${ok} dari ${jumlah} baris berhasil diproses; ${sisa} baris gagal dan perlu diperbaiki.`) +
+      (terpotong ? ` Pada versi demo hanya ${MAKS_LINK.toLocaleString("id-ID")} link dokumen pertama yang disimpan.` : ""),
     galat: galat.slice(0, 50),
+    dokumen: dokumen.slice(0, MAKS_LINK),
   }
 }

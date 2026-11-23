@@ -65,8 +65,8 @@ export function DialogItem({ item, baru, induk, jenis, tahun, terkunci: kunci, o
       judul: judul.trim(),
       desk: desk.trim(),
       nilai,
-      min: nilai === "percentage" ? 0 : Number(String(min).replace(",", ".")) || 0,
-      max: nilai === "percentage" ? 100 : nilai === "boolean" ? 1 : Number(String(max).replace(",", ".")) || 0,
+      min: Number(String(min).replace(",", ".")) || 0,
+      max: nilai === "boolean" ? 1 : Number(String(max).replace(",", ".")) || 0,
       kat: grup ? [] : kat,
     })
   }
@@ -136,9 +136,9 @@ export function DialogItem({ item, baru, induk, jenis, tahun, terkunci: kunci, o
                   <div className="text-gray-600">
                     Rentang nilai
                     <div className="mt-1.5 flex items-center gap-2">
-                      <input value={nilai === "percentage" ? "0" : min} onChange={(e) => setMin(e.target.value)} disabled={L || nilai === "percentage"} inputMode="decimal" aria-label="Minimum" className={KOLOM} />
+                      <input value={min} onChange={(e) => setMin(e.target.value)} disabled={L} aria-label="Minimum" className={KOLOM} />
                       –
-                      <input value={nilai === "percentage" ? "100" : max} onChange={(e) => setMax(e.target.value)} disabled={L || nilai === "percentage"} inputMode="decimal" aria-label="Maksimum" className={KOLOM} />
+                      <input value={max} onChange={(e) => setMax(e.target.value)} disabled={L} aria-label="Maksimum" className={KOLOM} />
                     </div>
                   </div>
                 ) : <div />}
@@ -188,7 +188,7 @@ export function DialogItem({ item, baru, induk, jenis, tahun, terkunci: kunci, o
                 !boolean && (
                   <div className="flex items-start gap-2 rounded-[4px] bg-emerald-50 px-3 py-2.5 text-[13px] text-emerald-800" role="status">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-                    Semua nilai {fmt(cakupan.mn ?? 0)}–{fmt(cakupan.mx ?? 0)} sudah punya kategori
+                    Semua nilai {fmt(cakupan.mn ?? 0)} sampai {fmt(cakupan.mx ?? 0)} sudah punya kategori
                   </div>
                 )
               ) : (
@@ -247,8 +247,8 @@ function BarisKategori({
           <td className="px-2 py-1.5"><input value={k.f} disabled aria-label="Nilai" className={INPUT_KAT} /></td>
         ) : (
           <>
-            <td className="px-2 py-1.5"><input value={k.f} onChange={(e) => onUbah({ f: e.target.value })} disabled={L} inputMode="decimal" aria-label="Dari" className={INPUT_KAT} /></td>
-            <td className="px-2 py-1.5"><input value={k.t} onChange={(e) => onUbah({ t: e.target.value })} disabled={L} inputMode="decimal" aria-label="Sampai" className={INPUT_KAT} /></td>
+            <td className="px-2 py-1.5"><input value={k.f} onChange={(e) => onUbah({ f: e.target.value })} disabled={L} aria-label="Dari" className={INPUT_KAT} /></td>
+            <td className="px-2 py-1.5"><input value={k.t} onChange={(e) => onUbah({ t: e.target.value })} disabled={L} aria-label="Sampai" className={INPUT_KAT} /></td>
           </>
         )}
         <td className="px-1 py-1.5">

@@ -1,7 +1,7 @@
 "use client"
 
 import { Fragment, useState } from "react"
-import { ChevronDown, ChevronRight, ChevronUp, Download, Lock, Pencil, Plus, Trash2 } from "lucide-react"
+import { AlertTriangle, ChevronDown, ChevronRight, ChevronUp, Download, Lock, Pencil, Plus, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
@@ -56,6 +56,8 @@ export function EditorMetadata({ db, ubah, tahun, jenis, onKembali, onTemplate, 
   const ok = lengkap(m)
   const buka = (n: ItemMeta) => terbuka[n.id] ?? n.id === m.items[0]?.id
   const label = labelJenis(jenis)
+  /** Saat terkunci hanya item Dokumen yang tetap bisa diubah, karena nilainya link dan tidak memengaruhi skor. */
+  const kunciItem = (n: ItemMeta) => L && n.type !== "dokumen"
 
   const ringkas = (() => {
     let a = 0, b = 0, c = 0, d = 0
@@ -112,9 +114,10 @@ export function EditorMetadata({ db, ubah, tahun, jenis, onKembali, onTemplate, 
 
   const baris = (n: ItemMeta, idx: number, len: number, lvl: 1 | 2): React.ReactNode => {
     const induk = n.type === "indikator" || n.type === "aspek"
+    const K = kunciItem(n)
     return (
       <Fragment key={n.id}>
-        <tr className="border-b border-[#eef0f2] transition-colors hover:bg-[#F9F9F9] [&:hover_.hv]:opacity-100 [&:focus-within_.hv]:opacity-100">
+        <tr className={cn("border-b border-[#eef0f2] transition-colors [&:hover_.hv]:opacity-100 [&:focus-within_.hv]:opacity-100", K ? "bg-[#F1F1F1]/60 text-gray-500" : "hover:bg-[#F9F9F9]")}>
           <td className={cn("py-3 pr-3", lvl === 2 ? "pl-[52px]" : "pl-4")}>
             <div className="flex min-w-0 items-center gap-1.5">
               {induk && (
@@ -126,29 +129,29 @@ export function EditorMetadata({ db, ubah, tahun, jenis, onKembali, onTemplate, 
                 </button>
               )}
               <div className="min-w-0">
-                <p className="break-words font-semibold text-gray-900">{n.judul}</p>
+                <p className={cn("break-words font-semibold", K ? "text-gray-500" : "text-gray-900")}>{n.judul}</p>
                 {n.desk && <p className="truncate text-xs text-gray-500" title={n.desk}>{n.desk}</p>}
               </div>
             </div>
           </td>
-          <td className="px-3 py-3 text-gray-700">{n.nilai ? LABEL_NILAI[n.nilai] : "–"}</td>
-          <td className="px-3 py-3 text-gray-700">{rentang(n, jenis)}</td>
-          <td className="px-3 py-3"><BatangKategori item={n} /></td>
-          <td className="px-3 py-3 font-mono text-[12.5px] text-gray-700">{n.kode}</td>
+          <td className={cn("px-3 py-3", K ? "text-gray-500" : "text-gray-700")}>{n.nilai ? LABEL_NILAI[n.nilai] : "–"}</td>
+          <td className={cn("px-3 py-3", K ? "text-gray-500" : "text-gray-700")}>{rentang(n, jenis)}</td>
+          <td className={cn("px-3 py-3", K && "opacity-60")}><BatangKategori item={n} /></td>
+          <td className={cn("px-3 py-3 font-mono text-[12.5px]", K ? "text-gray-500" : "text-gray-700")}>{n.kode}</td>
           <td className="px-3 py-3">
             <div className="flex items-center justify-end gap-1">
-              {!L && n.type !== "indeks" && (
+              {!K && n.type !== "indeks" && (
                 <>
                   <button type="button" onClick={() => geser(n.id, -1)} disabled={idx === 0} aria-label={`Naikkan ${n.judul}`} className={cn(TOMBOL_IKON, "hv opacity-0")}><ChevronUp className="h-4 w-4" /></button>
                   <button type="button" onClick={() => geser(n.id, 1)} disabled={idx >= len - 1} aria-label={`Turunkan ${n.judul}`} className={cn(TOMBOL_IKON, "hv opacity-0")}><ChevronDown className="h-4 w-4" /></button>
                 </>
               )}
-              {L ? (
+              {K ? (
                 <button type="button" onClick={() => setDlg({ item: n, baru: false, indukId: null })} aria-label={`Cek detail ${n.judul}`} className={TOMBOL_KECIL}>Cek Detail</button>
               ) : (
                 <button type="button" onClick={() => setDlg({ item: n, baru: false, indukId: null })} aria-label={`Ubah ${n.judul}`} className={TOMBOL_IKON}><Pencil className="h-4 w-4" /></button>
               )}
-              {!L && n.type !== "indeks" && (
+              {!K && n.type !== "indeks" && (
                 <button type="button" onClick={() => setHapus(cari(m, n.id))} aria-label={`Hapus ${n.judul}`} className={cn(TOMBOL_IKON, "hv opacity-0")}><Trash2 className="h-4 w-4" /></button>
               )}
             </div>
@@ -179,7 +182,7 @@ export function EditorMetadata({ db, ubah, tahun, jenis, onKembali, onTemplate, 
         <tr className="bg-[#F9F9F9]">
           <td colSpan={5} className="px-4 py-2.5 text-xs font-semibold uppercase text-gray-500">{judul} ({daftar.length})</td>
           <td className="px-3 py-2.5 text-right">
-            {!L && (
+            {(!L || tipe === "dokumen") && (
               <button type="button" onClick={() => tambah(tipe, null)} className={TOMBOL_TAUTAN}><Plus className="h-3.5 w-3.5" /> {tombol}</button>
             )}
           </td>
@@ -193,7 +196,7 @@ export function EditorMetadata({ db, ubah, tahun, jenis, onKembali, onTemplate, 
 
   const dialogItem = dlg && (
     <DialogItem
-      key={dlg.item.id} item={dlg.item} baru={dlg.baru} jenis={jenis} tahun={tahun} terkunci={L}
+      key={dlg.item.id} item={dlg.item} baru={dlg.baru} jenis={jenis} tahun={tahun} terkunci={kunciItem(dlg.item)}
       induk={dlg.indukId ? cari(m, dlg.indukId)?.n ?? null : null}
       onTutup={() => setDlg(null)} onSimpan={simpan}
     />
@@ -221,7 +224,7 @@ export function EditorMetadata({ db, ubah, tahun, jenis, onKembali, onTemplate, 
       {L && (
         <div className="flex items-center gap-2.5 rounded-[4px] border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="status">
           <Lock className="h-4 w-4 shrink-0" aria-hidden="true" />
-          <span className="flex-1">Terkunci karena ada {pengunci.length} file data {label} {tahun}. Hapus file untuk mengubah.</span>
+          <span className="flex-1">Sebagian terkunci karena ada {pengunci.length} file data {label} {tahun}. Hapus file untuk mengubah indikator, aspek, dan kategori. Dokumen masih bisa diubah.</span>
           <button type="button" onClick={onKembali} className={TOMBOL_KECIL_HITAM}>Lihat file</button>
         </div>
       )}
@@ -259,6 +262,12 @@ export function EditorMetadata({ db, ubah, tahun, jenis, onKembali, onTemplate, 
                   “{hapus.n.judul}”{hapus.n.kids.length ? ` dan ${hapus.n.kids.length} item di bawahnya` : ""} akan dihapus dari metadata.
                 </DialogDescription>
               </DialogHeader>
+              {L && hapus.n.type === "dokumen" && (
+                <div className="flex gap-2.5 rounded-[4px] border border-rose-200 bg-rose-50 px-3.5 py-3 text-sm text-rose-900" role="alert">
+                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                  <p>Link dokumen ini hilang dari data yang sudah diunggah, dan tombol unduhnya hilang dari halaman sekolah atau daerah. Tindakan ini tidak bisa dibatalkan.</p>
+                </div>
+              )}
               <div className="flex items-center justify-end gap-2">
                 <button type="button" onClick={() => setHapus(null)} className={TOMBOL_PUTIH}>Batal</button>
                 <button type="button" onClick={hapusItem} className={TOMBOL_MERAH}>Hapus</button>

@@ -6,7 +6,9 @@ import { cn } from "@/lib/utils"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { AspekTambahan } from "./indeks-bsan/AspekTambahan"
-import { EksporExcelButton, LastUpdate, Selisih, TAHUN_AKTIF, TERAKHIR_DIPERBARUI, TahunSelect, TingkatChip, fmt, nilaiSubindikator, tingkat, useDataTahun } from "./indeks-bsan/shared"
+import { UnduhDokumen } from "./indeks-bsan/UnduhDokumen"
+import type { IdentitasDokumen } from "@/lib/metadata-bsan"
+import { LastUpdate, Selisih, TAHUN_AKTIF, TERAKHIR_DIPERBARUI, TahunSelect, TingkatChip, fmt, nilaiSubindikator, tingkat, useDataTahun } from "./indeks-bsan/shared"
 
 const KATEGORI = [
   { label: "Tinggi", rentang: "≥ 8,0", contoh: 8 },
@@ -30,6 +32,12 @@ export interface DetailInstansi {
   kabKota?: string
   provinsi?: string
   skorTahun: (tahun: number) => number | null
+}
+
+/** Identitas untuk mencari link dokumen: sekolah lewat NPSN/nama, daerah lewat tingkat dan nama daerah. */
+function identitasDokumen(i: DetailInstansi): IdentitasDokumen {
+  if (i.npsn) return { jenis: "sekolah", npsn: i.npsn, nama: i.nama }
+  return i.kabKota ? { jenis: "dinas", level: "Kab/Kota", nama: i.kabKota } : { jenis: "dinas", level: "Provinsi", nama: i.provinsi }
 }
 
 interface IndeksBsanViewProps {
@@ -99,9 +107,9 @@ export function IndeksBsanView({ judul = "Indeks BSAN", instansi, breadcrumb }: 
             <p className="mt-1 text-sm text-gray-500">Gambaran penerapan Budaya Sekolah Aman dan Nyaman, dinilai dari 4 indikator dengan skala 0–10. <LastUpdate /></p>
           )}
         </div>
-        <div className="flex shrink-0 items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3 md:max-w-[62%] md:justify-end">
           <TahunSelect tahun={tahun} onChange={setTahun} />
-          {!belumMengikuti && <EksporExcelButton tahun={tahun} data={data} />}
+          <UnduhDokumen tahun={tahun} identitas={instansi && identitasDokumen(instansi)} />
         </div>
       </div>
 

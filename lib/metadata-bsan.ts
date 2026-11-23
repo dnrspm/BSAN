@@ -30,15 +30,20 @@ export const LABEL_NILAI: Record<Exclude<TipeNilai, "">, string> = {
 }
 const PREFIKS: Record<TipeItem, string> = { indeks: "IB", indikator: "I", sub: "SI", aspek: "AT", aspek_ind: "IAT", dokumen: "DOK" }
 
-/** Warna kategori: [latar, teks]. Pasangan sudah memenuhi kontras AA. */
+/**
+ * Warna kategori: [latar, teks], satu wakil per warna. Hijau, kuning, merah, biru, dan abu dari Badge Seragam
+ * (Success, Warning, Critical, Informational, Neutral). Ungu dan oranye tidak ada di Seragam (ungu paling dekat
+ * dengan Soft Purple 20 palet ilustrasi, #CFC3E2) sehingga dibuat dengan rona itu dan kecerahan setara Badge
+ * (OKLab L 0,86; Badge 0,856–0,952). Teks memakai gray-90 (#2F3031) seperti Badge.
+ */
 export const WARNA = {
-  hijau: ["#6ee7b7", "#022c22"],
-  kuning: ["#fde68a", "#451a03"],
-  merah: ["#fecdd3", "#4c0519"],
-  biru: ["#bae6fd", "#082f49"],
-  ungu: ["#ddd6fe", "#2e1065"],
-  oranye: ["#fed7aa", "#431407"],
-  abu: ["#e5e7eb", "#1f2937"],
+  hijau: ["#9AE5B9", "#2F3031"],
+  kuning: ["#FFDFA3", "#2F3031"],
+  merah: ["#FFE9EA", "#2F3031"],
+  biru: ["#98DAFB", "#2F3031"],
+  ungu: ["#D7CAEA", "#2F3031"],
+  oranye: ["#FFC5A3", "#2F3031"],
+  abu: ["#EFEFEF", "#2F3031"],
 } as const
 export type Warna = keyof typeof WARNA
 
@@ -68,6 +73,18 @@ export interface Metadata {
 }
 
 export type StatusFile = "Diproses" | "Berhasil" | "Gagal"
+
+/** Link dokumen satu sekolah/daerah untuk satu kode dokumen, dibaca dari baris dokumen pada file data. */
+export interface LinkDokumen {
+  /** NPSN (sekolah) atau kode wilayah (dinas). */
+  id: string
+  nama: string
+  /** Hanya dinas: "Provinsi" atau "Kab/Kota". */
+  level?: string
+  kode: string
+  url: string
+}
+
 export interface FileData {
   id: string
   /** ISO 8601. */
@@ -82,6 +99,8 @@ export interface FileData {
   pesan: string
   /** Daftar galat per baris (maksimal 50). */
   galat: string[]
+  /** Link dokumen yang dibaca dari file ini. */
+  dokumen?: LinkDokumen[]
 }
 
 export interface DataTahun {
@@ -231,25 +250,25 @@ export function periksaCakupan(d: { nilai: TipeNilai; min: string; max: string; 
   const rentang = d.kat.filter((k) => k.f !== "kosong")
   if (!rentang.length) return { ok: false, pesan: ["Tambah minimal 1 kategori rentang"] }
   if (tanpaNama) return { ok: false, pesan: ["Isi nama semua kategori"] }
-  const mn = d.nilai === "percentage" ? 0 : angka(d.min)
-  const mx = d.nilai === "percentage" ? 100 : angka(d.max)
+  const mn = angka(d.min)
+  const mx = angka(d.max)
   if (mn == null || mx == null || mn >= mx) return { ok: false, pesan: ["Nilai minimum harus lebih kecil dari maksimum"] }
   const galat: string[] = []
   const ks = rentang.map((k) => ({ l: k.l, f: angka(k.f), t: angka(k.t) }))
   for (const k of ks) {
     if (k.f == null || k.t == null) galat.push(`${k.l}: isi rentang dari dan sampai`)
     else if (k.f > k.t) galat.push(`${k.l}: “dari” lebih besar dari “sampai”`)
-    else if (k.f < mn || k.t > mx) galat.push(`${k.l}: di luar rentang ${fmt(mn)}–${fmt(mx)}`)
+    else if (k.f < mn || k.t > mx) galat.push(`${k.l}: di luar rentang ${fmt(mn)} sampai ${fmt(mx)}`)
   }
   if (galat.length) return { ok: false, pesan: galat, mn, mx }
   const urut = (ks as { l: string; f: number; t: number }[]).sort((a, b) => a.f - b.f)
   let cur = mn
   urut.forEach((k, i) => {
-    if (r1(k.f) > r1(cur)) galat.push(`Nilai ${fmt(cur)}–${fmt(r1(k.f - 0.1))} belum punya kategori`)
+    if (r1(k.f) > r1(cur)) galat.push(`Nilai ${fmt(cur)} sampai ${fmt(r1(k.f - 0.1))} belum punya kategori`)
     if (i > 0 && r1(k.f) <= r1(urut[i - 1].t)) galat.push(`${urut[i - 1].l} dan ${k.l} tumpang tindih`)
     cur = Math.max(cur, r1(k.t + 0.1))
   })
-  if (r1(cur) <= r1(mx)) galat.push(`Nilai ${fmt(cur)}–${fmt(mx)} belum punya kategori`)
+  if (r1(cur) <= r1(mx)) galat.push(`Nilai ${fmt(cur)} sampai ${fmt(mx)} belum punya kategori`)
   return { ok: !galat.length, pesan: galat, mn, mx }
 }
 
@@ -278,22 +297,56 @@ function seed(): Db {
   const m25 = { sekolah: metadataContoh("sekolah", 2025), dinas: metadataContoh("dinas", 2025) }
   const m26 = { sekolah: salinMetadata(m25.sekolah, "sekolah", 2026), dinas: salinMetadata(m25.dinas, "dinas", 2026) }
   m26.sekolah.items[0].desk = "Rasa aman, dukungan psikologis, dan penerimaan keberagaman yang dirasakan warga sekolah."
+  // Dokumen kedua (tahun 2026) agar tombol unduh dokumen tampil lebih dari satu pada demo.
+  for (const j of ["sekolah", "dinas"] as const) {
+    const m = m26[j]
+    const dok = buatItem(j, 2026, "dokumen", "Rekomendasi Tindak Lanjut", "link", m.cnt)
+    m.items.push(dok)
+  }
+  const kodeDok = (m: Metadata) => m.items.filter((n) => n.type === "dokumen").map((n) => n.kode)
+  const [sd1, sd2] = kodeDok(m26.sekolah)
+  const [dd1, dd2] = kodeDok(m26.dinas)
+  const BERKAS_DEMO = "https://drive.google.com/drive/folders/1xmDQ_cnnw30K-B3ZeJoR799cEMWIZq-D"
+  const linkSekolah: LinkDokumen[] = [
+    { id: "10100000", nama: "SDN 1 Banda Aceh", kode: sd1, url: BERKAS_DEMO },
+    { id: "10100000", nama: "SDN 1 Banda Aceh", kode: sd2, url: BERKAS_DEMO },
+    { id: "10100071", nama: "SMPN 2 Banda Aceh", kode: sd1, url: BERKAS_DEMO },
+    { id: "10100142", nama: "SMAN 3 Bireuen", kode: sd1, url: BERKAS_DEMO },
+  ]
+  const linkDinas: LinkDokumen[] = [
+    { id: "11", nama: "Aceh", level: "Provinsi", kode: dd1, url: BERKAS_DEMO },
+    { id: "11", nama: "Aceh", level: "Provinsi", kode: dd2, url: BERKAS_DEMO },
+    { id: "11.71", nama: "Banda Aceh", level: "Kab/Kota", kode: dd1, url: BERKAS_DEMO },
+  ]
   return {
     2025: { meta: m25, files: [
       berkas("s25-2", "2025-10-14T09:30:00", "dinas", "data_indeks_bsan_dinas_2025.xlsx", "Berhasil", 538),
       berkas("s25-1", "2025-10-12T14:40:00", "sekolah", "data_indeks_bsan_sekolah_2025.xlsx", "Berhasil", 412),
     ] },
     2026: { meta: m26, files: [
-      berkas("s26-1", "2026-11-05T08:00:00", "sekolah", "contoh_data_indeks_bsan_sekolah_2026.xlsx", "Berhasil", 466),
+      { ...berkas("s26-1", "2026-11-05T08:00:00", "sekolah", "contoh_data_indeks_bsan_sekolah_2026.xlsx", "Berhasil", 466), dokumen: linkSekolah },
       berkas("s26-2", "2026-11-04T16:20:00", "sekolah", "contoh_data_indeks_bsan_sekolah_2026_revisi.xlsx", "Berhasil", 39),
       berkas("s26-3", "2026-11-04T10:05:00", "sekolah", "data_sekolah_2026_salah_kode.xlsx", "Gagal", 0),
-      berkas("s26-4", "2026-11-03T14:10:00", "dinas", "contoh_data_indeks_bsan_dinas_2026.xlsx", "Berhasil", 552),
+      { ...berkas("s26-4", "2026-11-03T14:10:00", "dinas", "contoh_data_indeks_bsan_dinas_2026.xlsx", "Berhasil", 552), dokumen: linkDinas },
     ] },
     2027: { meta: { sekolah: salinMetadata(m26.sekolah, "sekolah", 2027), dinas: null }, files: [] },
   }
 }
 
-const KUNCI = "metadata-bsan-v1"
+const KUNCI = "metadata-bsan-v2"
+
+/** Baca data tersimpan; unggahan yang masih "Diproses" saat halaman ditinggalkan dianggap selesai. Null bila belum ada. */
+function muatDb(): Db | null {
+  try {
+    const mentah = localStorage.getItem(KUNCI)
+    if (!mentah) return null
+    const t = JSON.parse(mentah) as Db
+    for (const y of Object.keys(t)) t[+y].files = t[+y].files.map((f) => (f.status === "Diproses" ? { ...f, status: "Berhasil" } : f))
+    return t
+  } catch {
+    return null
+  }
+}
 
 /** Metadata dan riwayat unggahan, disimpan di localStorage (demo) agar tidak hilang saat berpindah menu. */
 export function useMetadataBsan() {
@@ -302,15 +355,8 @@ export function useMetadataBsan() {
   const [siap, setSiap] = useState(false)
 
   useEffect(() => {
-    try {
-      const mentah = localStorage.getItem(KUNCI)
-      if (mentah) {
-        const t = JSON.parse(mentah) as Db
-        // Unggahan yang masih "Diproses" saat halaman ditinggalkan dianggap selesai.
-        for (const y of Object.keys(t)) t[+y].files = t[+y].files.map((f) => (f.status === "Diproses" ? { ...f, status: "Berhasil" } : f))
-        setDb(t)
-      }
-    } catch {}
+    const t = muatDb()
+    if (t) setDb(t)
     setSiap(true)
   }, [])
 
@@ -330,6 +376,59 @@ export function useMetadataBsan() {
   }, [])
 
   return { db, ubah }
+}
+
+/* ===== dokumen unduhan per sekolah/daerah ===== */
+
+/** Identitas sekolah atau daerah yang halaman Indeks BSAN-nya sedang dibuka. */
+export interface IdentitasDokumen {
+  jenis: Jenis
+  /** Sekolah: NPSN bila ada. */
+  npsn?: string
+  /** Sekolah: nama sekolah. Dinas: nama daerah (tanpa awalan "Dinas Pendidikan"). */
+  nama?: string
+  /** Dinas saja. */
+  level?: "Provinsi" | "Kab/Kota"
+}
+
+export interface DokumenUnduh { kode: string; judul: string; deskripsi: string; url: string | null }
+
+const normNama = (s: string | undefined) => (s ?? "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim()
+
+function cocok(l: LinkDokumen, who: IdentitasDokumen) {
+  if (who.jenis === "sekolah") return (!!who.npsn && l.id === who.npsn) || (!!who.nama && normNama(l.nama) === normNama(who.nama))
+  return normNama(l.level) === normNama(who.level) && normNama(l.nama) === normNama(who.nama)
+}
+
+/**
+ * Dokumen unduhan untuk satu sekolah/daerah pada satu tahun: satu entri per item Dokumen di metadata. Link diambil
+ * dari file data Berhasil terbaru yang memuatnya, sehingga file baru menimpa dan menghapus file mengembalikan link lama.
+ */
+export function dokumenUnduh(db: Db, tahun: number, who: IdentitasDokumen): DokumenUnduh[] {
+  const th = db[tahun]
+  const meta = th?.meta[who.jenis]
+  if (!th || !meta) return []
+  const berkas = th.files.filter((f) => f.jenis === who.jenis && f.status === "Berhasil")
+  return meta.items
+    .filter((n) => n.type === "dokumen")
+    .map((n) => {
+      let url: string | null = null
+      for (const f of berkas) {
+        const l = f.dokumen?.find((d) => d.kode === n.kode && cocok(d, who))
+        if (l) { url = l.url; break }
+      }
+      return { kode: n.kode, judul: n.judul, deskripsi: n.desk, url }
+    })
+}
+
+/** Versi baca-saja dari data metadata untuk halaman lain (tidak menulis ke penyimpanan). */
+export function useDokumenUnduh(tahun: number, who: IdentitasDokumen | null): DokumenUnduh[] {
+  const [db, setDb] = useState<Db | null>(null)
+  useEffect(() => {
+    setDb(muatDb() ?? seed())
+  }, [])
+  if (!db || !who) return []
+  return dokumenUnduh(db, tahun, who)
 }
 
 /** "24/03/2025 11:12" */

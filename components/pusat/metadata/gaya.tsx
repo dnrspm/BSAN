@@ -34,14 +34,12 @@ export function LencanaStatus({ status }: { status: StatusFile }) {
 /** Batang berwarna: satu segmen per kategori, lebar sesuai rentangnya. */
 export function BatangKategori({ item }: { item: ItemMeta }) {
   if (!item.kat.length) return <span className="text-gray-400">–</span>
-  const tip = item.kat.map((k) => k.l + (k.t !== "" ? ` ${k.f}–${k.t}` : "")).join(" · ")
+  const tip = item.kat.map((k) => k.l + (k.t !== "" ? ` ${k.f} sampai ${k.t}` : "")).join(" · ")
   let segmen: { w: number; c: string }[]
   if (item.nilai === "boolean") {
     segmen = item.kat.map((k) => ({ w: 100 / item.kat.length, c: WARNA[k.c][0] }))
   } else {
-    const mn = item.nilai === "percentage" ? 0 : item.min
-    const mx = item.nilai === "percentage" ? 100 : item.max
-    const span = Math.max(mx - mn, 0.1)
+    const span = Math.max(item.max - item.min, 0.1)
     segmen = item.kat
       .filter((k) => k.f !== "kosong")
       .sort((a, b) => (angka(a.f) ?? 0) - (angka(b.f) ?? 0))
@@ -49,7 +47,7 @@ export function BatangKategori({ item }: { item: ItemMeta }) {
   }
   return (
     <span className="inline-flex items-center gap-2" title={tip}>
-      <span className="flex h-2 w-[84px] overflow-hidden rounded-full bg-gray-100" aria-hidden="true">
+      <span className="flex h-2 w-[84px] overflow-hidden rounded-full bg-white ring-1 ring-inset ring-black/10" aria-hidden="true">
         {segmen.map((s, i) => (
           <i key={i} className="block h-full" style={{ width: `${s.w}%`, background: s.c }} />
         ))}

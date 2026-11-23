@@ -93,7 +93,7 @@ export function MetadataUnggahView() {
     // Pemrosesan di server disimulasikan; status akhir mengikuti hasil pemeriksaan file.
     setTimeout(() => ubah((d) => { const f = d[y]?.files.find((x) => x.id === id); if (f) f.status = hasil.status }), 1500)
     setDlg(null)
-    tampilToast(hasil.status === "Gagal" ? "File diunggah, tetapi tidak dapat diproses. Lihat detailnya." : `File diunggah · Metadata ${labelJenis(j)} ${y} kini terkunci`)
+    tampilToast(hasil.status === "Gagal" ? "File diunggah, tetapi tidak dapat diproses. Lihat detailnya." : `File diunggah · Metadata ${labelJenis(j)} ${y} kini terkunci sebagian. Dokumen masih bisa diubah.`)
   }
 
   const hapusFile = (y: number, id: string) => {
@@ -200,7 +200,7 @@ export function MetadataUnggahView() {
                     <Langkah no={1} judul="Metadata" />
                     <div className="overflow-x-auto">
                       <table className="w-full min-w-[640px] table-fixed text-sm">
-                        <colgroup><col className="w-[16%]" /><col /><col className="w-[16%]" /><col className="w-[230px]" /></colgroup>
+                        <colgroup><col className="w-[12%]" /><col /><col className="w-[190px]" /><col className="w-[230px]" /></colgroup>
                         <thead><tr className={TR_HEAD}><th className={cn(TH, "pl-4")}>Jenis</th><th className={TH}>Isi</th><th className={TH}>Status</th><th className={TH} /></tr></thead>
                         <tbody className="divide-y divide-[#eef0f2]">
                           {JENIS.map((j) => {
@@ -223,7 +223,7 @@ export function MetadataUnggahView() {
                                 <td className="px-3 py-3 text-gray-600">{ringkasan(m)}</td>
                                 <td className="px-3 py-3">
                                   {kunci ? (
-                                    <span className={cn(LENCANA, "bg-amber-100 text-amber-900")} title={`Hapus ${kunci} file data ${j.label} untuk mengubah`}><Lock className="h-3 w-3" aria-hidden="true" /> Terkunci</span>
+                                    <span className={cn(LENCANA, "bg-amber-100 text-amber-900")} title={`Hapus ${kunci} file data ${j.label} untuk mengubah indikator dan kategori. Dokumen masih bisa diubah.`}><Lock className="h-3 w-3" aria-hidden="true" /> Terkunci sebagian</span>
                                   ) : ok ? (
                                     <span className={cn(LENCANA, "bg-emerald-300 text-emerald-950")}>Siap</span>
                                   ) : (
@@ -236,7 +236,7 @@ export function MetadataUnggahView() {
                                       <Download className="h-3.5 w-3.5" /> Template
                                     </button>
                                     <button type="button" onClick={() => bukaEditor(y, j.id)} className={TOMBOL_KECIL}>
-                                      {kunci ? "Cek Detail" : <><Pencil className="h-3.5 w-3.5" /> Ubah</>}
+                                      <Pencil className="h-3.5 w-3.5" /> Ubah
                                     </button>
                                   </div>
                                 </td>
