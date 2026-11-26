@@ -7,7 +7,7 @@ import { pilihHalaman } from "@/components/dashboard/SubMenuIndeks"
 import { IndeksBsanView, type DetailInstansi } from "@/components/sekolah/IndeksBsanView"
 import { IndeksBsanPusatView } from "@/components/pusat/IndeksBsanPusatView"
 import { IndeksBsanDaerahView } from "@/components/pusat/IndeksBsanDaerahView"
-import { MetadataUnggahView } from "@/components/pusat/MetadataUnggahView"
+import { UnggahDataPusatView } from "@/components/pusat/UnggahDataPusatView"
 
 interface IndeksBsanWilayahViewProps {
   /** BPMP: batasi pada provinsi kewenangan; kosong = seluruh Indonesia (Admin Pusat, Internal, Nasional). */
@@ -50,7 +50,7 @@ export function IndeksBsanWilayahView({ provinsi, bolehUnggah = false }: IndeksB
         )}
       </div>
 
-      {unggah && <MetadataUnggahView />}
+      {unggah && <UnggahDataPusatView />}
 
       {detail && !unggah && (
         <IndeksBsanView

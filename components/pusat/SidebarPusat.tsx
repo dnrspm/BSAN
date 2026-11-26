@@ -5,6 +5,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { MenuIndeksAccordion } from "@/components/dashboard/SubMenuIndeks"
 import { clearAuthAndRedirectToLogin } from "@/lib/logout"
+import { useModeUnggah, labelMenuUnggah } from "@/lib/mode-unggah"
 import { PERAN_PUSAT_LABEL, PERAN_PUSAT_SUBJUDUL, WARNA_SIDEBAR_PUSAT, bolehUbahModul, getPeranPusat, hakModul } from "@/lib/peran-pusat"
 
 export type PusatMenu = "dashboard" | "pokja" | "sumber-rujukan" | "kegiatan" | "laporan-akhir-tahun" | "indeks-bsan" | "pelanggaran" | "pengguna"
@@ -30,15 +31,16 @@ export function SidebarPusat({ activeMenu, onMenuChange }: SidebarPusatProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const logout = () => clearAuthAndRedirectToLogin(router)
   const peran = getPeranPusat()
+  const { mode: modeUnggah } = useModeUnggah()
   const warna = WARNA_SIDEBAR_PUSAT[peran]
   // Menu Akses Pengguna disembunyikan bagi peran tanpa akses (Admin Internal, Admin Nasional).
   const menuTampil = navItems.filter((item) => item.id !== "pengguna" || hakModul("aksesPengguna", peran) !== "none")
 
-  // Layar Indeks BSAN dipilih lewat submenu; Metadata & Unggah Data hanya untuk peran yang boleh mengubah.
+  // Layar Indeks BSAN dipilih lewat submenu; Unggah Data (atau Metadata & Unggah Data pada mode Ideal) hanya untuk peran yang boleh mengubah.
   const subMenuIndeks = [
     { id: "sekolah", label: "Sekolah" },
     { id: "daerah", label: "Provinsi dan Kab/Kota" },
-    ...(bolehUbahModul("indeksBsan") ? [{ id: "unggah", label: "Metadata & Unggah Data" }] : []),
+    ...(bolehUbahModul("indeksBsan") ? [{ id: "unggah", label: labelMenuUnggah(modeUnggah) }] : []),
   ]
 
   const SidebarContent = () => (
